@@ -1,0 +1,9 @@
+<properties>
+	<property id="maxHoursForecast" type="number">8</property>
+	<property id="alertLevelPrecipitationChance" type="number">75</property>
+	<property id="showAlertLevel" type="boolean">true</property>
+	<property id="showForecastStartTime" type="boolean">true</property>
+	<property id="showTimeOfDay" type="boolean">true</property>
+	<property id="dashesUnderColumnHeight" type="number">2</property>
+	<property id="showColumnBorder" type="boolean">false</property>
+</properties>

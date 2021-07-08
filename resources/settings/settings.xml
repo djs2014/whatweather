@@ -1,0 +1,23 @@
+<settings>
+	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
+		<settingConfig type="numeric" min="1" max="12" />
+	</setting>	
+	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>	
+	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
+		<settingConfig type="boolean" />
+	</setting>
+    <setting propertyKey="@Properties.showForecastStartTime" title="@Strings.ShowForecastStartTime">
+		<settingConfig type="boolean" />
+	</setting>
+	<setting propertyKey="@Properties.showTimeOfDay" title="@Strings.ShowTimeOfDay">
+		<settingConfig type="boolean" />
+	</setting>
+	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
+		<settingConfig type="numeric" min="0" max="4" />
+	</setting>	
+    <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
+		<settingConfig type="boolean" />
+	</setting>		
+</settings>

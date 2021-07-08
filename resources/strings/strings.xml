@@ -1,0 +1,10 @@
+<strings>
+    <string id="AppName">What Weather</string>    
+    <string id="MaxHoursForecast">Maximum hours of forecast data</string>    
+    <string id="AlertLevelprecipitationChance">Alert level precipitation chance</string>
+    <string id="ShowAlertLevel">Show alert level line</string>
+    <string id="ShowTimeOfDay">Show the time of day</string>
+    <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
+    <string id="ShowColumnBorder">Show border of the columns</string>    
+    <string id="ShowForecastStartTime">Show time of first forecast data</string>    
+</strings>
