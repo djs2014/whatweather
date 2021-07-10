@@ -19,4 +19,6 @@ Todo:
  - layout margins
  - layout for small and layout for bigger field
   - background orange when first time thunder, reset when no thunder at all. 
+
+- weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
  
