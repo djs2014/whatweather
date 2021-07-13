@@ -7,18 +7,23 @@ Connect IQ datafield showing precipitation chance.
 Get weather forecast and show per upcoming hour the precipitation chance in a blue column.
 If the weather conditions is `thunder` then the color will be red.
 
-First column shows precipitation chance for the next hour. If current time is 12:01 or 12:59 then 
-first column precipitation chance is for 13:00.
+First column shows precipitation chance for the current hour.
 
+Settings:
+	Show current forecast: show precipitation chance of current hour in first column.
+	Maximum hours of forecast data: precipitation chance will be displayd per hour in the next columns.
+	Alert level precipitation chance: set the percentage.
+	Show alert level line: display the precipitation chance alert level.
+	Show maximum precipitation chance on top of first column: Just what you read.
+	Show time of observation: display the time of the wheater data in top right corner.
+	Show location of observation: display the name in top left corner.
+	Show time of day: yes or no.	
+	
 Todo:
  - Show notification (next to time) ! when forecast data is delayed.
  - App settings for color
  - Target for other weather conditions and colors
- - show the current values (condition and precipitation chance).
-    - make it first column
- - layout margins
- - layout for small and layout for bigger field
-  - background orange when first time thunder, reset when no thunder at all. 
-
-- weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
- 
+ - layout for small and layout for bigger field  
+ - to fix, weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
+  
+  

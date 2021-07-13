@@ -1,6 +1,9 @@
 <settings>
+	<setting propertyKey="@Properties.showCurrentForecast" title="@Strings.ShowCurrentForecast">
+		<settingConfig type="boolean" />
+	</setting>
 	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
-		<settingConfig type="numeric" min="1" max="12" />
+		<settingConfig type="numeric" min="0" max="12" />
 	</setting>	
 	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
 		<settingConfig type="numeric" min="0" max="100" />
@@ -8,6 +11,12 @@
 	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
 		<settingConfig type="boolean" />
 	</setting>
+	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
+		<settingConfig type="boolean" />
+	</setting>	
+	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
+		<settingConfig type="boolean" />
+	</setting>		
     <setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
 		<settingConfig type="boolean" />
 	</setting>

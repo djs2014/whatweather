@@ -1,4 +1,3 @@
-import Toybox.Activity;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
@@ -6,7 +5,6 @@ import Toybox.Weather;
 using Toybox.Time.Gregorian as Calendar;
 
 class WhatWeatherView extends WatchUi.DataField {
-	hidden var printMessages = false;	
 	hidden var mFont=Graphics.FONT_LARGE;
 	hidden var mFontSmall=Graphics.FONT_XTINY;
 	hidden var mFontSmallH;
@@ -31,117 +29,109 @@ class WhatWeatherView extends WatchUi.DataField {
 
     // Display the value you computed here. This will be called once a second when the data field is visible.
     function onUpdate(dc as Dc) as Void {
-		// forecast + the current condition    	       	        		   
-    	var maxHoursForecast = getNumberProperty("maxHoursForecast", 8) + 1; 
+		// forecast + the current condition
+		var showCurrentForecast = getBooleanProperty("showCurrentForecast", true);    	       	        		   
+    	var maxHoursForecast = getNumberProperty("maxHoursForecast", 8); 
     	var showTimeOfDay = getBooleanProperty("showTimeOfDay", true);
         var alertLevelPrecipitationChance = getNumberProperty("alertLevelPrecipitationChance", 70); 
         var showAlertLevel = getBooleanProperty("showAlertLevel", true);
+        var showMaxPrecipitationChance = getBooleanProperty("showMaxPrecipitationChance", true);
         var dashesUnderColumnHeight = getNumberProperty("dashesUnderColumnHeight", 2); 
     	var showColumnBorder = getBooleanProperty("showColumnBorder", false);
-		//var showForecastStartTime = getBooleanProperty("showForecastStartTime", true);
 		var showObservationTime = getBooleanProperty("showObservationTime", true);
 		var showObservationLocationName = getBooleanProperty("showObservationLocationName", true);
+		var showPrecipitationChanceAxis = getBooleanProperty("showPrecipitationChanceAxis", true);
 		
 		if (mDisplayBackgroundAlert && !mDisplayedBackgroundAlert) {
 			mBackgroundColor = Graphics.COLOR_YELLOW;
 			mDisplayBackgroundAlert = false;			
 			mDisplayedBackgroundAlert = true;
-		} else {
-			mBackgroundColor = getBackgroundColor();
-		}
+		} else {mBackgroundColor = getBackgroundColor();}
 		
 		dc.setColor(mBackgroundColor, mBackgroundColor);
 		dc.clear();
 		mForegroundColor = Graphics.COLOR_BLACK;	
-     	if (mBackgroundColor == Graphics.COLOR_BLACK) {
-            mForegroundColor = Graphics.COLOR_WHITE;
-        } 
+     	if (mBackgroundColor == Graphics.COLOR_BLACK) {mForegroundColor = Graphics.COLOR_WHITE;} 
         
         var width = dc.getWidth();
-        var height = dc.getHeight();                
-        var bar_width = width/(maxHoursForecast + 4);
-        var space = bar_width/4;
-        var bar_height = height - 2 * space;                      
-		// System.println("FIRST width[" + width.format("%d") + "] height[" + height.format("%d") + "] space[" + space.format("%d") + "] bar_width[" + bar_width.format("%d") + "] bar_height[" + bar_height.format("%d") + "]");                      
-    	var barY = space;
-    	var barX = space; // width / maxHoursForecast - space/2;
+        var height = dc.getHeight();
+        var nrOfColumns = maxHoursForecast;
+        if (showCurrentForecast) {nrOfColumns = nrOfColumns + 1;}
+        
+        var margin = 5;
+        var space = 2;
+        var bar_width = 10;
+        if (nrOfColumns > 0) {bar_width = (width - (2 * margin) - (nrOfColumns - 1) * space) / nrOfColumns; }
+        
+        var bar_height = height - 2 * margin;                      
+		var barY = margin;
+		var correction = (width - (2 * margin) - (nrOfColumns * bar_width) - (nrOfColumns - 1) * space )/2;
+    	var barX = margin + correction; 
     	    	     	
-   	  	//debug("barY[" + barY.format("%d") + "] bar_height[" + bar_height.format("%d") + "]");               
-    	//debug("now: " + getDateTimeString(mTime));
-    
+   	  	var maxPrecipitationChance = 0;   	  	
     	var isWarningCondition = false;
-	    var isPrecipitationChance = false;
-	    var firstValidSegmentTime = null;    	    	
-    	try {
-    		var currentConditions = Weather.getCurrentConditions();
-			if (currentConditions != null) {
-				// First column, current conditions
-				var precipitationChance = currentConditions.precipitationChance;
-				var color = getConditionColor(currentConditions.condition);
-				isWarningCondition = isWarningCondition || color != Graphics.COLOR_BLUE;
-				 
-				if (showColumnBorder) {    
- 					drawColumnBorder(dc, barX, barY, bar_width, bar_height);      	  	
-           	  	}
-           	  	if (precipitationChance!=null) {
-           	  		drawColumnPrecipitationChance(dc, color, barX, barY, bar_width, bar_height, precipitationChance);
-           	  	}
-           	  	
-           	  	if (dashesUnderColumnHeight>0) {
-	           	  	dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
-					dc.fillRectangle(barX, barY + bar_height, bar_width, dashesUnderColumnHeight);
+	    try {
+	    	if (showCurrentForecast) {
+	    		var currentConditions = Weather.getCurrentConditions();
+				if (currentConditions != null) {
+					// First column, current conditions
+					var precipitationChance = currentConditions.precipitationChance;
+					var color = getConditionColor(currentConditions.condition);
+					isWarningCondition = isWarningCondition || color != Graphics.COLOR_BLUE;						
+					 
+	           	  	if (precipitationChance!=null) {
+	           	  		if (precipitationChance>maxPrecipitationChance) {maxPrecipitationChance = precipitationChance;}	           	  		
+						if (showColumnBorder) {drawColumnBorder(dc, barX, barY, bar_width, bar_height);}
+	           	  		drawColumnPrecipitationChance(dc, color, barX, barY, bar_width, bar_height, precipitationChance);
+	           	  	
+		           	  	if (dashesUnderColumnHeight>0) {
+			           	  	dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+							dc.fillRectangle(barX, barY + bar_height, bar_width, dashesUnderColumnHeight);
+						}
+						barX = barX + bar_width + space;	   
+	           	  	}
 				}
-				barX = barX + bar_width + space;	   
 			}
 			
-	    	var hourlyForecast = Weather.getHourlyForecast();
 	    	var validSegment = 0;
+	    	var hourlyForecast = Weather.getHourlyForecast();
 	    	if (hourlyForecast != null) {
-	    	    var maxSegment =  hourlyForecast.size();
-			    //debug("found maxSegment: " + maxSegment.format("%d"));
-			    	    	      	 
+	    	    var maxSegment =  hourlyForecast.size();			    	    	      	 
 	            for (var segment = 0; validSegment < maxHoursForecast && segment < maxSegment; segment +=1) {
 	           	  var forecast = hourlyForecast[segment];           	 
 	           	  var fcTime= Calendar.info(forecast.forecastTime, Time.FORMAT_SHORT);
-	           	  //debug("found forecast:" + getDateTimeString(fcTime));
 	           	             	            	             	             	             
 	           	  if (forecast.forecastTime.compare(Time.now()) >= 0) { 
 	           	    validSegment +=1;          	  
 	           	  	var precipitationChance = forecast.precipitationChance;
-	           	   	//debug("Segment[" + segment.format("%d") + "] forecast[" + getDateTimeString(fcTime) + "] rain[" + precipitationChance.format("%d") + "%]");
-	 				if (validSegment==1) {
-	 					firstValidSegmentTime = getTimeString(fcTime);
-	 				}
 	 				
-	 				if (showColumnBorder) {    
-	 					drawColumnBorder(dc, barX, barY, bar_width, bar_height);      	  	
-	           	  	}
-	           	  		           	  		           	 
-	           	  	// TODO, alert once, background flash if (precipitationChance >= alertLevelPrecipitationChance)
-	           	  		
 	           	  	if (precipitationChance != null) {
-	           	  		isPrecipitationChance = true;
+	           	  		if (precipitationChance>maxPrecipitationChance) {maxPrecipitationChance = precipitationChance;}
+		 				if (showColumnBorder) {drawColumnBorder(dc, barX, barY, bar_width, bar_height);}		           	  		           	  		           	
+	           	  		// TODO, alert once, background flash if (precipitationChance >= alertLevelPrecipitationChance)
+	           	  		
 		           	  	var color = getConditionColor(forecast.condition);
 		           	  	isWarningCondition = isWarningCondition || color != Graphics.COLOR_BLUE;
 						drawColumnPrecipitationChance(dc, color, barX, barY, bar_width, bar_height, precipitationChance);							           	  		           	  	
-	           	  	}      	  	
 	           	  	
-	           	  	if (dashesUnderColumnHeight>0) {
-	           	  		dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
-						dc.fillRectangle(barX, barY + bar_height, bar_width, dashesUnderColumnHeight);
-					}
-					           	  	           	  	
-	           	  	barX = barX + bar_width + space;	               
+		           	  	if (dashesUnderColumnHeight>0) {
+		           	  		dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+							dc.fillRectangle(barX, barY + bar_height, bar_width, dashesUnderColumnHeight);
+						}
+						           	  	           	  	
+		           	  	barX = barX + bar_width + space;	               
+	           	  	}      	  	
 	              }
-	            }
+	            } // /for
 	        }
         
         } catch(ex) {
 			System.println(ex);
 		}
 		
-        if (isPrecipitationChance && showAlertLevel) {
-        	drawWarningLevel(dc, Graphics.COLOR_LT_GRAY, alertLevelPrecipitationChance);			
+        if (maxPrecipitationChance > 0) {
+        	if (showMaxPrecipitationChance) {drawMaxPrecipitationChance(dc, margin, bar_height, Graphics.COLOR_LT_GRAY, maxPrecipitationChance);}
+        	if (showAlertLevel) {drawWarningLevel(dc, margin, bar_height, Graphics.COLOR_LT_GRAY, alertLevelPrecipitationChance);}			
         }     
 
 		try {			
@@ -151,12 +141,10 @@ class WhatWeatherView extends WatchUi.DataField {
 					var observationLocationName = currentConditions.observationLocationName;		
 					observationLocationName = observationLocationName == null ? "--------" : observationLocationName;
 					var comma = observationLocationName.find(",");
-					if (comma != null) {					
-						observationLocationName = observationLocationName.substring(0, comma);
-					}											
+					if (comma != null) {observationLocationName = observationLocationName.substring(0, comma);}											
 														 
 					var textY = 1; 					
-					var textX=space;					
+					var textX = margin;					
 					drawText(dc, textX, textY, observationLocationName, mFontSmall, Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);					
 				}
 							 			
@@ -170,7 +158,7 @@ class WhatWeatherView extends WatchUi.DataField {
 						 
 						var textY = 1; 
 						var textW = dc.getTextWidthInPixels(observationTimeString, mFontSmall);
-						var textX = width - textW - space;
+						var textX = width - textW - margin;
 						drawText(dc, textX, textY, observationTimeString, mFontSmall, Graphics.COLOR_LT_GRAY, mBackgroundColor);										
 					}
 				}			
@@ -178,6 +166,8 @@ class WhatWeatherView extends WatchUi.DataField {
 		} catch(ex) {
 			System.println(ex);
 		}
+    	
+    	if (showPrecipitationChanceAxis) { drawPrecipitationChanceAxis(dc, margin, bar_height);}
     	
     	if (showTimeOfDay) {
     		var now = Calendar.info(Time.now(), Time.FORMAT_SHORT);
@@ -193,9 +183,8 @@ class WhatWeatherView extends WatchUi.DataField {
 			dc.drawText(width/2,height/2,mFont,(now.hour.format("%02d") + ":" + now.min.format("%02d")),Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 		}	
 		
-		if (!isWarningCondition) {
-			ResetBackgroundAlert();
-		}        
+		if (isWarningCondition) {SetBackgroundAlert();}
+		else {ResetBackgroundAlert();}        
     }
     
     function drawText(dc, x, y, text, font, color, backColor) {    	    	
@@ -203,17 +192,44 @@ class WhatWeatherView extends WatchUi.DataField {
 		dc.drawText(x,y,font,text,Graphics.TEXT_JUSTIFY_LEFT);
     }
     
-    function drawWarningLevel(dc, color, heightPerc){  
+    function drawWarningLevel(dc, margin, bar_height, color, heightPerc){  
     	if (heightPerc<=0) {return;}
     	  
-    	var height = dc.getHeight();
     	var width = dc.getWidth();
-    	var margin = 5;
+    	
     	// integer division truncates the result, use float values
-        var lineY = height - height * (heightPerc / 100.0);
+        var lineY = margin + bar_height - bar_height * (heightPerc / 100.0);
         
         dc.setColor(color, Graphics.COLOR_TRANSPARENT);	
-        dc.drawLine(0 + margin, lineY, width - (2 * margin), lineY);         
+        dc.drawLine(margin, lineY, width - margin, lineY);         
+    }
+    
+    function drawMaxPrecipitationChance(dc, margin, bar_height, color, precipitationChance){
+    	if (precipitationChance > 80) {return;} 
+    	var y = margin + bar_height - bar_height * (precipitationChance / 100.0) - mFontSmallH - 2;
+    	dc.setColor(color, Graphics.COLOR_TRANSPARENT);	
+    	dc.drawText(margin, y, mFontSmall, precipitationChance.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);    	
+    }
+    
+    function drawPrecipitationChanceAxis(dc, margin, bar_height) {
+    	dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+		var width = dc.getWidth();
+		var x2 = width - margin;
+		var y100 = margin;
+    	dc.drawLine(0, y100, margin, y100);
+    	dc.drawLine(x2, y100, width, y100);
+    	var y75 = margin + bar_height - bar_height * 0.75;
+    	dc.drawLine(0, y75, margin, y75);  
+    	dc.drawLine(x2, y75, width, y75); 
+    	var y50 = margin + bar_height - bar_height * 0.5;
+    	dc.drawLine(0, y50, margin, y50);
+    	dc.drawLine(x2, y50, width, y50);
+    	var y25 = margin + bar_height - bar_height * 0.25;
+    	dc.drawLine(0, y25, margin, y25);
+    	dc.drawLine(x2, y25, width, y25);
+    	var y0 = margin + bar_height;
+    	dc.drawLine(0, y0, margin, y0);
+    	dc.drawLine(x2, y0, width, y0);    	
     }
     
 	function getDateTimeString(moment) {
@@ -239,19 +255,28 @@ class WhatWeatherView extends WatchUi.DataField {
 		    case Weather.CONDITION_THUNDERSTORMS:
 		    case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
 		    case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:    
-		    case Weather.CONDITION_TORNADO:
-		    case Weather.CONDITION_HURRICANE:
-		    	// @@ TEST
-		    	SetBackgroundAlert();
-		    	return Graphics.COLOR_ORANGE;
+		    	return Graphics.COLOR_RED;
 		        break;		    
+		    case Weather.CONDITION_FREEZING_RAIN:
+		    case Weather.CONDITION_HAIL:
+		    case Weather.CONDITION_HEAVY_RAIN:
+		    case Weather.CONDITION_HEAVY_RAIN_SNOW:
+		    case Weather.CONDITION_HEAVY_SHOWERS:
+		    case Weather.CONDITION_HEAVY_SNOW:
+		    	return Graphics.COLOR_DK_BLUE;
+		    case Weather.CONDITION_HURRICANE:
+		    case Weather.CONDITION_TORNADO:
+		    case Weather.CONDITION_SANDSTORM:
+		    case Weather.CONDITION_TROPICAL_STORM:
+		    case Weather.CONDITION_VOLCANIC_ASH:
+		    	return Graphics.COLOR_PURPLE;
 		    default:
 		        return Graphics.COLOR_BLUE;
 		}
 	}
 	
 	function drawColumnBorder(dc, x, y, width, height) {
-   	  	//debug("barX[" + barX.format("%d") + "] barY[" + barY.format("%d") + "] bar_width[" + bar_width.format("%d") + "] bar_height[" + bar_height.format("%d") + "]");           	  	
+   	  	//System.println("barX[" + barX.format("%d") + "] barY[" + barY.format("%d") + "] bar_width[" + bar_width.format("%d") + "] bar_height[" + bar_height.format("%d") + "]");           	  	
    	  	dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT); 
    	  	dc.drawRectangle(x, y, width, height);	
 	}
@@ -260,16 +285,10 @@ class WhatWeatherView extends WatchUi.DataField {
 		dc.setColor(color, Graphics.COLOR_TRANSPARENT);	           	  
 		var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0)  * precipitationChance)); 
 		var barFilledY = y + bar_height - barFilledHeight; 		           	  	      	  	           	  	           	 
-		// debug("barX[" + barX.format("%d") + "] barFilledY[" + barFilledY.format("%d") + "] bar_width[" + bar_width.format("%d") + "] barFilledHeight[" + barFilledHeight.format("%d") + "]");
+		// System.println("barX[" + barX.format("%d") + "] barFilledY[" + barFilledY.format("%d") + "] bar_width[" + bar_width.format("%d") + "] barFilledHeight[" + barFilledHeight.format("%d") + "]");
 		dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
-	}
-		           	  	
-	function debug(message) {
-		if (printMessages) {
-			System.println(message);
-		}
-	}
-	
+	}	
+			           	  
 	function ResetBackgroundAlert() {
 		mDisplayedBackgroundAlert = false;
 		mDisplayBackgroundAlert = false;
