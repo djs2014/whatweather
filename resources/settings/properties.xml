@@ -6,6 +6,7 @@
 	<property id="showMaxPrecipitationChance" type="boolean">true</property>	
 	<property id="showPrecipitationChanceAxis" type="boolean">true</property>	
 	<property id="showObservationTime" type="boolean">true</property>
+	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>	
 	<property id="observationTimeCaption" type="string">As of </property>	
 	<property id="showObservationLocationName" type="boolean">true</property>
 	<property id="showTimeOfDay" type="boolean">true</property>

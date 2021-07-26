@@ -18,12 +18,18 @@ Settings:
 	Show time of observation: display the time of the wheater data in top right corner.
 	Show location of observation: display the name in top left corner.
 	Show time of day: yes or no.	
+
+	Colors:
+		Thunderstorms: red
+		Heavy Rain: dark blue
+		Hurricane, tornado, sandstorm: purple 
+		    		       
+New
+	Beep on alert.
+	Time of observation is red when delayed for x minutes.
 	
 Todo:
- - Show notification (next to time) ! when forecast data is delayed.
- - App settings for color
+ - App settings for color / color picker?
  - Target for other weather conditions and colors
  - layout for small and layout for bigger field  
  - to fix, weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
-  
-  

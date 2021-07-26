@@ -2,6 +2,7 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Weather;
+import Toybox.Attention;
 using Toybox.Time.Gregorian as Calendar;
 
 class WhatWeatherView extends WatchUi.DataField {
@@ -10,14 +11,13 @@ class WhatWeatherView extends WatchUi.DataField {
 	hidden var mFontSmallH;
 	hidden var mForegroundColor;
 	hidden var mBackgroundColor;
-	
-	hidden var mDisplayBackgroundAlert;
-    hidden var mDisplayedBackgroundAlert; 
+	hidden var mDisplayAlert;
+    hidden var mDisplayedAlert; 
      										
     function initialize() {
         DataField.initialize();
         mFontSmallH = Graphics.getFontHeight(mFontSmall);
-        ResetBackgroundAlert(); 
+        resetBackgroundAlert(); 
     }
 
     function onLayout(dc as Dc) as Void {
@@ -41,11 +41,13 @@ class WhatWeatherView extends WatchUi.DataField {
 		var showObservationTime = getBooleanProperty("showObservationTime", true);
 		var showObservationLocationName = getBooleanProperty("showObservationLocationName", true);
 		var showPrecipitationChanceAxis = getBooleanProperty("showPrecipitationChanceAxis", true);
+		var observationTimeDelayedMinutesThreshold = getNumberProperty("observationTimeDelayedMinutesThreshold", 30); 
 		
-		if (mDisplayBackgroundAlert && !mDisplayedBackgroundAlert) {
+		if (mDisplayAlert && !mDisplayedAlert) {
 			mBackgroundColor = Graphics.COLOR_YELLOW;
-			mDisplayBackgroundAlert = false;			
-			mDisplayedBackgroundAlert = true;
+			playAlert();
+			mDisplayAlert = false;			
+			mDisplayedAlert = true;
 		} else {mBackgroundColor = getBackgroundColor();}
 		
 		dc.setColor(mBackgroundColor, mBackgroundColor);
@@ -69,7 +71,7 @@ class WhatWeatherView extends WatchUi.DataField {
     	var barX = margin + correction; 
     	    	     	
    	  	var maxPrecipitationChance = 0;   	  	
-    	var isWarningCondition = false;
+    	var isAlert = false;
 	    try {
 	    	if (showCurrentForecast) {
 	    		var currentConditions = Weather.getCurrentConditions();
@@ -77,9 +79,10 @@ class WhatWeatherView extends WatchUi.DataField {
 					// First column, current conditions
 					var precipitationChance = currentConditions.precipitationChance;
 					var color = getConditionColor(currentConditions.condition);
-					isWarningCondition = isWarningCondition || color != Graphics.COLOR_BLUE;						
+					isAlert = isAlert || isConditionAlert(color);						
 					 
 	           	  	if (precipitationChance!=null) {
+	           	  		isAlert = isAlert || isPrecipitationChanceAlert(alertLevelPrecipitationChance, precipitationChance);	
 	           	  		if (precipitationChance>maxPrecipitationChance) {maxPrecipitationChance = precipitationChance;}	           	  		
 						if (showColumnBorder) {drawColumnBorder(dc, barX, barY, bar_width, bar_height);}
 	           	  		drawColumnPrecipitationChance(dc, color, barX, barY, bar_width, bar_height, precipitationChance);
@@ -106,12 +109,13 @@ class WhatWeatherView extends WatchUi.DataField {
 	           	  	var precipitationChance = forecast.precipitationChance;
 	 				
 	           	  	if (precipitationChance != null) {
+	           	  		isAlert = isAlert || isPrecipitationChanceAlert(alertLevelPrecipitationChance, precipitationChance);
 	           	  		if (precipitationChance>maxPrecipitationChance) {maxPrecipitationChance = precipitationChance;}
 		 				if (showColumnBorder) {drawColumnBorder(dc, barX, barY, bar_width, bar_height);}		           	  		           	  		           	
 	           	  		// TODO, alert once, background flash if (precipitationChance >= alertLevelPrecipitationChance)
 	           	  		
 		           	  	var color = getConditionColor(forecast.condition);
-		           	  	isWarningCondition = isWarningCondition || color != Graphics.COLOR_BLUE;
+		           	  	isAlert = isAlert || isConditionAlert(color);
 						drawColumnPrecipitationChance(dc, color, barX, barY, bar_width, bar_height, precipitationChance);							           	  		           	  	
 	           	  	
 		           	  	if (dashesUnderColumnHeight>0) {
@@ -155,11 +159,16 @@ class WhatWeatherView extends WatchUi.DataField {
 						
 						var observationTimeCaption = getStringProperty("observationTimeCaption", "As of ");	
 						var observationTimeString = observationTimeCaption + getShortTimeString(obsTime);
+						var color = Graphics.COLOR_LT_GRAY;
+						if (isObservationTimeDelayed(observationTime, observationTimeDelayedMinutesThreshold)) { 
+							observationTimeString = observationTimeString + "!";
+							color = Graphics.COLOR_RED;
+							} 
 						 
 						var textY = 1; 
 						var textW = dc.getTextWidthInPixels(observationTimeString, mFontSmall);
 						var textX = width - textW - margin;
-						drawText(dc, textX, textY, observationTimeString, mFontSmall, Graphics.COLOR_LT_GRAY, mBackgroundColor);										
+						drawText(dc, textX, textY, observationTimeString, mFontSmall, color, mBackgroundColor);										
 					}
 				}			
 			}
@@ -183,8 +192,8 @@ class WhatWeatherView extends WatchUi.DataField {
 			dc.drawText(width/2,height/2,mFont,(now.hour.format("%02d") + ":" + now.min.format("%02d")),Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 		}	
 		
-		if (isWarningCondition) {SetBackgroundAlert();}
-		else {ResetBackgroundAlert();}        
+		if (isAlert) {setBackgroundAlert();}
+		else {resetBackgroundAlert();}        
     }
     
     function drawText(dc, x, y, text, font, color, backColor) {    	    	
@@ -205,8 +214,9 @@ class WhatWeatherView extends WatchUi.DataField {
     }
     
     function drawMaxPrecipitationChance(dc, margin, bar_height, color, precipitationChance){
-    	if (precipitationChance > 80) {return;} 
     	var y = margin + bar_height - bar_height * (precipitationChance / 100.0) - mFontSmallH - 2;
+    	// Do not overwrite Location name
+    	if (y < (mFontSmallH + 10)) { return; }
     	dc.setColor(color, Graphics.COLOR_TRANSPARENT);	
     	dc.drawText(margin, y, mFontSmall, precipitationChance.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);    	
     }
@@ -288,13 +298,33 @@ class WhatWeatherView extends WatchUi.DataField {
 		// System.println("barX[" + barX.format("%d") + "] barFilledY[" + barFilledY.format("%d") + "] bar_width[" + bar_width.format("%d") + "] barFilledHeight[" + barFilledHeight.format("%d") + "]");
 		dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
 	}	
+
+	function isConditionAlert(color) {
+		return color != Graphics.COLOR_BLUE;	
+	}			           	  
+	
+	function isPrecipitationChanceAlert(alertLevel, chance) {
+		return (alertLevel > 0) && (chance >= alertLevel);
+	}	
 			           	  
-	function ResetBackgroundAlert() {
-		mDisplayedBackgroundAlert = false;
-		mDisplayBackgroundAlert = false;
+	function resetBackgroundAlert() {
+		mDisplayedAlert = false;
+		mDisplayAlert = false;
 	}
 	
-	function SetBackgroundAlert() {
-		mDisplayBackgroundAlert = true;		
+	function setBackgroundAlert() {
+		mDisplayAlert = true;		
+	}
+	
+	function playAlert() {
+		if (Attention has :playTone) {
+	   		Attention.playTone(Attention.TONE_CANARY);
+	   	}
+	}
+	
+	function isObservationTimeDelayed(moment, minutesDelayedThreshold) {
+		if (moment == null || minutesDelayedThreshold <= 0) { return false;}
+		var seconds = Time.now().compare(moment);		
+		return seconds > (minutesDelayedThreshold * 60);
 	}
 }

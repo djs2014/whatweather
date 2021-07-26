@@ -10,6 +10,7 @@
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
     <string id="ShowColumnBorder">Show border of the columns</string>    
     <string id="ShowObservationTime">Show time of observation</string>
+    <string id="ObservationTimeDelayedMinutesThreshold">Show warning when time of observation is delayed for x minutes</string>
     <string id="ObservationTimeCaption">Caption time of observation</string>
     <string id="ShowObservationLocationName">Show location of observation</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
