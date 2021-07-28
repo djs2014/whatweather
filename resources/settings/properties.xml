@@ -1,15 +1,21 @@
 <properties>
 	<property id="showCurrentForecast" type="boolean">true</property>
+	<property id="maxMinuteForecast" type="number">0</property>
 	<property id="maxHoursForecast" type="number">8</property>
+	<property id="showClouds" type="boolean">false</property>
+	<property id="showUVIndexFactor" type="number">0</property>
+	<property id="hideUVIndexLowerThan" type="number">2</property>
 	<property id="alertLevelPrecipitationChance" type="number">75</property>
+	<property id="alertLevelRainMMfirstHour" type="number">0</property>
+	<property id="alertLevelUVi" type="number">0</property>
 	<property id="showAlertLevel" type="boolean">false</property>
-	<property id="showMaxPrecipitationChance" type="boolean">true</property>	
+	<property id="showMaxPrecipitationChance" type="boolean">false</property>	
 	<property id="showPrecipitationChanceAxis" type="boolean">true</property>	
 	<property id="showObservationTime" type="boolean">true</property>
 	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>	
 	<property id="observationTimeCaption" type="string">As of </property>	
-	<property id="showObservationLocationName" type="boolean">true</property>
-	<property id="showTimeOfDay" type="boolean">true</property>
+	<property id="showObservationLocationName" type="boolean">true</property>	
 	<property id="dashesUnderColumnHeight" type="number">2</property>
 	<property id="showColumnBorder" type="boolean">false</property>
+	<property id="showInfo" type="number">1</property>
 </properties>

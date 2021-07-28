@@ -17,19 +17,25 @@
 	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
 		<settingConfig type="boolean" />
 	</setting>		
-    <setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
+    <setting propertyKey="@Properties.showInfo" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
+            <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
+            <listEntry value="2">@Strings.ShowInfoAltitude</listEntry>
+            <listEntry value="3">@Strings.ShowInfoHeading</listEntry>
+            <listEntry value="4">@Strings.ShowInfoTemperature</listEntry>
+			<listEntry value="5">@Strings.ShowInfoHeartrate</listEntry>
+			<listEntry value="6">@Strings.ShowInfoAmbientPressure</listEntry>
+			<listEntry value="7">@Strings.ShowInfoDistance</listEntry>
+        </settingConfig>
+    </setting>      
+	<setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
 		<settingConfig type="numeric" min="0" max="60" />
 	</setting>	
-	 <setting propertyKey="@Properties.observationTimeCaption" title="@Strings.ObservationTimeCaption">
-		<settingConfig type="alphanumeric" />
-	</setting>	
 	<setting propertyKey="@Properties.showObservationLocationName" title="@Strings.ShowObservationLocationName">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showTimeOfDay" title="@Strings.ShowTimeOfDay">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">

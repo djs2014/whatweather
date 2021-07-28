@@ -33,3 +33,21 @@ Todo:
  - Target for other weather conditions and colors
  - layout for small and layout for bigger field  
  - to fix, weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
+
+- optional: icon under bar 14 pix breed
+	https://freebiesbug.com/illustrator-freebies/26-free-weather-icons/
+- refactor
+	- overlay bug delayed
+	- move generic code to classes: Render etc..
+
+x - use ww OWM code
+	- show km (bearing)
+	- show diff fields
+	- alert (weather-condition, windspeed, precipitation)
+	- temperature
+	- humidity
+	- wind bearing
+	- speed 
+	- icon with condition draw with sdk?
+
+- WWOWM - glitch simple node -> more advanced .. step by step
