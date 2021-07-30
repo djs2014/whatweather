@@ -4,113 +4,122 @@ import Toybox.Activity;
 import Toybox.Sensor;
 
 class CurrentInfo {
+  var lat = 0;
+  var lon = 0;
 
-    public var lat = 0;
-    public var lon = 0;
+  hidden var _actiInfo as Info ? ;
+  hidden var _posnInfo as Info ? ;
+  function initialize() {}
 
-    private var _actiInfo as Info?;
-    private var _posnInfo as Info?;
-    function initialize() {
-    }
+  function hasLocation() { return self.lat != 0 && self.lon != 0; }
 
-    function hasLocation() {
-        return self.lat != 0 && self.lon != 0;
-    }
-
-    function infoLocation() {
-        return Lang.format("current($1$,$2$)",[lat.format("%.4f"), lon.format("%.4f")]);
-    }
-    function getPosition(info as Activity.Info) {
-        try {
-            _actiInfo = info;
-            var location = getNewLocation(info.currentLocation);
-            if (location == null) {
-                _posnInfo  = Position.getInfo();
-                if (_posnInfo has :position && _posnInfo.position != null) {
-                    location = getNewLocation(_posnInfo.position);
-                }
-            }
-            if (location != null) {
-                self.lat = location[0];
-                self.lon = location[1];
-            }
-
-        } catch (ex) {
-            ex.printStackTrace();
+  function infoLocation() {
+    return Lang.format("current($1$,$2$)",
+                       [ lat.format("%.4f"), lon.format("%.4f") ]);
+  }
+  function getPosition(info as Activity.Info) {
+    try {
+      _actiInfo = info;
+      var location = getNewLocation(info.currentLocation);
+      if (location == null) {
+        _posnInfo = Position.getInfo();
+        if (_posnInfo has : position && _posnInfo.position != null) {
+          location = getNewLocation(_posnInfo.position);
         }
-    }
+      }
+      if (location != null) {
+        self.lat = location[0];
+        self.lon = location[1];
+      }
 
-    function getNewLocation(position as Position.Location) {
-        if (position == null) {return null;}
-        var location = position.toDegrees();
-        var lat = location[0];
-        var lon = location[1];
-        if ( lat.toNumber() != 0 && lon.toNumber() != 0 && self.lat != lat && self.lon != lon) {
-            return location;
-        }
-        return null;
+    } catch (ex) {
+      ex.printStackTrace();
     }
+  }
 
-    function compassDirection() {
-        var direction= null;
-        var SensorInfo = Sensor.Info;
-        if (SensorInfo != null && SensorInfo has :heading && SensorInfo.heading != null) {
-            direction = getCompassDirection(SensorInfo.heading);
-        } else if (_actiInfo != null && _actiInfo.currentHeading != null) {
-          direction = getCompassDirection(_actiInfo.currentHeading);
-        } else if (_posnInfo != null && _posnInfo.heading != null) {
-             direction = getCompassDirection(_posnInfo.heading);
-        }
-        return direction;
+  function getNewLocation(position as Position.Location) {
+    if (position == null) {
+      return null;
     }
-
-    function altitude() {
-        var SensorInfo = Sensor.Info;
-        if (SensorInfo != null && SensorInfo has :altitude && SensorInfo.altitude != null) {
-            return SensorInfo.altitude;
-        } else if (_actiInfo != null && _actiInfo has :altitude && _actiInfo.altitude != null) {
-            return _actiInfo.altitude;
-        } else if (_posnInfo != null && _posnInfo has :altitude && _posnInfo.altitude != null) {
-            return _posnInfo.altitude;
-        }
-        return null;
+    var location = position.toDegrees();
+    var lat = location[0];
+    var lon = location[1];
+    if (lat.toNumber() != 0 && lon.toNumber() != 0 && self.lat != lat &&
+        self.lon != lon) {
+      return location;
     }
+    return null;
+  }
 
-    function elapsedDistance() {
-        var distance = null;
-        if (_actiInfo != null && _actiInfo has :elapsedDistance && _actiInfo.elapsedDistance != null) {        
-          distance = _actiInfo.elapsedDistance;
-        }
-        return distance;
+  function compassDirection() {
+    var direction = null;
+    var SensorInfo = Sensor.Info;
+    if (SensorInfo != null && SensorInfo has
+        : heading && SensorInfo.heading != null) {
+      direction = getCompassDirection(SensorInfo.heading);
+    } else if (_actiInfo != null && _actiInfo.currentHeading != null) {
+      direction = getCompassDirection(_actiInfo.currentHeading);
+    } else if (_posnInfo != null && _posnInfo.heading != null) {
+      direction = getCompassDirection(_posnInfo.heading);
     }
+    return direction;
+  }
 
-    function heartRate() {
-        var SensorInfo = Sensor.Info;
-        if (SensorInfo != null && SensorInfo has :heartRate && SensorInfo.heartRate != null) {
-            return SensorInfo.heartRate;
-        } else if (_actiInfo != null && _actiInfo has :currentHeartRate && _actiInfo.currentHeartRate != null) {
-          return _actiInfo.currentHeartRate;
-        }
-        return null;
+  function altitude() {
+    var SensorInfo = Sensor.Info;
+    if (SensorInfo != null && SensorInfo has
+        : altitude && SensorInfo.altitude != null) {
+      return SensorInfo.altitude;
+    } else if (_actiInfo != null && _actiInfo has
+               : altitude && _actiInfo.altitude != null) {
+      return _actiInfo.altitude;
+    } else if (_posnInfo != null && _posnInfo has
+               : altitude && _posnInfo.altitude != null) {
+      return _posnInfo.altitude;
     }
+    return null;
+  }
 
-    function ambientPressure() {
-        var pressure = null;
-        var SensorInfo = Sensor.Info;        
-        if (SensorInfo != null && SensorInfo has :pressure && SensorInfo.pressure != null) {
-            pressure = SensorInfo.pressure;
-        } else if (_actiInfo != null && _actiInfo has :ambientPressure && _actiInfo.ambientPressure  != null) {
-            pressure = _actiInfo.ambientPressure;
-        }
-        return pressure;
+  function elapsedDistance() {
+    var distance = null;
+    if (_actiInfo != null && _actiInfo has
+        : elapsedDistance && _actiInfo.elapsedDistance != null) {
+      distance = _actiInfo.elapsedDistance;
     }
+    return distance;
+  }
 
-     function temperature() {
-        var SensorInfo = Sensor.Info;
-        if (SensorInfo != null && SensorInfo has :temperature && SensorInfo.temperature != null) {
-            return SensorInfo.temperature;
-        }
-        return null;
+  function heartRate() {
+    var SensorInfo = Sensor.Info;
+    if (SensorInfo != null && SensorInfo has
+        : heartRate && SensorInfo.heartRate != null) {
+      return SensorInfo.heartRate;
+    } else if (_actiInfo != null && _actiInfo has
+               : currentHeartRate && _actiInfo.currentHeartRate != null) {
+      return _actiInfo.currentHeartRate;
     }
+    return null;
+  }
 
+  function ambientPressure() {
+    var pressure = null;
+    var SensorInfo = Sensor.Info;
+    if (SensorInfo != null && SensorInfo has
+        : pressure && SensorInfo.pressure != null) {
+      pressure = SensorInfo.pressure;
+    } else if (_actiInfo != null && _actiInfo has
+               : ambientPressure && _actiInfo.ambientPressure != null) {
+      pressure = _actiInfo.ambientPressure;
+    }
+    return pressure;
+  }
+
+  function temperature() {
+    var SensorInfo = Sensor.Info;
+    if (SensorInfo != null && SensorInfo has
+        : temperature && SensorInfo.temperature != null) {
+      return SensorInfo.temperature;
+    }
+    return null;
+  }
 }

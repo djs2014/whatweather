@@ -8,6 +8,17 @@
 	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>	
+	<setting propertyKey="@Properties.showWind" title="@Strings.ShowWind" prompt="@Strings.ShowWindPrompt">
+		 <settingConfig type="list">
+            <listEntry value="0">@Strings.ShowWindNothing</listEntry>
+            <listEntry value="1">@Strings.ShowWindMeters</listEntry>            
+			<listEntry value="2">@Strings.ShowWindKilometers</listEntry>            
+            <listEntry value="3">@Strings.ShowWindBeaufort</listEntry>            
+        </settingConfig>
+	</setting>
+	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
+		<settingConfig type="numeric" min="0" />
+	</setting>	
 	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
 		<settingConfig type="boolean" />
 	</setting>

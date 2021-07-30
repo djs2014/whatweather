@@ -4,48 +4,46 @@ import Toybox.System;
 using Toybox.Application.Storage;
 
 function getStringStorage(key, dflt) {
-    Test.assert(dflt instanceof Lang.String);
-	try {
-        var val = Storage.getValue(key);
-        if (val != null && val instanceof Lang.String && !"".equals(val)) {
-            return val;
-        }
-	} catch (e) {
-    	return dflt;
-    } 	    
+  Test.assert(dflt instanceof Lang.String);
+  try {
+    var val = Storage.getValue(key);
+    if (val != null && val instanceof Lang.String && !"".equals(val)) {
+      return val;
+    }
+  } catch (e) {
     return dflt;
+  }
+  return dflt;
 }
 
 function getBooleanStorage(key, dflt) {
-    return getTypedStorage(key, dflt, Lang.Boolean);
+  return getTypedStorage(key, dflt, Lang.Boolean);
 }
 
 function getNumberStorage(key, dflt) {
-    return getTypedStorage(key, dflt, Lang.Number);
+  return getTypedStorage(key, dflt, Lang.Number);
 }
 
 function getFloatStorage(key, dflt) {
-    return getTypedStorage(key, dflt, Lang.Float);
+  return getTypedStorage(key, dflt, Lang.Float);
 }
 
 function getDoubleStorage(key, dflt) {
-    return getTypedStorage(key, dflt, Lang.Double);
+  return getTypedStorage(key, dflt, Lang.Double);
 }
 
 function getTypedStorage(key, dflt, type) {
-    Test.assert(dflt instanceof type);
+  Test.assert(dflt instanceof type);
 
-	try {
-        var val = Storage.getValue(key);
-        if (val != null && val instanceof type) {
-            return val;
-        }		
-	} catch (e) {
-    	return dflt;
-    } 	    
+  try {
+    var val = Storage.getValue(key);
+    if (val != null && val instanceof type) {
+      return val;
+    }
+  } catch (e) {
     return dflt;
+  }
+  return dflt;
 }
 
-function setStorage(key, value) {
-	Storage.setValue(key, value);	    
-}
+function setStorage(key, value) { Storage.setValue(key, value); }

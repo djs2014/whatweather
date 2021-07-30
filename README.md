@@ -41,13 +41,33 @@ Todo:
 	- move generic code to classes: Render etc..
 
 x - use ww OWM code
+	
+	- windspeed 0.1 < 10 anders 10 11 etc 0 decimals
+	- move to renderobject 
+	- temperature graph
+	- smallfield / large field
+	- large/wide field: current info
+
 	- show km (bearing)
 	- show diff fields
-	- alert (weather-condition, windspeed, precipitation)
-	- temperature
+	- alert (weather-condition, windSpeed, precipitation)
+
 	- humidity
 	- wind bearing
 	- speed 
+	- wind speed alert
 	- icon with condition draw with sdk?
 
 - WWOWM - glitch simple node -> more advanced .. step by step
+
+
+
+7 m/s
+
+7 *60 *60 /1000 
+= 25 km/u
+of miles / u
+
+beaufort
+
+windSpeed alert ??

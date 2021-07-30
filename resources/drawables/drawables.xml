@@ -1,16 +1,3 @@
 <drawables>
-    <bitmap id="LauncherIcon" filename="launcher_icon.png" />
-    <bitmap id="CONDITION_CHANCE_OF_SHOWERS" filename="CONDITION_CHANCE_OF_SHOWERS.png" />
-    <bitmap id="CONDITION_CHANCE_OF_THUNDERSTORMS" filename="CONDITION_CHANCE_OF_THUNDERSTORMS.png" />
-    <bitmap id="CONDITION_CLEAR" filename="CONDITION_CLEAR.png" />
-    <bitmap id="CONDITION_CLOUDY" filename="CONDITION_CLOUDY.png" />
-    <bitmap id="CONDITION_HEAVY_RAIN" filename="CONDITION_HEAVY_RAIN.png" />
-    <bitmap id="CONDITION_LIGHT_RAIN" filename="CONDITION_LIGHT_RAIN.png" />
-    <bitmap id="CONDITION_MIST" filename="CONDITION_MIST.png" />
-    <bitmap id="CONDITION_PARTLY_CLOUDY" filename="CONDITION_PARTLY_CLOUDY.png" />
-    <bitmap id="CONDITION_SAND" filename="CONDITION_SAND.png" />
-    <bitmap id="CONDITION_SNOW" filename="CONDITION_SNOW.png" />
-    <bitmap id="CONDITION_THUNDERSTORMS" filename="CONDITION_THUNDERSTORMS.png" />
-    <bitmap id="CONDITION_TORNADO" filename="CONDITION_TORNADO.png" />
-    <bitmap id="CONDITION_WINDY" filename="CONDITION_WINDY.png" />
+    <bitmap id="LauncherIcon" filename="launcher_icon.png" />    
 </drawables>

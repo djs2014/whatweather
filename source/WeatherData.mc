@@ -3,55 +3,64 @@ import Toybox.System;
 import Toybox.Time;
 
 class WeatherData {
-	public var current as CurrentConditions;
-	public var minutely as MinutelyForecast;
-	public var hourly as Lang.Array;
-	public var lastUpdated; // as Time.Moment; 
-	
-	public function initialize() {
-      current = new CurrentConditions();
-      minutely = new MinutelyForecast();
-      hourly = [];
-      lastUpdated = new Time.Moment(0);
-      System.println("WeatherData initialize");
-    }
+  var current as CurrentConditions;
+  var minutely as MinutelyForecast;
+  var hourly as Lang.Array;
+  var lastUpdated;  // as Time.Moment;
+
+  function initialize() {
+    current = new CurrentConditions();
+    minutely = new MinutelyForecast();
+    hourly = [];
+    lastUpdated = new Time.Moment(0);
+    System.println("WeatherData initialize");
+  }
 }
-	
+
 class CurrentConditions {
-	public  var lat = 0;
-	public  var lon = 0;
-	public  var observationLocationName = "";
-	public  var observationTime = null;
-	public  var forecastTime = null;
-	public  var clouds = 0;
-	public  var precipitationChance = 0;
-	public  var condition = 0;
-	public  var weather = "";
-	public  var uvi = 0;
-	
-	public function info() {
-	 	return Lang.format("CurrentConditions: time[$1$] pop[$2$] clouds[$3$] condition[$4$] weather[$5$] uvi[$6$] lat[$7$] lon[$8$] obsname[$9$] obstime[$10$]",
-        [getDateTimeString(forecastTime), precipitationChance, clouds, condition, weather, uvi, lat, lon, observationLocationName, getDateTimeString(observationTime)]);
-  	}
+  var lat = 0;
+  var lon = 0;
+  var observationLocationName = "";
+  var observationTime = null;
+  var forecastTime = null;
+  var clouds = 0;
+  var precipitationChance = 0;
+  var condition = 0;
+  var windBearing = null;
+  var windSpeed = null;
+  var weather = "";
+  var uvi = 0;
+
+  function info() {
+    return "Current:lat[" + lat + "]lon[" + lon + "]obsname[" +
+           observationLocationName + "]obstime[" +
+           getDateTimeString(observationTime) + "]time[" +
+           getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
+           "]clouds[" + clouds + "]condition[" + condition + "]weather[" +
+           weather + "]uvi[" + uvi + "]windBearing[" + windBearing +
+           "]windSpeed[" + windSpeed + "]";
+  }
 }
 
-class MinutelyForecast
-{
-    public var forecastTime;
-    public var pops = [];           
+class MinutelyForecast {
+  var forecastTime;
+  var pops = [];
 }
 
-class HourlyForecast
-{
-    public var forecastTime;
-    public var precipitationChance = 0;
-    public var clouds = 0;
-    public var condition = 0;
-    public var weather = "";
-    public var uvi = 0;       
-    
-    public function info() {
-    	return Lang.format("HourlyForecast: time[$1$] pop[$2$] clouds[$3$] condition[$4$] conditionText[$5$] uvi[$6$]",
-    	[getDateTimeString(forecastTime), precipitationChance, clouds, condition, weather, uvi]);   
-    } 
+class HourlyForecast {
+  var forecastTime;
+  var precipitationChance = 0;
+  var clouds = 0;
+  var condition = 0;
+  var windBearing = null;
+  var windSpeed = null;
+  var weather = "";
+  var uvi = 0;
+
+  function info() {
+    return "HourlyForecast:time[" + getDateTimeString(forecastTime) + "]pop[" +
+           precipitationChance + "]clouds[" + clouds + "]condition[" +
+           condition + "]weather[" + weather + "]uvi[" + uvi + "]windBearing[" +
+           windBearing + "]windSpeed[" + windSpeed + "]";
+  }
 }
