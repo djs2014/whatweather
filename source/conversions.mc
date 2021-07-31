@@ -112,6 +112,7 @@ function calculateComfortIdx(levelLow, levelHigh) {
   if (levelHigh > 0) {
     return COMFORT_HIGH;
   }
+  return COMFORT_BELOW;
 }
 
 function calculateComfortIdxInverted(levelLow, levelHigh) {
@@ -124,6 +125,7 @@ function calculateComfortIdxInverted(levelLow, levelHigh) {
   if (levelHigh > 0) {
     return COMFORT_BELOW;
   }
+  return COMFORT_BELOW;
 }
 
 function compareTo(numberA, numberB) {
