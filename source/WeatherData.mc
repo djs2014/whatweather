@@ -28,6 +28,8 @@ class CurrentConditions {
   var condition = 0;
   var windBearing = null;
   var windSpeed = null;
+  var relativeHumidity = null;
+  var temperature = null;
   var weather = "";
   var uvi = 0;
 
@@ -38,7 +40,8 @@ class CurrentConditions {
            getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
            "]clouds[" + clouds + "]condition[" + condition + "]weather[" +
            weather + "]uvi[" + uvi + "]windBearing[" + windBearing +
-           "]windSpeed[" + windSpeed + "]";
+           "]windSpeed[" + windSpeed + "]temperature[" + temperature +
+           "]humidity[" + relativeHumidity + "]";
   }
 }
 
@@ -54,6 +57,8 @@ class HourlyForecast {
   var condition = 0;
   var windBearing = null;
   var windSpeed = null;
+  var relativeHumidity = null;
+  var temperature = null;
   var weather = "";
   var uvi = 0;
 
@@ -61,6 +66,7 @@ class HourlyForecast {
     return "HourlyForecast:time[" + getDateTimeString(forecastTime) + "]pop[" +
            precipitationChance + "]clouds[" + clouds + "]condition[" +
            condition + "]weather[" + weather + "]uvi[" + uvi + "]windBearing[" +
-           windBearing + "]windSpeed[" + windSpeed + "]";
+           windBearing + "]windSpeed[" + windSpeed + "]temperature[" +
+           temperature + "]humidity[" + relativeHumidity + "]";
   }
 }

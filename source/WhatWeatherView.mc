@@ -19,8 +19,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var _posnInfo as Info ? ;
 
   const COLOR_CLOUDS = Graphics.COLOR_LT_GRAY;
-
-  hidden const DEBUG_DETAILS = false;
+  
   // For testing ..
   hidden var alwaysLoadGarminWeather = false;
 
@@ -57,7 +56,8 @@ class WhatWeatherView extends WatchUi.DataField {
     ds.clearScreen();
     ds.calculate(nrOfColumns);
 
-    getLatestGarminWeather();
+    GarminWeather.getLatestGarminWeather();
+    //getLatestGarminWeather();
     onUpdateWeather(dc, ds);
 
     if ($._showMaxPrecipitationChance) {
