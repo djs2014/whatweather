@@ -54,11 +54,13 @@ Todo:
 	- overlay bug delayed
 	- move generic code to classes: Render etc..
 	
+
 	- afronding wind km / naar boven
 	- fix show info 2 velden die nog niet werken
 		- temperature
 		- distance
 	- beta naar release
+	- 'dual' field info
 	
 	- move to renderobject 
 	- temperature graph == squares?  check ways to display data
