@@ -2,6 +2,7 @@ import Toybox.Graphics;
 import Toybox.System;
 import Toybox.Lang;
 import Toybox.Time;
+import Toybox.Math;
 using Toybox.Time.Gregorian as Calendar;
 
 class RenderWeather {
@@ -12,7 +13,6 @@ class RenderWeather {
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2;
 
- public
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
@@ -20,7 +20,6 @@ class RenderWeather {
     self.devSettings = System.getDeviceSettings();
   }
 
- public
   function drawUvIndexGraph(uvPoints as Lang.Array, factor as Lang.Number) {
     try {
       var max = uvPoints.size();
@@ -39,7 +38,6 @@ class RenderWeather {
     }
   }
 
- public
   function drawObservationLocation(name as Lang.String) {
     if (name == null || name.length() == 0) {
       return;
@@ -49,7 +47,6 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
- public
   function drawObservationLocation2(name as Lang.String) {
     // Hide on small screen
     if (name == null || name.length() == 0 || ds.smallField) {
@@ -60,7 +57,6 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
- public
   function drawObservationTime(observationTime as Time.Moment) {
     if (observationTime == null) {
       return;
@@ -81,7 +77,6 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
- public
   function drawWindInfoInColumn(x, windBearingInDegrees, windSpeed) {
     if (ds.smallField) {
       return;
@@ -112,6 +107,7 @@ class RenderWeather {
             value = value / MILE;
           }
         }
+        value = Math.round(value);
         if (value < 10) {
           text = value.format("%.1f");
           radius = radius + 2;

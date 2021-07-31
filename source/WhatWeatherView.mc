@@ -22,7 +22,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden const DEBUG_DETAILS = false;
   // For testing ..
-  hidden var alwaysLoadGarminWeather = true;
+  hidden var alwaysLoadGarminWeather = false;
 
   function initialize() {
     DataField.initialize();

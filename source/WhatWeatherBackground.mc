@@ -6,7 +6,9 @@ class Background extends WatchUi.Drawable {
   hidden var mColor as ColorValue;
 
   function initialize() {
-    var dictionary = { : identifier = > "Background"};
+    var dictionary = { 
+      :identifier => "Background"
+      };
 
     Drawable.initialize(dictionary);
 
