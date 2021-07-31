@@ -14,10 +14,20 @@ Settings:
 	Maximum hours of forecast data: precipitation chance will be displayd per hour in the next columns.
 	Alert level precipitation chance: set the percentage.
 	Show alert level line: display the precipitation chance alert level.
+	Show wind info: Beaufort, m/s or km/h.
+	Alert level windspeed in Beaufort.
 	Show maximum precipitation chance on top of first column: Just what you read.
+	Show extra info:
+		- Time of the day
+		- Altitude
+		- Heading
+		- Temperature (if it works)
+		- Heartrate
+		- Pressure
+		- Elapsed distance
 	Show time of observation: display the time of the wheater data in top right corner.
+		- Time of observation is red when delayed for x minutes.
 	Show location of observation: display the name in top left corner.
-	Show time of day: yes or no.	
 
 	Colors:
 		Thunderstorms: red
@@ -25,26 +35,35 @@ Settings:
 		Hurricane, tornado, sandstorm: purple 
 		    		       
 New
-	Beep on alert.
-	Time of observation is red when delayed for x minutes.
+	Show wind info: Beaufort, m/s or km/h.
+	Alert level windspeed in Beaufort.
+	Show extra info:
+		- Time of the day
+		- Altitude
+		- Heading
+		- Temperature (if it works)
+		- Heartrate
+		- Pressure
+		- Elapsed distance
 	
 Todo:
  - App settings for color / color picker?
  - Target for other weather conditions and colors
- - layout for small and layout for bigger field  
- - to fix, weird bug format Gregorian.Info.hour -> shows the actual time using println but shows `method` when drawn to dc.
-
-- optional: icon under bar 14 pix breed
-	https://freebiesbug.com/illustrator-freebies/26-free-weather-icons/
-- refactor
+ 
+ - refactor
 	- overlay bug delayed
 	- move generic code to classes: Render etc..
-
-x - use ww OWM code
 	
-	- windspeed 0.1 < 10 anders 10 11 etc 0 decimals
+	- afronding wind km / naar boven
+	- fix show info 2 velden die nog niet werken
+		- temperature
+		- distance
+	- beta naar release
+	
 	- move to renderobject 
-	- temperature graph
+	- temperature graph == squares?  check ways to display data
+	- humidity graph == blue
+
 	- smallfield / large field
 	- large/wide field: current info
 
@@ -62,12 +81,3 @@ x - use ww OWM code
 
 
 
-7 m/s
-
-7 *60 *60 /1000 
-= 25 km/u
-of miles / u
-
-beaufort
-
-windSpeed alert ??
