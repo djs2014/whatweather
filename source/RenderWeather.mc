@@ -38,6 +38,63 @@ class RenderWeather {
     }
   }
 
+  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) {
+    try {
+      var max = points.size();
+      for (var i = 0; i < max; i += 1) {
+        var p = points[i];
+        var x = p.x;
+        var y = ds.getYpostion(p.y * factor);
+        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+        dc.drawCircle(x, y, 3);
+        dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x, y, 2);
+      }
+    } catch (ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number) {
+    try {
+      var max = points.size();
+      for (var i = 0; i < max; i += 1) {
+        var p = points[i];
+        var x = p.x;
+        var y = ds.getYpostion(p.y * factor);
+        
+        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
+        dc.drawCircle(x, y, 3);
+        dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x, y, 2);
+
+      }
+    } catch (ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  function drawComfortColumn(x, temperature, relativeHumidity,
+                             precipitationChance) {
+    var idx =
+        convertToComfort(temperature, relativeHumidity, precipitationChance);
+    System.println("Comfort " + idx);
+    if (idx == COMFORT_NO) {
+      return;
+    }
+    var color = COLOR_WHITE_GREEN;
+    if (idx == COMFORT_NORMAL) {
+      color = COLOR_WHITE_YELLOW;
+    } else if (idx == COMFORT_HIGH) {
+      color = COLOR_WHITE_ORANGE;
+    }
+
+    dc.setColor(color, color);
+    dc.fillRectangle(x - + ds.space / 2, ds.columnY, ds.columnWidth + ds.space, ds.columnHeight);
+  }
+
   function drawObservationLocation(name as Lang.String) {
     if (name == null || name.length() == 0) {
       return;
@@ -104,7 +161,7 @@ class RenderWeather {
         if ($._showWind == SHOW_WIND_KILOMETERS) {
           value = windSpeedToKmPerHour(windSpeedMs);
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-            value = value / MILE;
+            value = kilometerToMile(value);
           }
         }
         value = Math.round(value);

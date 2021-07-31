@@ -20,6 +20,8 @@
 	<property id="showColumnBorder" type="boolean">false</property>
 	<property id="showInfo" type="number">1</property>
 	<property id="showWind" type="number">3</property>
-	<property id="showTemperature" type="boolean">false</property>
+	<property id="showTemperature" type="boolean">true</property>
+	<property id="showRelativeHumidity" type="boolean">true</property>
+	<property id="showComfort" type="boolean">true</property>
 	<property id="showWeatherCondition" type="boolean">false</property>	
 </properties>

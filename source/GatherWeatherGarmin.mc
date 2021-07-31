@@ -6,7 +6,7 @@ using Toybox.Time.Gregorian as Calendar;
 
 class GarminWeather  {
 
-hidden static var alwaysLoadGarminWeather = false;
+hidden static var alwaysLoadGarminWeather = true;
 
 static function getLatestGarminWeather() {
     try {

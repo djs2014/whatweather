@@ -62,6 +62,9 @@ class WhatWeatherApp extends Application.AppBase {
         $._showWind = getNumberProperty("showWind", SHOW_WIND_BEAUFORT);
         $._alertLevelWindSpeed = getNumberProperty("alertLevelWindSpeed", 5);
         $._showTemperature = getBooleanProperty("showTemperature", true);
+        $._showRelativeHumidity = getBooleanProperty("showRelativeHumidity", true);
+        $._showComfort = getBooleanProperty("showComfort", true);
+
         $._showWeatherCondition =
             getBooleanProperty("showWeatherCondition", true);
 

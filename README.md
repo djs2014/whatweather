@@ -59,7 +59,11 @@ Todo:
 	- fix show info 2 velden die nog niet werken
 		- temperature
 		- distance
+		- settings show info + config comfort range
+
 	- beta naar release
+	hum -> circle bla
+
 	- 'dual' field info
 	
 	- move to renderobject 
