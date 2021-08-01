@@ -51,37 +51,35 @@ Todo:
  - Target for other weather conditions and colors
  
  - refactor
-	- overlay bug delayed
+	- print alarms aligned left border 
+	- settings show info + config comfort range
+	 
+	 - if pop > 30 -> wind text black
+	TEST comfort background displays temp range + humidity range
 	- move generic code to classes: Render etc..
-	
-
+	- monkey barrel -> shared code
+	- 'dual' field info
 	- afronding wind km / naar boven
 	- fix show info 2 velden die nog niet werken
 		- temperature
-		- distance
-		- settings show info + config comfort range
-
-	- beta naar release
-	hum -> circle bla
-
-	- 'dual' field info
-	
-	- move to renderobject 
-	- temperature graph == squares?  check ways to display data
-	- humidity graph == blue
+		x- distance
+	- BUG - only current + weather alarm -> continue beep
+	- Finetune black/white background with diff settings (comfort, pop, condition)
 
 	- smallfield / large field
+		- small: hide temp and humid or small line only
+
 	- large/wide field: current info
+	
+	
+	- show weather condition 
+		- define categories
+		- show the bars under ..
+		- show abbreviation c, th, r, s, w, r2, -> check internet if available
+		- use pictograms 
+		
 
-	- show km (bearing)
-	- show diff fields
-	- alert (weather-condition, windSpeed, precipitation)
-
-	- humidity
-	- wind bearing
-	- speed 
-	- wind speed alert
-	- icon with condition draw with sdk?
+		
 
 - WWOWM - glitch simple node -> more advanced .. step by step
 
