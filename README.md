@@ -54,6 +54,11 @@ Todo:
 	- print alarms aligned left border 
 	- settings show info + config comfort range
 	 
+	- comfort zone
+		< min temp == below 
+		< 10 is no 
+		
+		 
 	 - if pop > 30 -> wind text black
 	TEST comfort background displays temp range + humidity range
 	- move generic code to classes: Render etc..

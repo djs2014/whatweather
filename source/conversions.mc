@@ -66,7 +66,8 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
     return COMFORT_NO;
   }
 
-  if (temperature < $._comfortTemperature[0] || relativeHumidity < $._comfortHumidity[0]) {
+  if (temperature < ($._comfortTemperature[0] - 10) ||
+      relativeHumidity < ($._comfortHumidity[0] - 10)) {
     return COMFORT_NO;
   }
   var tempLow = compareTo(temperature, $._comfortTemperature[0]);
