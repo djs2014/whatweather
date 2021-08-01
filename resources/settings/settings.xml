@@ -5,9 +5,6 @@
 	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
 		<settingConfig type="numeric" min="0" max="12" />
 	</setting>	
-	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>	
 	<setting propertyKey="@Properties.showWind" title="@Strings.ShowWind" prompt="@Strings.ShowWindPrompt">
 		 <settingConfig type="list">
             <listEntry value="0">@Strings.ShowWindNothing</listEntry>
@@ -16,18 +13,15 @@
             <listEntry value="3">@Strings.ShowWindBeaufort</listEntry>            
         </settingConfig>
 	</setting>
-	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
-		<settingConfig type="numeric" min="0" />
-	</setting>	
-	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
+	<setting propertyKey="@Properties.showTemperature" title="@Strings.ShowTemperature">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
+	<setting propertyKey="@Properties.showRelativeHumidity" title="@Strings.ShowRelativeHumidity">
 		<settingConfig type="boolean" />
-	</setting>	
-	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
+	</setting>
+	<setting propertyKey="@Properties.showComfort" title="@Strings.ShowComfort">
 		<settingConfig type="boolean" />
-	</setting>		
+	</setting>
     <setting propertyKey="@Properties.showInfo" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
@@ -40,6 +34,36 @@
 			<listEntry value="7">@Strings.ShowInfoDistance</listEntry>
         </settingConfig>
     </setting>      
+	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>	
+	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
+		<settingConfig type="numeric" min="0" />
+	</setting>	
+	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
+		<settingConfig type="boolean" />
+	</setting>
+	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortHumidityMax" title="@Strings.ComfortHumidityMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortTempMin" title="@Strings.ComfortTempMin">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortPopMax" title="@Strings.ComfortPopMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
+		<settingConfig type="boolean" />
+	</setting>	
+	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
+		<settingConfig type="boolean" />
+	</setting>		
 	<setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
 		<settingConfig type="boolean" />
 	</setting>

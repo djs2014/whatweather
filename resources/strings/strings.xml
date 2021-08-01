@@ -11,6 +11,9 @@
     <string id="ShowWindMeters">Show wind in meter/sec</string>    
     <string id="ShowWindKilometers">Show wind in km/h or mi/h</string>
     <string id="ShowWindBeaufort">Show wind in Beaufort</string>
+    <string id="ShowTemperature">Show temperature</string>
+    <string id="ShowRelativeHumidity">Show relative humidity</string>
+    <string id="ShowComfort">Show comfort indication</string>
     <string id="ShowUVIndexFactor">Show UV index (factor)</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
     <string id="AlertLevelprecipitationChance">Alert level precipitation chance</string>
@@ -36,4 +39,9 @@
     <string id="ShowInfoHeartrate">Show heartrate</string>
     <string id="ShowInfoAmbientPressure">Show pressure</string>
     <string id="ShowInfoDistance">Show distance</string>
+    <string id="ComfortHumidityMin">Comfort humidity(%) min</string>
+    <string id="ComfortHumidityMax">Comfort humidity(%) max</string>
+    <string id="ComfortTempMin">Comfort temperature(C) min</string>
+    <string id="ComfortTempMax">Comfort temperature(C) max</string>
+	<string id="ComfortPopMax">Comfort precipitation(%) max</string>	
 </strings>

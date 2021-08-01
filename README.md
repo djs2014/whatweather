@@ -45,41 +45,31 @@ New
 		- Heartrate
 		- Pressure
 		- Elapsed distance
+	Show temperature
+	Show relative humidity
+	Show comfort zones (humidity / temperature). Default 21-27 Celcius and 40% - 60% relative humidity.
 	
 Todo:
+ - picture explaining information on
+	small field
+	large field
+	
  - App settings for color / color picker?
  - Target for other weather conditions and colors
- 
- - refactor
-	- overlay bug delayed
+ - refactor		
+	- if pop > 30 -> wind text black
 	- move generic code to classes: Render etc..
-	
-
-	- afronding wind km / naar boven
-	- fix show info 2 velden die nog niet werken
-		- temperature
-		- distance
-	- beta naar release
+	- monkey barrel -> shared code
 	- 'dual' field info
+	- fix show info for temperature		
+	- BUG - one column + weather alarm -> continue beep
+	- Finetune black/white background with diff settings (comfort, pop, condition)
+	- smallfield / large field / wide field?
 	
-	- move to renderobject 
-	- temperature graph == squares?  check ways to display data
-	- humidity graph == blue
-
-	- smallfield / large field
-	- large/wide field: current info
-
-	- show km (bearing)
-	- show diff fields
-	- alert (weather-condition, windSpeed, precipitation)
-
-	- humidity
-	- wind bearing
-	- speed 
-	- wind speed alert
-	- icon with condition draw with sdk?
-
+	- show weather condition 
+		- define categories
+		- show the bars under column, or ..
+		- show abbreviation 
+		- use pictograms 
+		
 - WWOWM - glitch simple node -> more advanced .. step by step
-
-
-

@@ -1,4 +1,5 @@
 import Toybox.Graphics;
+import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Weather;
@@ -17,13 +18,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var _currentInfo as CurrentInfo;
 
   hidden var _posnInfo as Info ? ;
-
-  const COLOR_CLOUDS = Graphics.COLOR_LT_GRAY;
-
-  hidden const DEBUG_DETAILS = false;
-  // For testing ..
-  hidden var alwaysLoadGarminWeather = false;
-
+  
   function initialize() {
     DataField.initialize();
     mFontSmallH = Graphics.getFontHeight(mFontSmall);
@@ -41,9 +36,10 @@ class WhatWeatherView extends WatchUi.DataField {
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
   function onUpdate(dc as Dc) as Void {
-    if (dc has : setAntiAlias) {
+    if (dc has :setAntiAlias) {
       dc.setAntiAlias(true);
     }
+
     var backgroundColor = getBackgroundColor();
     $._alertHandler.checkStatus();
     if ($._alertHandler.isAnyAlertTriggered()) {
@@ -57,7 +53,7 @@ class WhatWeatherView extends WatchUi.DataField {
     ds.clearScreen();
     ds.calculate(nrOfColumns);
 
-    getLatestGarminWeather();
+    GarminWeather.getLatestGarminWeather();
     onUpdateWeather(dc, ds);
 
     if ($._showMaxPrecipitationChance) {
@@ -74,14 +70,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if ($._showPrecipitationChanceAxis) {
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
     }
-
-    var activeAlerts = $._alertHandler.infoHandled();
-    if (activeAlerts.length() > 0) {
-      dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(ds.margin, ds.height / 2, mFontSmall, activeAlerts,
-                  Graphics.TEXT_JUSTIFY_LEFT);
-    }
-
+  
     showInfo(dc, ds);
   }
 
@@ -114,7 +103,7 @@ class WhatWeatherView extends WatchUi.DataField {
           postfix = "m";
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "f";
-            currentAltitude = altitude * FEET;
+            currentAltitude = meterToFeet(altitude);
           }
           info = currentAltitude.toNumber().toString();
         }
@@ -132,7 +121,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var temperature = temperatureCelcius;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "°F";
-            temperature = ((temperatureCelcius * 9 / 5) + 32);
+            temperature = celciusToFarenheit(temperatureCelcius);
           }
           if (ds.smallField) {
             info = temperature.format("%.0f");
@@ -167,7 +156,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var distance = distanceInKm;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "mi";
-            distance = (distanceInKm / MILE).format("%.2f");
+            distance = kilometerToMile(distanceInKm).format("%.2f");
           }
           if (ds.smallField) {
             info = distance.format("%.0f");
@@ -195,6 +184,9 @@ class WhatWeatherView extends WatchUi.DataField {
     var x = ds.columnX;
     var y = ds.columnY;
     var uvPoints = [];
+    var tempPoints = [];
+    var humidityPoints = [];
+    var windPoints = [];
     var color;
     var precipitationChance;
     var mm = null;
@@ -209,7 +201,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var render = new RenderWeather(dc, ds);
-
+                
       if ($._maxMinuteForecast > 0) {
         var xMMstart = x;
         var popTotal = 0;
@@ -265,6 +257,11 @@ class WhatWeatherView extends WatchUi.DataField {
 
           validSegment = validSegment + 1;
 
+          if ($._showComfort) {
+            render.drawComfortColumn(x, current.temperature, current.relativeHumidity,
+                             precipitationChance);
+          }
+
           if ($._showColumnBorder) {
             drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
                              ds.columnHeight);
@@ -287,9 +284,15 @@ class WhatWeatherView extends WatchUi.DataField {
             uvPoints.add(uvp);
           }
 
+
+          if ($._showTemperature) {
+            tempPoints.add(new Point(x + ds.columnWidth /2, current.temperature));
+          }
+          if ($._showRelativeHumidity) {
+            humidityPoints.add(new Point(x + ds.columnWidth /2, current.relativeHumidity));
+          }
           if ($._showWind) {
-            render.drawWindInfoInColumn(x, current.windBearing,
-                                        current.windSpeed);
+            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed));            
           }
 
           if ($._dashesUnderColumnHeight > 0) {
@@ -339,7 +342,10 @@ class WhatWeatherView extends WatchUi.DataField {
                   Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",
                               [ x, forecast.info(), color ]));
             }
-
+            if ($._showComfort) {
+              render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity,
+                             precipitationChance); 
+            }
             if ($._showColumnBorder) {
               drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
                                ds.columnHeight);
@@ -360,12 +366,15 @@ class WhatWeatherView extends WatchUi.DataField {
               uvp.calculateVisible(precipitationChance);
               uvPoints.add(uvp);
             }
-
-            if ($._showWind) {
-              render.drawWindInfoInColumn(x, forecast.windBearing,
-                                          forecast.windSpeed);
+            if ($._showTemperature) {
+              tempPoints.add(new Point(x + ds.columnWidth /2, forecast.temperature));
             }
-
+            if ($._showRelativeHumidity) {
+              humidityPoints.add(new Point(x + ds.columnWidth /2, forecast.relativeHumidity));
+            }
+            if ($._showWind) {
+              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed));              
+            }
             if ($._dashesUnderColumnHeight > 0) {
               color =
                   getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
@@ -389,7 +398,17 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showUVIndexFactor > 0) {
         render.drawUvIndexGraph(uvPoints, $._showUVIndexFactor);
       }
+      if ($._showTemperature) { 
+        render.drawTemperatureGraph(tempPoints, 1);
+      }
+      if ($._showRelativeHumidity) {
+         render.drawHumidityGraph(humidityPoints, 1);
+      }
 
+      if ($._showComfort) {
+        render.drawComfortZones();
+      }
+    
       if (current != null) {
         // Always show position of observation
         var distance = "";
@@ -406,7 +425,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
             // 1 Mile = 1.609344 Kilometers
             distanceMetric = "mi";
-            distance = (distanceInKm / MILE).format("%.2f");
+            distance = kilometerToMile(distanceInKm).format("%.2f");
           }
           var bearing = getRhumbLineBearing(_currentInfo.lat, _currentInfo.lon,
                                             current.lat, current.lon);
@@ -424,99 +443,17 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
 
+      if ($._showWind) {
+        render.drawWindInfo(windPoints);
+      }
+      render.drawAlertMessages($._alertHandler.infoHandled());
+
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
-  function getLatestGarminWeather() {
-    try {
-      var garCurrent = Weather.getCurrentConditions();
-      if (garCurrent == null) {
-        $._mostRecentData = new WeatherData();
-        $._mostRecentData.lastUpdated = Time.now();
-        return;
-      }
-
-      var newData =
-          ($._mostRecentData != null) && garCurrent.observationTime != null &&
-          garCurrent.observationTime.greaterThan($._mostRecentData.lastUpdated);
-
-      if (DEBUG_DETAILS) {
-        System.println(Lang.format(
-            "Check garmin obs[$1$] last updated[$2$] is new data[$3$]", [
-              getDateTimeString(garCurrent.observationTime),
-              getDateTimeString($._mostRecentData.lastUpdated),
-              garCurrent.observationTime.greaterThan(
-                  $._mostRecentData.lastUpdated)
-            ]));
-      }
-      if (!alwaysLoadGarminWeather && !newData) {
-        return;
-      }
-
-      var cc = new CurrentConditions();
-      cc.precipitationChance = getValue(garCurrent.precipitationChance, 0);
-      cc.forecastTime = null;  //@@ needed?
-
-      var position = garCurrent.observationLocationPosition;
-      if (position != null) {
-        var location = position.toDegrees();
-        cc.lat = getValue(location[0], 0);
-        cc.lon = getValue(location[1], 0);
-      }
-      cc.observationLocationName =
-          getValue(garCurrent.observationLocationName, "");
-      // Skip after first ,
-      var comma = cc.observationLocationName.find(",");
-      if (comma != null) {
-        cc.observationLocationName =
-            cc.observationLocationName.substring(0, comma);
-      }
-
-      cc.observationTime = garCurrent.observationTime;
-      cc.clouds = 0;    // Not available
-      cc.uvi = null;    // Not available
-      cc.weather = "";  // @@ map condition
-      cc.condition = getValue(garCurrent.condition, Weather.CONDITION_CLEAR);
-      cc.windBearing = garCurrent.windBearing;
-      cc.windSpeed = garCurrent.windSpeed;
-      if (DEBUG_DETAILS) {
-        System.println("Gar Current: " + cc.info());
-      }
-
-      var mm = new MinutelyForecast();  // Not available
-
-      var hh = [];
-      var garHourlyForecast = Weather.getHourlyForecast();
-      if (garHourlyForecast != null) {
-        for (var idx = 0; idx < garHourlyForecast.size(); idx += 1) {
-          var garForecast = garHourlyForecast[idx];
-          var hf = new HourlyForecast();
-          hf.forecastTime = garForecast.forecastTime;
-          hf.clouds = 0;  // Not available
-          hf.uvi = null;  // Not available
-          hf.precipitationChance = getValue(garForecast.precipitationChance, 0);
-          hf.weather = "";  // @@ map condition
-          hf.condition =
-              getValue(garForecast.condition, Weather.CONDITION_CLEAR);
-          hf.windBearing = garForecast.windBearing;
-          hf.windSpeed = garForecast.windSpeed;
-          if (DEBUG_DETAILS) {
-            System.println("Gar Hourly: " + hf.info());
-          }
-          hh.add(hf);
-        }
-      }
-
-      $._mostRecentData.current = cc;
-      $._mostRecentData.hourly = hh;
-      $._mostRecentData.minutely = mm;
-      $._mostRecentData.lastUpdated = cc.observationTime;
-    } catch (ex) {
-      ex.printStackTrace();
-    }
-  }
+  
 
   function drawWarningLevel(dc, margin, bar_height, color, heightPerc) {
     if (heightPerc <= 0) {
