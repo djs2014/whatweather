@@ -74,10 +74,30 @@ class WhatWeatherApp extends Application.AppBase {
         $._alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
         $._alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
         $._alertHandler.resetStatus();
+
+        initComfortSettings();
         System.println("Settings loaded");
       } catch (ex) {
         ex.printStackTrace();
       }
+    }
+
+    
+    function initComfortSettings() {
+      var humMin = getNumberProperty("comfortHumidityMin", 40);
+      var humMax = getNumberProperty("comfortHumidityMax", 60);
+      $._comfortHumidity[0] = min(humMin, humMax);
+      $._comfortHumidity[1] = max(humMin, humMax);
+
+      var tempMin = getNumberProperty("comfortTempMin", 21);
+      var tempMax = getNumberProperty("comfortTempMax", 27);
+      $._comfortTemperature[0] = min(tempMin, tempMax);
+      $._comfortTemperature[1] = max(tempMin, tempMax);
+
+      var popMin = getNumberProperty("comfortPopMin", 0);
+      var popMax = getNumberProperty("comfortPopMax", 40);
+      $._comfortPrecipitationChance[0] = min(popMin, popMax);
+      $._comfortPrecipitationChance[1] = max(popMin, popMax);
     }
 }
 

@@ -54,8 +54,8 @@ const COMFORT_NORMAL = 2;
 const COMFORT_HIGH = 3;
 
 // value from low to high
-var _comfortTemperature = [22,27];
 var _comfortHumidity = [40,60];
+var _comfortTemperature = [22,27];
 var _comfortPrecipitationChance = [0, 40];
 
 var _alertHandler = new AlertHandler();

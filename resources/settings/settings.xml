@@ -43,6 +43,21 @@
 	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
 		<settingConfig type="boolean" />
 	</setting>
+	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortHumidityMax" title="@Strings.ComfortHumidityMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortTempMin" title="@Strings.ComfortTempMin">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
+	<setting propertyKey="@Properties.comfortPopMax" title="@Strings.ComfortPopMax">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
 	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
 		<settingConfig type="boolean" />
 	</setting>	
