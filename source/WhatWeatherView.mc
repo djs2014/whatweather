@@ -17,8 +17,6 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var _currentInfo as CurrentInfo;
 
   hidden var _posnInfo as Info ? ;
-
-  const COLOR_CLOUDS = Graphics.COLOR_LT_GRAY;
   
   function initialize() {
     DataField.initialize();
@@ -418,7 +416,7 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showComfort) {
         render.drawComfortZones();
       }
-      
+
       if (current != null) {
         // Always show position of observation
         var distance = "";

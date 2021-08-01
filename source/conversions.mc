@@ -66,10 +66,10 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
     return COMFORT_NO;
   }
 
-  if (temperature < ($._comfortTemperature[0] - ($._comfortTemperature[0] * 0.3)) ||
-      relativeHumidity < ($._comfortHumidity[0] - ($._comfortTemperature[0] * 0.3)) {
-    return COMFORT_NO;
-  }
+  if (temperature < offsetValue($._comfortTemperature[0], 0.3) ||
+      relativeHumidity < offsetValue($._comfortHumidity[0], 0.3) ) {
+      return COMFORT_NO;
+    }
   var tempLow = compareTo(temperature, $._comfortTemperature[0]);
   var tempHigh = compareTo(temperature, $._comfortTemperature[1]);
 
@@ -106,6 +106,8 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
   }
   return COMFORT_NO;
 }
+
+function offsetValue(value, factor) { return value - (value * factor); }
 
 function calculateComfortIdx(levelLow, levelHigh) {
   if (levelLow >= 0 && levelHigh <= 0) {
