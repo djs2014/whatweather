@@ -39,6 +39,9 @@ class RenderWeather {
   }
 
   function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) {
+    if (ds.smallField) {
+      return;
+    }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -57,30 +60,33 @@ class RenderWeather {
   }
 
   function drawHumidityGraph(points as Lang.Array, factor as Lang.Number) {
+    if (ds.smallField) {
+      return;
+    }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i];
         var x = p.x;
         var y = ds.getYpostion(p.y * factor);
-        
+
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
         dc.drawCircle(x, y, 3);
         dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, 2);
-
       }
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
+  // top is max (temp/humid), low is min(temp/humid)
   function drawComfortColumn(x, temperature, relativeHumidity,
                              precipitationChance) {
     var idx =
         convertToComfort(temperature, relativeHumidity, precipitationChance);
-    System.println("Comfort x[" +x + "] comfort: " + idx);
+    System.println("Comfort x[" + x + "] comfort: " + idx);
     if (idx == COMFORT_NO) {
       return;
     }
@@ -91,8 +97,33 @@ class RenderWeather {
       color = COLOR_WHITE_ORANGE;
     }
 
+    var yTop =
+        ds.getYpostion(max($._comfortTemperature[1], $._comfortHumidity[1]));
+    var yBottom =
+        ds.getYpostion(min($._comfortTemperature[0], $._comfortHumidity[0]));
+    var height = yBottom - yTop;
     dc.setColor(color, color);
-    dc.fillRectangle(x - + ds.space / 2, ds.columnY, ds.columnWidth + ds.space, ds.columnHeight);
+    dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);   
+  }
+
+  function drawComfortZones() {
+    if (ds.smallField) {
+      return;
+    }
+    // The separate zones temp/humid
+    var yHumTop = ds.getYpostion($._comfortHumidity[1]);
+    var yHumBottom = ds.getYpostion($._comfortHumidity[0]);
+    
+    dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+    drawWobblyLine(yHumTop);
+    drawWobblyLine(yHumBottom);
+    
+    var yTempTop = ds.getYpostion($._comfortTemperature[1]);
+    var yTempBottom = ds.getYpostion($._comfortTemperature[0]);
+
+    dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+    drawWobblyLine(yTempTop);
+    drawWobblyLine(yTempBottom);    
   }
 
   function drawObservationLocation(name as Lang.String) {
@@ -166,20 +197,21 @@ class RenderWeather {
         }
         value = Math.round(value);
         if (value < 10) {
-          text = value.format("%.1f");          
+          text = value.format("%.1f");
         } else {
           text = value.format("%d");
         }
       }
-      radius = min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;          
+      radius =
+          min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;
     }
-    
+
     // The circle
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     if (hasAlert) {
       dc.fillCircle(center.x, center.y, radius);
     } else {
-       dc.drawCircle(center.x, center.y, radius);
+      dc.drawCircle(center.x, center.y, radius);
     }
     // Bearing arrow
     if (windBearingInDegrees != null) {
@@ -203,7 +235,7 @@ class RenderWeather {
       dc.setColor(ds.COLOR_TEXT_I_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     }
     dc.drawText(center.x, center.y, Graphics.FONT_XTINY, text,
-                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function pointOnCircle(radius, angleInDegrees,
@@ -213,6 +245,14 @@ class RenderWeather {
     var y = (radius * Math.sin(angleInDegrees * Math.PI / 180)) + center.y;
 
     return new Point(x, y);
+  }
+
+  hidden function drawWobblyLine(y as Lang.Number) {
+    var max = ds.width;
+    for (var x = 0; x < max; x++) {
+      var y1 =  y + Math.sin(x);
+      dc.drawPoint(x, y1);
+    }
   }
 }
 

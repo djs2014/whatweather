@@ -208,7 +208,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var render = new RenderWeather(dc, ds);
-
+                
       if ($._maxMinuteForecast > 0) {
         var xMMstart = x;
         var popTotal = 0;
@@ -415,6 +415,10 @@ class WhatWeatherView extends WatchUi.DataField {
          render.drawHumidityGraph(humidityPoints, 1);
       }
 
+      if ($._showComfort) {
+        render.drawComfortZones();
+      }
+      
       if (current != null) {
         // Always show position of observation
         var distance = "";

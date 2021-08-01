@@ -190,3 +190,11 @@ function min(a as Lang.Number, b as Lang.Number) {
     return b;
   }
 }
+
+function max(a as Lang.Number, b as Lang.Number) {
+  if (a >= b) {
+    return a;
+  } else {
+    return b;
+  }
+}
