@@ -1,4 +1,5 @@
 import Toybox.Lang;
+import Toybox.Graphics;
 
 const DEBUG_DETAILS = false;
 const SHOW_WIND_NOTHING = 0;
@@ -15,11 +16,12 @@ const SHOW_INFO_HEARTRATE = 5;
 const SHOW_INFO_AMBIENT_PRESSURE = 6;
 const SHOW_INFO_DISTANCE = 7;
 
-const COLOR_LT_BLUE = 0x00FFFF;
+const COLOR_CLOUDS = Graphics.COLOR_LT_GRAY;
 
-const COLOR_WHITE_GREEN = 0x8DDA8D;
-const COLOR_WHITE_YELLOW = 0xFFFFAA;
-const COLOR_WHITE_ORANGE = 0xF1AC4A;
+const COLOR_WHITE_BLUE = 0xE1E5F8;
+const COLOR_WHITE_GREEN = 0xE6ffE5; //0x8DDA8D;
+const COLOR_WHITE_YELLOW = 0xFFFFE1; //0xFFFFAA;
+const COLOR_WHITE_ORANGE = 0xFFE9E1; //0xF1AC4A;
 
 var _showCurrentForecast = true;
 var _maxHoursForecast = 8;

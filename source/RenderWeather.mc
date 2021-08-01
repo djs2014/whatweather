@@ -13,11 +13,17 @@ class RenderWeather {
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2;
 
+  hidden var yHumTop = 0;
+  hidden var yHumBottom = 0;
+  hidden var yTempTop = 0;
+  hidden var yTempBottom = 0;
+
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
     topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
     self.devSettings = System.getDeviceSettings();
+    initComfortZones();
   }
 
   function drawUvIndexGraph(uvPoints as Lang.Array, factor as Lang.Number) {
@@ -86,7 +92,7 @@ class RenderWeather {
                              precipitationChance) {
     var idx =
         convertToComfort(temperature, relativeHumidity, precipitationChance);
-    System.println("Comfort x[" + x + "] comfort: " + idx);
+    // System.println("Comfort x[" + x + "] comfort: " + idx);
     if (idx == COMFORT_NO) {
       return;
     }
@@ -97,33 +103,35 @@ class RenderWeather {
       color = COLOR_WHITE_ORANGE;
     }
 
-    var yTop =
-        ds.getYpostion(max($._comfortTemperature[1], $._comfortHumidity[1]));
-    var yBottom =
-        ds.getYpostion(min($._comfortTemperature[0], $._comfortHumidity[0]));
-    var height = yBottom - yTop;
     dc.setColor(color, color);
-    dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);   
+    if (ds.smallField) {
+      var yTop =
+          ds.getYpostion(max($._comfortTemperature[1], $._comfortHumidity[1]));
+      var yBottom =
+          ds.getYpostion(min($._comfortTemperature[0], $._comfortHumidity[0]));
+      var height = yBottom - yTop;
+      dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space,
+                       height);
+      return;
+    }
+
+    dc.fillRectangle(x - ds.space / 2, self.yHumTop, ds.columnWidth + ds.space,
+                     self.yHumBottom - self.yHumTop);
+    dc.fillRectangle(x - ds.space / 2, self.yTempTop, ds.columnWidth + ds.space,
+                     self.yTempBottom - self.yTempTop);
   }
 
   function drawComfortZones() {
     if (ds.smallField) {
       return;
     }
-    // The separate zones temp/humid
-    var yHumTop = ds.getYpostion($._comfortHumidity[1]);
-    var yHumBottom = ds.getYpostion($._comfortHumidity[0]);
-    
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(yHumTop);
-    drawWobblyLine(yHumBottom);
-    
-    var yTempTop = ds.getYpostion($._comfortTemperature[1]);
-    var yTempBottom = ds.getYpostion($._comfortTemperature[0]);
+    drawWobblyLine(self.yHumTop);
+    drawWobblyLine(self.yHumBottom);
 
     dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(yTempTop);
-    drawWobblyLine(yTempBottom);    
+    drawWobblyLine(self.yTempTop);
+    drawWobblyLine(self.yTempBottom);
   }
 
   function drawObservationLocation(name as Lang.String) {
@@ -250,9 +258,16 @@ class RenderWeather {
   hidden function drawWobblyLine(y as Lang.Number) {
     var max = ds.width;
     for (var x = 0; x < max; x++) {
-      var y1 =  y + Math.sin(x);
+      var y1 = y + Math.sin(x);
       dc.drawPoint(x, y1);
     }
+  }
+
+  hidden function initComfortZones() {
+    self.yHumTop = ds.getYpostion($._comfortHumidity[1]);
+    self.yHumBottom = ds.getYpostion($._comfortHumidity[0]);
+    self.yTempTop = ds.getYpostion($._comfortTemperature[1]);
+    self.yTempBottom = ds.getYpostion($._comfortTemperature[0]);
   }
 }
 
