@@ -186,6 +186,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var uvPoints = [];
     var tempPoints = [];
     var humidityPoints = [];
+    var windPoints = [];
     var color;
     var precipitationChance;
     var mm = null;
@@ -291,8 +292,7 @@ class WhatWeatherView extends WatchUi.DataField {
             humidityPoints.add(new Point(x + ds.columnWidth /2, current.relativeHumidity));
           }
           if ($._showWind) {
-            render.drawWindInfoInColumn(x, current.windBearing,
-                                        current.windSpeed);
+            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed));            
           }
 
           if ($._dashesUnderColumnHeight > 0) {
@@ -373,8 +373,7 @@ class WhatWeatherView extends WatchUi.DataField {
               humidityPoints.add(new Point(x + ds.columnWidth /2, forecast.relativeHumidity));
             }
             if ($._showWind) {
-              render.drawWindInfoInColumn(x, forecast.windBearing,
-                                          forecast.windSpeed);
+              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed));              
             }
             if ($._dashesUnderColumnHeight > 0) {
               color =
@@ -409,7 +408,7 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showComfort) {
         render.drawComfortZones();
       }
-
+    
       if (current != null) {
         // Always show position of observation
         var distance = "";
@@ -444,6 +443,9 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
 
+      if ($._showWind) {
+        render.drawWindInfo(windPoints);
+      }
       render.drawAlertMessages($._alertHandler.infoHandled());
 
     } catch (ex) {

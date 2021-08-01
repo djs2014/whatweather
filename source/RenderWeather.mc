@@ -173,6 +173,17 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
+  function drawWindInfo(windPoints) {
+    if (ds.smallField) {
+      return;
+    }
+    var max = windPoints.size();
+    for (var idx = 0; idx < max; idx++) {
+      var wp = windPoints[idx];
+      drawWindInfoInColumn(wp.x, wp.bearing, wp.speed);
+    }
+  }
+
   function drawWindInfoInColumn(x, windBearingInDegrees, windSpeed) {
     if (ds.smallField) {
       return;
@@ -189,11 +200,13 @@ class RenderWeather {
       return;
     }
 
-    if (activeAlerts == null || activeAlerts.length() <= 0) { return;}
-    
+    if (activeAlerts == null || activeAlerts.length() <= 0) {
+      return;
+    }
+
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts,
-                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);    
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   // --
