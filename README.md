@@ -51,20 +51,13 @@ Todo:
  - Target for other weather conditions and colors
  
  - refactor
-	- print alarms aligned left border 
-	- settings show info + config comfort range
 	 
-	- comfort zone
-		< min temp == below 
-		< 10 is no 
-		
-		 
+	
 	 - if pop > 30 -> wind text black
 	TEST comfort background displays temp range + humidity range
 	- move generic code to classes: Render etc..
 	- monkey barrel -> shared code
 	- 'dual' field info
-	- afronding wind km / naar boven
 	- fix show info 2 velden die nog niet werken
 		- temperature
 		x- distance
@@ -73,7 +66,6 @@ Todo:
 
 	- smallfield / large field
 		- small: hide temp and humid or small line only
-
 	- large/wide field: current info
 	
 	

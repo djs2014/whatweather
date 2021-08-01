@@ -87,7 +87,7 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
 
   var tempIdx = calculateComfortIdx(tempLow, tempHigh);
   var humIdx = calculateComfortIdx(humLow, humHigh);
-  System.println("Comfort tempIdx:" + tempIdx + " humIdx:" + humIdx);
+  // System.println("Comfort tempIdx:" + tempIdx + " humIdx:" + humIdx);
 
   if (tempIdx <= COMFORT_BELOW) {
     return COMFORT_BELOW;

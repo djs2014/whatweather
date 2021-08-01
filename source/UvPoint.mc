@@ -16,8 +16,6 @@ class UvPoint {
   function calculateVisible(precipitationChance) {
     self.isHidden =
         (uvi <= $._hideUVIndexLowerThan) && (precipitationChance > 0);
-    // System.println("hidden " + isHidden + " uvi " + uvi + " hideuv " +
-    // $._hideUVIndexLowerThan + " pop " +  precipitationChance);
   }
 
   function info() {

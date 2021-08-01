@@ -184,6 +184,18 @@ class RenderWeather {
     drawWind(center, radius, windBearingInDegrees, windSpeed);
   }
 
+  function drawAlertMessages(activeAlerts) {
+    if (ds.smallField) {
+      return;
+    }
+
+    if (activeAlerts == null || activeAlerts.length() <= 0) { return;}
+    
+    dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
+    dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts,
+                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);    
+  }
+
   // --
   hidden function drawWind(center as Point, radius, windBearingInDegrees,
                            windSpeedMs) {

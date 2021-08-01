@@ -1,4 +1,5 @@
 import Toybox.Graphics;
+import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Weather;
@@ -69,14 +70,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if ($._showPrecipitationChanceAxis) {
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
     }
-
-    var activeAlerts = $._alertHandler.infoHandled();
-    if (activeAlerts.length() > 0) {
-      dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(ds.margin, ds.height / 2, mFontSmall, activeAlerts,
-                  Graphics.TEXT_JUSTIFY_LEFT);
-    }
-
+  
     showInfo(dc, ds);
   }
 
@@ -289,10 +283,6 @@ class WhatWeatherView extends WatchUi.DataField {
             uvPoints.add(uvp);
           }
 
-          if ($._showWind) {
-            render.drawWindInfoInColumn(x, current.windBearing,
-                                        current.windSpeed);
-          }
 
           if ($._showTemperature) {
             tempPoints.add(new Point(x + ds.columnWidth /2, current.temperature));
@@ -300,6 +290,11 @@ class WhatWeatherView extends WatchUi.DataField {
           if ($._showRelativeHumidity) {
             humidityPoints.add(new Point(x + ds.columnWidth /2, current.relativeHumidity));
           }
+          if ($._showWind) {
+            render.drawWindInfoInColumn(x, current.windBearing,
+                                        current.windSpeed);
+          }
+
           if ($._dashesUnderColumnHeight > 0) {
             color =
                 getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
@@ -371,17 +366,15 @@ class WhatWeatherView extends WatchUi.DataField {
               uvp.calculateVisible(precipitationChance);
               uvPoints.add(uvp);
             }
-
-            if ($._showWind) {
-              render.drawWindInfoInColumn(x, forecast.windBearing,
-                                          forecast.windSpeed);
-            }
             if ($._showTemperature) {
-              // @@ new WeatherPoint -> with visible threshold etc.
               tempPoints.add(new Point(x + ds.columnWidth /2, forecast.temperature));
             }
             if ($._showRelativeHumidity) {
               humidityPoints.add(new Point(x + ds.columnWidth /2, forecast.relativeHumidity));
+            }
+            if ($._showWind) {
+              render.drawWindInfoInColumn(x, forecast.windBearing,
+                                          forecast.windSpeed);
             }
             if ($._dashesUnderColumnHeight > 0) {
               color =
@@ -450,6 +443,8 @@ class WhatWeatherView extends WatchUi.DataField {
           render.drawObservationTime(current.observationTime);
         }
       }
+
+      render.drawAlertMessages($._alertHandler.infoHandled());
 
     } catch (ex) {
       ex.printStackTrace();
