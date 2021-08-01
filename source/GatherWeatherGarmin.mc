@@ -2,6 +2,7 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.Weather;
 import Toybox.System;
+import Toybox.Time;
 using Toybox.Time.Gregorian as Calendar;
 
 class GarminWeather  {
