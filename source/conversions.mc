@@ -77,7 +77,7 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
 
   var popIdx = calculateComfortIdxInverted(popLow, popHigh);
   if (popIdx < COMFORT_NORMAL) {
-    return;
+    return COMFORT_NO;
   }
 
   var tempIdx = calculateComfortIdx(tempLow, tempHigh);
@@ -180,5 +180,13 @@ function getConditionColor(condition, def) {
       return Graphics.COLOR_PURPLE;
     default:
       return def;
+  }
+}
+
+function min(a as Lang.Number, b as Lang.Number) {
+  if (a <= b) {
+    return a;
+  } else {
+    return b;
   }
 }

@@ -80,7 +80,7 @@ class RenderWeather {
                              precipitationChance) {
     var idx =
         convertToComfort(temperature, relativeHumidity, precipitationChance);
-    System.println("Comfort " + idx);
+    System.println("Comfort x[" +x + "] comfort: " + idx);
     if (idx == COMFORT_NO) {
       return;
     }
@@ -149,11 +149,11 @@ class RenderWeather {
   hidden function drawWind(center as Point, radius, windBearingInDegrees,
                            windSpeedMs) {
     var hasAlert = false;
+    var text = "";
     if (windSpeedMs != null) {
       var beaufort = windSpeedToBeaufort(windSpeedMs);
       hasAlert =
           ($._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed);
-      var text = "";
       if ($._showWind == SHOW_WIND_BEAUFORT) {
         text = beaufort.format("%d");
       } else {
@@ -166,26 +166,22 @@ class RenderWeather {
         }
         value = Math.round(value);
         if (value < 10) {
-          text = value.format("%.1f");
-          radius = radius + 2;
+          text = value.format("%.1f");          
         } else {
           text = value.format("%d");
         }
       }
-
-      dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
-      if (hasAlert) {
-        dc.fillCircle(center.x, center.y, radius);
-        dc.setColor(ds.COLOR_TEXT_I_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
-      }
-      dc.drawText(center.x, center.y, Graphics.FONT_XTINY, text,
-                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+      radius = min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;          
     }
-    if (!hasAlert) {
-      dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
-      dc.drawCircle(center.x, center.y, radius);
+    
+    // The circle
+    dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+    if (hasAlert) {
+      dc.fillCircle(center.x, center.y, radius);
+    } else {
+       dc.drawCircle(center.x, center.y, radius);
     }
-    // Bearing
+    // Bearing arrow
     if (windBearingInDegrees != null) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
@@ -202,6 +198,12 @@ class RenderWeather {
       dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(pts);
     }
+    // Windspeed
+    if (hasAlert) {
+      dc.setColor(ds.COLOR_TEXT_I_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+    }
+    dc.drawText(center.x, center.y, Graphics.FONT_XTINY, text,
+                  Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function pointOnCircle(radius, angleInDegrees,

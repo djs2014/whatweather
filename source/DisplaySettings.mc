@@ -62,6 +62,13 @@ class DisplaySettings {
       COLOR_TEXT_I = Graphics.COLOR_BLACK;
       COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_BLACK;
       COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+    } else {
+      COLOR_TEXT = Graphics.COLOR_BLACK;
+      COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
+      COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+      COLOR_TEXT_I = Graphics.COLOR_WHITE;
+      COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
+      COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
     }
   }
 
