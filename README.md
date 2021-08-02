@@ -68,10 +68,15 @@ Todo:
 	
 	- show weather condition 
 		- define categories
+			first: clear, clouds, thunderstorm, drizzle, rain, snow, mist, smoke, haze, dust, fog, sand, ash, squall, tornado
+			next sub category + text
+				-> reuse garmin weather enum?
+
 		- show the bars under column, or ..
 		- show abbreviation 
 		- use pictograms 
 		
 	- Show info large field - 
 	- Options display, display 2 fields, 
+	- At initial start -> position is 0 (calc distance is then 5840km)? 
 - WWOWM - glitch simple node -> more advanced .. step by step
