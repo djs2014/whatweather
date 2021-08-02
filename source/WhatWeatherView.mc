@@ -78,7 +78,11 @@ class WhatWeatherView extends WatchUi.DataField {
     var devSettings = System.getDeviceSettings();
     var info = "";
     var postfix = "";
-    switch ($._showInfo) {
+    var showInfo = $._showInfo2;
+    if (ds.smallField) {
+      showInfo = $._showInfo;
+    }
+    switch (showInfo) {
       case SHOW_INFO_NOTHING:
         return;
       case SHOW_INFO_TIME_Of_DAY:

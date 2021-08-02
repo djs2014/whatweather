@@ -53,6 +53,7 @@ class WhatWeatherApp extends Application.AppBase {
         $._showUVIndexFactor = getBooleanProperty("showUVIndexFactor", 2);
         $._hideUVIndexLowerThan = getNumberProperty("hideUVIndexLowerThan", 4);
         $._showInfo = getNumberProperty("showInfo", SHOW_INFO_TIME_Of_DAY);
+        $._showInfo2 = getNumberProperty("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
         $._showPrecipitationChanceAxis =
             getBooleanProperty("showPrecipitationChanceAxis", true);
         $._alertLevelUVi = getNumberProperty("alertLevelUVi", 6);

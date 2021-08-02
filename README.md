@@ -72,4 +72,6 @@ Todo:
 		- show abbreviation 
 		- use pictograms 
 		
+	- Show info large field - 
+	- Options display, display 2 fields, 
 - WWOWM - glitch simple node -> more advanced .. step by step

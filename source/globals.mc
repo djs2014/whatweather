@@ -38,6 +38,7 @@ var _showClouds = true;
 var _showUVIndexFactor = 2;
 var _hideUVIndexLowerThan = 4;
 var _showInfo = SHOW_INFO_TIME_Of_DAY;
+var _showInfo2 = SHOW_INFO_AMBIENT_PRESSURE;
 var _showPrecipitationChanceAxis = true;
 
 var _alertLevelWindSpeed = 5;
