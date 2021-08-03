@@ -22,6 +22,7 @@
 	<property id="showInfo2" type="number">6</property>
 	<property id="showWind" type="number">3</property>
 	<property id="showTemperature" type="boolean">true</property>
+	<property id="hideTemperatureLowerThan" type="number">11</property>
 	<property id="showRelativeHumidity" type="boolean">true</property>
 	<property id="showComfort" type="boolean">true</property>
 	<property id="showWeatherCondition" type="boolean">false</property>	

@@ -18,6 +18,8 @@ class RenderWeather {
   hidden var yTempTop = 0;
   hidden var yTempBottom = 0;
 
+  hidden const NO_BEARING_SPEED = 0.3;
+
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
@@ -52,13 +54,22 @@ class RenderWeather {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i];
+
         var x = p.x;
         var y = ds.getYpostion(p.y * factor);
+
+        // if ($._showWind && p.y < $._hideTemperatureLowerThan) {
+        //   dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
+        //   dc.drawCircle(x, y, 3);
+        //   dc.setColor(ds.COLOR_TEXT_I, Graphics.COLOR_TRANSPARENT);
+        //   dc.fillCircle(x, y, 2);
+        // } else {
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
         dc.drawCircle(x, y, 3);
         dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, 2);
+        // }
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -189,9 +200,13 @@ class RenderWeather {
       return;
     }
     var radius = 8;
-    var center =
-        new Point(x + ds.columnWidth / 2,
-                  ds.columnY + ds.columnHeight - radius - (radius / 2));
+    // var center =
+    //     new Point(x + ds.columnWidth / 2,
+    //               ds.columnY + ds.columnHeight - radius - (radius / 2));
+    var center = new Point(
+        x + ds.columnWidth / 2,
+        ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2);
+
     drawWind(center, radius, windBearingInDegrees, windSpeed);
   }
 
@@ -207,6 +222,61 @@ class RenderWeather {
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts,
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+  }
+
+  function drawWeatherCondition(x, condition) {
+    if (condition == null || ds.smallField) {
+      return;
+    }
+    var center =
+        new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight +
+                                              ds.heightWind + ds.heightWc / 2);
+    // clear                                    
+    if (condition == Weather.CONDITION_FAIR) {
+      drawConditionClear(center, 3, 6, 0);
+      return;
+    }        
+    if (condition == Weather.CONDITION_MOSTLY_CLEAR || condition == Weather.CONDITION_PARTLY_CLEAR) {
+      drawConditionClear(center, 3, 6, 30);
+      return;
+    }                                      
+    if (condition == Weather.CONDITION_CLEAR) {
+      drawConditionClear(center, 3, 6, 30);
+      return;
+    }
+    // clouds
+    if (condition ==Weather.CONDITION_THIN_CLOUDS || condition == Weather.CONDITION_PARTLY_CLOUDY) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 4));
+      return;
+    }
+    if (condition ==Weather.CONDITION_MOSTLY_CLOUDY) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 6));
+      return;
+    }
+    if (condition == Weather.CONDITION_CLOUDY) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 8));
+      return;
+    }
+      
+  }
+
+  hidden function drawConditionClear(center as Point, radius, radiusOuter,
+                                     increment) {
+    dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+    dc.drawCircle(center.x, center.y, radius);
+    if (increment <= 0) {
+      increment = 30;
+    }
+    var angle = 0;
+    while (angle < 360) {
+      var p1 = pointOnCircle(radius, angle, center);
+      var p2 = pointOnCircle(radiusOuter, angle, center);
+      dc.drawLine(p1.x, p1.y, p2.x, p2.y);
+      angle = angle + increment;
+    }
   }
 
   // --
@@ -247,7 +317,7 @@ class RenderWeather {
       dc.drawCircle(center.x, center.y, radius);
     }
     // Bearing arrow
-    if (windBearingInDegrees != null) {
+    if (windBearingInDegrees != null && ( windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED)) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
@@ -294,6 +364,35 @@ class RenderWeather {
     self.yTempTop = ds.getYpostion($._comfortTemperature[1]);
     self.yTempBottom = ds.getYpostion($._comfortTemperature[0]);
   }
+
+  hidden function getCloudPoints(center as Point, radius) {
+    var pts = [];
+    var p;
+    var cLeft = center.move(-radius * 0.9, 0);
+    var d = -180;
+    while (d <= -90) {
+      p = pointOnCircle(radius * 0.3, d, cLeft);
+      pts.add([ p.x, p.y ]);
+      d = d + 10;
+    }
+
+    d = -180;
+    while (d <= 0) {
+      p = pointOnCircle(radius, d, center);
+      pts.add([ p.x, p.y ]);
+      d = d + 10;
+    }
+
+    var cRight = center.move(radius * 0.9, 0);
+    d = -90;
+    while (d <= 0) {
+      p = pointOnCircle(radius * 0.6, d, cRight);
+      pts.add([ p.x, p.y ]);
+      d = d + 10;
+    }
+
+    return pts;
+  }
 }
 
 class Point {
@@ -304,4 +403,5 @@ class Point {
     self.y = y;
   }
   function asArray() { return [ x, y ]; }
+  function move(x, y) { return new Point(self.x + x, self.y + y); }
 }

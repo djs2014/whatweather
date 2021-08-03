@@ -18,7 +18,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var _currentInfo as CurrentInfo;
 
   hidden var _posnInfo as Info ? ;
-  
+
   function initialize() {
     DataField.initialize();
     mFontSmallH = Graphics.getFontHeight(mFontSmall);
@@ -51,7 +51,11 @@ class WhatWeatherView extends WatchUi.DataField {
     var nrOfColumns = $._maxHoursForecast;
     ds.setDc(dc, backgroundColor);
     ds.clearScreen();
-    ds.calculate(nrOfColumns);
+
+    var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
+    var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
+    if (heightWind > 0 || heightWc > 0 ) { $._dashesUnderColumnHeight = 0; }
+    ds.calculate(nrOfColumns, heightWind, heightWc);
 
     GarminWeather.getLatestGarminWeather();
     onUpdateWeather(dc, ds);
@@ -70,7 +74,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if ($._showPrecipitationChanceAxis) {
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
     }
-  
+
     showInfo(dc, ds);
   }
 
@@ -205,7 +209,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var render = new RenderWeather(dc, ds);
-                
+
       if ($._maxMinuteForecast > 0) {
         var xMMstart = x;
         var popTotal = 0;
@@ -262,8 +266,9 @@ class WhatWeatherView extends WatchUi.DataField {
           validSegment = validSegment + 1;
 
           if ($._showComfort) {
-            render.drawComfortColumn(x, current.temperature, current.relativeHumidity,
-                             precipitationChance);
+            render.drawComfortColumn(x, current.temperature,
+                                     current.relativeHumidity,
+                                     precipitationChance);
           }
 
           if ($._showColumnBorder) {
@@ -288,15 +293,17 @@ class WhatWeatherView extends WatchUi.DataField {
             uvPoints.add(uvp);
           }
 
-
           if ($._showTemperature) {
-            tempPoints.add(new Point(x + ds.columnWidth /2, current.temperature));
+            tempPoints.add(
+                new Point(x + ds.columnWidth / 2, current.temperature));
           }
           if ($._showRelativeHumidity) {
-            humidityPoints.add(new Point(x + ds.columnWidth /2, current.relativeHumidity));
+            humidityPoints.add(
+                new Point(x + ds.columnWidth / 2, current.relativeHumidity));
           }
           if ($._showWind) {
-            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed));            
+            windPoints.add(
+                new WindPoint(x, current.windBearing, current.windSpeed));
           }
 
           if ($._dashesUnderColumnHeight > 0) {
@@ -307,12 +314,9 @@ class WhatWeatherView extends WatchUi.DataField {
                              $._dashesUnderColumnHeight);
           }
 
-          // if ($._showWeatherCondition) {
-          //   var bitmap = getBitmap(current.condition);
-          //   // @@ icon width 14 px
-          //   dc.drawBitmap(x + (ds.columnWidth /2) - 7, ds.columnY +
-          //   ds.columnHeight - 20 , bitmap);
-          // }
+          if ($._showWeatherCondition) {
+            render.drawWeatherCondition(x, current.condition);
+          }
 
           x = x + ds.columnWidth + ds.space;
         }
@@ -347,8 +351,9 @@ class WhatWeatherView extends WatchUi.DataField {
                               [ x, forecast.info(), color ]));
             }
             if ($._showComfort) {
-              render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity,
-                             precipitationChance); 
+              render.drawComfortColumn(x, forecast.temperature,
+                                       forecast.relativeHumidity,
+                                       precipitationChance);
             }
             if ($._showColumnBorder) {
               drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
@@ -371,13 +376,16 @@ class WhatWeatherView extends WatchUi.DataField {
               uvPoints.add(uvp);
             }
             if ($._showTemperature) {
-              tempPoints.add(new Point(x + ds.columnWidth /2, forecast.temperature));
+              tempPoints.add(
+                  new Point(x + ds.columnWidth / 2, forecast.temperature));
             }
             if ($._showRelativeHumidity) {
-              humidityPoints.add(new Point(x + ds.columnWidth /2, forecast.relativeHumidity));
+              humidityPoints.add(
+                  new Point(x + ds.columnWidth / 2, forecast.relativeHumidity));
             }
             if ($._showWind) {
-              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed));              
+              windPoints.add(
+                  new WindPoint(x, forecast.windBearing, forecast.windSpeed));
             }
             if ($._dashesUnderColumnHeight > 0) {
               color =
@@ -387,12 +395,9 @@ class WhatWeatherView extends WatchUi.DataField {
                                $._dashesUnderColumnHeight);
             }
 
-            // if ($._showWeatherCondition) {
-            //   var bitmap = getBitmap(forecast.condition);
-            //   // @@ icon width 14 px
-            //   dc.drawBitmap(x + (ds.columnWidth /2) - 7, ds.columnY +
-            //   ds.columnHeight - 20 , bitmap);
-            // }
+            if ($._showWeatherCondition) {
+              render.drawWeatherCondition(x, forecast.condition);
+            }
 
             x = x + ds.columnWidth + ds.space;
           }
@@ -402,17 +407,17 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showUVIndexFactor > 0) {
         render.drawUvIndexGraph(uvPoints, $._showUVIndexFactor);
       }
-      if ($._showTemperature) { 
+      if ($._showTemperature) {
         render.drawTemperatureGraph(tempPoints, 1);
       }
       if ($._showRelativeHumidity) {
-         render.drawHumidityGraph(humidityPoints, 1);
+        render.drawHumidityGraph(humidityPoints, 1);
       }
 
       if ($._showComfort) {
         render.drawComfortZones();
       }
-    
+
       if (current != null) {
         // Always show position of observation
         var distance = "";
@@ -456,8 +461,6 @@ class WhatWeatherView extends WatchUi.DataField {
       ex.printStackTrace();
     }
   }
-
-  
 
   function drawWarningLevel(dc, margin, bar_height, color, heightPerc) {
     if (heightPerc <= 0) {
@@ -536,5 +539,4 @@ class WhatWeatherView extends WatchUi.DataField {
       Attention.playTone(Attention.TONE_CANARY);
     }
   }
-  
 }
