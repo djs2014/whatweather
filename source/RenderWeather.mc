@@ -237,7 +237,9 @@ class RenderWeather {
       return;
     }        
     if (condition == Weather.CONDITION_MOSTLY_CLEAR || condition == Weather.CONDITION_PARTLY_CLEAR) {
-      drawConditionClear(center, 3, 6, 30);
+      drawConditionClear(center.move(3, -2), 2, 4, 30);
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center.move(0, 3), 6));
       return;
     }                                      
     if (condition == Weather.CONDITION_CLEAR) {
@@ -357,8 +359,37 @@ class RenderWeather {
       return;
     }
 
-    // windy
     // thunder
+    if (condition == Weather.CONDITION_CHANCE_OF_THUNDERSTORMS) {
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts(center, 4));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_SCATTERED_THUNDERSTORMS) {
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts(center, 6));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_THUNDERSTORMS) {
+      dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts(center.move(-4,-2), 6));
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts(center.move(2,0), 8));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_TROPICAL_STORM) {
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts( center.move(-1,1), 8));
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getLightningPts( center.move(4,4), 6));
+      dc.setColor(Graphics.COLOR_PURPLE, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 8));
+      return;
+    }
+    // windy
     // hurricane
     // sandstorm
     // dust
@@ -366,6 +397,25 @@ class RenderWeather {
     // smoke
     // fog
     // unknown
+  }
+
+  hidden function getLightningPts(center as Point, range) {
+    var pts = [];
+    
+    pts.add([center.x, center.y - range]);
+    pts.add([center.x + range * 0.5, center.y - range]);
+    
+    pts.add([center.x + 2, center.y - range *0.5]);
+    pts.add([center.x + 5, center.y - range *0.5]);
+
+    pts.add([center.x - 4, center.y + range]);
+
+    pts.add([center.x, center.y - range *0.2]);
+    pts.add([center.x - 3, center.y - range *0.2]);
+
+    pts.add([center.x - 2, center.y - range]);
+
+    return pts;
   }
 
   hidden function drawSnowFlake(center as Point, radius) {
@@ -453,36 +503,38 @@ class RenderWeather {
           min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;
     }
 
-    // The circle
-    dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
-    if (hasAlert) {
-      dc.fillCircle(center.x, center.y, radius);
-    } else {
-      dc.drawCircle(center.x, center.y, radius);
-    }
     // Bearing arrow
     if (windBearingInDegrees != null && ( windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED)) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pTop = (radius * 0.6);
-      if (hasAlert) {
-        pTop = radius - 2;
-      }
-      var pA = pointOnCircle(radius, windBearingInDegrees - 30, center);
-      var pB = pointOnCircle(radius + pTop, windBearingInDegrees, center);
-      var pC = pointOnCircle(radius, windBearingInDegrees + 30, center);
+      var pA = pointOnCircle(radius + (radius * 0.3), windBearingInDegrees - 35 - 180, center);
+      var pB = pointOnCircle(radius + (radius * 0.9), windBearingInDegrees, center);
+      var pC = pointOnCircle(radius + (radius * 0.3), windBearingInDegrees + 35 - 180, center);
       var pts = [ pA.asArray(), pB.asArray(), pC.asArray() ];
       dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(pts);
     }
+    // The circle
+    dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+    dc.drawCircle(center.x, center.y, radius);
+    if (hasAlert) {
+      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+    } else {
+      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);      
+    }
+    dc.fillCircle(center.x, center.y, radius - 1);
+
     // Windspeed
     if (hasAlert) {
-      dc.setColor(ds.COLOR_TEXT_I_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    } else {
+      dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     }
-    dc.drawText(center.x, center.y, Graphics.FONT_XTINY, text,
-                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    var w = dc.getTextWidthInPixels(text, Graphics.FONT_XTINY);
+    dc.drawText(center.x - w / 2, center.y, Graphics.FONT_XTINY, text,
+                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function pointOnCircle(radius, angleInDegrees,
