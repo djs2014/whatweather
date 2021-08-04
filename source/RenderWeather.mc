@@ -137,12 +137,12 @@ class RenderWeather {
       return;
     }
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(self.yHumTop);
-    drawWobblyLine(self.yHumBottom);
+    drawWobblyLine(0,ds.width,self.yHumTop);
+    drawWobblyLine(0,ds.width,self.yHumBottom);
 
     dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(self.yTempTop);
-    drawWobblyLine(self.yTempBottom);
+    drawWobblyLine(0,ds.width,self.yTempTop);
+    drawWobblyLine(0,ds.width,self.yTempBottom);
   }
 
   function drawObservationLocation(name as Lang.String) {
@@ -394,9 +394,33 @@ class RenderWeather {
     // sandstorm
     // dust
     // ash
+
     // smoke
+
     // fog
+    if (condition == Weather.CONDITION_FOG || condition == Weather.CONDITION_MIST) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawMist(center, 10);
+      return;
+    }
+
     // unknown
+    if (condition == Weather.CONDITION_UNKNOWN_PRECIPITATION || condition == Weather.CONDITION_UNKNOWN) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(center.x, center.y,  Graphics.FONT_XTINY, '?',
+                Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+      return;
+    }
+  }
+
+  hidden function drawMist(center as Point, range) {
+    var x1 = center.x - range /2;
+    var x2 = center.x + range /2;
+    var max = center.y + range /2;
+    for(var y = center.y - range /2; y < max; y = y + 3)
+    {
+      drawWobblyLine(x1, x2, y);
+    }    
   }
 
   hidden function getLightningPts(center as Point, range) {
@@ -546,14 +570,20 @@ class RenderWeather {
     return new Point(x, y);
   }
 
-  hidden function drawWobblyLine(y as Lang.Number) {
-    var max = ds.width;
-    for (var x = 0; x < max; x++) {
+  // hidden function drawWobblyLine(y as Lang.Number) {
+  //   var max = ds.width;
+  //   for (var x = 0; x < max; x++) {
+  //     var y1 = y + Math.sin(x);
+  //     dc.drawPoint(x, y1);
+  //   }
+  // }
+
+  hidden function drawWobblyLine(x1, x2, y) {
+    for (var x = x1; x <= x2; x++) {
       var y1 = y + Math.sin(x);
       dc.drawPoint(x, y1);
     }
   }
-
   hidden function initComfortZones() {
     self.yHumTop = ds.getYpostion($._comfortHumidity[1]);
     self.yHumBottom = ds.getYpostion($._comfortHumidity[0]);
