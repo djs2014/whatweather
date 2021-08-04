@@ -230,7 +230,7 @@ class RenderWeather {
     }
     var center =
         new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight +
-                                              ds.heightWind + ds.heightWc / 2);
+                                              ds.heightWind + ds.heightWc / 2 + 2);
     // clear                                    
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(center, 3, 6, 0);
@@ -260,7 +260,151 @@ class RenderWeather {
       dc.fillPolygon(getCloudPoints(center, 8));
       return;
     }
-      
+    // rain
+    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN || condition == Weather.CONDITION_CHANCE_OF_SHOWERS ) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 5, 4);
+      dc.fillPolygon(getCloudPoints(center, 5));
+    }
+
+    if (condition == Weather.CONDITION_DRIZZLE ) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 5, 3);
+    }
+
+    if (condition == Weather.CONDITION_LIGHT_RAIN || condition == Weather.CONDITION_LIGHT_SHOWERS || condition == Weather.CONDITION_SCATTERED_SHOWERS) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 8, 2);
+      dc.fillPolygon(getCloudPoints(center, 6));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_RAIN || condition == Weather.CONDITION_SHOWERS ) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 8, 2);
+      dc.fillPolygon(getCloudPoints(center, 8));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_HEAVY_SHOWERS || condition == Weather.CONDITION_HEAVY_RAIN ) {
+      dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 8, 1);
+      dc.fillPolygon(getCloudPoints(center, 8));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_FREEZING_RAIN  ) {
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 8, 1);
+      dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 8));
+      return;
+    }
+
+    // hail
+    if (condition == Weather.CONDITION_HAIL) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getHailPoints(center, 8));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_WINTRY_MIX ) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getHailPoints(center, 8));
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 8, 3);
+      return;
+    }
+    // snow
+    if (condition == Weather.CONDITION_CHANCE_OF_SNOW || condition == Weather.CONDITION_CHANCE_OF_RAIN_SNOW ) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center, 6);
+      return;
+    }
+
+    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW || condition == Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW ) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center.move(0,2), 6);
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 7));
+      return;
+    }
+
+    if (condition == Weather.CONDITION_FLURRIES || condition == Weather.CONDITION_LIGHT_SNOW ) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center, 6);      
+      return;
+    }
+
+    if (condition == Weather.CONDITION_SNOW || condition == Weather.CONDITION_RAIN_SNOW ) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center, 8);      
+      return;
+    }
+
+    if (condition == Weather.CONDITION_SLEET || condition == Weather.CONDITION_ICE_SNOW || condition == Weather.CONDITION_ICE ) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getHailPoints(center.move(-2,-1), 4));   
+      dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center, 8);   
+      return;
+    }
+
+    if (condition == Weather.CONDITION_HEAVY_SNOW || condition == Weather.CONDITION_HEAVY_RAIN_SNOW) {
+      dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center.move(-4,2), 8);      
+      drawSnowFlake(center.move(4,-3), 8);      
+      return;
+    }
+
+    // windy
+    // thunder
+    // hurricane
+    // sandstorm
+    // dust
+    // ash
+    // smoke
+    // fog
+    // unknown
+  }
+
+  hidden function drawSnowFlake(center as Point, radius) {
+    var angle = 0;
+    while (angle < 360) {
+      var p1 = pointOnCircle(radius, angle, center);
+      dc.drawLine(center.x, center.y, p1.x, p1.y);
+      angle = angle + 45;
+    }
+  }
+
+  hidden function getHailPoints(center as Point, radius) {
+    var pts = [];
+
+    var angle = 0;
+    while (angle < 360) {
+      var p1 = pointOnCircle(radius, angle, center);
+      pts.add([ p1.x, p1.y ]);
+      angle = angle + 60;
+    }
+
+    return pts;
+  }
+
+  hidden function drawRainDrops(center as Point, range, density) {
+    var x1, x2, y1,y2;
+    range = range / 2;
+    var s = center.x - range;
+    var e = center.x + range;
+    var x = s;
+    y1 = center.y + range;
+    y2 = center.y - range;
+
+    while (x < e) {
+      x1 = x ;
+      x2 = x + 3;
+      dc.drawLine(x1, y1, x2, y2);      
+      x = x + density;
+    }    
   }
 
   hidden function drawConditionClear(center as Point, radius, radiusOuter,
@@ -268,7 +412,7 @@ class RenderWeather {
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(center.x, center.y, radius);
     if (increment <= 0) {
-      increment = 30;
+      return;
     }
     var angle = 0;
     while (angle < 360) {
@@ -322,7 +466,7 @@ class RenderWeather {
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pTop = (radius / 2);
+      var pTop = (radius * 0.6);
       if (hasAlert) {
         pTop = radius - 2;
       }
