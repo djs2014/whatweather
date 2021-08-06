@@ -51,11 +51,17 @@ class WhatWeatherView extends WatchUi.DataField {
     var nrOfColumns = $._maxHoursForecast;
     ds.setDc(dc, backgroundColor);
     ds.clearScreen();
-
+  
     var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
     var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
     if (heightWind > 0 || heightWc > 0 ) { $._dashesUnderColumnHeight = 0; }
     ds.calculate(nrOfColumns, heightWind, heightWc);
+
+    if ($._showGlossary && ds.oneField) {
+      var render = new RenderWeather(dc, ds);
+      render.drawGlossary();
+      return;
+    }
 
     GarminWeather.getLatestGarminWeather();
     onUpdateWeather(dc, ds);

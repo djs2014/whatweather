@@ -48,44 +48,31 @@ function getWeatherCondition(condition) as WeatherCondition {
       
 
     // thunder                              
-    case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
-      return new WeatherCondition(WeatherCondition.THUNDERSTORMS,
-                                  WeatherCondition.CHANCE);
+    case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:      
     case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
-      return new WeatherCondition(WeatherCondition.THUNDERSTORMS,
-                                  WeatherCondition.LIGHT);
     case Weather.CONDITION_THUNDERSTORMS:
-      return new WeatherCondition(WeatherCondition.THUNDERSTORMS,
-                                  WeatherCondition.NORMAL);
     case Weather.CONDITION_TROPICAL_STORM:
-      return new WeatherCondition(WeatherCondition.THUNDERSTORMS,
-                                  WeatherCondition.HEAVY);
-
-    
-
-    // hurricane
-    case Weather.CONDITION_HURRICANE:
-    case Weather.CONDITION_TORNADO:
-      return new WeatherCondition(WeatherCondition.TORNADO,
-                                  WeatherCondition.HEAVY);
+            
     // dust
     case Weather.CONDITION_DUST:
     case Weather.CONDITION_SAND:
-      return new WeatherCondition(WeatherCondition.SAND,
-                                  WeatherCondition.NORMAL);
+      
+    case Weather.CONDITION_HAZY: // dust, difficult to see
     // sandstorm
     case Weather.CONDITION_SANDSTORM:
-      return new WeatherCondition(WeatherCondition.SAND,
-                                  WeatherCondition.HEAVY);
+      
     // ash
     case Weather.CONDITION_VOLCANIC_ASH:
-      return new WeatherCondition(WeatherCondition.ASH,
-                                  WeatherCondition.NORMAL);
+      
     // smoke
     case Weather.CONDITION_SMOKE:
       return new WeatherCondition(WeatherCondition.SMOKE,
                                   WeatherCondition.NORMAL);
-
+// hurricane
+    case Weather.CONDITION_HURRICANE:
+    case Weather.CONDITION_TORNADO:
+      return new WeatherCondition(WeatherCondition.TORNADO,
+                                  WeatherCondition.HEAVY);
     
 
     // fog
@@ -93,19 +80,11 @@ function getWeatherCondition(condition) as WeatherCondition {
      case Weather.CONDITION_MIST:
      
      // windy
-    case Weather.CONDITION_WINDY:
-      return new WeatherCondition(WeatherCondition.WINDY,
-                                  WeatherCondition.NORMAL);
-
-    case Weather.CONDITION_HAZY:
-      return new WeatherCondition(WeatherCondition.HAZE,
-                                  WeatherCondition.NORMAL);
-    
-
+    case Weather.CONDITION_WINDY:    
     case Weather.CONDITION_SQUALL:  // sudden windspeed
-      return new WeatherCondition(WeatherCondition.SQUALL,
-                                  WeatherCondition.NORMAL);
-
+   
+    
+    
     case Weather.CONDITION_UNKNOWN_PRECIPITATION:
     case Weather.CONDITION_UNKNOWN:
     

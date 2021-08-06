@@ -79,4 +79,7 @@ Todo:
 	- Show info large field - 
 	- Options display, display 2 fields, 
 	- At initial start -> position is 0 (calc distance is then 5840km)? 
+	- Show glossary weather icons 1 field .. option
+		- draw colors + meaning
+		
 - WWOWM - glitch simple node -> more advanced .. step by step

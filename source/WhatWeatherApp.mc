@@ -66,7 +66,8 @@ class WhatWeatherApp extends Application.AppBase {
         $._hideTemperatureLowerThan = getNumberProperty("hideTemperatureLowerThan", 11);        
         $._showRelativeHumidity = getBooleanProperty("showRelativeHumidity", true);
         $._showComfort = getBooleanProperty("showComfort", true);
-
+        $._showGlossary = getBooleanProperty("showGlossary", false);
+  
         $._showWeatherCondition =
             getBooleanProperty("showWeatherCondition", true);
 

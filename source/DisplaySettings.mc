@@ -34,6 +34,7 @@ class DisplaySettings {
   var columnX = 0;
 
   var smallField = false;
+  var oneField = false;
   hidden var backgroundColor;
 
   function initialize() {}
@@ -43,16 +44,15 @@ class DisplaySettings {
     self.width = dc.getWidth();
     self.height = dc.getHeight();
     self.smallField = self.height < 80;
+    self.oneField = self.height >= 322 && self.width >= 246;
     // 1 large field: w[246] h[322]
     // 2 fields: w[246] h[160]
     // 3 fields: w[246] h[106]
   }
 
   function setDc(dc as Dc, backgroundColor) {
-    self.dc = dc;
-    self.width = dc.getWidth();
-    self.height = dc.getHeight();
-    self.smallField = self.height < 80;
+    calculateLayout(dc);
+    
     self.backgroundColor = backgroundColor;
     nightMode = (backgroundColor == Graphics.COLOR_BLACK);
     setColors();

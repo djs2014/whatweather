@@ -49,6 +49,8 @@ var _showRelativeHumidity = true;
 var _showWeatherCondition = true;
 var _showComfort = true;
 
+var _showGlossary = true;
+
 var _alertLevelUVi = 6;
 var _alertLevelRainMMfirstHour = 5;
 

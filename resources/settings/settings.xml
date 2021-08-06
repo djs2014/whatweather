@@ -22,6 +22,9 @@
 	<setting propertyKey="@Properties.showComfort" title="@Strings.ShowComfort">
 		<settingConfig type="boolean" />
 	</setting>
+	<setting propertyKey="@Properties.showWeatherCondition" title="@Strings.ShowWeatherCondition">
+		<settingConfig type="boolean" />
+	</setting>
     <setting propertyKey="@Properties.showInfo" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
@@ -90,8 +93,8 @@
 	</setting>	
     <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
 		<settingConfig type="boolean" />
-	</setting>		
-	<setting propertyKey="@Properties.showWeatherCondition" title="@Strings.ShowWeatherCondition">
+	</setting>				
+	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
 		<settingConfig type="boolean" />
 	</setting>	
 </settings>

@@ -222,13 +222,41 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
+  function drawGlossary() {
+    dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
+    var cMax = $._maxHoursForecast;
+    var lMax = 10;
+
+    var conditionNr = 0;
+    var conditionNrMax = 53;
+    for (var l = 1; l <= lMax && conditionNr <= conditionNrMax; l = l + 1) {
+      var y = ds.margin + (30 * l);
+      for (var c = 0; c < cMax && conditionNr <= conditionNrMax; c = c + 1) {
+        var x = ds.margin + (ds.columnWidth + ds.space) * c;        
+        var center = new Point(x + ds.columnWidth / 2, y);        
+        _drawWeatherCondition(center, conditionNr);
+
+        conditionNr = conditionNr + 1;        
+      }
+    }    
+  }
+
   function drawWeatherCondition(x, condition) {
+    return _drawWeatherCondition(
+        new Point(
+            x + ds.columnWidth / 2,
+            ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2),
+        condition);
+  }
+
+  function _drawWeatherCondition(center as Point, condition) {
     if (condition == null || ds.smallField) {
       return;
     }
-    var center = new Point(
-        x + ds.columnWidth / 2,
-        ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2);
+    // var center = new Point(
+    //     x + ds.columnWidth / 2,
+    //     ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2);
+
     // clear
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(center, 3, 6, 0);
@@ -423,7 +451,7 @@ class RenderWeather {
       return;
     }
     // dust, difficult to see
-    if (condition == Weather.CONDITION_HAZY) {
+    if (condition == Weather.CONDITION_HAZY || condition == Weather.CONDITION_HAZE) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawMistIcon(center, 10);
       drawDustIcon(center, 8, 1, 8);
