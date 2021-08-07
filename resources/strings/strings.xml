@@ -43,5 +43,7 @@
     <string id="ComfortHumidityMax">Comfort humidity(%) max</string>
     <string id="ComfortTempMin">Comfort temperature(C) min</string>
     <string id="ComfortTempMax">Comfort temperature(C) max</string>
-	<string id="ComfortPopMax">Comfort precipitation(%) max</string>	
+	<string id="ComfortPopMax">Comfort precipitation(%) max</string>
+    <string id="ShowWeatherCondition">Show weather condition</string>	
+    <string id="ShowGlossary">Show glossary (single field)</string>	
 </strings>

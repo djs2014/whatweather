@@ -67,9 +67,9 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
   }
 
   if (temperature < offsetValue($._comfortTemperature[0], 0.3) ||
-      relativeHumidity < offsetValue($._comfortHumidity[0], 0.3) ) {
-      return COMFORT_NO;
-    }
+      relativeHumidity < offsetValue($._comfortHumidity[0], 0.3)) {
+    return COMFORT_NO;
+  }
   var tempLow = compareTo(temperature, $._comfortTemperature[0]);
   var tempHigh = compareTo(temperature, $._comfortTemperature[1]);
 
@@ -189,6 +189,7 @@ function getConditionColor(condition, def) {
       return def;
   }
 }
+
 
 function min(a as Lang.Number, b as Lang.Number) {
   if (a <= b) {

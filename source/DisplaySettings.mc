@@ -20,16 +20,22 @@ class DisplaySettings {
   var nrOfColumns = 0;
 
   var margin = 5;
+  var marginBottom = 5;
   var space = 2;
 
   var offsetX = 0;
   var columnWidth = 10;
   var columnHeight = 0;
 
+  var dashesPosY;
+  var heightWind = 0;
+  var heightWc = 0;
+  var heightWt = 0;
   var columnY = 0;
   var columnX = 0;
 
   var smallField = false;
+  var oneField = false;
   hidden var backgroundColor;
 
   function initialize() {}
@@ -39,16 +45,15 @@ class DisplaySettings {
     self.width = dc.getWidth();
     self.height = dc.getHeight();
     self.smallField = self.height < 80;
+    self.oneField = self.height >= 322 && self.width >= 246;
     // 1 large field: w[246] h[322]
     // 2 fields: w[246] h[160]
     // 3 fields: w[246] h[106]
   }
 
   function setDc(dc as Dc, backgroundColor) {
-    self.dc = dc;
-    self.width = dc.getWidth();
-    self.height = dc.getHeight();
-    self.smallField = self.height < 80;
+    calculateLayout(dc);
+    
     self.backgroundColor = backgroundColor;
     nightMode = (backgroundColor == Graphics.COLOR_BLACK);
     setColors();
@@ -77,8 +82,11 @@ class DisplaySettings {
     dc.clear();
   }
 
-  function calculate(columns) {
-    nrOfColumns = columns;
+  function calculate(nrOfColumns, heightWind, heightWc, heightWt) {
+    self.nrOfColumns = nrOfColumns;
+    self.heightWind = heightWind;
+    self.heightWc = heightWc;
+    self.heightWt = heightWt;
     calculateColumnWidth(0);
   }
 
@@ -90,13 +98,18 @@ class DisplaySettings {
           (width - offsetX - (2 * margin) - (nrOfColumns - 1) * space) /
           nrOfColumns;
     }
-    columnHeight = height - 2 * margin;
 
     columnY = margin;
     var correction = (width - offsetX - (2 * margin) -
                       (nrOfColumns * columnWidth) - (nrOfColumns - 1) * space) /
                      2;
     columnX = margin + correction;
+
+    // Height of the weather column
+    columnHeight = height - 2 * margin - heightWind - heightWc - heightWt;
+
+    // Position of dashes under columns
+    dashesPosY = columnY + columnHeight;
   }
 
   function info() {

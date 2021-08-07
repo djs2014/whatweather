@@ -18,7 +18,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var _currentInfo as CurrentInfo;
 
   hidden var _posnInfo as Info ? ;
-  
+
   function initialize() {
     DataField.initialize();
     mFontSmallH = Graphics.getFontHeight(mFontSmall);
@@ -51,7 +51,18 @@ class WhatWeatherView extends WatchUi.DataField {
     var nrOfColumns = $._maxHoursForecast;
     ds.setDc(dc, backgroundColor);
     ds.clearScreen();
-    ds.calculate(nrOfColumns);
+  
+    var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
+    var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
+    var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
+    if (heightWind > 0 || heightWc > 0 ) { $._dashesUnderColumnHeight = 0; }
+    ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
+
+    if ($._showGlossary && ds.oneField) {
+      var render = new RenderWeather(dc, ds);
+      render.drawGlossary();
+      return;
+    }
 
     GarminWeather.getLatestGarminWeather();
     onUpdateWeather(dc, ds);
@@ -70,7 +81,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if ($._showPrecipitationChanceAxis) {
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
     }
-  
+
     showInfo(dc, ds);
   }
 
@@ -78,7 +89,11 @@ class WhatWeatherView extends WatchUi.DataField {
     var devSettings = System.getDeviceSettings();
     var info = "";
     var postfix = "";
-    switch ($._showInfo) {
+    var showInfo = $._showInfo2;
+    if (ds.smallField) {
+      showInfo = $._showInfo;
+    }
+    switch (showInfo) {
       case SHOW_INFO_NOTHING:
         return;
       case SHOW_INFO_TIME_Of_DAY:
@@ -192,6 +207,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var mm = null;
     var current = null;
     var hourlyForecast = null;
+    var previousCondition = -1;
 
     try {
       if ($._mostRecentData != null) {
@@ -201,7 +217,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var render = new RenderWeather(dc, ds);
-                
+
       if ($._maxMinuteForecast > 0) {
         var xMMstart = x;
         var popTotal = 0;
@@ -258,8 +274,9 @@ class WhatWeatherView extends WatchUi.DataField {
           validSegment = validSegment + 1;
 
           if ($._showComfort) {
-            render.drawComfortColumn(x, current.temperature, current.relativeHumidity,
-                             precipitationChance);
+            render.drawComfortColumn(x, current.temperature,
+                                     current.relativeHumidity,
+                                     precipitationChance);
           }
 
           if ($._showColumnBorder) {
@@ -284,15 +301,17 @@ class WhatWeatherView extends WatchUi.DataField {
             uvPoints.add(uvp);
           }
 
-
           if ($._showTemperature) {
-            tempPoints.add(new Point(x + ds.columnWidth /2, current.temperature));
+            tempPoints.add(
+                new Point(x + ds.columnWidth / 2, current.temperature));
           }
           if ($._showRelativeHumidity) {
-            humidityPoints.add(new Point(x + ds.columnWidth /2, current.relativeHumidity));
+            humidityPoints.add(
+                new Point(x + ds.columnWidth / 2, current.relativeHumidity));
           }
           if ($._showWind) {
-            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed));            
+            windPoints.add(
+                new WindPoint(x, current.windBearing, current.windSpeed));
           }
 
           if ($._dashesUnderColumnHeight > 0) {
@@ -303,12 +322,13 @@ class WhatWeatherView extends WatchUi.DataField {
                              $._dashesUnderColumnHeight);
           }
 
-          // if ($._showWeatherCondition) {
-          //   var bitmap = getBitmap(current.condition);
-          //   // @@ icon width 14 px
-          //   dc.drawBitmap(x + (ds.columnWidth /2) - 7, ds.columnY +
-          //   ds.columnHeight - 20 , bitmap);
-          // }
+          if ($._showWeatherCondition) {
+            render.drawWeatherCondition(x, current.condition);   
+            if (previousCondition != current.condition) {
+              render.drawWeatherConditionText(x, current.condition);
+              previousCondition = current.condition;
+            }
+          }
 
           x = x + ds.columnWidth + ds.space;
         }
@@ -343,8 +363,9 @@ class WhatWeatherView extends WatchUi.DataField {
                               [ x, forecast.info(), color ]));
             }
             if ($._showComfort) {
-              render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity,
-                             precipitationChance); 
+              render.drawComfortColumn(x, forecast.temperature,
+                                       forecast.relativeHumidity,
+                                       precipitationChance);
             }
             if ($._showColumnBorder) {
               drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
@@ -367,13 +388,16 @@ class WhatWeatherView extends WatchUi.DataField {
               uvPoints.add(uvp);
             }
             if ($._showTemperature) {
-              tempPoints.add(new Point(x + ds.columnWidth /2, forecast.temperature));
+              tempPoints.add(
+                  new Point(x + ds.columnWidth / 2, forecast.temperature));
             }
             if ($._showRelativeHumidity) {
-              humidityPoints.add(new Point(x + ds.columnWidth /2, forecast.relativeHumidity));
+              humidityPoints.add(
+                  new Point(x + ds.columnWidth / 2, forecast.relativeHumidity));
             }
             if ($._showWind) {
-              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed));              
+              windPoints.add(
+                  new WindPoint(x, forecast.windBearing, forecast.windSpeed));
             }
             if ($._dashesUnderColumnHeight > 0) {
               color =
@@ -383,12 +407,13 @@ class WhatWeatherView extends WatchUi.DataField {
                                $._dashesUnderColumnHeight);
             }
 
-            // if ($._showWeatherCondition) {
-            //   var bitmap = getBitmap(forecast.condition);
-            //   // @@ icon width 14 px
-            //   dc.drawBitmap(x + (ds.columnWidth /2) - 7, ds.columnY +
-            //   ds.columnHeight - 20 , bitmap);
-            // }
+            if ($._showWeatherCondition) {
+              render.drawWeatherCondition(x, forecast.condition);
+              if (previousCondition != forecast.condition) {
+                render.drawWeatherConditionText(x, forecast.condition);
+                previousCondition = forecast.condition;
+               }
+            }
 
             x = x + ds.columnWidth + ds.space;
           }
@@ -398,17 +423,17 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showUVIndexFactor > 0) {
         render.drawUvIndexGraph(uvPoints, $._showUVIndexFactor);
       }
-      if ($._showTemperature) { 
+      if ($._showTemperature) {
         render.drawTemperatureGraph(tempPoints, 1);
       }
       if ($._showRelativeHumidity) {
-         render.drawHumidityGraph(humidityPoints, 1);
+        render.drawHumidityGraph(humidityPoints, 1);
       }
 
       if ($._showComfort) {
         render.drawComfortZones();
       }
-    
+
       if (current != null) {
         // Always show position of observation
         var distance = "";
@@ -452,8 +477,6 @@ class WhatWeatherView extends WatchUi.DataField {
       ex.printStackTrace();
     }
   }
-
-  
 
   function drawWarningLevel(dc, margin, bar_height, color, heightPerc) {
     if (heightPerc <= 0) {
@@ -530,86 +553,6 @@ class WhatWeatherView extends WatchUi.DataField {
   function playAlert() {
     if (Attention has : playTone) {
       Attention.playTone(Attention.TONE_CANARY);
-    }
-  }
-
-  function getBitmap(condition) {
-    switch (condition) {
-      case Weather.CONDITION_THUNDERSTORMS:
-      case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
-      case Weather.CONDITION_TROPICAL_STORM:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_THUNDERSTORMS);
-      case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
-        return WatchUi.loadResource(
-            Rez.Drawables.CONDITION_CHANCE_OF_THUNDERSTORMS);
-      case Weather.CONDITION_FREEZING_RAIN:
-      case Weather.CONDITION_HAIL:
-      case Weather.CONDITION_HEAVY_RAIN:
-      case Weather.CONDITION_HEAVY_RAIN_SNOW:
-      case Weather.CONDITION_HEAVY_SHOWERS:
-      case Weather.CONDITION_RAIN:
-      case Weather.CONDITION_WINTRY_MIX:
-      case Weather.CONDITION_HAIL:
-      case Weather.CONDITION_SHOWERS:
-      case Weather.CONDITION_FREEZING_RAIN:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_HEAVY_RAIN);
-
-      case Weather.CONDITION_HEAVY_SNOW:
-      case Weather.CONDITION_SNOW:
-      case Weather.CONDITION_HEAVY_SNOW:
-      case Weather.CONDITION_RAIN_SNOW:
-      case Weather.CONDITION_ICE_SNOW:
-      case Weather.CONDITION_ICE:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_SNOW);
-      case Weather.CONDITION_HURRICANE:
-      case Weather.CONDITION_TORNADO:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_TORNADO);
-      case Weather.CONDITION_SANDSTORM:
-      case Weather.CONDITION_VOLCANIC_ASH:
-      case Weather.CONDITION_DUST:
-      case Weather.CONDITION_SAND:
-      case Weather.CONDITION_SMOKE:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_SAND);
-      case Weather.CONDITION_CLEAR:
-      case Weather.CONDITION_MOSTLY_CLEAR:
-      case Weather.CONDITION_PARTLY_CLEAR:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_CLEAR);
-      case Weather.CONDITION_PARTLY_CLOUDY:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_PARTLY_CLOUDY);
-      case Weather.CONDITION_MOSTLY_CLOUDY:
-      case Weather.CONDITION_CLOUDY:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_CLOUDY);
-      case Weather.CONDITION_LIGHT_RAIN:
-      case Weather.CONDITION_LIGHT_SNOW:
-      case Weather.CONDITION_LIGHT_SHOWERS:
-      case Weather.CONDITION_SCATTERED_SHOWERS:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_LIGHT_RAIN);
-      case Weather.CONDITION_CHANCE_OF_SNOW:
-      case Weather.CONDITION_CHANCE_OF_RAIN_SNOW:
-      case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN:
-      case Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW:
-      case Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW:
-      case Weather.CONDITION_CHANCE_OF_SHOWERS:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_CHANCE_OF_SHOWERS);
-      case Weather.CONDITION_FOG:
-      case Weather.CONDITION_MIST:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_MIST);
-      case Weather.CONDITION_WINDY:
-        return WatchUi.loadResource(Rez.Drawables.CONDITION_WINDY);
-
-      case Weather.CONDITION_HAZY:
-      case Weather.CONDITION_FLURRIES:
-      case Weather.CONDITION_DRIZZLE:
-      case Weather.CONDITION_SQUALL:
-      case Weather.CONDITION_HAZE:
-      case Weather.CONDITION_FAIR:
-      case Weather.CONDITION_SLEET:
-      case Weather.CONDITION_THIN_CLOUDS:
-      case Weather.CONDITION_UNKNOWN_PRECIPITATION:
-      case Weather.CONDITION_UNKNOWN:
-
-      default:
-        return null;
     }
   }
 }

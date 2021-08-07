@@ -10,7 +10,8 @@ var _mostRecentData = null;
 class WhatWeatherApp extends Application.AppBase {
   function initialize() {
     AppBase.initialize();
-    $._mostRecentData = new WeatherData();
+    $._mostRecentData = new WeatherData();        
+    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions);
   }
 
   // onStart() is called on application start up
@@ -53,6 +54,7 @@ class WhatWeatherApp extends Application.AppBase {
         $._showUVIndexFactor = getBooleanProperty("showUVIndexFactor", 2);
         $._hideUVIndexLowerThan = getNumberProperty("hideUVIndexLowerThan", 4);
         $._showInfo = getNumberProperty("showInfo", SHOW_INFO_TIME_Of_DAY);
+        $._showInfo2 = getNumberProperty("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
         $._showPrecipitationChanceAxis =
             getBooleanProperty("showPrecipitationChanceAxis", true);
         $._alertLevelUVi = getNumberProperty("alertLevelUVi", 6);
@@ -62,9 +64,11 @@ class WhatWeatherApp extends Application.AppBase {
         $._showWind = getNumberProperty("showWind", SHOW_WIND_BEAUFORT);
         $._alertLevelWindSpeed = getNumberProperty("alertLevelWindSpeed", 5);
         $._showTemperature = getBooleanProperty("showTemperature", true);
+        $._hideTemperatureLowerThan = getNumberProperty("hideTemperatureLowerThan", 11);        
         $._showRelativeHumidity = getBooleanProperty("showRelativeHumidity", true);
         $._showComfort = getBooleanProperty("showComfort", true);
-
+        $._showGlossary = getBooleanProperty("showGlossary", false);
+  
         $._showWeatherCondition =
             getBooleanProperty("showWeatherCondition", true);
 

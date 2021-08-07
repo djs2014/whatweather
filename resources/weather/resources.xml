@@ -1,0 +1,3 @@
+<resources>
+ <jsonData id="weatherDescriptions" filename="descriptions.json"/>
+ </resources>

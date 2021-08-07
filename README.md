@@ -49,13 +49,11 @@ New
 	Show relative humidity
 	Show comfort zones (humidity / temperature). Default 21-27 Celcius and 40% - 60% relative humidity.
 	
+	Show weather condition 
+	Small field / Large field automatic layout
 Todo:
- - picture explaining information on
-	small field
-	large field
-	
+ - picture explaining information	
  - App settings for color / color picker?
- - Target for other weather conditions and colors
  - refactor		
 	- if pop > 30 -> wind text black
 	- move generic code to classes: Render etc..
@@ -63,13 +61,18 @@ Todo:
 	- 'dual' field info
 	- fix show info for temperature		
 	- BUG - one column + weather alarm -> continue beep
-	- Finetune black/white background with diff settings (comfort, pop, condition)
-	- smallfield / large field / wide field?
-	
-	- show weather condition 
-		- define categories
-		- show the bars under column, or ..
-		- show abbreviation 
-		- use pictograms 
+	- Finetune black/white background with diff settings (comfort, pop, condition)			
+	- At initial start -> position is 0 (calc distance is then 5840km)? 
+	- Show glossary weather icons if 1 field  + text
+		- draw colors + text
+		? = chance of
+		p = partly
+		m = mostly
+		- = light
+		+ = heavy
+		s = scattered
+		wintry = rain/snow etc.
+		thunder = thunderstorms
+		tropical = tropicalstorms
 		
 - WWOWM - glitch simple node -> more advanced .. step by step
