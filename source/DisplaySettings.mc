@@ -30,6 +30,7 @@ class DisplaySettings {
   var dashesPosY;
   var heightWind = 0;
   var heightWc = 0;
+  var heightWt = 0;
   var columnY = 0;
   var columnX = 0;
 
@@ -81,10 +82,11 @@ class DisplaySettings {
     dc.clear();
   }
 
-  function calculate(nrOfColumns, heightWind, heightWc) {
+  function calculate(nrOfColumns, heightWind, heightWc, heightWt) {
     self.nrOfColumns = nrOfColumns;
     self.heightWind = heightWind;
     self.heightWc = heightWc;
+    self.heightWt = heightWt;
     calculateColumnWidth(0);
   }
 
@@ -104,7 +106,7 @@ class DisplaySettings {
     columnX = margin + correction;
 
     // Height of the weather column
-    columnHeight = height - 2 * margin - heightWind - heightWc;
+    columnHeight = height - 2 * margin - heightWind - heightWc - heightWt;
 
     // Position of dashes under columns
     dashesPosY = columnY + columnHeight;

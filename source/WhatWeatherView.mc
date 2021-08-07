@@ -54,8 +54,9 @@ class WhatWeatherView extends WatchUi.DataField {
   
     var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
     var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
+    var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
     if (heightWind > 0 || heightWc > 0 ) { $._dashesUnderColumnHeight = 0; }
-    ds.calculate(nrOfColumns, heightWind, heightWc);
+    ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
 
     if ($._showGlossary && ds.oneField) {
       var render = new RenderWeather(dc, ds);
@@ -206,6 +207,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var mm = null;
     var current = null;
     var hourlyForecast = null;
+    var previousCondition = -1;
 
     try {
       if ($._mostRecentData != null) {
@@ -321,7 +323,11 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           if ($._showWeatherCondition) {
-            render.drawWeatherCondition(x, current.condition);            
+            render.drawWeatherCondition(x, current.condition);   
+            if (previousCondition != current.condition) {
+              render.drawWeatherConditionText(x, current.condition);
+              previousCondition = current.condition;
+            }
           }
 
           x = x + ds.columnWidth + ds.space;
@@ -403,6 +409,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
             if ($._showWeatherCondition) {
               render.drawWeatherCondition(x, forecast.condition);
+              if (previousCondition != forecast.condition) {
+                render.drawWeatherConditionText(x, forecast.condition);
+                previousCondition = forecast.condition;
+               }
             }
 
             x = x + ds.columnWidth + ds.space;
