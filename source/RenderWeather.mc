@@ -232,27 +232,25 @@ class RenderWeather {
     var x = ds.margin;
     var currentX = x;
     var columnMaxWidth = ds.columnWidth + ds.space;
-    var maxHeight = ds.height - ds.margin;
-    
+    var maxHeight = ds.height - ds.margin;    
     var iHeight = 10;
 
     while (y <= ds.height && conditionNr <= conditionNrMax) {
-      var cHeight = 20;
       y = y + iHeight;
 
-      var text = getConditionText(conditionNr);   
+      var text = getConditionText(conditionNr);  
+      var tw = columnMaxWidth; 
       if (text != null) {
-        var tw = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);
+        tw = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);
         columnMaxWidth = max(columnMaxWidth, tw);      
       }
-      //cHeight = max(cHeight, textLines.size() * fontHeight);          
           
       if (y + iHeight > maxHeight) {
         // next column
         currentX = currentX + columnMaxWidth + ds.space;
         x = currentX;
         y = ds.margin + iHeight;
-        columnMaxWidth = ds.columnWidth + ds.space;
+        columnMaxWidth = max(ds.columnWidth + ds.space, tw);
       }
 
       // draw icon
@@ -267,32 +265,10 @@ class RenderWeather {
         y = y + fontHeight;
       }
       
-      dc.drawLine(x, y, x + ds.columnWidth, y);      
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);       
+      dc.drawLine(x, y, x + tw, y);      
       conditionNr++;
-    }
-
-    // var cMax = $._maxHoursForecast;
-    // var lMax = 10;
-
-    // for (var l = 0; l < lMax && conditionNr <= conditionNrMax; l = l + 1) {
-    //   var y = 10 + (30 * l);
-    //   var x = 0;
-    //   var xSpace = 0;
-    //   for (var c = 0; c < cMax && conditionNr <= conditionNrMax && x < ds.width; c = c + 1) {
-    //     x = ds.margin + xSpace + (ds.columnWidth + ds.space) * c;        
-    //     var center = new Point(x + ds.columnWidth / 2, y);        
-    //     _drawWeatherCondition(center, conditionNr);
-    //     xSpace = 0;
-    //     var text = getConditionText(conditionNr);
-    //     if (text != null) {
-    //       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);  
-    //       dc.drawText(x, y, Graphics.FONT_SYSTEM_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);
-    //       xSpace = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);          
-    //     }
-
-    //     conditionNr = conditionNr + 1;        
-    //   }
-    // }    
+    }   
   }
 
   function drawWeatherCondition(x, condition) {
