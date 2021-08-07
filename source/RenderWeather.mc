@@ -224,21 +224,75 @@ class RenderWeather {
 
   function drawGlossary() {
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-    var cMax = $._maxHoursForecast;
-    var lMax = 10;
+    var fontHeight = dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY);
 
     var conditionNr = 0;
     var conditionNrMax = 53;
-    for (var l = 1; l <= lMax && conditionNr <= conditionNrMax; l = l + 1) {
-      var y = ds.margin + (30 * l);
-      for (var c = 0; c < cMax && conditionNr <= conditionNrMax; c = c + 1) {
-        var x = ds.margin + (ds.columnWidth + ds.space) * c;        
-        var center = new Point(x + ds.columnWidth / 2, y);        
-        _drawWeatherCondition(center, conditionNr);
+    var y = ds.margin;
+    var x = ds.margin;
+    var currentX = x;
+    var columnMaxWidth = ds.columnWidth + ds.space;
+    var maxHeight = ds.height - ds.margin;
+    
+    var iHeight = 10;
 
-        conditionNr = conditionNr + 1;        
+    while (y <= ds.height && conditionNr <= conditionNrMax) {
+      var cHeight = 20;
+      y = y + iHeight;
+
+      var text = getConditionText(conditionNr);   
+      if (text != null) {
+        var tw = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);
+        columnMaxWidth = max(columnMaxWidth, tw);      
       }
-    }    
+      //cHeight = max(cHeight, textLines.size() * fontHeight);          
+          
+      if (y + iHeight > maxHeight) {
+        // next column
+        currentX = currentX + columnMaxWidth + ds.space;
+        x = currentX;
+        y = ds.margin + iHeight;
+        columnMaxWidth = ds.columnWidth + ds.space;
+      }
+
+      // draw icon
+      var center = new Point(x + ds.columnWidth / 2, y);        
+      _drawWeatherCondition(center, conditionNr);
+
+      // draw description
+      y = y + 5;      
+      if (text != null) {  
+        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);          
+        dc.drawText(x, y, Graphics.FONT_SYSTEM_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);
+        y = y + fontHeight;
+      }
+      
+      dc.drawLine(x, y, x + ds.columnWidth, y);      
+      conditionNr++;
+    }
+
+    // var cMax = $._maxHoursForecast;
+    // var lMax = 10;
+
+    // for (var l = 0; l < lMax && conditionNr <= conditionNrMax; l = l + 1) {
+    //   var y = 10 + (30 * l);
+    //   var x = 0;
+    //   var xSpace = 0;
+    //   for (var c = 0; c < cMax && conditionNr <= conditionNrMax && x < ds.width; c = c + 1) {
+    //     x = ds.margin + xSpace + (ds.columnWidth + ds.space) * c;        
+    //     var center = new Point(x + ds.columnWidth / 2, y);        
+    //     _drawWeatherCondition(center, conditionNr);
+    //     xSpace = 0;
+    //     var text = getConditionText(conditionNr);
+    //     if (text != null) {
+    //       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);  
+    //       dc.drawText(x, y, Graphics.FONT_SYSTEM_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);
+    //       xSpace = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);          
+    //     }
+
+    //     conditionNr = conditionNr + 1;        
+    //   }
+    // }    
   }
 
   function drawWeatherCondition(x, condition) {
@@ -253,24 +307,27 @@ class RenderWeather {
     if (condition == null || ds.smallField) {
       return;
     }
-    // var center = new Point(
-    //     x + ds.columnWidth / 2,
-    //     ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2);
-
+    
     // clear
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(center, 3, 6, 0);
       return;
     }
-    if (condition == Weather.CONDITION_MOSTLY_CLEAR ||
-        condition == Weather.CONDITION_PARTLY_CLEAR) {
+    if (condition == Weather.CONDITION_PARTLY_CLEAR) {
       drawConditionClear(center.move(3, -2), 2, 4, 30);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      dc.fillPolygon(getCloudPoints(center.move(0, 3), 6));
+      dc.fillPolygon(getCloudPoints(center.move(0, 3), 4));      
+      return;
+    }
+
+    if (condition == Weather.CONDITION_MOSTLY_CLEAR) {
+      drawConditionClear(center.move(3, -2), 2, 4, 30);
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center.move(0, 3), 6));      
       return;
     }
     if (condition == Weather.CONDITION_CLEAR) {
-      drawConditionClear(center, 3, 6, 30);
+      drawConditionClear(center, 3, 6, 30);      
       return;
     }
     // clouds
@@ -293,9 +350,9 @@ class RenderWeather {
     // rain
     if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN ||
         condition == Weather.CONDITION_CHANCE_OF_SHOWERS) {
-      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 5, 4);
-      dc.fillPolygon(getCloudPoints(center, 5));
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center, 5, 3);
+      dc.fillPolygon(getCloudPoints(center, 6));
     }
 
     if (condition == Weather.CONDITION_DRIZZLE) {
@@ -323,14 +380,14 @@ class RenderWeather {
     if (condition == Weather.CONDITION_HEAVY_SHOWERS ||
         condition == Weather.CONDITION_HEAVY_RAIN) {
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 1);
+      drawRainDrops(center, 8, 2);
       dc.fillPolygon(getCloudPoints(center, 8));
       return;
     }
 
     if (condition == Weather.CONDITION_FREEZING_RAIN) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 1);
+      drawRainDrops(center, 8, 2);
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center, 8));
       return;
@@ -338,28 +395,39 @@ class RenderWeather {
 
     // hail
     if (condition == Weather.CONDITION_HAIL) {
-      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      dc.fillPolygon(getHailPoints(center, 8));
-      return;
-    }
-
-    if (condition == Weather.CONDITION_WINTRY_MIX) {
-      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      dc.fillPolygon(getHailPoints(center, 8));
+      //dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      // dc.fillPolygon(getHailPoints(center, 8));
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
       drawRainDrops(center, 8, 3);
       return;
     }
+
+    if (condition == Weather.CONDITION_WINTRY_MIX ||
+        condition == Weather.CONDITION_RAIN_SNOW) {
+      dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center.move(-4, 0), 6);
+      dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawRainDrops(center.move(4,0), 8, 3);
+      return;
+    }
+
+    if (condition == Weather.CONDITION_CHANCE_OF_RAIN_SNOW ||
+        condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW ||
+        condition == Weather.CONDITION_LIGHT_RAIN_SNOW) {
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      drawSnowFlake(center.move(-4, 0), 6);
+      drawRainDrops(center.move(4,0), 8, 3);
+      return;
+    }
+
     // snow
-    if (condition == Weather.CONDITION_CHANCE_OF_SNOW ||
-        condition == Weather.CONDITION_CHANCE_OF_RAIN_SNOW) {
+    if (condition == Weather.CONDITION_CHANCE_OF_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center, 6);
       return;
     }
 
-    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW ||
-        condition == Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW) {
+    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center.move(0, 2), 6);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
@@ -374,8 +442,7 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_SNOW ||
-        condition == Weather.CONDITION_RAIN_SNOW) {
+    if (condition == Weather.CONDITION_SNOW) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center, 8);
       return;
@@ -385,7 +452,7 @@ class RenderWeather {
         condition == Weather.CONDITION_ICE_SNOW ||
         condition == Weather.CONDITION_ICE) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      dc.fillPolygon(getHailPoints(center.move(-2, -1), 4));
+      dc.fillPolygon(getHailPoints(center, 4));
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center, 8);
       return;

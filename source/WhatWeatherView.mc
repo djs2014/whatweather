@@ -321,7 +321,7 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           if ($._showWeatherCondition) {
-            render.drawWeatherCondition(x, current.condition);
+            render.drawWeatherCondition(x, current.condition);            
           }
 
           x = x + ds.columnWidth + ds.space;

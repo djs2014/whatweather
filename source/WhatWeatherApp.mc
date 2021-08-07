@@ -10,7 +10,8 @@ var _mostRecentData = null;
 class WhatWeatherApp extends Application.AppBase {
   function initialize() {
     AppBase.initialize();
-    $._mostRecentData = new WeatherData();
+    $._mostRecentData = new WeatherData();        
+    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions);
   }
 
   // onStart() is called on application start up
