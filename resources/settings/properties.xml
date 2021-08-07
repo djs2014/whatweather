@@ -5,7 +5,7 @@
 	<property id="showClouds" type="boolean">false</property>
 	<property id="showUVIndexFactor" type="number">0</property>
 	<property id="hideUVIndexLowerThan" type="number">2</property>
-	<property id="alertLevelPrecipitationChance" type="number">75</property>
+	<property id="alertLevelPrecipitationChance" type="number">70</property>
 	<property id="alertLevelRainMMfirstHour" type="number">0</property>
 	<property id="alertLevelUVi" type="number">0</property>
 	<property id="alertLevelWindSpeed" type="number">5</property>
@@ -25,7 +25,7 @@
 	<property id="hideTemperatureLowerThan" type="number">11</property>
 	<property id="showRelativeHumidity" type="boolean">true</property>
 	<property id="showComfort" type="boolean">true</property>
-	<property id="showWeatherCondition" type="boolean">false</property>	
+	<property id="showWeatherCondition" type="boolean">true</property>	
 	<property id="comfortHumidityMin" type="number">40</property>	
 	<property id="comfortHumidityMax" type="number">60</property>	
 	<property id="comfortTempMin" type="number">21</property>	

@@ -55,9 +55,6 @@
 	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
 		<settingConfig type="numeric" min="0" />
 	</setting>	
-	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
-		<settingConfig type="boolean" />
-	</setting>
 	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>
@@ -73,27 +70,30 @@
 	<setting propertyKey="@Properties.comfortPopMax" title="@Strings.ComfortPopMax">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>
-	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
-		<settingConfig type="boolean" />
-	</setting>	
-	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
-		<settingConfig type="boolean" />
-	</setting>		
 	<setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
 		<settingConfig type="numeric" min="0" max="60" />
 	</setting>	
+	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
+		<settingConfig type="boolean" />
+	</setting>
 	<setting propertyKey="@Properties.showObservationLocationName" title="@Strings.ShowObservationLocationName">
 		<settingConfig type="boolean" />
 	</setting>
+	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
+		<settingConfig type="boolean" />
+	</setting>		
 	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
 		<settingConfig type="numeric" min="0" max="4" />
 	</setting>	
     <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
 		<settingConfig type="boolean" />
 	</setting>				
+	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
+		<settingConfig type="boolean" />
+	</setting>	
 	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
 		<settingConfig type="boolean" />
 	</setting>	
