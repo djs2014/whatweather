@@ -55,7 +55,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
     var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
     var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
-    if (heightWind > 0 || heightWc > 0 ) { $._dashesUnderColumnHeight = 0; }
+    var dashesUnderColumnHeight = $._dashesUnderColumnHeight;
+    if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
     ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
 
     if ($._showGlossary && ds.oneField) {
@@ -65,7 +66,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     GarminWeather.getLatestGarminWeather();
-    onUpdateWeather(dc, ds);
+    onUpdateWeather(dc, ds, dashesUnderColumnHeight);
 
     if ($._showMaxPrecipitationChance) {
       drawMaxPrecipitationChance(dc, ds.margin, ds.columnHeight,
@@ -195,7 +196,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function onUpdateWeather(dc as Dc, ds as DisplaySettings) as Void {
+  function onUpdateWeather(dc as Dc, ds as DisplaySettings, dashesUnderColumnHeight) as Void {
     var x = ds.columnX;
     var y = ds.columnY;
     var uvPoints = [];
@@ -245,11 +246,11 @@ class WhatWeatherView extends WatchUi.DataField {
           x = x + ds.space;
         }
 
-        if ($._dashesUnderColumnHeight > 0) {
+        if (dashesUnderColumnHeight > 0) {
           dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
           dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight,
                            ($._maxMinuteForecast * columnWidth),
-                           $._dashesUnderColumnHeight);
+                           dashesUnderColumnHeight);
         }
         x = xMMstart + offset;
         $._alertHandler.processRainMMfirstHour(popTotal);
@@ -314,12 +315,12 @@ class WhatWeatherView extends WatchUi.DataField {
                 new WindPoint(x, current.windBearing, current.windSpeed));
           }
 
-          if ($._dashesUnderColumnHeight > 0) {
+          if (dashesUnderColumnHeight > 0) {
             color =
                 getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
             dc.setColor(color, Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
-                             $._dashesUnderColumnHeight);
+                             dashesUnderColumnHeight);
           }
 
           if ($._showWeatherCondition) {
@@ -399,12 +400,12 @@ class WhatWeatherView extends WatchUi.DataField {
               windPoints.add(
                   new WindPoint(x, forecast.windBearing, forecast.windSpeed));
             }
-            if ($._dashesUnderColumnHeight > 0) {
+            if (dashesUnderColumnHeight > 0) {
               color =
                   getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
               dc.setColor(color, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
-                               $._dashesUnderColumnHeight);
+                               dashesUnderColumnHeight);
             }
 
             if ($._showWeatherCondition) {
