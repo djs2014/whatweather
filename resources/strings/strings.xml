@@ -13,7 +13,7 @@
     <string id="ShowWindBeaufort">Show wind in Beaufort</string>
     <string id="ShowTemperature">Show temperature</string>
     <string id="ShowRelativeHumidity">Show relative humidity</string>
-    <string id="ShowComfort">Show comfort indication</string>
+    <string id="ShowComfort">Show comfort regions</string>
     <string id="ShowUVIndexFactor">Show UV index (factor)</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
     <string id="AlertLevelprecipitationChance">Alert level precipitation chance</string>

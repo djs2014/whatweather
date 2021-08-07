@@ -171,20 +171,27 @@ function getConditionColor(condition, def) {
     case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
     case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
       return Graphics.COLOR_RED;
-      break;
+      
+    case Weather.CONDITION_HEAVY_SHOWERS:
+    case Weather.CONDITION_HEAVY_RAIN:
     case Weather.CONDITION_FREEZING_RAIN:
     case Weather.CONDITION_HAIL:
-    case Weather.CONDITION_HEAVY_RAIN:
     case Weather.CONDITION_HEAVY_RAIN_SNOW:
-    case Weather.CONDITION_HEAVY_SHOWERS:
     case Weather.CONDITION_HEAVY_SNOW:
       return Graphics.COLOR_DK_BLUE;
+
+    case Weather.CONDITION_WINTRY_MIX:
+    case Weather.CONDITION_RAIN_SNOW:
+    case Weather.CONDITION_SNOW:
+      return Graphics.COLOR_DK_GRAY;
+
     case Weather.CONDITION_HURRICANE:
     case Weather.CONDITION_TORNADO:
     case Weather.CONDITION_SANDSTORM:
     case Weather.CONDITION_TROPICAL_STORM:
     case Weather.CONDITION_VOLCANIC_ASH:
       return Graphics.COLOR_PURPLE;
+
     default:
       return def;
   }

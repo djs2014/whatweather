@@ -76,10 +76,10 @@
 	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
 		<settingConfig type="numeric" min="0" max="60" />
 	</setting>	
-	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
+	<setting propertyKey="@Properties.showObservationLocationName" title="@Strings.ShowObservationLocationName">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showObservationLocationName" title="@Strings.ShowObservationLocationName">
+	<setting propertyKey="@Properties.showAlertLevel" title="@Strings.ShowAlertLevel">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
