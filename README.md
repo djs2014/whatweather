@@ -1,6 +1,6 @@
 # What Weather
 
-TL;DR;
+# TL;DR;
 
 Connect IQ datafield showing precipitation chance.
 
@@ -10,7 +10,8 @@ If the weather conditions is `dangerous` then the color will be different.
 First column shows precipitation chance for the current hour.
 A small field has a different layout than the `large` field.
 
-Settings:
+# Settings
+
 	- Show current forecast: show precipitation chance of current hour in first column.
 	- Maximum hours of forecast data: precipitation chance will be displayed per hour in the next columns.
 	- Show wind information: Beaufort, m/s or km/h, and direction.
@@ -39,14 +40,15 @@ Settings:
 	- Show maximum precipitation chance on top of first column.
 	- Show glossary. Show all weather icons when on single field display.
 
-Colors:
+ ## Colors
+
 	- Blue: Default.
 	- Gray: Wintry, rain/snow, snow.
 	- Red: Thunderstorms.
 	- Dark Blue: Heavy rain, Freezing rain, Hail, Heavy snow.
 	- Purple: Hurricane, tornado, sandstorm, tropical storm, volcanic ash.
-	
-Weather text abbreviations:
+
+## Weather text abbreviations:
 	- ? = chance of
 	- p = partly
 	- m = mostly
@@ -58,7 +60,7 @@ Weather text abbreviations:
 	- tropical = tropicalstorms (so not that good)
 	
 	
-Todo:
+# Todo
 	- Refactor the code, etc.
 	- Monkey barrel -> shared code
 	- Check white/black background settings.
@@ -66,6 +68,6 @@ Todo:
 	- BUG - one column + weather alarm -> continue beep
 	- At initial start -> position is 0 (calc distance is then 5840km)? 			
 
-Nice to have :-)
+## Nice to have :-)
 	- Uv index,
 	- Minutely forecast.
