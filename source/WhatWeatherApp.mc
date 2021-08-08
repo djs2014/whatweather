@@ -68,11 +68,10 @@ class WhatWeatherApp extends Application.AppBase {
         $._showComfort = getBooleanProperty("showComfort", true);
         $._showGlossary = getBooleanProperty("showGlossary", false);
   
-        $._showWeatherCondition =
-            getBooleanProperty("showWeatherCondition", true);
+        $._showWeatherCondition = getBooleanProperty("showWeatherCondition", true);
+        $._alwaysUpdateGarminWeather = getBooleanProperty("alwaysUpdateGarminWeather", false);
 
-        $._alertHandler.setAlertPrecipitationChance(
-            $._alertLevelPrecipitationChance);
+        $._alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
         $._alertHandler.setAlertUVi($._alertLevelUVi);
         $._alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
         $._alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);

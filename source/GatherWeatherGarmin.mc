@@ -7,8 +7,6 @@ using Toybox.Time.Gregorian as Calendar;
 
 class GarminWeather  {
 
-hidden static var alwaysLoadGarminWeather = true;
-
 static function getLatestGarminWeather() {
     try {
       var garCurrent = Weather.getCurrentConditions();
@@ -31,7 +29,7 @@ static function getLatestGarminWeather() {
                   $._mostRecentData.lastUpdated)
             ]));
       }
-      if (!self.alwaysLoadGarminWeather && !newData) {
+      if (!$._alwaysUpdateGarminWeather && !newData) {
         return;
       }
 

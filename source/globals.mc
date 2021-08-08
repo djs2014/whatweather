@@ -51,6 +51,7 @@ var _showComfort = true;
 
 var _showGlossary = true;
 var _weatherDescriptions = [];
+var _alwaysUpdateGarminWeather = false;
 
 var _alertLevelUVi = 6;
 var _alertLevelRainMMfirstHour = 5;

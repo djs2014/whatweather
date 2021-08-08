@@ -46,4 +46,5 @@
 	<string id="ComfortPopMax">Comfort precipitation(%) max</string>
     <string id="ShowWeatherCondition">Show weather condition</string>	
     <string id="ShowGlossary">Show glossary (single field)</string>	
+    <string id="AlwaysUpdateGarminWeather">Dev. always update weather object</string>
 </strings>
