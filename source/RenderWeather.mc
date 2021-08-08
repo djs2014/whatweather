@@ -58,19 +58,12 @@ class RenderWeather {
 
         var x = p.x;
         var y = ds.getYpostion(p.y * factor);
-
-        // if ($._showWind && p.y < $._hideTemperatureLowerThan) {
-        //   dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
-        //   dc.drawCircle(x, y, 3);
-        //   dc.setColor(ds.COLOR_TEXT_I, Graphics.COLOR_TRANSPARENT);
-        //   dc.fillCircle(x, y, 2);
-        // } else {
+        
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
         dc.drawCircle(x, y, 3);
         dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, 2);
-        // }
       }
     } catch (ex) {
       ex.printStackTrace();

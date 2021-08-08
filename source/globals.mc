@@ -45,7 +45,6 @@ var _showPrecipitationChanceAxis = true;
 var _alertLevelWindSpeed = 5;
 var _showWind = SHOW_WIND_BEAUFORT;
 var _showTemperature = true;
-var _hideTemperatureLowerThan = 11;
 var _showRelativeHumidity = true;
 var _showWeatherCondition = true;
 var _showComfort = true;
