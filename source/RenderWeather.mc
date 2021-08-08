@@ -19,7 +19,7 @@ class RenderWeather {
   hidden var yTempBottom = 0;
 
   hidden const NO_BEARING_SPEED = 0.3;
-
+  
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
@@ -265,11 +265,12 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherConditionText(x, condition) {
+  function drawWeatherConditionText(x, condition, yLine) {
     if (ds.oneField) {
       var text = getConditionText(condition);
+      var yOffset = (yLine == null) ? 0 : yLine * ds.heightWt;
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(x, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc,
+      dc.drawText(x, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset,
                   Graphics.FONT_SYSTEM_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);
     }
   }

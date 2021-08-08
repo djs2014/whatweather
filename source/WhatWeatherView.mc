@@ -208,6 +208,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var current = null;
     var hourlyForecast = null;
     var previousCondition = -1;
+    var weatherTextLine = 0;
 
     try {
       if ($._mostRecentData != null) {
@@ -325,7 +326,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if ($._showWeatherCondition) {
             render.drawWeatherCondition(x, current.condition);   
             if (previousCondition != current.condition) {
-              render.drawWeatherConditionText(x, current.condition);
+              render.drawWeatherConditionText(x, current.condition, weatherTextLine);
               previousCondition = current.condition;
             }
           }
@@ -411,7 +412,8 @@ class WhatWeatherView extends WatchUi.DataField {
             if ($._showWeatherCondition) {
               render.drawWeatherCondition(x, forecast.condition);
               if (previousCondition != forecast.condition) {
-                render.drawWeatherConditionText(x, forecast.condition);
+                weatherTextLine = (weatherTextLine == 0)? 1:0;
+                render.drawWeatherConditionText(x, forecast.condition, weatherTextLine);
                 previousCondition = forecast.condition;
                }
             }

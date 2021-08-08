@@ -105,8 +105,8 @@ class DisplaySettings {
                      2;
     columnX = margin + correction;
 
-    // Height of the weather column
-    columnHeight = height - 2 * margin - heightWind - heightWc - heightWt;
+    // Height of the weather column, 2 lines for weather condition text
+    columnHeight = height - 2 * margin - heightWind - heightWc - (heightWt * 2);
 
     // Position of dashes under columns
     dashesPosY = columnY + columnHeight;
