@@ -204,7 +204,6 @@ class WhatWeatherView extends WatchUi.DataField {
     var humidityPoints = [];
     var windPoints = [];
     var color;
-    var precipitationChance;
     var mm = null;
     var current = null;
     var hourlyForecast = null;
@@ -265,9 +264,7 @@ class WhatWeatherView extends WatchUi.DataField {
                                        [ x, current.info(), color ]));
           }
 
-          precipitationChance = current.precipitationChance;
-
-          $._alertHandler.processPrecipitationChance(precipitationChance);
+          $._alertHandler.processPrecipitationChance(current.precipitationChance);
           $._alertHandler.processWeather(color.toNumber());
           $._alertHandler.processUvi(current.uvi);
           $._alertHandler.processWindSpeed(current.windSpeed);
@@ -277,7 +274,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if ($._showComfort) {
             render.drawComfortColumn(x, current.temperature,
                                      current.relativeHumidity,
-                                     precipitationChance);
+                                     current.precipitationChance);
           }
 
           if ($._showColumnBorder) {
@@ -294,11 +291,11 @@ class WhatWeatherView extends WatchUi.DataField {
           // rain
           drawColumnPrecipitationChance(dc, color, x, ds.columnY,
                                         ds.columnWidth, ds.columnHeight,
-                                        precipitationChance);
+                                        current.precipitationChance);
 
           if ($._showUVIndexFactor > 0 && current.uvi != null) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
-            uvp.calculateVisible(precipitationChance);
+            uvp.calculateVisible(current.precipitationChance);
             uvPoints.add(uvp);
           }
 
@@ -316,8 +313,10 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           if (dashesUnderColumnHeight > 0) {
-            color =
-                getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
+            color = Graphics.COLOR_DK_GRAY;
+            if (current.precipitationChance == 0) {
+              color =getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
+            }
             dc.setColor(color, Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
                              dashesUnderColumnHeight);
@@ -349,11 +348,10 @@ class WhatWeatherView extends WatchUi.DataField {
           var fcTime = Calendar.info(forecast.forecastTime, Time.FORMAT_SHORT);
           if (forecast.forecastTime.compare(Time.now()) >= 0) {
             validSegment += 1;
-            precipitationChance = forecast.precipitationChance;
-
+            
             color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
 
-            $._alertHandler.processPrecipitationChance(precipitationChance);
+            $._alertHandler.processPrecipitationChance(forecast.precipitationChance);
             $._alertHandler.processWeather(color.toNumber());
             $._alertHandler.processUvi(forecast.uvi);
             $._alertHandler.processWindSpeed(forecast.windSpeed);
@@ -366,7 +364,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if ($._showComfort) {
               render.drawComfortColumn(x, forecast.temperature,
                                        forecast.relativeHumidity,
-                                       precipitationChance);
+                                       forecast.precipitationChance);
             }
             if ($._showColumnBorder) {
               drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
@@ -381,11 +379,11 @@ class WhatWeatherView extends WatchUi.DataField {
             // rain
             drawColumnPrecipitationChance(dc, color, x, ds.columnY,
                                           ds.columnWidth, ds.columnHeight,
-                                          precipitationChance);
+                                          forecast.precipitationChance);
 
             if ($._showUVIndexFactor > 0 && forecast.uvi != null) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
-              uvp.calculateVisible(precipitationChance);
+              uvp.calculateVisible(forecast.precipitationChance);
               uvPoints.add(uvp);
             }
             if ($._showTemperature) {
@@ -400,9 +398,11 @@ class WhatWeatherView extends WatchUi.DataField {
               windPoints.add(
                   new WindPoint(x, forecast.windBearing, forecast.windSpeed));
             }
-            if (dashesUnderColumnHeight > 0) {
-              color =
-                  getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
+            if (dashesUnderColumnHeight > 0) {              
+              color = Graphics.COLOR_DK_GRAY;
+              if (forecast.precipitationChance == 0) {
+                color = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
+              }
               dc.setColor(color, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
                                dashesUnderColumnHeight);
