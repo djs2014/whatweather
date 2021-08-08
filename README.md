@@ -68,6 +68,9 @@ A small field has a different layout than the `large` field.
 	- BUG - one column + weather alarm -> continue beep
 	- At initial start -> position is 0 (calc distance is then 5840km)? 			
 
+	dashes under bar gray when pop > 0
+	text 2 lines: first on line 1, next on line 2, next on line 1 alternating position
+
 ## Nice to have :-)
 	- Uv index,
 	- Minutely forecast.

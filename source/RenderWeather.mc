@@ -19,7 +19,7 @@ class RenderWeather {
   hidden var yTempBottom = 0;
 
   hidden const NO_BEARING_SPEED = 0.3;
-
+  
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
@@ -58,19 +58,12 @@ class RenderWeather {
 
         var x = p.x;
         var y = ds.getYpostion(p.y * factor);
-
-        // if ($._showWind && p.y < $._hideTemperatureLowerThan) {
-        //   dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
-        //   dc.drawCircle(x, y, 3);
-        //   dc.setColor(ds.COLOR_TEXT_I, Graphics.COLOR_TRANSPARENT);
-        //   dc.fillCircle(x, y, 2);
-        // } else {
+        
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
         dc.drawCircle(x, y, 3);
         dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
         dc.fillCircle(x, y, 2);
-        // }
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -272,11 +265,12 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherConditionText(x, condition) {
+  function drawWeatherConditionText(x, condition, yLine) {
     if (ds.oneField) {
       var text = getConditionText(condition);
+      var yOffset = (yLine == null) ? 0 : yLine * ds.heightWt;
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(x, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc,
+      dc.drawText(x, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset,
                   Graphics.FONT_SYSTEM_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);
     }
   }
