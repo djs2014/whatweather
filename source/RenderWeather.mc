@@ -746,11 +746,11 @@ class RenderWeather {
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pA = pointOnCircle(radius + (radius * 0.3),
+      var pA = pointOnCircle(radius + (radius * 0.5),
                              windBearingInDegrees - 35 - 180, center);
       var pB =
           pointOnCircle(radius + (radius * 0.9), windBearingInDegrees, center);
-      var pC = pointOnCircle(radius + (radius * 0.3),
+      var pC = pointOnCircle(radius + (radius * 0.5),
                              windBearingInDegrees + 35 - 180, center);
       var pts = [ pA.asArray(), pB.asArray(), pC.asArray() ];
       dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
