@@ -18,24 +18,24 @@ class GarminWeather {
         return;
       }
 
-      if (!$._alwaysUpdateGarminWeather || $._mostRecentData.valid()) {
-        var newData = garCurrent.observationTime != null &&
-                      garCurrent.observationTime.greaterThan(
-                          $._mostRecentData.lastUpdated);
+      // if (!$._alwaysUpdateGarminWeather || $._mostRecentData.valid()) {
+      //   var newData = garCurrent.observationTime != null &&
+      //                 garCurrent.observationTime.greaterThan(
+      //                     $._mostRecentData.lastUpdated);
 
-        if (DEBUG_DETAILS) {
-          System.println(Lang.format(
-              "Check garmin obs[$1$] last updated[$2$] is new data[$3$]", [
-                getDateTimeString(garCurrent.observationTime),
-                getDateTimeString($._mostRecentData.lastUpdated),
-                garCurrent.observationTime.greaterThan(
-                    $._mostRecentData.lastUpdated)
-              ]));
-        }
-        if (!newData) {
-          return;
-        }
-      }
+      //   if (DEBUG_DETAILS) {
+      //     System.println(Lang.format(
+      //         "Check garmin obs[$1$] last updated[$2$] is new data[$3$]", [
+      //           getDateTimeString(garCurrent.observationTime),
+      //           getDateTimeString($._mostRecentData.lastUpdated),
+      //           garCurrent.observationTime.greaterThan(
+      //               $._mostRecentData.lastUpdated)
+      //         ]));
+      //   }
+      //   if (!newData) {
+      //     return;
+      //   }
+      // }
 
       var cc = new CurrentConditions();
       cc.precipitationChance = getValue(garCurrent.precipitationChance, 0);
