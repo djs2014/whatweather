@@ -96,8 +96,5 @@
 	</setting>	
 	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
 		<settingConfig type="boolean" />
-	</setting>	
-	<setting propertyKey="@Properties.alwaysUpdateGarminWeather" title="@Strings.AlwaysUpdateGarminWeather">
-		<settingConfig type="boolean" />
-	</setting>		
+	</setting>			
 </settings>
