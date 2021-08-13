@@ -116,25 +116,29 @@ class AlertHandler {
   function checkStatus() {
     maxPrecipitationChance = 0;
     if (allClearUvi) {
-      statusUvi = NEUTRAL;
-      allClearUvi = false;
+      statusUvi = NEUTRAL;      
     }
     if (allClearPrecipitationChance) {
-      statusPrecipitationChance = NEUTRAL;
-      allClearPrecipitationChance = false;
+      statusPrecipitationChance = NEUTRAL;      
     }
     if (allClearRainMMfirstHour) {
-      statusRainMMfirstHour = NEUTRAL;
-      allClearRainMMfirstHour = false;
+      statusRainMMfirstHour = NEUTRAL;      
     }
     if (allClearWeather) {
-      statusWeather = NEUTRAL;
-      allClearWeather = false;
+      statusWeather = NEUTRAL;      
     }
     if (allClearWindSpeed) {
-      statusWindSpeed = NEUTRAL;
-      allClearWindSpeed = false;
+      statusWindSpeed = NEUTRAL;      
     }
+    resetAllClear();
+  }
+
+  hidden function resetAllClear() {
+    allClearUvi = true;
+    allClearPrecipitationChance = true;
+    allClearRainMMfirstHour = true;
+    allClearWeather = true;
+    allClearWindSpeed = true;
   }
 
   function processUvi(uvi) {
@@ -196,7 +200,7 @@ class AlertHandler {
 
     // all clear again HANDLED -> NEUTRAL
     allClearWeather = allClearWeather && (statusWeather == HANDLED &&
-                                          colorValue != WEATHER_NEUTRAL);
+                                          colorValue == WEATHER_NEUTRAL);
   }
 
   function processWindSpeed(windSpeedMs) {
@@ -211,6 +215,6 @@ class AlertHandler {
 
     // all clear again HANDLED -> NEUTRAL
     allClearWindSpeed = allClearWindSpeed && (statusWindSpeed == HANDLED &&
-                                              windSpeedMs < alertWindSpeed);
+                                              beaufort < alertWindSpeed);    
   }
 }

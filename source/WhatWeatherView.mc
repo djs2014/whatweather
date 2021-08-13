@@ -46,7 +46,7 @@ class WhatWeatherView extends WatchUi.DataField {
       backgroundColor = Graphics.COLOR_YELLOW;
       playAlert();
       $._alertHandler.currentlyTriggeredHandled();
-    }
+    }    
 
     var nrOfColumns = $._maxHoursForecast;
     ds.setDc(dc, backgroundColor);
@@ -211,7 +211,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var weatherTextLine = 0;
 
     try {
-      if ($._mostRecentData != null) {
+      if ($._mostRecentData != null && $._mostRecentData.valid()) {
         mm = $._mostRecentData.minutely;
         current = $._mostRecentData.current;
         hourlyForecast = $._mostRecentData.hourly;
