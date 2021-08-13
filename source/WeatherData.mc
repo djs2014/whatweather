@@ -15,6 +15,10 @@ class WeatherData {
     lastUpdated = new Time.Moment(0);
     System.println("WeatherData initialize");
   }
+
+  function valid() {
+    return hourly != null && hourly.size() > 0;
+  }
 }
 
 class CurrentConditions {
