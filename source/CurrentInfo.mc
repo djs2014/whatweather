@@ -2,6 +2,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Activity;
 import Toybox.Sensor;
+//using Toybox.SensorHistory;
 
 class CurrentInfo {
   var lat = 0;
@@ -108,10 +109,19 @@ class CurrentInfo {
 
   function temperature() {
     var SensorInfo = Sensor.Info;
-    if (SensorInfo != null && SensorInfo has :temperature) {
+    if (SensorInfo != null && SensorInfo has :temperature && SensorInfo.temperature != null) {
       return SensorInfo.temperature;
     }
     return null;
+    //return getLatestTemperatureHistory();
   }
+
+  // hidden function getLatestTemperatureHistory() {
+  //   if ((Toybox has :SensorHistory) && (SensorHistory has :getTemperatureHistory)) {
+	//       var temperatureHistory = SensorHistory.getTemperatureHistory({:period =>1, :order => SensorHistory.ORDER_NEWEST_FIRST});
+	//       return temperatureHistory.next().data;
+	//   }
+	//   return null;
+  // }
   
 }
