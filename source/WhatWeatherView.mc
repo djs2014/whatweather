@@ -456,7 +456,7 @@ class WhatWeatherView extends WatchUi.DataField {
             distance = kilometerToMile(distanceInKm).format("%.2f");
           }
           var bearing = getRhumbLineBearing(_currentInfo.lat, _currentInfo.lon,
-                                            current.lat, current.lon);
+                                            current.lat, current.lon);                                            
           var compassDirection = getCompassDirection(bearing);
           render.drawObservationLocation(Lang.format(
               "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
