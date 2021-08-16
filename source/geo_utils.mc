@@ -20,7 +20,13 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 
 function deg2rad(deg) { return deg * (Math.PI / 180); }
 
-function rad2deg(rad) { return rad * 180 / Math.PI; }
+function rad2deg(rad) {
+  var deg = rad * 180 / Math.PI;
+  if (deg < 0) {
+    deg += 360.0;
+  }
+  return deg;
+}
 
 // http://www.dougv.com/2009/07/13/calculating-the-bearing-and-compass-rose-direction-between-two-latitude-longitude-coordinates-in-php/
 function getRhumbLineBearing(lat1, lon1, lat2, lon2) {
@@ -48,6 +54,7 @@ function getRhumbLineBearing(lat1, lon1, lat2, lon2) {
   return (rad2deg(Math.atan2(dLon, dPhi)) + 360).toNumber() % 360;
 }
 
+// bearing in degrees
 function getCompassDirection(bearing) {
   var direction = "";
   // Round and convert to number (1.00000 -> 1)

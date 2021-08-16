@@ -55,11 +55,11 @@ class CurrentInfo {
     var direction = null;
     var SensorInfo = Sensor.Info;
     if (SensorInfo != null && SensorInfo has :heading && SensorInfo.heading != null) {
-      direction = getCompassDirection(SensorInfo.heading);
+      direction = getCompassDirection(rad2deg(SensorInfo.heading));
     } else if (_actiInfo != null && _actiInfo.currentHeading != null) {
-      direction = getCompassDirection(_actiInfo.currentHeading);
+      direction = getCompassDirection(rad2deg(_actiInfo.currentHeading));
     } else if (_posnInfo != null && _posnInfo.heading != null) {
-      direction = getCompassDirection(_posnInfo.heading);
+      direction = getCompassDirection(rad2deg(_posnInfo.heading));
     }
     return direction;
   }
