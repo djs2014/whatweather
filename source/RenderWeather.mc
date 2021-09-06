@@ -294,7 +294,7 @@ class RenderWeather {
       return;
     }
     if (condition == Weather.CONDITION_PARTLY_CLEAR) {
-      drawConditionClear(center.move(3, -2), 2, 4, 30);
+      drawConditionClear(center.move(3, -2), 2, 4, 60);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.move(0, 3), 4));
       return;
@@ -303,7 +303,7 @@ class RenderWeather {
     if (condition == Weather.CONDITION_MOSTLY_CLEAR) {
       drawConditionClear(center.move(3, -2), 2, 4, 30);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      dc.fillPolygon(getCloudPoints(center.move(0, 3), 6));
+      dc.fillPolygon(getCloudPoints(center.move(0, 3), 4));
       return;
     }
     if (condition == Weather.CONDITION_CLEAR) {
@@ -311,8 +311,13 @@ class RenderWeather {
       return;
     }
     // clouds
-    if (condition == Weather.CONDITION_THIN_CLOUDS ||
-        condition == Weather.CONDITION_PARTLY_CLOUDY) {
+    if (condition == Weather.CONDITION_PARTLY_CLOUDY) {
+      drawConditionClear(center.move(3, -3), 2, 4, 60);    
+      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      dc.fillPolygon(getCloudPoints(center, 4));
+      return;
+    }
+    if (condition == Weather.CONDITION_THIN_CLOUDS) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center, 4));
       return;
