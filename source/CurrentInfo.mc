@@ -2,6 +2,7 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Activity;
 import Toybox.Sensor;
+using Toybox.System;
 //using Toybox.SensorHistory;
 
 class CurrentInfo {
@@ -78,10 +79,11 @@ class CurrentInfo {
     return null;
   }
 
+  // Distance in km
   function elapsedDistance() {
     var distance = null;    
-    if (_actiInfo != null && _actiInfo has :elapsedDistance) {
-      distance = _actiInfo.elapsedDistance;
+    if (_actiInfo != null && _actiInfo has :elapsedDistance && _actiInfo.elapsedDistance != null) {      
+      distance = _actiInfo.elapsedDistance / 1000.0;
     }
     return distance;
   }
