@@ -172,12 +172,24 @@ class WhatWeatherView extends WatchUi.DataField {
           var distance = distanceInKm;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "mi";
-            distance = kilometerToMile(distanceInKm).format("%.2f");
+            distance = kilometerToMile(distanceInKm);
           }
-          if (ds.smallField) {
-            info = distance.format("%.0f");
-          } else {
-            info = distance.format("%.2f");
+          if (distance < 1) {
+            info = distance.format("%.3f");
+          } else {                        
+            if (ds.smallField) {
+              if (distance < 99) {
+                info = distance.format("%.2f");
+              } else {
+                info = distance.format("%.1f");
+              }
+            } else {
+              if (distance < 99) {
+                info = distance.format("%.3f");
+              } else {
+                info = distance.format("%.2f");
+              }
+            }
           }
         }
         break;
