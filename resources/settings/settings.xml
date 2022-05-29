@@ -29,24 +29,18 @@
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
             <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
-            <listEntry value="2">@Strings.ShowInfoAltitude</listEntry>
-            <listEntry value="3">@Strings.ShowInfoHeading</listEntry>
-            <listEntry value="4">@Strings.ShowInfoTemperature</listEntry>
-			<listEntry value="5">@Strings.ShowInfoHeartrate</listEntry>
-			<listEntry value="6">@Strings.ShowInfoAmbientPressure</listEntry>
-			<listEntry value="7">@Strings.ShowInfoDistance</listEntry>
+            <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
+			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
+			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
         </settingConfig>
     </setting>      
 	 <setting propertyKey="@Properties.showInfo2" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
             <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
-            <listEntry value="2">@Strings.ShowInfoAltitude</listEntry>
-            <listEntry value="3">@Strings.ShowInfoHeading</listEntry>
-            <listEntry value="4">@Strings.ShowInfoTemperature</listEntry>
-			<listEntry value="5">@Strings.ShowInfoHeartrate</listEntry>
-			<listEntry value="6">@Strings.ShowInfoAmbientPressure</listEntry>
-			<listEntry value="7">@Strings.ShowInfoDistance</listEntry>
+            <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
+			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
+			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
         </settingConfig>
     </setting>      
 	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">

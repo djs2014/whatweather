@@ -19,7 +19,7 @@
 	<property id="dashesUnderColumnHeight" type="number">2</property>
 	<property id="showColumnBorder" type="boolean">false</property>
 	<property id="showInfo" type="number">1</property>
-	<property id="showInfo2" type="number">6</property>
+	<property id="showInfo2" type="number">4</property>
 	<property id="showWind" type="number">3</property>
 	<property id="showTemperature" type="boolean">true</property>
 	<property id="hideTemperatureLowerThan" type="number">11</property>

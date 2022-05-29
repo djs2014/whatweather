@@ -88,6 +88,17 @@ class CurrentInfo {
     return null;
   }
 
+  function meanSeaLevelPressure () as Lang.Float? {
+    if (_actiInfo != null) {
+      var info = _actiInfo as Activity.Info;
+      if (info has :meanSeaLevelPressure  && info.meanSeaLevelPressure  != null) {
+        return info.meanSeaLevelPressure ;
+      }
+    } 
+
+    return null;
+  }
+
   function temperature() as Lang.Number? {
     var SensorInfo = Sensor.Info;
     if (SensorInfo != null && SensorInfo has :temperature && SensorInfo.temperature != null) {

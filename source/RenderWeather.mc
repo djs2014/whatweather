@@ -709,6 +709,7 @@ class RenderWeather {
       radius = Utils.min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;
     }
 
+    dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     // Bearing arrow
     if (windBearingInDegrees != null &&
         (windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED)) {
@@ -716,17 +717,20 @@ class RenderWeather {
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pA = pointOnCircle(radius + (radius * 0.3), windBearingInDegrees - 35 - 180, center);
+      var pA = pointOnCircle(radius + (radius * 0.5), windBearingInDegrees - 35 - 180, center);
       var pB = pointOnCircle(radius + (radius * 0.9), windBearingInDegrees, center);
-      var pC = pointOnCircle(radius + (radius * 0.3), windBearingInDegrees + 35 - 180, center);
+      var pC = pointOnCircle(radius + (radius * 0.5), windBearingInDegrees + 35 - 180, center);
       
       var pts = [ pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate() ] as Polygone;
       
-      dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+      if (hasAlert) {
+        dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      } else {
+        dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+      }
       dc.fillPolygon(pts);
     }
     // The circle
-    dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(center.x, center.y, radius);
     if (hasAlert) {
       dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
@@ -736,14 +740,15 @@ class RenderWeather {
     dc.fillCircle(center.x, center.y, radius - 1);
 
     // Windspeed
+    var wsFont = Graphics.FONT_XTINY;
     if (hasAlert) {
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+      wsFont = Graphics.FONT_TINY;
     } else {
       dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     }
-    var w = dc.getTextWidthInPixels(text, Graphics.FONT_XTINY);
-    dc.drawText(center.x - w / 2, center.y, Graphics.FONT_XTINY, text,
-                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    var w = dc.getTextWidthInPixels(text, wsFont);
+    dc.drawText(center.x - w / 2, center.y, wsFont, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function pointOnCircle(radius as Lang.Numeric, angleInDegrees as Lang.Numeric, center as Point) as Point {

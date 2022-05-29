@@ -104,7 +104,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
         info = (nowHour.format("%02d") + ":" + nowMin.format("%02d"));
         break;
-  
+      
       // case SHOW_INFO_HEADING:
       //   var compassDirection = _currentInfo.compassDirection();
       //   if (compassDirection != null) {
@@ -139,7 +139,20 @@ class WhatWeatherView extends WatchUi.DataField {
             info = (ap / 100).format("%.2f");
           }
         }
-        break;      
+        break;   
+
+      case SHOW_INFO_SEALEVEL_PRESSURE:
+        var sp = _currentInfo.meanSeaLevelPressure();
+        if (sp != null) {
+          // pascal -> mbar (hPa)
+          postfix = "hPa";
+          if (ds.smallField) {
+            info = (sp / 100).format("%.0f");
+          } else {
+            info = (sp / 100).format("%.2f");
+          }
+        }
+        break;         
     }
 
     if (info.length() == 0) {
