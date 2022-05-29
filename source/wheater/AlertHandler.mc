@@ -1,50 +1,52 @@
 import Toybox.Lang;
 import Toybox.System;
+using WhatAppBase.Utils as Utils;
 
 class AlertHandler {
-  hidden var alertUvi = 0;
-  hidden var alertPrecipitationChance = 0;
-  hidden var alertRainMMfirstHour = 0;
-  hidden var alertWindSpeed = 0;
+  hidden var alertUvi as Lang.Number = 0;
+  hidden var alertPrecipitationChance as Lang.Number = 0;
+  hidden var alertRainMMfirstHour as Lang.Number = 0;
+  hidden var alertWindSpeed as Lang.Number = 0;
 
-  var maxPrecipitationChance = 0;
+  var maxPrecipitationChance as Lang.Number = 0;
 
-  hidden var WEATHER_NEUTRAL = 0x00AAFF;  // COLOR_BLUE
+  hidden var WEATHER_NEUTRAL as Lang.Number = 0x00AAFF;  // COLOR_BLUE
 
   hidden const NEUTRAL = 0;
   hidden const TRIGGERED = 1;
   hidden const HANDLED = 2;
 
-  hidden var statusUvi = NEUTRAL;
-  hidden var statusPrecipitationChance = NEUTRAL;
-  hidden var statusRainMMfirstHour = NEUTRAL;
-  hidden var statusWeather = NEUTRAL;
-  hidden var statusWindSpeed = NEUTRAL;
-  hidden var allClearUvi = true;
-  hidden var allClearPrecipitationChance = true;
-  hidden var allClearRainMMfirstHour = true;
-  hidden var allClearWeather = true;
-  hidden var allClearWindSpeed = true;
+  hidden var statusUvi as Lang.Number = NEUTRAL;
+  hidden var statusPrecipitationChance as Lang.Number = NEUTRAL;
+  hidden var statusRainMMfirstHour as Lang.Number = NEUTRAL;
+  hidden var statusWeather as Lang.Number = NEUTRAL;
+  hidden var statusWindSpeed as Lang.Number = NEUTRAL;
 
-  function setAlertPrecipitationChance(value) {
+  hidden var allClearUvi as Lang.Boolean = true;
+  hidden var allClearPrecipitationChance as Lang.Boolean = true;
+  hidden var allClearRainMMfirstHour as Lang.Boolean = true;
+  hidden var allClearWeather as Lang.Boolean = true;
+  hidden var allClearWindSpeed as Lang.Boolean = true;
+
+  function setAlertPrecipitationChance(value as Lang.Number) as Void {
     alertPrecipitationChance = value;
   }
 
-  function setAlertUVi(value) { alertUvi = value; }
+  function setAlertUVi(value as Lang.Number) as Void { alertUvi = value; }
 
-  function setAlertRainMMfirstHour(value) { alertRainMMfirstHour = value; }
+  function setAlertRainMMfirstHour(value as Lang.Number) as Void { alertRainMMfirstHour = value; }
 
   //! is in beaufort
 
-  function setAlertWindSpeed(value) { alertWindSpeed = value; }
+  function setAlertWindSpeed(value as Lang.Number) as Void { alertWindSpeed = value; }
 
-  function infoUvi() {
+  function infoUvi() as Lang.String {
     return Lang.format(
         "alerthandler alertUvi[$1$] statusUvi[$2$] allClearUvi[$3$]",
         [ alertUvi, statusUvi, allClearUvi ]);
   }
 
-  function infoPrecipitationChance() {
+  function infoPrecipitationChance() as Lang.String {
     return Lang.format(
         "alerthandler alertPop[$1$] statusPop[$2$] allClearPop[$3$]", [
           alertPrecipitationChance, statusPrecipitationChance,
@@ -55,14 +57,14 @@ class AlertHandler {
   //!  level reached --> alert triggered (display/play alert) --> (handled
   //!  displayed alert) --> reset when level below alert
 
-  function isAnyAlertTriggered() {
+  function isAnyAlertTriggered() as Lang.Boolean {
     return (statusUvi == TRIGGERED) ||
            (statusPrecipitationChance == TRIGGERED) ||
            (statusRainMMfirstHour == TRIGGERED) ||
            (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED);
   }
 
-  function infoHandled() {
+  function infoHandled() as Lang.String {
     var info = "";
     if (statusUvi == HANDLED) {
       info = info + "U ";
@@ -82,7 +84,7 @@ class AlertHandler {
     return info;
   }
 
-  function currentlyTriggeredHandled() {
+  function currentlyTriggeredHandled() as Void{
     if (statusUvi == TRIGGERED) {
       statusUvi = HANDLED;
       allClearUvi = true;
@@ -105,7 +107,7 @@ class AlertHandler {
     }
   }
 
-  function resetStatus() {
+  function resetStatus() as Void {
     statusPrecipitationChance = NEUTRAL;
     statusUvi = NEUTRAL;
     statusRainMMfirstHour = NEUTRAL;
@@ -113,7 +115,7 @@ class AlertHandler {
     statusWindSpeed = NEUTRAL;
   }
 
-  function checkStatus() {
+  function checkStatus() as Void {
     maxPrecipitationChance = 0;
     if (allClearUvi) {
       statusUvi = NEUTRAL;      
@@ -133,7 +135,7 @@ class AlertHandler {
     resetAllClear();
   }
 
-  hidden function resetAllClear() {
+  hidden function resetAllClear() as Void {
     allClearUvi = true;
     allClearPrecipitationChance = true;
     allClearRainMMfirstHour = true;
@@ -141,7 +143,7 @@ class AlertHandler {
     allClearWindSpeed = true;
   }
 
-  function processUvi(uvi) {
+  function processUvi(uvi as Lang.Float?) as Void {
     if (alertUvi <= 0 || uvi == null) {
       return;
     }
@@ -154,7 +156,7 @@ class AlertHandler {
     allClearUvi = allClearUvi && (statusUvi == HANDLED && uvi < alertUvi);
   }
 
-  function processPrecipitationChance(chance) {
+  function processPrecipitationChance(chance as Lang.Number?) as Void {
     if (chance == null) {
       return;
     }
@@ -166,18 +168,16 @@ class AlertHandler {
       return;
     }
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    if (statusPrecipitationChance == NEUTRAL &&
-        chance >= alertPrecipitationChance) {
+    if (statusPrecipitationChance == NEUTRAL && chance >= alertPrecipitationChance) {
       statusPrecipitationChance = TRIGGERED;
     }
 
     // all clear again HANDLED -> NEUTRAL
-    allClearPrecipitationChance =
-        allClearPrecipitationChance && (statusPrecipitationChance == HANDLED &&
+    allClearPrecipitationChance = allClearPrecipitationChance && (statusPrecipitationChance == HANDLED &&
                                         chance < alertPrecipitationChance);
   }
 
-  function processRainMMfirstHour(mm) {
+  function processRainMMfirstHour(mm as Lang.Number?) as Void {
     if (alertRainMMfirstHour <= 0 || mm == null) {
       return;
     }
@@ -192,7 +192,7 @@ class AlertHandler {
         (statusRainMMfirstHour == HANDLED && mm < alertRainMMfirstHour);
   }
 
-  function processWeather(colorValue) {
+  function processWeather(colorValue as Lang.Number?) as Void{
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusWeather == NEUTRAL && colorValue != WEATHER_NEUTRAL) {
       statusWeather = TRIGGERED;
@@ -203,12 +203,12 @@ class AlertHandler {
                                           colorValue == WEATHER_NEUTRAL);
   }
 
-  function processWindSpeed(windSpeedMs) {
+  function processWindSpeed(windSpeedMs as Lang.Float?) as Void {
     if (alertWindSpeed <= 0 || windSpeedMs == null) {
       return;
     }
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    var beaufort = windSpeedToBeaufort(windSpeedMs);
+    var beaufort = Utils.windSpeedToBeaufort(windSpeedMs);
     if (statusWindSpeed == NEUTRAL && beaufort >= alertWindSpeed) {
       statusWindSpeed = TRIGGERED;
     }

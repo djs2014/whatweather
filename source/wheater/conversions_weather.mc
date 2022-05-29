@@ -1,84 +1,37 @@
 import Toybox.Weather;
 import Toybox.System;
 import Toybox.Graphics;
-
-const MILE = 1.609344;
-const FEET = 3.281;
-
-function windSpeedToBeaufort(metersPerSecond) {
-  if (metersPerSecond == null || metersPerSecond <= 0.2) {
-    return 0;
-  }
-  if (metersPerSecond <= 1.5) {
-    return 1;
-  }
-  if (metersPerSecond <= 3.3) {
-    return 2;
-  }
-  if (metersPerSecond <= 5.4) {
-    return 3;
-  }
-  if (metersPerSecond <= 7.9) {
-    return 4;
-  }
-  if (metersPerSecond <= 10.7) {
-    return 5;
-  }
-  if (metersPerSecond <= 13.8) {
-    return 6;
-  }
-  if (metersPerSecond <= 17.1) {
-    return 7;
-  }
-  if (metersPerSecond <= 20.7) {
-    return 8;
-  }
-  if (metersPerSecond <= 24.4) {
-    return 9;
-  }
-  if (metersPerSecond <= 28.4) {
-    return 10;
-  }
-  if (metersPerSecond <= 32.6) {
-    return 11;
-  }
-  return 12;
-}
-
-function windSpeedToKmPerHour(metersPerSecond) {
-  if (metersPerSecond == null) {
-    return 0;
-  }
-  return (metersPerSecond * 60 * 60) / 1000.0;
-}
-
-function celciusToFarenheit(celcius) { return ((celcius * 9 / 5) + 32); }
-
-function meterToFeet(meter) { return meter * FEET; }
-
-function kilometerToMile(km) { return km / MILE; }
+import Toybox.Lang;
+using WhatAppBase.Utils as Utils;
 
 // Somewhere from the internet.. Humans generally feel comfortable between
 // temperatures of 22 °C to 27 °C and a relative humidity of 40% to 60%.
-function convertToComfort(temperature, relativeHumidity, precipitationChance) {
-  if (temperature == null || relativeHumidity == null ||
-      precipitationChance == null) {
+function convertToComfort(temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?) as Lang.Number {
+  if (temperature == null || relativeHumidity == null || precipitationChance == null) {
     return COMFORT_NO;
   }
 
-  if (temperature < offsetValue($._comfortTemperature[0], 0.3) ||
-      relativeHumidity < offsetValue($._comfortHumidity[0], 0.3)) {
+  var cTemp0 = $._comfortTemperature[0] as Lang.Number;
+  var cTemp1 = $._comfortTemperature[1] as Lang.Number;
+  var cHum0 = $._comfortHumidity[0] as Lang.Number;
+  var cHum1 = $._comfortHumidity[1] as Lang.Number;
+  var cPrec0 = $._comfortPrecipitationChance[0] as Lang.Number;
+  var cPrec1 = $._comfortPrecipitationChance[1] as Lang.Number;
+
+  if (temperature < offsetValue(cTemp0, 0.3) ||
+      relativeHumidity < offsetValue(cHum0, 0.3)) {
     return COMFORT_NO;
   }
-  var tempLow = compareTo(temperature, $._comfortTemperature[0]);
-  var tempHigh = compareTo(temperature, $._comfortTemperature[1]);
 
-  var humLow = compareTo(relativeHumidity, $._comfortHumidity[0]);
-  var humHigh = compareTo(relativeHumidity, $._comfortHumidity[1]);
 
-  var popLow = compareTo(precipitationChance, $._comfortPrecipitationChance[0]);
-  var popHigh =
-      compareTo(precipitationChance, $._comfortPrecipitationChance[1]);
+  var tempLow = Utils.compareTo(temperature, cTemp0);
+  var tempHigh = Utils.compareTo(temperature, cTemp1);
+
+  var humLow = Utils.compareTo(relativeHumidity, cHum0);
+  var humHigh = Utils.compareTo(relativeHumidity, cHum1);
+
+  var popLow = Utils.compareTo(precipitationChance, cPrec0);
+  var popHigh = Utils.compareTo(precipitationChance, cPrec1);
 
   var popIdx = calculateComfortIdxInverted(popLow, popHigh);
   if (popIdx < COMFORT_NORMAL) {
@@ -104,12 +57,14 @@ function convertToComfort(temperature, relativeHumidity, precipitationChance) {
       return COMFORT_HIGH;
     }
   }
-  return COMFORT_NO;
+  // return COMFORT_NO;
 }
 
-function offsetValue(value, factor) { return value - (value * factor); }
+function offsetValue(value as Lang.Numeric, factor as Lang.Numeric) as Lang.Numeric {
+   return value - (value * factor);
+}
 
-function calculateComfortIdx(levelLow, levelHigh) {
+function calculateComfortIdx(levelLow as Lang.Numeric, levelHigh as Lang.Numeric) as Lang.Number {
   if (levelLow >= 0 && levelHigh <= 0) {
     return COMFORT_NORMAL;
   }
@@ -122,7 +77,7 @@ function calculateComfortIdx(levelLow, levelHigh) {
   return COMFORT_BELOW;
 }
 
-function calculateComfortIdxInverted(levelLow, levelHigh) {
+function calculateComfortIdxInverted(levelLow as Lang.Numeric, levelHigh as Lang.Numeric) as Lang.Number {
   if (levelLow >= 0 && levelHigh <= 0) {
     return COMFORT_NORMAL;
   }
@@ -135,17 +90,7 @@ function calculateComfortIdxInverted(levelLow, levelHigh) {
   return COMFORT_BELOW;
 }
 
-function compareTo(numberA, numberB) {
-  if (numberA > numberB) {
-    return 1;
-  } else if (numberA < numberB) {
-    return -1;
-  } else {
-    return 0;
-  }
-}
-
-function uviToColor(uvi) {
+function uviToColor(uvi as Lang.Float?) as Lang.Number {
   if (uvi == null) {
     return Graphics.COLOR_GREEN;
   }
@@ -162,7 +107,7 @@ function uviToColor(uvi) {
   }
 }
 
-function getConditionColor(condition, def) {
+function getConditionColor(condition as Lang.Number?, def as Lang.Number) as Lang.Number {
   if (condition == null) {
     return def;  // Graphics.COLOR_BLUE;
   }
@@ -194,22 +139,5 @@ function getConditionColor(condition, def) {
 
     default:
       return def;
-  }
-}
-
-
-function min(a as Lang.Number, b as Lang.Number) {
-  if (a <= b) {
-    return a;
-  } else {
-    return b;
-  }
-}
-
-function max(a as Lang.Number, b as Lang.Number) {
-  if (a >= b) {
-    return a;
-  } else {
-    return b;
   }
 }

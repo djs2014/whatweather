@@ -32,7 +32,7 @@ A small field has a different layout than the `large` field.
 	- Alert level windspeed in Beaufort.
 	- Comfort zone humidity, min and max %.
 	- Comfort zone temperature, min and max (in Celcius).
-	- Show time of observation: display the time of the wheater data in top right corner.
+	- Show time of observation: display the time of the weather data in top right corner.
 	- Show warning when time of observation is delayed for x minutes. (default 30)		
 	- Show location of observation: Distance and heading from current position.
 		- Display the name (`large field`).
@@ -64,9 +64,11 @@ A small field has a different layout than the `large` field.
 	- Refactor the code, etc.
 	- Monkey barrel -> shared code
 	- Check white/black background settings.
- 	- How to show info for temperature.
 	- BUG - one column + weather alarm -> continue beep
 	- At initial start -> position is 0 (calc distance is then 5840km)? 			
+	- bg process
+     	- How to show info for temperature.
+    	- merge owm data
 
 ## Nice to have :-)
 	- Uv index,
