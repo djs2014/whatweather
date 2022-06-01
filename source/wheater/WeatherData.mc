@@ -57,8 +57,8 @@ class WeatherMinutely {
 
 class WeatherHourly {
   var forecastTime as Time.Moment = Time.now();
-  var precipitationChance as Lang.Number = 0;
   var clouds as Lang.Number = 0;
+  var precipitationChance as Lang.Number = 0;
   var condition as Lang.Number = 0;
   var windBearing as Lang.Number? = null;
   var windSpeed as Lang.Float? = null;

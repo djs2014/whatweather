@@ -107,6 +107,23 @@ function uviToColor(uvi as Lang.Float?) as Lang.Number {
   }
 }
 
+function uviToRadius(uvi as Lang.Float?) as Lang.Number {
+  if (uvi == null) {
+    return 0;
+  }
+  if (uvi > 10) {
+    return 6;
+  } else if (uvi >= 8) {
+    return 5;
+  } else if (uvi >= 6) {
+    return 4;
+  } else if (uvi >= 3) {
+    return 3;
+  } else {
+    return 3;
+  }
+}
+
 function getConditionColor(condition as Lang.Number?, def as Lang.Number) as Lang.Number {
   if (condition == null) {
     return def;  // Graphics.COLOR_BLUE;

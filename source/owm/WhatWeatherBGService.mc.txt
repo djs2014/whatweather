@@ -1,0 +1,100 @@
+using Toybox.Application.Storage;
+using Toybox.Background;
+using Toybox.System;
+using Toybox.Communications;
+using Toybox.Time;
+using Toybox.Lang;
+// Background not allowed to have GPS access, but can get last known position
+using Toybox.Position;
+
+
+// @@ start only when connected to pc
+(:background)
+class WhatWeatherBGService extends System.ServiceDelegate {
+
+    public const ERROR_BG_NO_API_KEY = -1;
+    public const ERROR_BG_NO_POSITION = -2;
+    public const ERROR_BG_NO_PROXY = -3;
+    public const ERROR_BG_EXCEPTION = -4;
+    public const ERROR_BG_EXIT_DATA_SIZE_LIMIT = -5;
+    public const ERROR_BG_INVALID_BACKGROUND_TIME = -6;
+
+	function initialize() {
+		System.ServiceDelegate.initialize();		
+	}
+	
+    public function onTemporalEvent() as Void {    	
+    	var location  = null;
+    	var positionInfo  = Position.getInfo();
+      	if (positionInfo has :position && positionInfo.position != null) {
+        	location = positionInfo.position.toDegrees();  	
+    	}   
+    	
+		var apiKey = Storage.getValue("openWeatherAPIKey");
+        var proxy = Storage.getValue("openWeatherProxy");
+        var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
+        
+        if (location  == null || apiKey == null || apiKey.length() == 0 || proxy == null || proxy.length() == 0) {     
+        	System.println( Lang.format("proxyurl[$1$] location [$2$] apiKey[$3$]",[proxy, location , apiKey]));    
+            if (location  == null) {Background.exit(ERROR_BG_NO_POSITION);}
+            if (apiKey == null || apiKey.length() == 0) {Background.exit(ERROR_BG_NO_API_KEY);}
+            Background.exit(ERROR_BG_NO_PROXY);
+        }
+		
+        if (proxyApiKey == null) {proxyApiKey="";}
+		var lat = location [0];
+		var lon = location [1];
+		requestWeatherData(lat, lon, apiKey, proxy, proxyApiKey);		 		    		 		    
+    }
+	  
+	function requestWeatherData(lat as Lang.Double, lon as Lang.Double, apiKey as Lang.String, proxy as Lang.String, proxyApiKey as Lang.String) as Void {
+		System.println(Lang.format("requestWeatherData proxyurl[$1$] location[$2$,$3$] apiKey[$4$] proxyApiKey[$5$]", [proxy, lat, lon , apiKey, proxyApiKey]));    
+        var options = {
+            :method => Communications.HTTP_REQUEST_METHOD_GET,
+            :headers => {
+                "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON,
+                "Authorization" => proxyApiKey
+                },
+            :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON	
+        };
+        var responseCallBack = method(:onReceiveOpenWeatherResponse);
+
+        // API DOC: https://openweathermap.org/api/one-call-api
+        // OWM json is too big for connect IQ background app, so proxy needed to minify the json
+		var url = proxy;        
+        var params = {
+            "lat" => lat,
+            "lon" => lon,
+            "exclude" => "daily,alerts",
+            "units" => "metric",
+            "appid" => apiKey
+        };		       
+//        var proxy = "http://localhost:3000/owm";
+//        var url = Lang.format("$1$/lat=$2$/lon=$3$/exclude=daily,alerts/units=metric/appid=$4$/",[proxy, lat, lon,apiKey]);
+//        var params = {};                                
+//		System.println(url);		                                        
+        Communications.makeWebRequest(url, params, options, responseCallBack);
+   	}
+   
+   	function onReceiveOpenWeatherResponse(responseCode, responseData) {
+        if (responseCode == 200 && responseData != null) {
+        	try { 
+                var data = {
+                    "current" => responseData["current"],
+                    "minutely" => responseData["minutely"],
+                    "hourly" => responseData["hourly"]              
+                };
+                Background.exit(data);
+            } catch(ex instanceof Background.ExitDataSizeLimitException ) {
+                ex.printStackTrace();
+                System.println(responseData);
+            	Background.exit(ERROR_BG_EXIT_DATA_SIZE_LIMIT);
+            } catch(ex) {
+            	ex.printStackTrace();
+            	Background.exit(ERROR_BG_EXCEPTION);
+            }
+        } else {
+            Background.exit(responseCode);
+        }
+    }
+}

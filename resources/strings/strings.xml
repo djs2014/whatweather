@@ -44,4 +44,12 @@
     <string id="ShowWeatherCondition">Show weather condition</string>	
     <string id="ShowGlossary">Show glossary (single field)</string>	
     <string id="AlwaysUpdateGarminWeather">Dev. always update weather object</string>
+
+    <string id="WeatherDataSource">Weather source</string>
+    <string id="WeatherDataSourcePrompt">Select weather source</string>
+    <string id="WeatherDataSourceGarmin">Garmin</string>
+    <string id="WeatherDataSourceOWM">Open weather map (OWM)</string>    
+    <string id="OpenWeatherAPIKey">Open weather map API key</string>
+    <string id="OpenWeatherProxy">OWM Proxy (to compress OWM-json)</string>
+    <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   
 </strings>

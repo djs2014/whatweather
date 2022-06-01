@@ -3,6 +3,7 @@ import Toybox.WatchUi;
 import Toybox.Activity;
 import Toybox.Position;
 import Toybox.Sensor;
+import Toybox.Application.Storage;
 using Toybox.System;
 using WhatAppBase.Utils as Utils;
 //using Toybox.SensorHistory;
@@ -52,6 +53,7 @@ class CurrentInfo {
     var lon = _location[1];
     if (lat.toNumber() != 0 && lon.toNumber() != 0 && self.lat != lat &&
         self.lon != lon) {
+      Storage.setValue("latest_latlng", _location); // [lat,lng]
       return _location;
     }
     return null;
@@ -99,13 +101,8 @@ class CurrentInfo {
     return null;
   }
 
-  function temperature() as Lang.Number? {
-    var SensorInfo = Sensor.Info;
-    if (SensorInfo != null && SensorInfo has :temperature && SensorInfo.temperature != null) {
-      return SensorInfo.temperature;
-    }
-    return null;
-    //return getLatestTemperatureHistory();
+  function temperature() as Lang.Float? {
+    return Utils.getStorageValue("Temperature", null) as Lang.Float?;
   }
 
   // hidden function getLatestTemperatureHistory() {

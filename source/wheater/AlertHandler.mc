@@ -2,6 +2,14 @@ import Toybox.Lang;
 import Toybox.System;
 using WhatAppBase.Utils as Utils;
 
+enum ActiveAlert {
+  aaUvi,
+  aaRain1stHour,
+  aaPrecChance,
+  aaWind,
+  aaWeather
+}
+
 class AlertHandler {
   hidden var alertUvi as Lang.Number = 0;
   hidden var alertPrecipitationChance as Lang.Number = 0;
@@ -82,6 +90,28 @@ class AlertHandler {
       info = info + "WS ";
     }
     return info;
+  }
+
+  function activeAlerts() as Array {
+    var info = [];
+    if (statusUvi == HANDLED) {
+      info.add(aaUvi);      
+    }
+    if (statusPrecipitationChance == HANDLED) {
+      info.add(aaPrecChance);          
+    }
+    if (statusRainMMfirstHour == HANDLED) {
+      info.add(aaRain1stHour);                
+    }
+    if (statusWeather == HANDLED) {
+      info.add(aaWeather);                
+    }
+    if (statusWindSpeed == HANDLED) {
+      info.add(aaWind);                
+    }
+    // info.add(aaUvi);  
+    // info.add(aaWind);   
+    return info;    
   }
 
   function currentlyTriggeredHandled() as Void{

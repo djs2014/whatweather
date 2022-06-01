@@ -1,5 +1,5 @@
 import Toybox.Lang;
-import Toybox.Graphics;
+// import Toybox.Graphics;
 import Toybox.System;
 
 const DEBUG_DETAILS = false;
@@ -14,7 +14,7 @@ const SHOW_INFO_TEMPERATURE = 2;
 const SHOW_INFO_AMBIENT_PRESSURE = 3;
 const SHOW_INFO_SEALEVEL_PRESSURE = 4;
 
-const COLOR_CLOUDS = Graphics.COLOR_LT_GRAY;
+const COLOR_CLOUDS = 0xAAAAAA; // Graphics.COLOR_LT_GRAY;
 
 const COLOR_WHITE_BLUE = 0xE1E5F8;
 const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
@@ -47,8 +47,7 @@ var _showWeatherCondition as Lang.Boolean = true;
 var _showComfort as Lang.Boolean = true;
 
 var _showGlossary as Lang.Boolean = true;
-var _weatherDescriptions as Lang.Dictionary = {};
-var _alwaysUpdateGarminWeather as Lang.Boolean = false;
+// var _alwaysUpdateGarminWeather as Lang.Boolean = false;
 
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Number = 5;
@@ -63,7 +62,7 @@ var _comfortHumidity as Array = [ 40, 60 ];
 var _comfortTemperature as Array = [ 22, 27 ];
 var _comfortPrecipitationChance as Array = [ 0, 40 ];
 
-var _alertHandler as AlertHandler = new AlertHandler();
+// var _alertHandler as AlertHandler? = new AlertHandler();
 
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
   if (condition == null) {

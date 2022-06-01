@@ -39,13 +39,27 @@ class RenderWeather {
         if (!uvp.isHidden) {
           var x = uvp.x;
           var y = ds.getYpostion((uvp.y * factor));
-          dc.setColor(uviToColor(uvp.uvi), Graphics.COLOR_TRANSPARENT);
-          dc.fillCircle(x, y, 3);
+          var r = uviToRadius(uvp.uvi);
+          drawUvPoint(x,y,r,uvp.uvi);
+          // dc.setColor(uviToColor(uvp.uvi), Graphics.COLOR_TRANSPARENT);
+          // dc.fillCircle(x, y, r);
+          // var rh = (r + 2)/2;
+          // dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
+          // dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
         }
       }
     } catch (ex) {
       ex.printStackTrace();
     }
+  }
+
+  function drawUvPoint(x as Lang.Number, y as Lang.Number, r as Lang.Number, uvi as Lang.Float?) as Void {
+    if (uvi == null || uvi == 0) { return; }
+    dc.setColor(uviToColor(uvi), Graphics.COLOR_TRANSPARENT);
+    dc.fillCircle(x, y, r);
+    var rh = (r + 2)/2;
+    dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
+    dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
   }
 
   function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) as Void {
@@ -190,6 +204,39 @@ class RenderWeather {
 
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+  }
+
+  function drawActiveAlert(activeAlerts as Array) as Void{
+    if (ds.smallField) { return; } // @@TODO
+
+    var max = activeAlerts.size();
+    if (max == 0) { return; }
+
+    // every alert 20 px width
+    var alertW = 20;
+    var xStart = (ds.width - alertW * max)/ 2;
+    var x = xStart;
+    var y = 20;    
+    for (var idx = 0; idx < max; idx += 1) {
+      var aa = activeAlerts[idx] as ActiveAlert;
+      // TODO? get alerted condition/value
+      if (aa == aaUvi) {
+        drawUvPoint(x, y, 4, 6.0);
+      } else if (aa == aaPrecChance) {
+        // max % rain chance
+
+      } else if (aa == aaRain1stHour) {
+        
+
+      } else if (aa == aaWeather) {
+        // @@ current condition
+
+      } else if (aa == aaWind) {    
+        // @@ current windspeed/bearing            
+        drawWind(new Point(x,y), 8, 45, 20.0);
+      }
+      x = x + alertW;
+    }    
   }
 
   function drawGlossary() as Void {

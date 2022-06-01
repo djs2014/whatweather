@@ -3,23 +3,41 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Time;
 import Toybox.System;
+import Toybox.Background;
+import Toybox.Application.Storage;
 using Toybox.Position;
 using WhatAppBase.Utils as Utils;
+//import Helpers;
 
+var _alertHandler as AlertHandler?;
+var _bgData as WeatherData?;
+var _bgCounter as Number = 0; 
+var _bgStatus as Number = 0;
+
+(:background)
 var _mostRecentData as WeatherData?;
+(:background)
+var _weatherDescriptions as Lang.Dictionary = {};
 
+(:background)
 class WhatWeatherApp extends Application.AppBase {
   function initialize() {
-    AppBase.initialize();    
-    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
+    AppBase.initialize();       
   }
 
   function onStart(state as Dictionary?) as Void {    }
 
   function onStop(state as Dictionary?) as Void {    }
-
-    //! Return the initial view of your application here
+    
   function getInitialView() as Array<Views or InputDelegates> ? {
+    try {
+      if (Toybox.System has :ServiceDelegate) {
+        Background.registerForTemporalEvent(new Time.Duration(5 * 60));
+      }
+    } catch (ex) {
+      ex.printStackTrace();          
+    }   
+    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
     return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
   }
@@ -56,8 +74,11 @@ class WhatWeatherApp extends Application.AppBase {
       $._showGlossary = Utils.getApplicationProperty("showGlossary", false) as Lang.Boolean;
 
       $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Lang.Boolean;
-      $._alwaysUpdateGarminWeather = Utils.getApplicationProperty("alwaysUpdateGarminWeather", false) as Lang.Boolean;
+      // $._alwaysUpdateGarminWeather = Utils.getApplicationProperty("alwaysUpdateGarminWeather", false) as Lang.Boolean;
 
+      if ($._alertHandler == null) {
+        $._alertHandler = new AlertHandler();
+      }
       $._alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
       $._alertHandler.setAlertUVi($._alertLevelUVi);
       $._alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
@@ -65,12 +86,17 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertHandler.resetStatus();
 
       initComfortSettings();
+
+      Storage.setValue("weatherDataSource", Utils.getApplicationProperty("weatherDataSource",0) as Number);
+      Storage.setValue("openWeatherAPIKey", Utils.getApplicationProperty("openWeatherAPIKey","") as String);
+      Storage.setValue("openWeatherProxy", Utils.getApplicationProperty("openWeatherProxy","") as String);
+      Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationProperty("openWeatherProxyAPIKey","") as String);                    
+    
       System.println("Settings loaded");
     } catch (ex) {
       ex.printStackTrace();
     }
   }
-
     
   function initComfortSettings() as Void {
       var humMin = Utils.getApplicationProperty("comfortHumidityMin", 40) as Lang.Number;
@@ -88,8 +114,36 @@ class WhatWeatherApp extends Application.AppBase {
       $._comfortPrecipitationChance[0] = Utils.min(popMin, popMax);
       $._comfortPrecipitationChance[1] = Utils.max(popMin, popMax);
     }
+
+  public function getServiceDelegate() as Array<System.ServiceDelegate> {
+    return [new BackgroundServiceDelegate()] as Array<System.ServiceDelegate>;
+  }
+
+  function onBackgroundData(data) {
+    System.println("Background data recieved background");    
+    if(data instanceof Number) {
+      var responseCode = data as Number;
+      $._bgStatus = responseCode;
+      if (responseCode > 0) {
+        // setErrorMessage("HTTP error: " + responseCode);                            
+        // System.println("Error webrequest responsecode: " + data);
+      } else {
+        // setErrorMessage(getCommunicationError(responseCode));
+        //System.println("Error webrequest responsecode: " + Helpers.getCommunicationError(responseCode));
+      }
+    } else {
+      // First entry hourly in OWM is current entry
+      $._bgData = WeatherBG.toWeatherData(data, true);
+      $._bgStatus = 200;
+      $._bgCounter = $._bgCounter + 1;      
+      // Storage.setValue("OWMResult", data);        	            
+    }
+                      
+    WatchUi.requestUpdate();
+  }
 }
 
 function getApp() as WhatWeatherApp {
   return Application.getApp() as WhatWeatherApp;
 }
+

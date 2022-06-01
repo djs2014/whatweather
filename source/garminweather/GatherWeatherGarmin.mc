@@ -7,17 +7,13 @@ import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 
 class GarminWeather {
-  static function getLatestGarminWeather() as Void {
+  static function getLatestGarminWeather() as WeatherData {
     var WEATHER_CONDITION_UNKNOWN = 53;
     try {
-      // if ($._mostRecentData == null) {
-      //   $._mostRecentData = new WeatherData();
-      // }
       var garCurrent = Weather.getCurrentConditions();
       if (garCurrent == null) {
-        $._mostRecentData = new WeatherData(null, null, null, Time.now());
-        // $._mostRecentData.lastUpdated = Time.now();
-        return;
+        return new WeatherData(null, null, null, Time.now());
+        // $._mostRecentData.lastUpdated = Time.now();        
       }
 
       // if (!$._alwaysUpdateGarminWeather || $._mostRecentData.valid()) {
@@ -98,9 +94,10 @@ class GarminWeather {
         }
       }
 
-      $._mostRecentData = new WeatherData(cc, mm, hh, cc.observationTime);      
+      return new WeatherData(cc, mm, hh, cc.observationTime);      
     } catch (ex) {
       ex.printStackTrace();
+      return new WeatherData(null, null, null, Time.now());
     }
   }
 }

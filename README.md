@@ -21,12 +21,9 @@ A small field has a different layout than the `large` field.
 	- Show weather condition (`large field`): Display condition in a icon. On single field display also the text.
 	- Show extra info (`small field`):
 		- Time of the day
-		- Altitude
-		- Heading
 		- Temperature (if it works)
-		- Heartrate
 		- Pressure
-		- Elapsed distance
+        - Pressure at sealevel		
 	- Show extra info (`large field`):		
 	- Alert level precipitation chance in %.
 	- Alert level windspeed in Beaufort.
@@ -58,18 +55,9 @@ A small field has a different layout than the `large` field.
 	- wintry = rain/snow etc.
 	- thunder = thunderstorms
 	- tropical = tropicalstorms (so not that good)
-	
-	
-# Todo
-	- Refactor the code, etc.
-	- Monkey barrel -> shared code
-	- Check white/black background settings.
-	- BUG - one column + weather alarm -> continue beep
-	- At initial start -> position is 0 (calc distance is then 5840km)? 			
-	- bg process
-     	- How to show info for temperature.
-    	- merge owm data
 
-## Nice to have :-)
-	- Uv index,
-	- Minutely forecast.
+
+## Open weather map
+
+UV index
+https://en.wikipedia.org/wiki/Ultraviolet_index
