@@ -5,19 +5,23 @@
 
 MVP - 1 
 0 - bug save settings via mobile - crash?
+- show alert info on small field (abbreviated)
+- combine with bg data / rain pop 
+- use intial stored gps location
+  - for current loc
+  - for garmin weather?
+  - for owm
 
-4 - alerts with max values
-5 - progress info on screen [time next req + # + status] + obs time -> use bgHandler logic
+
 6 - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
 2 - layout garmin / owm
 	- uvi icon () ?
 x 3 - only add uvi / clouds (missing data on garmin weather)
-- use handler (see whatrain app) - refactor
-- status -> text / short info
+
 7 - set interval for weather call 0/5/10/15/20/25/30
 	0 = disabled
 	bgCounter callCounter modulo x 
-	use bghanlder for counter/obs time/ callback bg data
+	
 6 - show night/sun down/up
 	grijs lichter, nacht -> grijs donker
 7 -  buffered bitmaps (when weather not changed)

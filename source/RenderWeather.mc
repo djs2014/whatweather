@@ -20,7 +20,8 @@ class RenderWeather {
   hidden var yTempBottom as Lang.Number = 0;
 
   hidden const NO_BEARING_SPEED = 0.3;
-  
+  hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
+
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
     self.ds = ds;
@@ -106,11 +107,18 @@ class RenderWeather {
     if (idx == COMFORT_NO) {
       return;
     }
-    var color = COLOR_WHITE_GREEN;
+    // var color = COLOR_WHITE_GREEN;
+    // if (idx == COMFORT_NORMAL) {
+    //   color = COLOR_WHITE_YELLOW;
+    // } else if (idx == COMFORT_HIGH) {
+    //   color = COLOR_WHITE_ORANGE;
+    // }
+
+    var color = WhatAppBase.Colors.COLOR_WHITE_GREEN_2;
     if (idx == COMFORT_NORMAL) {
-      color = COLOR_WHITE_YELLOW;
+      color = WhatAppBase.Colors.COLOR_WHITE_YELLOW_2;
     } else if (idx == COMFORT_HIGH) {
-      color = COLOR_WHITE_ORANGE;
+      color = WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_2;
     }
 
     dc.setColor(color, color);
@@ -196,7 +204,7 @@ class RenderWeather {
       return;
     }
 
-    dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 

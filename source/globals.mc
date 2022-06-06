@@ -20,12 +20,12 @@ const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xFFFFE1;  // 0xFFFFAA;
 const COLOR_WHITE_ORANGE = 0xFFE9E1;  // 0xF1AC4A;
 
+// @@ Make settings object -> + toString
 var _showCurrentForecast as Lang.Boolean = true;
 var _maxHoursForecast as Lang.Number = 8;
-var _maxMinuteForecast as Lang.Number = 60;
+var _maxMinuteForecast as Lang.Number = 0;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _showAlertLevel as Lang.Boolean = false;
-var _showMaxPrecipitationChance as Lang.Boolean = true;
 var _dashesUnderColumnHeight as Lang.Number = 2;
 var _showColumnBorder as Lang.Boolean = false;
 var _showObservationTime as Lang.Boolean = true;

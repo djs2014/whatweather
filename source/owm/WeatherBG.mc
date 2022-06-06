@@ -5,9 +5,10 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
+using WhatAppBase.Colors as Colors;
 
 class WeatherBG  {
-    static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
+    static function purgePastWeatherdata(data as WeatherData) as WeatherData {
       if (data == null || data.hourly == null) { return data; }
       var max = data.hourly.size();
       var idxCurrent = -1;
@@ -37,7 +38,7 @@ class WeatherBG  {
           current.relativeHumidity = forecast.relativeHumidity;
           current.temperature = forecast.temperature;
           current.uvi = forecast.uvi;
-          // current.weather = forecast.weather;
+          current.weather = forecast.weather;
         }
       }
       return data;
@@ -72,7 +73,7 @@ class WeatherBG  {
           
           cc.clouds = Utils.getDictionaryValue(current, "clouds", 0) as Number; 
           cc.condition = Utils.getDictionaryValue(current, "weather", 0) as Number;
-          //         var windBearing as Lang.Number? = null;
+          // var windBearing as Lang.Number? = null;
           // var windSpeed as Lang.Float? = null;
           // var relativeHumidity as Lang.Number? = null;
           // var temperature as Lang.Number? = null;

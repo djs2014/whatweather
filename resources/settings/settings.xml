@@ -117,10 +117,7 @@
 	</setting>	
     <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
 		<settingConfig type="boolean" />
-	</setting>				
-	<setting propertyKey="@Properties.showMaxPrecipitationChance" title="@Strings.ShowMaxPrecipitationChance">
-		<settingConfig type="boolean" />
-	</setting>	
+	</setting>					
 	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
 		<settingConfig type="boolean" />
 	</setting>		

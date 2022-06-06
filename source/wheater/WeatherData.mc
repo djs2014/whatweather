@@ -8,12 +8,14 @@ class WeatherData {
   var minutely as WeatherMinutely?;
   var hourly as Lang.Array?;
   var lastUpdated as Time.Moment?;
+  var changed as Boolean = true;
 
   function initialize(current as WeatherCurrent?, minutely as WeatherMinutely?, hourly as Lang.Array?, lastUpdated as Time.Moment?) {    
     self.current = current;
     self.minutely = minutely;
     self.hourly = hourly;
     self.lastUpdated = lastUpdated;    
+    self.changed = true;
   }
 
   function valid() as Lang.Boolean {
@@ -23,6 +25,10 @@ class WeatherData {
   function getObservationTime() as Time.Moment? {
     if (self.current == null) { return null; }
     return (self.current as WeatherCurrent).observationTime;
+  }
+
+  function setChanged(changed as Boolean) as Void {
+    self.changed = changed;
   }
 }
 

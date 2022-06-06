@@ -20,8 +20,7 @@
     <string id="AlertLevelRainMMfirstHour">Alert level rain mm in first hour (if available)</string>
     <string id="AlertLevelUVi">Alert level UV index</string>   
     <string id="AlertLevelWindSpeed">Alert level wind (Beaufort)</string>        
-    <string id="ShowAlertLevel">Show alert level line</string>
-    <string id="ShowMaxPrecipitationChance">Show maximum precipitation chance on top of first column</string>    
+    <string id="ShowAlertLevel">Show alert level line</string>    
     <string id="ShowPrecipitationChanceAxis">Show precipitation chance axis (0,25,50,75,100) left and right</string>        
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
     <string id="ShowColumnBorder">Show border of the columns</string>    

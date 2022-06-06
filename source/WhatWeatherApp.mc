@@ -27,14 +27,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   function onStop(state as Dictionary?) as Void {    }
     
-  function getInitialView() as Array<Views or InputDelegates> ? {
-    // try {
-    //   if (Toybox.System has :ServiceDelegate) {
-    //     Background.registerForTemporalEvent(new Time.Duration(5 * 60));
-    //   }
-    // } catch (ex) {
-    //   ex.printStackTrace();          
-    // }   
+  function getInitialView() as Array<Views or InputDelegates> ? {    
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
     return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
@@ -59,40 +52,39 @@ class WhatWeatherApp extends Application.AppBase {
   function loadUserSettings() as Void {
     try {
       System.println("Loading user settings");  
-      $._showCurrentForecast = Utils.getApplicationProperty("showCurrentForecast", true) as Lang.Boolean;
-      $._maxMinuteForecast = Utils.getApplicationProperty("maxMinuteForecast", 60) as Lang.Number;
-      $._maxHoursForecast = Utils.getApplicationProperty("maxHoursForecast", 8) as Lang.Number;
-      $._alertLevelPrecipitationChance = Utils.getApplicationProperty("alertLevelPrecipitationChance", 70) as Lang.Number;
-      $._showAlertLevel = Utils.getApplicationProperty("showAlertLevel", true) as Lang.Boolean;
-      $._showMaxPrecipitationChance = Utils.getApplicationProperty("showMaxPrecipitationChance", true) as Lang.Boolean;
-      $._dashesUnderColumnHeight = Utils.getApplicationProperty("dashesUnderColumnHeight", 2) as Lang.Number;
-      $._showColumnBorder = Utils.getApplicationProperty("showColumnBorder", false) as Lang.Boolean;
-      $._showObservationTime = Utils.getApplicationProperty("showObservationTime", true) as Lang.Boolean;
-      $._showObservationLocationName = Utils.getApplicationProperty("showObservationLocationName", true) as Lang.Boolean;
-      $._observationTimeDelayedMinutesThreshold = Utils.getApplicationProperty("observationTimeDelayedMinutesThreshold", 30) as Lang.Number;
-      $._showClouds = Utils.getApplicationProperty("showClouds", true) as Lang.Boolean;
-      $._showUVIndexFactor = Utils.getApplicationProperty("showUVIndexFactor", 2) as Lang.Number;
-      $._hideUVIndexLowerThan = Utils.getApplicationProperty("hideUVIndexLowerThan", 4) as Lang.Number;
-      $._showInfo = Utils.getApplicationProperty("showInfo", SHOW_INFO_TIME_Of_DAY) as Lang.Number;
-      $._showInfo2 = Utils.getApplicationProperty("showInfo2", SHOW_INFO_AMBIENT_PRESSURE) as Lang.Number;
-      $._showPrecipitationChanceAxis = Utils.getApplicationProperty("showPrecipitationChanceAxis", true) as Lang.Boolean;
-      $._alertLevelUVi = Utils.getApplicationProperty("alertLevelUVi", 6) as Lang.Number;
-      $._alertLevelRainMMfirstHour = Utils.getApplicationProperty("alertLevelRainMMfirstHour", 5) as Lang.Number;
+      $._showCurrentForecast = Utils.getApplicationPropertyAsBoolean("showCurrentForecast", true);
+      $._maxMinuteForecast = Utils.getApplicationPropertyAsNumber("maxMinuteForecast", 0);
+      $._maxHoursForecast = Utils.getApplicationPropertyAsNumber("maxHoursForecast", 8);
+      $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
+      $._showAlertLevel = Utils.getApplicationPropertyAsBoolean("showAlertLevel", true);      
+      $._dashesUnderColumnHeight = Utils.getApplicationPropertyAsNumber("dashesUnderColumnHeight", 2);
+      $._showColumnBorder = Utils.getApplicationPropertyAsBoolean("showColumnBorder", false);
+      $._showObservationTime = Utils.getApplicationPropertyAsBoolean("showObservationTime", true);
+      $._showObservationLocationName = Utils.getApplicationPropertyAsBoolean("showObservationLocationName", true);
+      $._observationTimeDelayedMinutesThreshold = Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 30);
+      $._showClouds = Utils.getApplicationPropertyAsBoolean("showClouds", true);
+      $._showUVIndexFactor = Utils.getApplicationPropertyAsNumber("showUVIndexFactor", 2);
+      $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
+      $._showInfo = Utils.getApplicationPropertyAsNumber("showInfo", SHOW_INFO_TIME_Of_DAY);
+      $._showInfo2 = Utils.getApplicationPropertyAsNumber("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
+      $._showPrecipitationChanceAxis = Utils.getApplicationPropertyAsBoolean("showPrecipitationChanceAxis", true);
+      $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
+      $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
 
-      $._showWind = Utils.getApplicationProperty("showWind", SHOW_WIND_BEAUFORT) as Lang.Number;
-      $._alertLevelWindSpeed = Utils.getApplicationProperty("alertLevelWindSpeed", 5) as Lang.Number;
-      $._showTemperature = Utils.getApplicationProperty("showTemperature", true) as Lang.Boolean;
-      $._showRelativeHumidity = Utils.getApplicationProperty("showRelativeHumidity", true) as Lang.Boolean;
-      $._showComfort = Utils.getApplicationProperty("showComfort", true) as Lang.Boolean;
-      $._showGlossary = Utils.getApplicationProperty("showGlossary", false) as Lang.Boolean;
+      $._showWind = Utils.getApplicationPropertyAsNumber("showWind", SHOW_WIND_BEAUFORT);
+      $._alertLevelWindSpeed = Utils.getApplicationPropertyAsNumber("alertLevelWindSpeed", 5);
+      $._showTemperature = Utils.getApplicationPropertyAsBoolean("showTemperature", true);
+      $._showRelativeHumidity = Utils.getApplicationPropertyAsBoolean("showRelativeHumidity", true);
+      $._showComfort = Utils.getApplicationPropertyAsBoolean("showComfort", true);
+      $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
 
-      $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Lang.Boolean;
+      $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
       
       var bgHandler =  getBGServiceHandler();
-      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationProperty("observationTimeDelayedMinutesThreshold", 10) as Number);
+      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 10));
       // @@ TODO add in settings
-      bgHandler.setMinimalGPSLevel(Utils.getApplicationProperty("minimalGPSquality", 3) as Number);
-      bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationProperty("updateFrequencyWebReq", 5) as Number);
+      bgHandler.setMinimalGPSLevel(Utils.getApplicationPropertyAsNumber("minimalGPSquality", 3));
+      bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
       if ($._showClouds || $._showUVIndexFactor > 0 || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE) {
         bgHandler.Enable(); 
@@ -100,39 +92,47 @@ class WhatWeatherApp extends Application.AppBase {
         bgHandler.Disable(); 
       }
 
+      System.println("Alerthandler");
       var alertHandler = getAlertHandler();     
       alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
+      System.println("Alerthandler 1");
       alertHandler.setAlertUVi($._alertLevelUVi);
+      System.println("Alerthandler 2");
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
+      System.println("Alerthandler 3");
       alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
+      System.println("Alerthandler 4");
       alertHandler.resetStatus();
 
       initComfortSettings();
+      System.println("Comfort settings");
 
-      Storage.setValue("weatherDataSource", Utils.getApplicationProperty("weatherDataSource",0) as Number);
-      Storage.setValue("openWeatherAPIKey", Utils.getApplicationProperty("openWeatherAPIKey","") as String);
-      Storage.setValue("openWeatherProxy", Utils.getApplicationProperty("openWeatherProxy","") as String);
-      Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationProperty("openWeatherProxyAPIKey","") as String);                    
+      // @@ Weather merge mode ..
+      Storage.setValue("weatherDataSource", Utils.getApplicationPropertyAsNumber("weatherDataSource",0));
+      Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
+      Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
+      Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    
     
       System.println("User settings loaded");
     } catch (ex) {
       ex.printStackTrace();
+      System.println(ex.getErrorMessage());
     }
   }
     
   function initComfortSettings() as Void {
-      var humMin = Utils.getApplicationProperty("comfortHumidityMin", 40) as Lang.Number;
-      var humMax = Utils.getApplicationProperty("comfortHumidityMax", 60) as Lang.Number;
+      var humMin = Utils.getApplicationPropertyAsNumber("comfortHumidityMin", 40);
+      var humMax = Utils.getApplicationPropertyAsNumber("comfortHumidityMax", 60);
       $._comfortHumidity[0] = Utils.min(humMin, humMax);
       $._comfortHumidity[1] = Utils.max(humMin, humMax);
 
-      var tempMin = Utils.getApplicationProperty("comfortTempMin", 21) as Lang.Number;
-      var tempMax = Utils.getApplicationProperty("comfortTempMax", 27) as Lang.Number;
+      var tempMin = Utils.getApplicationPropertyAsNumber("comfortTempMin", 21);
+      var tempMax = Utils.getApplicationPropertyAsNumber("comfortTempMax", 27);
       $._comfortTemperature[0] = Utils.min(tempMin, tempMax);
       $._comfortTemperature[1] = Utils.max(tempMin, tempMax);
 
-      var popMin = Utils.getApplicationProperty("comfortPopMin", 0) as Lang.Number;
-      var popMax = Utils.getApplicationProperty("comfortPopMax", 40) as Lang.Number;
+      var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
+      var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
       $._comfortPrecipitationChance[0] = Utils.min(popMin, popMax);
       $._comfortPrecipitationChance[1] = Utils.max(popMin, popMax);
     }

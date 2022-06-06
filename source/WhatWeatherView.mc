@@ -61,56 +61,56 @@ class WhatWeatherView extends WatchUi.DataField {
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
   function onUpdate(dc as Dc) as Void {
-    if (dc has :setAntiAlias) { dc.setAntiAlias(true); }
+    try {
+      if (dc has :setAntiAlias) { dc.setAntiAlias(true); }
 
-    var backgroundColor = getBackgroundColor();
-    var alertHandler = getAlertHandler();
-    alertHandler.checkStatus();
-    if (alertHandler.isAnyAlertTriggered()) {
-      backgroundColor = Graphics.COLOR_YELLOW;
-      playAlert();
-      alertHandler.currentlyTriggeredHandled();
-    }    
+      var backgroundColor = getBackgroundColor();
+      var alertHandler = getAlertHandler();
+      alertHandler.checkStatus();
+      if (alertHandler.isAnyAlertTriggered()) {
+        backgroundColor = Graphics.COLOR_YELLOW;
+        playAlert();
+        alertHandler.currentlyTriggeredHandled();
+      }    
 
-    var nrOfColumns = $._maxHoursForecast;
-    ds.setDc(dc, backgroundColor);
-    ds.clearScreen();
-  
-    var heightWind = ($._showWind != SHOW_WIND_NOTHING && !ds.smallField) ? 15 : 0;
-    var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
-    var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
-    var dashesUnderColumnHeight = $._dashesUnderColumnHeight;
-    if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
-    ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
+      var nrOfColumns = $._maxHoursForecast;
+      ds.setDc(dc, backgroundColor);
+      ds.clearScreen();
+    
+      var heightWind = ($._showWind != SHOW_WIND_NOTHING && !ds.smallField) ? 15 : 0;
+      var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
+      var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
+      var dashesUnderColumnHeight = $._dashesUnderColumnHeight;
+      if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
+      ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
 
-    if ($._showGlossary && ds.oneField) {
-      var render = new RenderWeather(dc, ds);
-      render.drawGlossary();
-      return;
-    }
+      if ($._showGlossary && ds.oneField) {
+        var render = new RenderWeather(dc, ds);
+        render.drawGlossary();
+        return;
+      }
 
-    // @@ Check if weather data has changed    
-    var weatherChanged = true;
-    var garminWeather = WeatherBG.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-    $._bgData = WeatherBG.purgePastWeatherdata($._bgData);
-    $._mostRecentData = WeatherBG.mergeWeather(garminWeather, $._bgData);
-    if (weatherChanged) {
-      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
-    }
+      // @@ Check if weather data has changed    
+      var weatherChanged = true;
+      var garminWeather = WeatherBG.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+      $._bgData = WeatherBG.purgePastWeatherdata($._bgData);
+      $._mostRecentData = WeatherBG.mergeWeather(garminWeather, $._bgData);
+      if (weatherChanged) {
+        onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+      }
+     
+      if ($._showAlertLevel) {
+        drawWarningLevel(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY,$._alertLevelPrecipitationChance);
+      }
 
-    if ($._showMaxPrecipitationChance) {
-      drawMaxPrecipitationChance(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY, alertHandler.maxPrecipitationChance);
-    }
+      if ($._showPrecipitationChanceAxis) { drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight); }
 
-    if ($._showAlertLevel) {
-      drawWarningLevel(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY,$._alertLevelPrecipitationChance);
-    }
+      showInfo(dc, ds);
 
-    if ($._showPrecipitationChanceAxis) { drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight); }
-
-    showInfo(dc, ds);
-
-    showBgInfo(dc, ds);    
+      showBgInfo(dc, ds);    
+    } catch (ex) {
+      ex.printStackTrace();
+    }  
   }
 
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
@@ -258,13 +258,13 @@ class WhatWeatherView extends WatchUi.DataField {
 
       var render = new RenderWeather(dc, ds);
 
-      if ($._maxMinuteForecast > 0) {
-        var xMMstart = x;
+      if ( $._maxMinuteForecast > 0) {
+        var xMMstart = x; // issue?
         var popTotal = 0 as Lang.Number;
         var columnWidth = 1;
         var offset = ($._maxMinuteForecast * columnWidth) + ds.space;
-        ds.calculateColumnWidth(offset);
         if (mm != null) {
+          ds.calculateColumnWidth(offset);
           var max = mm.pops.size();
           for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
             var pop = mm.pops[i] as Lang.Number;
@@ -417,7 +417,6 @@ class WhatWeatherView extends WatchUi.DataField {
           distance = distanceInKm.format("%.2f");
           var deviceSettings = System.getDeviceSettings();
           if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
-            // 1 Mile = 1.609344 Kilometers
             distanceMetric = "mi";
             distance = Utils.kilometerToMile(distanceInKm).format("%.2f");
           }
@@ -426,8 +425,7 @@ class WhatWeatherView extends WatchUi.DataField {
           render.drawObservationLocation(Lang.format( "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
         }
 
-        if ($._showObservationLocationName) { render.drawObservationLocation2(current.observationLocationName); }
-        // render.drawBGserviceInformation();
+        if ($._showObservationLocationName) { render.drawObservationLocation2(current.observationLocationName); }        
         if ($._showObservationTime) { render.drawObservationTime(current.observationTime); }
       }
 
@@ -449,14 +447,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     dc.drawLine(margin, lineY, width - margin, lineY);
-  }
-
-  function drawMaxPrecipitationChance(dc as Dc, margin as Number, bar_height as Number, color as Graphics.ColorType, precipitationChance as Number) as Void {
-    var y = margin + bar_height - bar_height * (precipitationChance / 100.0) - mFontSmallH - 2;
-    // Do not overwrite Location name
-    if (y < (mFontSmallH + 10)) { return; }
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(margin, y, mFontSmall, precipitationChance.format("%02d"), Graphics.TEXT_JUSTIFY_LEFT);
   }
 
   function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {

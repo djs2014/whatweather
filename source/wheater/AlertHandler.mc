@@ -79,19 +79,20 @@ class AlertHandler {
   function infoHandled() as Lang.String {
     var info = "";
     if (statusUvi == HANDLED) {
-      info = info + "U ";
+      info = info + " Uv" + maxUvi.format("%.1f");
     }
     if (statusPrecipitationChance == HANDLED) {
-      info = info + "R% ";
+      info = info + " R%" + maxPrecipitationChance.format("%d");
     }
     if (statusRainMMfirstHour == HANDLED) {
-      info = info + "R ";
+      info = info + " R" + maxRainMMfirstHour.format("%d");
     }
     if (statusWeather == HANDLED) {
-      info = info + "W ";
+      info = info + " W";
     }
     if (statusWindSpeed == HANDLED) {
-      info = info + "WS ";
+      var beaufort = Utils.windSpeedToBeaufort(maxWindSpeed);
+      info = info + " Ws" + beaufort.format("%d");
     }
     return info;
   }
