@@ -13,8 +13,8 @@ module WhatAppBase {
       try {
         var val = Toybox.Application.Properties.getValue(key);
         if (val != null || !(val instanceof Number)) { 
-          System.println("Use default property value [" + key + "]");
-          return val.toNumber();
+          System.println("Use default property value [" + key as String + "]");
+          return val as Number;
         }
       } catch (e) {
         return dflt;
@@ -26,7 +26,7 @@ module WhatAppBase {
       try {
         var val = Toybox.Application.Properties.getValue(key);
         if (val != null || !(val instanceof String)) { 
-          System.println("Use default property value [" + key + "]");
+          System.println("Use default property value [" + key as String + "]");
           return val as String;
         }
       } catch (e) {
@@ -39,7 +39,7 @@ module WhatAppBase {
       try {
         var val = Toybox.Application.Properties.getValue(key);
         if (val != null || !(val instanceof Boolean)) { 
-          System.println("Use default property value [" + key + "]");
+          System.println("Use default property value [" + key as String + "]");
           return val as Boolean;
         }
       } catch (e) {

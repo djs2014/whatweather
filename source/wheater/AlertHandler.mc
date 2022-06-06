@@ -76,6 +76,26 @@ class AlertHandler {
            (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED);
   }
 
+  function infoHandledShort() as Lang.String {
+    var info = "";
+    if (statusUvi == HANDLED) {
+      info = info + " Uv";
+    }
+    if (statusPrecipitationChance == HANDLED) {
+      info = info + " R%";
+    }
+    if (statusRainMMfirstHour == HANDLED) {
+      info = info + " R";
+    }
+    if (statusWeather == HANDLED) {
+      info = info + " W";
+    }
+    if (statusWindSpeed == HANDLED) {      
+      info = info + " Ws";
+    }
+    return info;
+  }
+
   function infoHandled() as Lang.String {
     var info = "";
     if (statusUvi == HANDLED) {

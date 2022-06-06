@@ -197,12 +197,8 @@ class RenderWeather {
     drawWind(center, radius, windBearingInDegrees, windSpeed);
   }
 
-  function drawAlertMessages(activeAlerts as Lang.String?) as Void{
-    if (ds.smallField) { return; }
-
-    if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
-      return;
-    }
+  function drawAlertMessages(activeAlerts as Lang.String?) as Void{  
+    if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) { return; }
 
     dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);

@@ -11,9 +11,7 @@ class GarminWeather {
     var WEATHER_CONDITION_UNKNOWN = 53;
     try {
       var garCurrent = Weather.getCurrentConditions();
-      if (garCurrent == null) {
-        return new WeatherData(null, null, null, Time.now());
-      }
+      if (garCurrent == null) { return WeatherData.initEmpty(); }
     
       var cc = new WeatherCurrent();
       cc.precipitationChance = Utils.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
@@ -51,7 +49,7 @@ class GarminWeather {
 
       var mm = new WeatherMinutely();  // Not available for Garmin
 
-      var hh = [];
+      var hh = [] as Array<WeatherHourly>;
       var garHourlyForecast = Weather.getHourlyForecast();
       if (garHourlyForecast != null) {
         for (var idx = 0; idx < garHourlyForecast.size(); idx += 1) {
@@ -77,7 +75,7 @@ class GarminWeather {
       return new WeatherData(cc, mm, hh, cc.observationTime);      
     } catch (ex) {
       ex.printStackTrace();
-      return new WeatherData(null, null, null, Time.now());
+      return WeatherData.initEmpty();
     }
   }
 }

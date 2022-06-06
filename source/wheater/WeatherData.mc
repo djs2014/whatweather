@@ -4,13 +4,13 @@ import Toybox.Time;
 using WhatAppBase.Utils as Utils;
 
 class WeatherData {
-  var current as WeatherCurrent?;
-  var minutely as WeatherMinutely?;
-  var hourly as Lang.Array?;
+  var current as WeatherCurrent;
+  var minutely as WeatherMinutely;
+  var hourly as Lang.Array<WeatherHourly>;
   var lastUpdated as Time.Moment?;
   var changed as Boolean = true;
 
-  function initialize(current as WeatherCurrent?, minutely as WeatherMinutely?, hourly as Lang.Array?, lastUpdated as Time.Moment?) {    
+  function initialize(current as WeatherCurrent, minutely as WeatherMinutely, hourly as Lang.Array<WeatherHourly>, lastUpdated as Time.Moment?) {    
     self.current = current;
     self.minutely = minutely;
     self.hourly = hourly;
@@ -18,8 +18,12 @@ class WeatherData {
     self.changed = true;
   }
 
+  static function initEmpty() as WeatherData {
+    return new WeatherData(new WeatherCurrent(), new WeatherMinutely(), [] as Array<WeatherHourly>, Time.now());
+  }
+
   function valid() as Lang.Boolean {
-    return hourly != null && (hourly as Array).size() > 0;
+    return hourly.size() > 0;
   }
 
   function getObservationTime() as Time.Moment? {
@@ -62,7 +66,7 @@ class WeatherCurrent {
 
 class WeatherMinutely {
   var forecastTime as Time.Moment? = null;
-  var pops as Array = [];
+  var pops as Array<Number> = [] as Array<Number>;
 }
 
 class WeatherHourly {

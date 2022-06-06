@@ -26,7 +26,8 @@ class WhatWeatherApp extends Application.AppBase {
   function onStart(state as Dictionary?) as Void {    }
 
   function onStop(state as Dictionary?) as Void {    }
-    
+
+ (:typecheck(disableBackgroundCheck))  
   function getInitialView() as Array<Views or InputDelegates> ? {    
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
@@ -35,6 +36,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   function onSettingsChanged() as Void { loadUserSettings(); }
 
+  (:typecheck(disableBackgroundCheck))
   function getBGServiceHandler() as BGServiceHandler {
     if ($._BGServiceHandler == null) {
       $._BGServiceHandler = new BGServiceHandler();
@@ -42,6 +44,7 @@ class WhatWeatherApp extends Application.AppBase {
     return $._BGServiceHandler;
   }
 
+  (:typecheck(disableBackgroundCheck))
   function getAlertHandler() as AlertHandler {
     if ($._alertHandler == null) {
       $._alertHandler = new AlertHandler();
@@ -49,6 +52,7 @@ class WhatWeatherApp extends Application.AppBase {
     return $._alertHandler;
   }
 
+  (:typecheck(disableBackgroundCheck))
   function loadUserSettings() as Void {
     try {
       System.println("Loading user settings");  
@@ -119,8 +123,9 @@ class WhatWeatherApp extends Application.AppBase {
       System.println(ex.getErrorMessage());
     }
   }
-    
-  function initComfortSettings() as Void {
+
+  (:typecheck(disableBackgroundCheck))  
+  hidden function initComfortSettings() as Void {
       var humMin = Utils.getApplicationPropertyAsNumber("comfortHumidityMin", 40);
       var humMax = Utils.getApplicationPropertyAsNumber("comfortHumidityMax", 60);
       $._comfortHumidity[0] = Utils.min(humMin, humMax);
@@ -141,6 +146,7 @@ class WhatWeatherApp extends Application.AppBase {
     return [new BackgroundServiceDelegate()] as Array<System.ServiceDelegate>;
   }
 
+  (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data) {
     System.println("Background data recieved");
     var bgHandler = getBGServiceHandler();
@@ -149,14 +155,12 @@ class WhatWeatherApp extends Application.AppBase {
     WatchUi.requestUpdate();
   }
 
-  function updateBgData(handler as BGServiceHandler?, data as Dictionary) as Void {
+  (:typecheck(disableBackgroundCheck))
+  function updateBgData(bgHandler as BGServiceHandler, data as Dictionary) as Void {
     // First entry hourly in OWM is current entry
-    var bgData = WeatherBG.toWeatherData(data, true);
-    if (bgData != null) { 
-      $._bgData = WeatherBG.toWeatherData(data, true);
-
-      handler.setLastObservationMoment(bgData.getObservationTime());
-    }
+    var bgData = WeatherService.toWeatherData(data, true);
+    $._bgData = bgData;
+    bgHandler.setLastObservationMoment(bgData.getObservationTime());    
   }
 }
 

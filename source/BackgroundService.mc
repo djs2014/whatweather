@@ -7,8 +7,6 @@ import Toybox.Sensor;
 import Toybox.Application.Storage;
 import Toybox.Communications;
 using CommunicationsHelpers as Helpers;
-// Background not allowed to have GPS access, but can get last known position
-// import Toybox.Position;
 
 (:background)
 class BackgroundServiceDelegate extends System.ServiceDelegate {
@@ -26,43 +24,33 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             Storage.setValue("Temperature", sensorInfo.temperature);            
         }
 
-        handleOWM();
-        // check phone
-        // use location from storage
-        
+        handleOWM();                
     }
 
-    function handleOWM() {
-         try { 
-
-             if (DEBUG_DETAILS) { System.println("BackgroundServiceDelegate handleOWM"); }
-
-        var location  = Storage.getValue("latest_latlng");
-    	// var positionInfo = Position.getInfo();
-      	// if (positionInfo has :position && positionInfo.position != null) {
-        // 	location = positionInfo.position.toDegrees();  	
-    	// }   
-    	
-
-		var apiKey = Storage.getValue("openWeatherAPIKey");
-        var proxy = Storage.getValue("openWeatherProxy");
-        var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
+    function handleOWM() as Void {
+        try {             
+            var location = Storage.getValue("latest_latlng");                                
+            var apiKey = Storage.getValue("openWeatherAPIKey");
+            var proxy = Storage.getValue("openWeatherProxy");
+            var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
         
-        if (location  == null || apiKey == null || apiKey.length() == 0 || proxy == null || proxy.length() == 0) {     
-        	System.println( Lang.format("Warning proxyurl[$1$] location [$2$] apiKey[$3$]",[proxy, location , apiKey]));    
-            if (location  == null) {Background.exit(Helpers.CustomErrors.ERROR_BG_NO_POSITION);}
-            if (apiKey == null || apiKey.length() == 0) {Background.exit(Helpers.CustomErrors.ERROR_BG_NO_API_KEY);}
-            Background.exit(Helpers.CustomErrors.ERROR_BG_NO_PROXY);
+        	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$]",[proxy, location , apiKey]));    
+
+            if (apiKey == null) { apiKey=""; }            
+            if (proxy == null) { proxy=""; }            
+            if (proxyApiKey == null) { proxyApiKey=""; }
+            // @@ check error codes
+            if (location  == null) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_POSITION); }
+            if ((apiKey as String).length() == 0) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_API_KEY); }
+            if ((proxy as String).length() == 0) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_PROXY); }
+        
+            var lat = (location as Array)[0] as Double;
+            var lon = (location as Array)[1] as Double;
+            requestOWMData(lat, lon, (apiKey as String), (proxy as String), (proxyApiKey as String));	
+        } catch(ex) {
+            ex.printStackTrace();
+            Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
         }
-		
-        if (proxyApiKey == null) {proxyApiKey="";}
-		var lat = location[0];
-		var lon = location[1];
-		requestOWMData(lat, lon, apiKey, proxy, proxyApiKey);	
-         } catch(ex) {
-                ex.printStackTrace();
-                Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
-            }
     }
 
     function requestOWMData(lat as Lang.Double, lon as Lang.Double, apiKey as Lang.String, proxy as Lang.String, proxyApiKey as Lang.String) as Void {
@@ -87,23 +75,13 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             "units" => "metric",
             "appid" => apiKey
         };		       
-//        var proxy = "http://localhost:3000/owm";
-//        var url = Lang.format("$1$/lat=$2$/lon=$3$/exclude=daily,alerts/units=metric/appid=$4$/",[proxy, lat, lon,apiKey]);
-//        var params = {};                                
-//		System.println(url);		                                        
         Communications.makeWebRequest(url, params, options, responseCallBack);
    	}
 
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null) as Void {
     if (responseCode == 200 && responseData != null) {
         try { 
-                System.println(responseData);
-                // var datax = {
-                //     "current" => responseData["current"],
-                //     "minutely" => responseData["minutely"],
-                //     "hourly" => responseData["hourly"]              
-                // };
-                // data.put("current", responseData["current"]);
+                System.println(responseData);                
                 var data = responseData as String;            
                 Background.exit(data);
             } catch(ex instanceof Background.ExitDataSizeLimitException ) {

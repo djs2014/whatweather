@@ -1,10 +1,7 @@
--> node.js: OWM pop = pop * 100.0 
-+ build current
-
+-> node.js: OWM pop = value 0.1 - 1  + example json
 --------------------
 
 MVP - 1 
-0 - bug save settings via mobile - crash?
 - show alert info on small field (abbreviated)
 - combine with bg data / rain pop 
 - use intial stored gps location

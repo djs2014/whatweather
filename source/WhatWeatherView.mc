@@ -92,9 +92,9 @@ class WhatWeatherView extends WatchUi.DataField {
 
       // @@ Check if weather data has changed    
       var weatherChanged = true;
-      var garminWeather = WeatherBG.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-      $._bgData = WeatherBG.purgePastWeatherdata($._bgData);
-      $._mostRecentData = WeatherBG.mergeWeather(garminWeather, $._bgData);
+      var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+      $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData);
       if (weatherChanged) {
         onUpdateWeather(dc, ds, dashesUnderColumnHeight);
       }
@@ -430,7 +430,11 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       if ($._showWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
-      render.drawAlertMessages(alertHandler.infoHandled());
+      if (ds.smallField) { 
+        render.drawAlertMessages(alertHandler.infoHandledShort());
+      } else {
+        render.drawAlertMessages(alertHandler.infoHandled());
+      }
       // @@ TEST render.drawActiveAlert(alertHandler.activeAlerts());  
     } catch (ex) {
       ex.printStackTrace();
