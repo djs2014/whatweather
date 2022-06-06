@@ -13,6 +13,7 @@ using WhatAppBase.Utils as Utils;
 
 class WhatWeatherView extends WatchUi.DataField {
   var mBGServiceHandler as BGServiceHandler?;
+  var mAlertHandler as AlertHandler?;
   var mCurrentLocation as Utils.CurrentLocation = new Utils.CurrentLocation();
 
   // @@ cleanup
@@ -30,11 +31,14 @@ class WhatWeatherView extends WatchUi.DataField {
     var handler = getBGServiceHandler();
     handler.setCurrentLocation(mCurrentLocation);  
 
-    mFontSmallH = Graphics.getFontHeight(mFontSmall);    
-    // @@QnD
-    if ($._alertHandler == null) {
-        $._alertHandler = new AlertHandler();
+    mFontSmallH = Graphics.getFontHeight(mFontSmall);        
+  }
+
+  hidden function getAlertHandler() as AlertHandler {
+    if (mAlertHandler == null) {
+      mAlertHandler = getApp().getAlertHandler();
     }
+    return mAlertHandler;
   }
 
   hidden function getBGServiceHandler() as BGServiceHandler {
@@ -43,34 +47,29 @@ class WhatWeatherView extends WatchUi.DataField {
     }
     return mBGServiceHandler;
   }
-
+  
   function onLayout(dc as Dc) as Void {}
 
   function compute(info as Activity.Info) as Void {
     _currentInfo.getPosition(info);
-
-
     
-    // mCurrentLocation.infoLocation();
-
-    var handler = getBGServiceHandler();
-    handler.onCompute(info);
-    handler.autoScheduleService();   
+    var bgHandler = getBGServiceHandler();
+    bgHandler.onCompute(info);
+    bgHandler.autoScheduleService();   
   }
 
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
   function onUpdate(dc as Dc) as Void {
-    if (dc has :setAntiAlias) {
-      dc.setAntiAlias(true);
-    }
+    if (dc has :setAntiAlias) { dc.setAntiAlias(true); }
 
     var backgroundColor = getBackgroundColor();
-    $._alertHandler.checkStatus();
-    if ($._alertHandler.isAnyAlertTriggered()) {
+    var alertHandler = getAlertHandler();
+    alertHandler.checkStatus();
+    if (alertHandler.isAnyAlertTriggered()) {
       backgroundColor = Graphics.COLOR_YELLOW;
       playAlert();
-      $._alertHandler.currentlyTriggeredHandled();
+      alertHandler.currentlyTriggeredHandled();
     }    
 
     var nrOfColumns = $._maxHoursForecast;
@@ -90,19 +89,17 @@ class WhatWeatherView extends WatchUi.DataField {
       return;
     }
 
-    
-    // $._mostRecentData = GarminWeather.getLatestGarminWeather();
-    
+    // @@ Check if weather data has changed    
+    var weatherChanged = true;
     var garminWeather = WeatherBG.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-    var bgData = WeatherBG.purgePastWeatherdata($._bgData);
-    $._mostRecentData = WeatherBG.mergeWeather(garminWeather, bgData);
-
-    
-
-    onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+    $._bgData = WeatherBG.purgePastWeatherdata($._bgData);
+    $._mostRecentData = WeatherBG.mergeWeather(garminWeather, $._bgData);
+    if (weatherChanged) {
+      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+    }
 
     if ($._showMaxPrecipitationChance) {
-      drawMaxPrecipitationChance(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY, $._alertHandler.maxPrecipitationChance);
+      drawMaxPrecipitationChance(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY, alertHandler.maxPrecipitationChance);
     }
 
     if ($._showAlertLevel) {
@@ -113,21 +110,43 @@ class WhatWeatherView extends WatchUi.DataField {
 
     showInfo(dc, ds);
 
-    var status;
-    var handler = getBGServiceHandler();
-    if (handler.hasError()) {
-      status = handler.getError();
-    } else {
-      status = handler.getStatus();
-    }
+    showBgInfo(dc, ds);    
+  }
 
-    // @@ if bg active -> draw current info loc/dateobserv #[status]nextreq
-    var text = "#" + $._bgCounter.format("%d") + "[" + status + " " + $._bgStatus.format("%d") + "]" + getWhenNextRequest();
+  hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
+    var bgHandler = getBGServiceHandler();
+    if (!bgHandler.isEnabled()) { return; }
+    var color = ds.COLOR_TEXT;
+    var obsTime = "";
+    
+    if (!ds.smallField && $._bgData != null) { obsTime = Utils.getShortTimeString(($._bgData as WeatherData).getObservationTime()); }
+    
+    if (bgHandler.isDataDelayed()){
+      color = Graphics.COLOR_RED;
+      if (ds.smallField) { obsTime = "!"; }
+    }
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+
+    var text;
+    if (ds.smallField) {
+      text = obsTime;
+    } else {
+      var counter = "#" + bgHandler.getCounterStats();
+      var next = bgHandler.getWhenNextRequest("");    
+      var status;
+      if (bgHandler.hasError()) {
+        status = bgHandler.getError();
+      } else {
+        status = bgHandler.getStatus();
+      }
+      text = obsTime + " " + counter + " " + status + "(" + next + ")";
+    }
+    // @@ if bg active -> draw current info loc
     var textWH = dc.getTextDimensions(text, Graphics.FONT_XTINY);
     dc.drawText(dc.getWidth() - textWH[0], dc.getHeight() - textWH[1], Graphics.FONT_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);  
   }
 
-  function showInfo(dc as Dc, ds as DisplaySettings) as Void {
+  hidden function showInfo(dc as Dc, ds as DisplaySettings) as Void {
     var devSettings = System.getDeviceSettings();
     var info = "";
     var postfix = "";
@@ -228,6 +247,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var hourlyForecast = null;
     var previousCondition = -1;
     var weatherTextLine = 0;
+    var alertHandler = getAlertHandler();
 
     try {
       if ($._mostRecentData != null && ($._mostRecentData as WeatherData).valid()) {
@@ -265,7 +285,7 @@ class WhatWeatherView extends WatchUi.DataField {
           dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
         }
         x = xMMstart + offset;
-        $._alertHandler.processRainMMfirstHour(popTotal);
+        alertHandler.processRainMMfirstHour(popTotal);
       }
 
       var validSegment = 0;
@@ -274,10 +294,10 @@ class WhatWeatherView extends WatchUi.DataField {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
           if (DEBUG_DETAILS) { System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [ x, current.info(), color ])); }
 
-          $._alertHandler.processPrecipitationChance(current.precipitationChance);
-          $._alertHandler.processWeather(color.toNumber());
-          $._alertHandler.processUvi(current.uvi);
-          $._alertHandler.processWindSpeed(current.windSpeed);
+          alertHandler.processPrecipitationChance(current.precipitationChance);
+          alertHandler.processWeather(color.toNumber());
+          alertHandler.processUvi(current.uvi);
+          alertHandler.processWindSpeed(current.windSpeed);
 
           validSegment = validSegment + 1;
 
@@ -333,10 +353,10 @@ class WhatWeatherView extends WatchUi.DataField {
             
             color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
 
-            $._alertHandler.processPrecipitationChance(forecast.precipitationChance);
-            $._alertHandler.processWeather(color.toNumber());
-            $._alertHandler.processUvi(forecast.uvi);
-            $._alertHandler.processWindSpeed(forecast.windSpeed);
+            alertHandler.processPrecipitationChance(forecast.precipitationChance);
+            alertHandler.processWeather(color.toNumber());
+            alertHandler.processUvi(forecast.uvi);
+            alertHandler.processWindSpeed(forecast.windSpeed);
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
@@ -412,8 +432,8 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       if ($._showWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
-      render.drawAlertMessages($._alertHandler.infoHandled());
-      // @@ TEST render.drawActiveAlert($._alertHandler.activeAlerts());  
+      render.drawAlertMessages(alertHandler.infoHandled());
+      // @@ TEST render.drawActiveAlert(alertHandler.activeAlerts());  
     } catch (ex) {
       ex.printStackTrace();
     }

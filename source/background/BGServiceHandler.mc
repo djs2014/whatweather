@@ -40,6 +40,8 @@ class BGServiceHandler {
     function isDataDelayed() as Boolean {
         return Utils.isDelayedFor(mLastObservationMoment, mObservationTimeDelayedMinutesThreshold);
     }
+    function isEnabled() as Boolean { return !mBGDisabled; }
+    function isActive() as Boolean { return !mBGActive; }
     function hasError() as Boolean { return mError != BGService.ERROR_BG_NONE || mHttpStatus != BGService.HTTP_OK; }
     function reset() as Void {
         System.println("Reset BG service");
@@ -140,10 +142,10 @@ class BGServiceHandler {
         } 
     }
 
-    function getWhenNextRequest() as String? {
-        if (hasError() || mBGDisabled || !mBGActive) { return null; }
+    function getWhenNextRequest(defValue as String?) as String? {
+        if (hasError() || mBGDisabled || !mBGActive) { return defValue; }
         var lastTime = Background.getLastTemporalEventTime();
-        if (lastTime == null) { return null; }
+        if (lastTime == null) { return defValue; }
         var elapsedSeconds = Time.now().value() - lastTime.value();
         var secondsToNext = (mUpdateFrequencyInMinutes * 60) - elapsedSeconds;
         return Utils.secondsToShortTimeString(secondsToNext, "{m}:{s}");
@@ -157,7 +159,7 @@ class BGServiceHandler {
             if (code < 0) {
                 mError = code;
             } else {
-                mHttpStatus = code;\
+                mHttpStatus = code;
                 mError = BGService.ERROR_BG_HTTPSTATUS;
             }
             System.println("onBackgroundData error responsecode: " + data);

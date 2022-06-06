@@ -35,17 +35,11 @@ class RenderWeather {
       var max = uvPoints.size();
       for (var i = 0; i < max; i += 1) {
         var uvp = uvPoints[i] as UvPoint;
-        // System.println(uvp.info());
         if (!uvp.isHidden) {
           var x = uvp.x;
           var y = ds.getYpostion((uvp.y * factor));
           var r = uviToRadius(uvp.uvi);
-          drawUvPoint(x,y,r,uvp.uvi);
-          // dc.setColor(uviToColor(uvp.uvi), Graphics.COLOR_TRANSPARENT);
-          // dc.fillCircle(x, y, r);
-          // var rh = (r + 2)/2;
-          // dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
-          // dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
+          drawUvPoint(x,y,r,uvp.uvi);          
         }
       }
     } catch (ex) {

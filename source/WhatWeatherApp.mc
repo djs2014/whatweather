@@ -8,11 +8,9 @@ import Toybox.Application.Storage;
 using Toybox.Position;
 using WhatAppBase.Utils as Utils;
 
-var mBGServiceHandler as BGServiceHandler?; 
+var _BGServiceHandler as BGServiceHandler?; 
 var _alertHandler as AlertHandler?;
 var _bgData as WeatherData?;
-var _bgCounter as Number = 0; 
-var _bgStatus as Number = 0;
 
 (:background)
 var _mostRecentData as WeatherData?;
@@ -45,10 +43,17 @@ class WhatWeatherApp extends Application.AppBase {
   function onSettingsChanged() as Void { loadUserSettings(); }
 
   function getBGServiceHandler() as BGServiceHandler {
-    if (mBGServiceHandler == null) {
-      mBGServiceHandler = new BGServiceHandler();
+    if ($._BGServiceHandler == null) {
+      $._BGServiceHandler = new BGServiceHandler();
     }
-    return mBGServiceHandler;
+    return $._BGServiceHandler;
+  }
+
+  function getAlertHandler() as AlertHandler {
+    if ($._alertHandler == null) {
+      $._alertHandler = new AlertHandler();
+    }
+    return $._alertHandler;
   }
 
   function loadUserSettings() as Void {
@@ -83,26 +88,24 @@ class WhatWeatherApp extends Application.AppBase {
 
       $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Lang.Boolean;
       
-      var handler =  getBGServiceHandler();
-      handler.setObservationTimeDelayedMinutes(Utils.getApplicationProperty("observationTimeDelayedMinutesThreshold", 10) as Number);
+      var bgHandler =  getBGServiceHandler();
+      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationProperty("observationTimeDelayedMinutesThreshold", 10) as Number);
       // @@ TODO add in settings
-      handler.setMinimalGPSLevel(Utils.getApplicationProperty("minimalGPSquality", 3) as Number);
-      handler.setUpdateFrequencyInMinutes(Utils.getApplicationProperty("updateFrequencyWebReq", 5) as Number);
+      bgHandler.setMinimalGPSLevel(Utils.getApplicationProperty("minimalGPSquality", 3) as Number);
+      bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationProperty("updateFrequencyWebReq", 5) as Number);
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
       if ($._showClouds || $._showUVIndexFactor > 0 || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE) {
-        handler.Enable(); 
+        bgHandler.Enable(); 
       } else {
-        handler.Disable(); 
+        bgHandler.Disable(); 
       }
 
-      if ($._alertHandler == null) {
-        $._alertHandler = new AlertHandler();
-      }
-      $._alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
-      $._alertHandler.setAlertUVi($._alertLevelUVi);
-      $._alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
-      $._alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
-      $._alertHandler.resetStatus();
+      var alertHandler = getAlertHandler();     
+      alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
+      alertHandler.setAlertUVi($._alertLevelUVi);
+      alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
+      alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
+      alertHandler.resetStatus();
 
       initComfortSettings();
 
@@ -139,26 +142,21 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   function onBackgroundData(data) {
-    System.println("Background data recieved background");    
-    if(data instanceof Number) {
-      var responseCode = data as Number;
-      $._bgStatus = responseCode;
-      if (responseCode > 0) {
-        // setErrorMessage("HTTP error: " + responseCode);                            
-        // System.println("Error webrequest responsecode: " + data);
-      } else {
-        // setErrorMessage(getCommunicationError(responseCode));
-        //System.println("Error webrequest responsecode: " + Helpers.getCommunicationError(responseCode));
-      }
-    } else {
-      // First entry hourly in OWM is current entry
-      $._bgData = WeatherBG.toWeatherData(data, true);
-      $._bgStatus = 200;
-      $._bgCounter = $._bgCounter + 1;      
-      // Storage.setValue("OWMResult", data);        	            
-    }
+    System.println("Background data recieved");
+    var bgHandler = getBGServiceHandler();
+    bgHandler.onBackgroundData(data, self, :updateBgData);
                       
     WatchUi.requestUpdate();
+  }
+
+  function updateBgData(handler as BGServiceHandler?, data as Dictionary) as Void {
+    // First entry hourly in OWM is current entry
+    var bgData = WeatherBG.toWeatherData(data, true);
+    if (bgData != null) { 
+      $._bgData = WeatherBG.toWeatherData(data, true);
+
+      handler.setLastObservationMoment(bgData.getObservationTime());
+    }
   }
 }
 

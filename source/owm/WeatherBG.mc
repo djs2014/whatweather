@@ -6,13 +6,8 @@ import Toybox.Time;
 import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 
-// @@ remove past hours  -> update current (if this happens)
-// var fcTime = Gregorian.info(forecast.forecastTime, Time.FORMAT_SHORT);
-//           if (forecast.forecastTime.compare(Time.now()) >= 0) {
-//             validSegment += 1;
-
 class WeatherBG  {
-    static function purgePastWeatherdata(data as WeatherData) as WeatherData {
+    static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
       if (data == null || data.hourly == null) { return data; }
       var max = data.hourly.size();
       var idxCurrent = -1;
@@ -22,7 +17,7 @@ class WeatherBG  {
         if ($.DEBUG_DETAILS) { System.println("purgePastWeatherdata?: " + Utils.getDateTimeString(forecast.forecastTime)); }
 
         if (forecast.forecastTime.compare(Time.now()) < 0) {
-          // past forecast
+          // Is a past forecast
           idxCurrent = idx;
           if ($.DEBUG_DETAILS) { System.println("purgePastWeatherdata past data!: " + Utils.getDateTimeString(forecast.forecastTime)); }
         }

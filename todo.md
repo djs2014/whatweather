@@ -6,14 +6,12 @@
 MVP - 1 
 0 - bug save settings via mobile - crash?
 
-1 - purge old data -> merge is then easier
-	Test it
-2 - layout garmin / owm
-	- uvi icon ()
-x 3 - only add uvi / clouds (missing data on garmin weather)
-4 - alerts with icons and max values
+4 - alerts with max values
 5 - progress info on screen [time next req + # + status] + obs time -> use bgHandler logic
 6 - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
+2 - layout garmin / owm
+	- uvi icon () ?
+x 3 - only add uvi / clouds (missing data on garmin weather)
 - use handler (see whatrain app) - refactor
 - status -> text / short info
 7 - set interval for weather call 0/5/10/15/20/25/30

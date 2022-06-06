@@ -19,6 +19,11 @@ class WeatherData {
   function valid() as Lang.Boolean {
     return hourly != null && (hourly as Array).size() > 0;
   }
+
+  function getObservationTime() as Time.Moment? {
+    if (self.current == null) { return null; }
+    return (self.current as WeatherCurrent).observationTime;
+  }
 }
 
 class WeatherCurrent {

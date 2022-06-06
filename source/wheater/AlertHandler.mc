@@ -16,8 +16,11 @@ class AlertHandler {
   hidden var alertRainMMfirstHour as Lang.Number = 0;
   hidden var alertWindSpeed as Lang.Number = 0;
 
+  var maxUvi as Lang.Float = 0.0;
   var maxPrecipitationChance as Lang.Number = 0;
-
+  var maxRainMMfirstHour as Lang.Number = 0;
+  var maxWindSpeed as Lang.Float = 0.0;
+  
   hidden var WEATHER_NEUTRAL as Lang.Number = 0x00AAFF;  // COLOR_BLUE
 
   hidden const NEUTRAL = 0;
@@ -36,6 +39,7 @@ class AlertHandler {
   hidden var allClearWeather as Lang.Boolean = true;
   hidden var allClearWindSpeed as Lang.Boolean = true;
 
+  
   function setAlertPrecipitationChance(value as Lang.Number) as Void {
     alertPrecipitationChance = value;
   }
@@ -143,10 +147,15 @@ class AlertHandler {
     statusRainMMfirstHour = NEUTRAL;
     statusWeather = NEUTRAL;
     statusWindSpeed = NEUTRAL;
+
+    maxUvi = 0.0;
+    maxPrecipitationChance = 0;
+    maxRainMMfirstHour = 0;
+    maxWindSpeed = 0.0;
   }
 
   function checkStatus() as Void {
-    maxPrecipitationChance = 0;
+    //maxPrecipitationChance = 0; ??
     if (allClearUvi) {
       statusUvi = NEUTRAL;      
     }
@@ -177,6 +186,7 @@ class AlertHandler {
     if (alertUvi <= 0 || uvi == null) {
       return;
     }
+    maxUvi = Utils.max(maxUvi, uvi) as Float;    
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusUvi == NEUTRAL && uvi >= alertUvi) {
       statusUvi = TRIGGERED;
@@ -190,10 +200,9 @@ class AlertHandler {
     if (chance == null) {
       return;
     }
-    if (chance >= maxPrecipitationChance) {
-      maxPrecipitationChance = chance;
-    }
-
+   
+    maxPrecipitationChance = Utils.max(maxPrecipitationChance, chance) as Number;
+   
     if (alertPrecipitationChance <= 0) {
       return;
     }
@@ -211,6 +220,8 @@ class AlertHandler {
     if (alertRainMMfirstHour <= 0 || mm == null) {
       return;
     }
+
+    maxRainMMfirstHour = Utils.max(maxRainMMfirstHour, mm) as Number;    
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusRainMMfirstHour == NEUTRAL && mm >= alertRainMMfirstHour) {
       statusRainMMfirstHour = TRIGGERED;
@@ -237,6 +248,7 @@ class AlertHandler {
     if (alertWindSpeed <= 0 || windSpeedMs == null) {
       return;
     }
+    maxWindSpeed = Utils.max(maxWindSpeed, windSpeedMs) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     var beaufort = Utils.windSpeedToBeaufort(windSpeedMs);
     if (statusWindSpeed == NEUTRAL && beaufort >= alertWindSpeed) {
