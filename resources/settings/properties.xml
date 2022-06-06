@@ -2,12 +2,12 @@
 	<property id="showCurrentForecast" type="boolean">true</property>
 	<property id="maxMinuteForecast" type="number">0</property>
 	<property id="maxHoursForecast" type="number">8</property>
-	<property id="showClouds" type="boolean">false</property>
-	<property id="showUVIndexFactor" type="number">0</property>
+	<property id="showClouds" type="boolean">true</property>
+	<property id="showUVIndexFactor" type="number">2</property>
 	<property id="hideUVIndexLowerThan" type="number">2</property>
 	<property id="alertLevelPrecipitationChance" type="number">70</property>
 	<property id="alertLevelRainMMfirstHour" type="number">0</property>
-	<property id="alertLevelUVi" type="number">0</property>
+	<property id="alertLevelUVi" type="number">6</property>
 	<property id="alertLevelWindSpeed" type="number">5</property>
 	<property id="showAlertLevel" type="boolean">false</property>
 	<property id="showMaxPrecipitationChance" type="boolean">false</property>	
@@ -33,5 +33,12 @@
 	<property id="comfortPopMin" type="number">0</property>	
 	<property id="comfortPopMax" type="number">40</property>	
 	<property id="showGlossary" type="boolean">false</property>	
-	<property id="alwaysUpdateGarminWeather" type="boolean">false</property>		
+	
+	<property id="minimalGPSquality" type="number">3</property>	
+	<property id="updateFrequencyWebReq" type="number">5</property>	
+
+	<property id="weatherDataSource" type="number">1</property>
+	<property id="openWeatherAPIKey" type="string">9ad5416854d7da69e780643714df7301</property>
+	<property id="openWeatherProxy" type="string">https://api.castlephoto.info/owm_one</property>
+	<property id="openWeatherProxyAPIKey" type="string">0548b3c7-61bc-4afc-b6e5-616f19d3cf23</property>	
 </properties>

@@ -13,28 +13,8 @@ class GarminWeather {
       var garCurrent = Weather.getCurrentConditions();
       if (garCurrent == null) {
         return new WeatherData(null, null, null, Time.now());
-        // $._mostRecentData.lastUpdated = Time.now();        
       }
-
-      // if (!$._alwaysUpdateGarminWeather || $._mostRecentData.valid()) {
-      //   var newData = garCurrent.observationTime != null &&
-      //                 garCurrent.observationTime.greaterThan(
-      //                     $._mostRecentData.lastUpdated);
-
-      //   if (DEBUG_DETAILS) {
-      //     System.println(Lang.format(
-      //         "Check garmin obs[$1$] last updated[$2$] is new data[$3$]", [
-      //           getDateTimeString(garCurrent.observationTime),
-      //           getDateTimeString($._mostRecentData.lastUpdated),
-      //           garCurrent.observationTime.greaterThan(
-      //               $._mostRecentData.lastUpdated)
-      //         ]));
-      //   }
-      //   if (!newData) {
-      //     return;
-      //   }
-      // }
-
+    
       var cc = new WeatherCurrent();
       cc.precipitationChance = Utils.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
       cc.forecastTime = null;  //@@ needed?

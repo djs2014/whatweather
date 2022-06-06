@@ -1,1 +1,5 @@
 bin/
+other/logs/
+export/
+export_beta/
+private/

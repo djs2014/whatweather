@@ -13,8 +13,7 @@ class WeatherData {
     self.current = current;
     self.minutely = minutely;
     self.hourly = hourly;
-    self.lastUpdated = lastUpdated;
-    System.println("WeatherData initialize");
+    self.lastUpdated = lastUpdated;    
   }
 
   function valid() as Lang.Boolean {

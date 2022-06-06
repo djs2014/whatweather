@@ -12,6 +12,9 @@ import Toybox.Background;
 using WhatAppBase.Utils as Utils;
 
 class WhatWeatherView extends WatchUi.DataField {
+  var mBGServiceHandler as BGServiceHandler?;
+  var mCurrentLocation as Utils.CurrentLocation = new Utils.CurrentLocation();
+
   // @@ cleanup
   hidden var mFont as Graphics.FontType = Graphics.FONT_LARGE;
   hidden var mFontPostfix as Graphics.FontType = Graphics.FONT_TINY;
@@ -23,6 +26,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function initialize() {
     DataField.initialize();
+
+    var handler = getBGServiceHandler();
+    handler.setCurrentLocation(mCurrentLocation);  
+
     mFontSmallH = Graphics.getFontHeight(mFontSmall);    
     // @@QnD
     if ($._alertHandler == null) {
@@ -30,10 +37,25 @@ class WhatWeatherView extends WatchUi.DataField {
     }
   }
 
+  hidden function getBGServiceHandler() as BGServiceHandler {
+    if (mBGServiceHandler == null) {
+      mBGServiceHandler = getApp().getBGServiceHandler();
+    }
+    return mBGServiceHandler;
+  }
+
   function onLayout(dc as Dc) as Void {}
 
   function compute(info as Activity.Info) as Void {
     _currentInfo.getPosition(info);
+
+
+    
+    // mCurrentLocation.infoLocation();
+
+    var handler = getBGServiceHandler();
+    handler.onCompute(info);
+    handler.autoScheduleService();   
   }
 
   // Display the value you computed here. This will be called once a second when
@@ -72,8 +94,8 @@ class WhatWeatherView extends WatchUi.DataField {
     // $._mostRecentData = GarminWeather.getLatestGarminWeather();
     
     var garminWeather = WeatherBG.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-    $._bgData = WeatherBG.purgePastWeatherdata($._bgData);
-    $._mostRecentData = WeatherBG.mergeWeather(garminWeather, $._bgData);
+    var bgData = WeatherBG.purgePastWeatherdata($._bgData);
+    $._mostRecentData = WeatherBG.mergeWeather(garminWeather, bgData);
 
     
 
@@ -91,8 +113,16 @@ class WhatWeatherView extends WatchUi.DataField {
 
     showInfo(dc, ds);
 
+    var status;
+    var handler = getBGServiceHandler();
+    if (handler.hasError()) {
+      status = handler.getError();
+    } else {
+      status = handler.getStatus();
+    }
+
     // @@ if bg active -> draw current info loc/dateobserv #[status]nextreq
-    var text = "#" + $._bgCounter.format("%d") + "[" + $._bgStatus.format("%d") + "]" + getWhenNextRequest();
+    var text = "#" + $._bgCounter.format("%d") + "[" + status + " " + $._bgStatus.format("%d") + "]" + getWhenNextRequest();
     var textWH = dc.getTextDimensions(text, Graphics.FONT_XTINY);
     dc.drawText(dc.getWidth() - textWH[0], dc.getHeight() - textWH[1], Graphics.FONT_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);  
   }
@@ -255,10 +285,11 @@ class WhatWeatherView extends WatchUi.DataField {
 
           if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
-          if ($._showClouds) { drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); }
+          var cHeight = 0;
+          if ($._showClouds) { cHeight = drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); }
           // rain
-          drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
-          if ($._showClouds) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); }
+          var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
+          if ($._showClouds  && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); }
 
           if ($._showUVIndexFactor > 0) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
@@ -313,10 +344,11 @@ class WhatWeatherView extends WatchUi.DataField {
             if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight);
             }
 
-            if ($._showClouds) { drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); }
+            var cHeight = 0;
+            if ($._showClouds) { cHeight = drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); }
             // rain
-            drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
-            if ($._showClouds) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); }
+            var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
+            if ($._showClouds && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); }
 
             if ($._showUVIndexFactor > 0) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
@@ -433,19 +465,25 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.drawRectangle(x, y, width, height);
   }
 
-  function drawColumnPrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, precipitationChance as Number) as Void{
+  function drawColumnPrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, precipitationChance as Number) as Number{
+    if (precipitationChance == 0) { return 0; }
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * precipitationChance));
     var barFilledY = y + bar_height - barFilledHeight;
     dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
+    return barFilledHeight.toNumber();
   }
 
-  function drawLinePrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, precipitationChance as Number) as Void{
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+  function drawLinePrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, 
+    precipitationChance as Number) as Number {
+    if (precipitationChance == 0) { return 0; }
     var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * precipitationChance));
     var barFilledY = y + bar_height - barFilledHeight;
-    var lineWidth = 2;
-    dc.fillRectangle(x + bar_width - lineWidth, barFilledY, lineWidth, barFilledHeight);
+    var lineWidth = bar_width / 3;
+    var posX = x + bar_width - lineWidth;
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+    dc.fillRectangle(posX, barFilledY, lineWidth, barFilledHeight);
+    return barFilledHeight.toNumber();
   }
 
   function drawColumnPrecipitationMillimeters(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, popmm as Number) as Void{

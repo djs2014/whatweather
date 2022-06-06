@@ -15,19 +15,22 @@ class WeatherBG  {
     static function purgePastWeatherdata(data as WeatherData) as WeatherData {
       if (data == null || data.hourly == null) { return data; }
       var max = data.hourly.size();
-      var idxEnd = -1;
+      var idxCurrent = -1;
       var forecast;
       for (var idx = 0; idx < max; idx += 1) {
         forecast = data.hourly[idx] as WeatherHourly;
+        if ($.DEBUG_DETAILS) { System.println("purgePastWeatherdata?: " + Utils.getDateTimeString(forecast.forecastTime)); }
+
         if (forecast.forecastTime.compare(Time.now()) < 0) {
           // past forecast
-          idxEnd = idx;
+          idxCurrent = idx;
+          if ($.DEBUG_DETAILS) { System.println("purgePastWeatherdata past data!: " + Utils.getDateTimeString(forecast.forecastTime)); }
         }
       }
-      if (idxEnd > -1) {
-        // Remove old entries
-        forecast = data.hourly[idxEnd] as WeatherHourly;
-        data.hourly = data.hourly.slice(0, idxEnd);
+      if (idxCurrent > -1) {
+        // Remove old entries, start after current hour
+        forecast = data.hourly[idxCurrent] as WeatherHourly;        
+        data.hourly = data.hourly.slice(idxCurrent + 1, null);
         if (data.current != null) {
           var current = data.current as WeatherCurrent;
           current.forecastTime = forecast.forecastTime;

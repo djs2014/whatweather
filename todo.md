@@ -1,26 +1,38 @@
 -> node.js: OWM pop = pop * 100.0 
 + build current
-if (hourly.size() > 0) {			
-                    // First entry of hourly - > clouds + pop goes to current (it is the current hour)
-                    cc.precipitationChance = getValue(hourly[0]["pop"], 0) * 100.0; 
-                    cc.forecastTime = new Time.Moment(hourly[0]["dt"]); 
-                }
-cc.observationLocationName = cc.lat + "," + cc.lon;
-cc.observationTime = new Time.Moment(current["dt"]);
+
 --------------------
 
 MVP - 1 
+0 - bug save settings via mobile - crash?
+
 1 - purge old data -> merge is then easier
 	Test it
 2 - layout garmin / owm
 	- uvi icon ()
 x 3 - only add uvi / clouds (missing data on garmin weather)
-4 - alerts with icons
-5 - progress info on screen [time next req + # + status]
+4 - alerts with icons and max values
+5 - progress info on screen [time next req + # + status] + obs time -> use bgHandler logic
+6 - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
+- use handler (see whatrain app) - refactor
+- status -> text / short info
 7 - set interval for weather call 0/5/10/15/20/25/30
 	0 = disabled
+	bgCounter callCounter modulo x 
+	use bghanlder for counter/obs time/ callback bg data
 6 - show night/sun down/up
+	grijs lichter, nacht -> grijs donker
 7 -  buffered bitmaps (when weather not changed)
+	- draw wobbly line // aka the background
+8 - /test parameter -> owm response with mm rain data to test layout
+
+9 - property: weatherData.changed -> 
+	- new call to owm
+	- obstime /lat /lng / obsname diff
+10 - when owm location closer to current location then garmin location use owm for:
+	- precepation chance / weather etc..
+	- mark owm location green, garmin location light gray or something
+	- 
 
 MVP - 2
 1 

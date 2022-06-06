@@ -7,8 +7,8 @@ import Toybox.Background;
 import Toybox.Application.Storage;
 using Toybox.Position;
 using WhatAppBase.Utils as Utils;
-//import Helpers;
 
+var mBGServiceHandler as BGServiceHandler?; 
 var _alertHandler as AlertHandler?;
 var _bgData as WeatherData?;
 var _bgCounter as Number = 0; 
@@ -30,13 +30,13 @@ class WhatWeatherApp extends Application.AppBase {
   function onStop(state as Dictionary?) as Void {    }
     
   function getInitialView() as Array<Views or InputDelegates> ? {
-    try {
-      if (Toybox.System has :ServiceDelegate) {
-        Background.registerForTemporalEvent(new Time.Duration(5 * 60));
-      }
-    } catch (ex) {
-      ex.printStackTrace();          
-    }   
+    // try {
+    //   if (Toybox.System has :ServiceDelegate) {
+    //     Background.registerForTemporalEvent(new Time.Duration(5 * 60));
+    //   }
+    // } catch (ex) {
+    //   ex.printStackTrace();          
+    // }   
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
     return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
@@ -44,8 +44,16 @@ class WhatWeatherApp extends Application.AppBase {
 
   function onSettingsChanged() as Void { loadUserSettings(); }
 
+  function getBGServiceHandler() as BGServiceHandler {
+    if (mBGServiceHandler == null) {
+      mBGServiceHandler = new BGServiceHandler();
+    }
+    return mBGServiceHandler;
+  }
+
   function loadUserSettings() as Void {
     try {
+      System.println("Loading user settings");  
       $._showCurrentForecast = Utils.getApplicationProperty("showCurrentForecast", true) as Lang.Boolean;
       $._maxMinuteForecast = Utils.getApplicationProperty("maxMinuteForecast", 60) as Lang.Number;
       $._maxHoursForecast = Utils.getApplicationProperty("maxHoursForecast", 8) as Lang.Number;
@@ -74,7 +82,18 @@ class WhatWeatherApp extends Application.AppBase {
       $._showGlossary = Utils.getApplicationProperty("showGlossary", false) as Lang.Boolean;
 
       $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Lang.Boolean;
-      // $._alwaysUpdateGarminWeather = Utils.getApplicationProperty("alwaysUpdateGarminWeather", false) as Lang.Boolean;
+      
+      var handler =  getBGServiceHandler();
+      handler.setObservationTimeDelayedMinutes(Utils.getApplicationProperty("observationTimeDelayedMinutesThreshold", 10) as Number);
+      // @@ TODO add in settings
+      handler.setMinimalGPSLevel(Utils.getApplicationProperty("minimalGPSquality", 3) as Number);
+      handler.setUpdateFrequencyInMinutes(Utils.getApplicationProperty("updateFrequencyWebReq", 5) as Number);
+      // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
+      if ($._showClouds || $._showUVIndexFactor > 0 || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE) {
+        handler.Enable(); 
+      } else {
+        handler.Disable(); 
+      }
 
       if ($._alertHandler == null) {
         $._alertHandler = new AlertHandler();
@@ -92,7 +111,7 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherProxy", Utils.getApplicationProperty("openWeatherProxy","") as String);
       Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationProperty("openWeatherProxyAPIKey","") as String);                    
     
-      System.println("Settings loaded");
+      System.println("User settings loaded");
     } catch (ex) {
       ex.printStackTrace();
     }
