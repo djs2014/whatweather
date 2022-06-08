@@ -7,7 +7,7 @@ import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 using WhatAppBase.Colors as Colors;
 
-enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1 }
+enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1, wsGarminOnly = 2, wsOWMOnly = 3 }
 
 (:typecheck(disableBackgroundCheck))  
 class WeatherService  {
@@ -148,11 +148,24 @@ class WeatherService  {
         switch(source) {
           case wsGarminFirst:
             garminData.current.precipitationChanceOther = current.precipitationChance; 
+            garminData.current.conditionOther = current.condition; 
            break;
           case wsOWMFirst:
             garminData.current.precipitationChanceOther = garminData.current.precipitationChance; 
             garminData.current.precipitationChance = current.precipitationChance; 
+            garminData.current.conditionOther = garminData.current.condition; 
+            garminData.current.condition = current.condition; 
            break;
+          case wsGarminOnly:
+            garminData.current.precipitationChanceOther = 0; 
+            garminData.current.conditionOther = 0;  
+           break;
+          case wsOWMOnly:
+            garminData.current.precipitationChance = current.precipitationChance; 
+            garminData.current.precipitationChanceOther = 0; 
+            garminData.current.condition = current.condition; 
+            garminData.current.conditionOther = 0; 
+           break; 
         }
 
         // We assume start hour is for both set the same! Past hours will be purged.
@@ -166,11 +179,24 @@ class WeatherService  {
             switch(source) {
             case wsGarminFirst:
               garminData.hourly[h].precipitationChanceOther = hourly[h].precipitationChance; 
+              garminData.hourly[h].conditionOther = hourly[h].condition; 
               break;
             case wsOWMFirst:
               garminData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
               garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+              garminData.hourly[h].conditionOther = garminData.hourly[h].condition; 
+              garminData.hourly[h].condition = hourly[h].condition; 
               break;
+            case wsGarminOnly:
+              garminData.hourly[h].precipitationChanceOther = 0; 
+              garminData.hourly[h].conditionOther = 0;  
+            break;
+            case wsOWMOnly:
+              garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+              garminData.hourly[h].precipitationChanceOther = 0; 
+              garminData.hourly[h].condition = hourly[h].condition; 
+              garminData.hourly[h].conditionOther = 0; 
+            break; 
             }
           }
         }

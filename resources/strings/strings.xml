@@ -45,8 +45,10 @@
     
     <string id="WeatherDataSource">Weather source</string>
     <string id="WeatherDataSourcePrompt">Select weather source</string>
+    <string id="WeatherDataSourceGarminFirst">Garmin first</string>
+    <string id="WeatherDataSourceOWMFirst">OWM first</string>  
     <string id="WeatherDataSourceGarmin">Garmin</string>
-    <string id="WeatherDataSourceOWM">Open weather map (OWM)</string>    
+    <string id="WeatherDataSourceOWM">OWM (Open weather map)</string>    
     <string id="OpenWeatherAPIKey">Open weather map API key</string>
     <string id="OpenWeatherProxy">OWM Proxy (to compress OWM-json)</string>
     <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   

@@ -111,8 +111,9 @@ class WhatWeatherApp extends Application.AppBase {
       initComfortSettings();
       System.println("Comfort settings");
 
-      // @@ Weather merge mode ..
-      Storage.setValue("weatherDataSource", Utils.getApplicationPropertyAsNumber("weatherDataSource",0));
+      var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
+      $._weatherDataSource = ws as WeatherSource;
+      Storage.setValue("weatherDataSource", ws);
       Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
       Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
       Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    

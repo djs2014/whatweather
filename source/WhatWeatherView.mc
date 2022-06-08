@@ -125,7 +125,7 @@ class WhatWeatherView extends WatchUi.DataField {
       var weatherChanged = true;
       var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
       $._bgData = WeatherService.purgePastWeatherdata($._bgData);
-      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData, wsGarminFirst);
+      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData, $._weatherDataSource);
       if (weatherChanged) {
         onUpdateWeather(dc, ds, dashesUnderColumnHeight);
       }
@@ -272,7 +272,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var tempPoints = [];
     var humidityPoints = [];
     var windPoints = [];
-    var color;
+    var color, colorOther, colorDashes;
     var mm = null;
     var current = null;
     var hourlyForecast = null;
@@ -323,10 +323,13 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showCurrentForecast) {
         if (current != null) {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
+          colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
           if (DEBUG_DETAILS) { System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [ x, current.info(), color ])); }
 
           alertHandler.processPrecipitationChance(current.precipitationChance);
-          alertHandler.processWeather(color.toNumber());
+          alertHandler.processPrecipitationChance(current.precipitationChanceOther);
+          alertHandler.processWeather(color.toNumber());          
+          alertHandler.processWeather(colorOther.toNumber());
           alertHandler.processUvi(current.uvi);
           alertHandler.processWindSpeed(current.windSpeed);
 
@@ -340,9 +343,9 @@ class WhatWeatherView extends WatchUi.DataField {
           if ($._showClouds) { cHeight = drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); }
           // rain
           var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
-          if ($._showClouds  && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
+          if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
           // rain other
-          drawLinePrecipitationChance(dc, COLOR_CLOUDS, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, current.precipitationChanceOther);
+          drawLinePrecipitationChance(dc, COLOR_CLOUDS, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, current.precipitationChanceOther);
 
           if ($._showUVIndexFactor > 0) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
@@ -355,10 +358,15 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowWind != SHOW_WIND_NOTHING) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
 
           if (dashesUnderColumnHeight > 0) {
-            color = Graphics.COLOR_DK_GRAY;
-            if (current.precipitationChance == 0) { color =getConditionColor(current.condition, Graphics.COLOR_DK_GRAY); }
-            dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+            colorDashes = Graphics.COLOR_DK_GRAY;
+            if (current.precipitationChance == 0) { colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY); }
+            dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth, dashesUnderColumnHeight);
+            if (color != colorOther && current.precipitationChanceOther == 0) {
+              colorDashes = getConditionColor(current.conditionOther, Graphics.COLOR_DK_GRAY);
+              dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+              dc.fillRectangle(x + (ds.columnWidth/3 * 2), ds.columnY + ds.columnHeight, ds.columnWidth/3, dashesUnderColumnHeight);
+            }
           }
 
           if (mShowWeatherCondition) {
@@ -385,25 +393,26 @@ class WhatWeatherView extends WatchUi.DataField {
             validSegment += 1;
             
             color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
-
+            colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE); 
             alertHandler.processPrecipitationChance(forecast.precipitationChance);
+            alertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
             alertHandler.processWeather(color.toNumber());
+            alertHandler.processWeather(colorOther.toNumber());
             alertHandler.processUvi(forecast.uvi);
             alertHandler.processWindSpeed(forecast.windSpeed);
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
             if (mShowComfort) { render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity, forecast.precipitationChance); }
-            if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight);
-            }
+            if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
             var cHeight = 0;
             if ($._showClouds) { cHeight = drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); }
             // rain
             var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
-            if ($._showClouds && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }
+            if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, COLOR_CLOUDS, COLOR_CLOUDS, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }
             // rain other
-            drawLinePrecipitationChance(dc, COLOR_CLOUDS, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
+            drawLinePrecipitationChance(dc, COLOR_CLOUDS, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
 
             if ($._showUVIndexFactor > 0) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
@@ -415,10 +424,15 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mShowWind) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
 
             if (dashesUnderColumnHeight > 0) {              
-              color = Graphics.COLOR_DK_GRAY;
-              if (forecast.precipitationChance == 0) { color = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY); }
-              dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+              colorDashes = Graphics.COLOR_DK_GRAY;
+              if (forecast.precipitationChance == 0) { colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY); }
+              dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth, dashesUnderColumnHeight);
+              if (color != colorOther && forecast.precipitationChanceOther == 0) {
+                colorDashes = getConditionColor(forecast.conditionOther, Graphics.COLOR_DK_GRAY);
+                dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+                dc.fillRectangle(x + (ds.columnWidth/3 *2), ds.columnY + ds.columnHeight, ds.columnWidth/3, dashesUnderColumnHeight);
+              }
             }
 
             if (mShowWeatherCondition) {

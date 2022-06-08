@@ -5,7 +5,10 @@ MVP - 1
 - show alert info on small field (abbreviated)
 - combine with bg data / rain pop 
   - pop_other ==> side line diff color blue
-    - show mode on screen
+    - use condition icon if not different from default (color)
+    - show mode on screen (when paused?)
+    - garmin only + add missing
+    - owm only + add missing
     - garmin first
     - owm first
     - bg enabled if owm first or show uvi/clouds

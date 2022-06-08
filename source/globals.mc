@@ -50,6 +50,8 @@ var _showGlossary as Lang.Boolean = true;
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Number = 5;
 
+var _weatherDataSource as WeatherSource = wsGarminFirst;
+
 const COMFORT_NO = 0;
 const COMFORT_BELOW = 1;
 const COMFORT_NORMAL = 2;

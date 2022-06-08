@@ -1,8 +1,10 @@
 <settings>
 	<setting propertyKey="@Properties.weatherDataSource" title="@Strings.WeatherDataSource" prompt="@Strings.WeatherDataSourcePrompt">
         <settingConfig type="list">
-            <listEntry value="0">@Strings.WeatherDataSourceGarmin</listEntry>
-            <listEntry value="1">@Strings.WeatherDataSourceOWM</listEntry>            
+            <listEntry value="0">@Strings.WeatherDataSourceGarminFirst</listEntry>
+            <listEntry value="1">@Strings.WeatherDataSourceOWMFirst</listEntry>            
+            <listEntry value="2">@Strings.WeatherDataSourceGarmin</listEntry>
+            <listEntry value="3">@Strings.WeatherDataSourceOWM</listEntry>            
         </settingConfig>
     </setting>
  	<setting propertyKey="@Properties.openWeatherAPIKey" title="@Strings.OpenWeatherAPIKey">

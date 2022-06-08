@@ -44,8 +44,9 @@ class WeatherCurrent {
   var forecastTime as Time.Moment? = null;
   var clouds as Lang.Number = 0;
   var precipitationChance as Lang.Number = 0;
-  var precipitationChanceOther as Lang.Number = 0; // @nD
   var condition as Lang.Number = 0;
+  var precipitationChanceOther as Lang.Number = 0; // @nD
+  var conditionOther as Lang.Number = 0;
   var windBearing as Lang.Number? = null;
   var windSpeed as Lang.Float? = null;
   var relativeHumidity as Lang.Number? = null;
@@ -74,8 +75,9 @@ class WeatherHourly {
   var forecastTime as Time.Moment = Time.now();
   var clouds as Lang.Number = 0;
   var precipitationChance as Lang.Number = 0;
-  var precipitationChanceOther as Lang.Number = 0; // @nD
   var condition as Lang.Number = 0;
+  var precipitationChanceOther as Lang.Number = 0; // @nD
+  var conditionOther as Lang.Number = 0;
   var windBearing as Lang.Number? = null;
   var windSpeed as Lang.Float? = null;
   var relativeHumidity as Lang.Number? = null;
