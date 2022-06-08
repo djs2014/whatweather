@@ -1,6 +1,8 @@
 import Toybox.Graphics;
 import Toybox.System;
 import Toybox.Lang;
+using WhatAppBase.Utils as Utils;
+using WhatAppBase.Types as Types;
 
 class DisplaySettings {
   hidden var dc as Graphics.Dc?;
@@ -35,6 +37,8 @@ class DisplaySettings {
   var columnX as Lang.Number = 0;
 
   var smallField as Lang.Boolean = false;
+  var wideField as Lang.Boolean = false;
+  var largeField as Lang.Boolean = false;
   var oneField as Lang.Boolean = false;
   hidden var backgroundColor as Graphics.ColorType = 0;
 
@@ -44,12 +48,44 @@ class DisplaySettings {
     self.dc = dc;
     self.width = dc.getWidth();
     self.height = dc.getHeight();
-    self.smallField = self.height < 80;
-    self.oneField = self.height >= 322 && self.width >= 246;
+    // @@ QnD
+    self.smallField = isSmallField(dc);
+    self.wideField = isWideField(dc);
+    self.largeField = isLargeField(dc);
+    self.oneField = isOneField(dc);
+
+    // self.smallField = self.height < 80;
+    // self.oneField = self.height >= 322 && self.width >= 246;
+  }
+
+
+    function isHiddenField(dc as Dc) as Boolean { return getFieldType(dc) == Types.HiddenField; }
+    function isSmallField(dc as Dc) as Boolean { return getFieldType(dc) == Types.SmallField; }
+    function isWideField(dc as Dc) as Boolean { return getFieldType(dc) == Types.WideField; }
+    function isLargeField(dc as Dc) as Boolean { return getFieldType(dc) == Types.LargeField; }
+    function isOneField(dc as Dc) as Boolean { return getFieldType(dc) == Types.OneField; }
+
     // 1 large field: w[246] h[322]
     // 2 fields: w[246] h[160]
     // 3 fields: w[246] h[106]
-  }
+    function getFieldType(dc as Dc) as Types.FieldType {
+      var width = dc.getWidth();
+      var height = dc.getHeight();
+      var fieldType = Types.SmallField;
+
+      if (width == 0) {
+        fieldType = Types.HiddenField;        
+      } else if (width >= 246) {
+        fieldType = Types.WideField;
+        if (height >= 100) {
+          fieldType = Types.LargeField;
+        } else if (height >= 322) {
+          fieldType = Types.OneField;
+        }
+      }
+      return fieldType;
+    }
+
 
   function setDc(dc as Dc, backgroundColor as Graphics.ColorType) as Void {
     calculateLayout(dc);

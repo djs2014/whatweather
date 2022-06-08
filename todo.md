@@ -4,6 +4,11 @@
 MVP - 1 
 - show alert info on small field (abbreviated)
 - combine with bg data / rain pop 
+  - pop_other ==> side line diff color blue
+    - show mode on screen
+    - garmin first
+    - owm first
+    - bg enabled if owm first or show uvi/clouds
 - use intial stored gps location
   - for current loc
   - for garmin weather?

@@ -58,7 +58,7 @@ class RenderWeather {
   }
 
   function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) as Void {
-    if (ds.smallField) { return; }
+    //if (ds.smallField) { return; }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -79,9 +79,9 @@ class RenderWeather {
   }
 
   function drawHumidityGraph(points as Lang.Array, factor as Lang.Number) as Void {
-    if (ds.smallField) {
-      return;
-    }
+    // if (ds.smallField) {
+    //   return;
+    // }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -142,7 +142,7 @@ class RenderWeather {
   }
 
   function drawComfortZones() as Void {
-    if (ds.smallField) { return; }
+    // if (ds.smallField) { return; }
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
     drawWobblyLine(0, ds.width, self.yHumTop);
     drawWobblyLine(0, ds.width, self.yHumBottom);
@@ -158,9 +158,9 @@ class RenderWeather {
     dc.drawText(ds.margin, TOP_ADDITIONAL_INFO, ds.fontSmall, name, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawObservationLocation2(name as Lang.String?) as Void {
-    // Hide on small screen
-    if (name == null || (name as String).length() == 0 || ds.smallField) { return; }
+  function drawObservationLocationLine2(name as Lang.String?) as Void {
+    // Hide on small screen || ds.smallField
+    if (name == null || (name as String).length() == 0) { return; }
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.margin, topAdditionalInfo2, ds.fontSmall, name,
                 Graphics.TEXT_JUSTIFY_LEFT);
@@ -182,7 +182,7 @@ class RenderWeather {
   }
 
   function drawWindInfo(windPoints as Array) as Void {
-    if (ds.smallField) { return; }
+    // if (ds.smallField) { return; }
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
       var wp = windPoints[idx] as WindPoint;
@@ -191,7 +191,7 @@ class RenderWeather {
   }
 
   function drawWindInfoInColumn(x as Lang.Number, windBearingInDegrees as Lang.Number, windSpeed as Lang.Float) as Void {
-    if (ds.smallField) { return; }
+    // if (ds.smallField) { return; }
     var radius = 8;
     var center = new Point(x + ds.columnWidth / 2,        ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2);
     drawWind(center, radius, windBearingInDegrees, windSpeed);
@@ -200,12 +200,30 @@ class RenderWeather {
   function drawAlertMessages(activeAlerts as Lang.String?) as Void{  
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) { return; }
 
-    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(ds.width / 2, 10, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);    
+    dc.drawText(ds.width / 2, TOP_ADDITIONAL_INFO, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
+  }
+
+  function drawAlertMessagesVert(activeAlerts as Array<String>) as Void {
+    var max = activeAlerts.size();
+    if (max == 0) { return; }
+
+    var h = dc.getFontHeight(ds.fontSmall) - 4;
+    var y = TOP_ADDITIONAL_INFO;
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);    
+    for (var idx = 0; idx < max; idx += 1) {
+      var aa = activeAlerts[idx] as String;
+      y = y + h;
+
+      var textW = dc.getTextWidthInPixels(aa, ds.fontSmall);
+      var textX = ds.width - textW - ds.margin;
+
+      dc.drawText(textX, y, ds.fontSmall, aa, Graphics.TEXT_JUSTIFY_LEFT);
+    }
   }
 
   function drawActiveAlert(activeAlerts as Array) as Void{
-    if (ds.smallField) { return; } // @@TODO
+    // if (ds.smallField) { return; } // @@TODO
 
     var max = activeAlerts.size();
     if (max == 0) { return; }
@@ -303,7 +321,8 @@ class RenderWeather {
   }
 
   function _drawWeatherCondition(center as Point, condition as Lang.Number) as Void {
-    if (condition == null || ds.smallField) { return; }
+    if (condition == null) { return; }
+    // if (condition == null || ds.smallField) { return; }
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {

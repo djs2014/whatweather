@@ -7,6 +7,8 @@ import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 using WhatAppBase.Colors as Colors;
 
+enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1 }
+
 (:typecheck(disableBackgroundCheck))  
 class WeatherService  {
     static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
@@ -23,6 +25,7 @@ class WeatherService  {
           // Is a past forecast
           idxCurrent = idx;
           if ($.DEBUG_DETAILS) { System.println("purgePastWeatherdata past data!: " + Utils.getDateTimeString(forecast.forecastTime)); }
+          wData.setChanged(true);
         }
       }
       if (idxCurrent > -1) {
@@ -127,7 +130,7 @@ class WeatherService  {
       }       
     }
 
-    static function mergeWeather(garminData as WeatherData, bgData as WeatherData) as WeatherData {
+    static function mergeWeather(garminData as WeatherData, bgData as WeatherData, source as WeatherSource) as WeatherData {
       try {
         var current = bgData.current;
         var hourly = bgData.hourly;
@@ -139,8 +142,19 @@ class WeatherService  {
         // Add minutes
         // Prefer Pop / Weather 
                 
-        garminData.current.uvi = bgData.current.uvi;
-        garminData.current.clouds = bgData.current.clouds;       
+        garminData.current.uvi = current.uvi;
+        garminData.current.clouds = current.clouds;  
+        garminData.current.precipitationChanceOther = 0;
+        switch(source) {
+          case wsGarminFirst:
+            garminData.current.precipitationChanceOther = current.precipitationChance; 
+           break;
+          case wsOWMFirst:
+            garminData.current.precipitationChanceOther = garminData.current.precipitationChance; 
+            garminData.current.precipitationChance = current.precipitationChance; 
+           break;
+        }
+
         // We assume start hour is for both set the same! Past hours will be purged.
         var maxH = garminData.hourly.size();
         var maxBgH = hourly.size();          
@@ -148,6 +162,16 @@ class WeatherService  {
           if (h < maxBgH) {
             garminData.hourly[h].uvi =  hourly[h].uvi;
             garminData.hourly[h].clouds =  hourly[h].clouds;
+            garminData.hourly[h].precipitationChanceOther = 0;
+            switch(source) {
+            case wsGarminFirst:
+              garminData.hourly[h].precipitationChanceOther = hourly[h].precipitationChance; 
+              break;
+            case wsOWMFirst:
+              garminData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
+              garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+              break;
+            }
           }
         }
             

@@ -76,24 +76,24 @@ class AlertHandler {
            (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED);
   }
 
-  function infoHandledShort() as Lang.String {
-    var info = "";
+  function infoHandledShort() as Array<String> {
+    var info = [] as Array<String>;
     if (statusUvi == HANDLED) {
-      info = info + " Uv";
+      info.add("Uv");      
     }
     if (statusPrecipitationChance == HANDLED) {
-      info = info + " R%";
+      info.add("R%");          
     }
     if (statusRainMMfirstHour == HANDLED) {
-      info = info + " R";
+      info.add("R");                
     }
     if (statusWeather == HANDLED) {
-      info = info + " W";
+      info.add("W");                
     }
-    if (statusWindSpeed == HANDLED) {      
-      info = info + " Ws";
-    }
-    return info;
+    if (statusWindSpeed == HANDLED) {
+      info.add("Ws");                
+    }        
+    return info;    
   }
 
   function infoHandled() as Lang.String {
@@ -134,8 +134,6 @@ class AlertHandler {
     if (statusWindSpeed == HANDLED) {
       info.add(aaWind);                
     }
-    // info.add(aaUvi);  
-    // info.add(aaWind);   
     return info;    
   }
 
