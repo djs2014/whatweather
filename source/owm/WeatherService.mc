@@ -136,11 +136,14 @@ class WeatherService  {
         var hourly = bgData.hourly;
         var minutely = bgData.minutely;
 
+        if (garminData.hourly.size() == 0) {
+          // No garmin data
+          return bgData;
+        }
         // @@TODO Only merge if changed 
         // Add uvi data
         // Add cloud data
         // Add minutes
-        // Prefer Pop / Weather 
                 
         garminData.current.uvi = current.uvi;
         garminData.current.clouds = current.clouds;  
@@ -177,30 +180,31 @@ class WeatherService  {
             garminData.hourly[h].clouds =  hourly[h].clouds;
             garminData.hourly[h].precipitationChanceOther = 0;
             switch(source) {
-            case wsGarminFirst:
-              garminData.hourly[h].precipitationChanceOther = hourly[h].precipitationChance; 
-              garminData.hourly[h].conditionOther = hourly[h].condition; 
+              case wsGarminFirst:
+                garminData.hourly[h].precipitationChanceOther = hourly[h].precipitationChance; 
+                garminData.hourly[h].conditionOther = hourly[h].condition; 
+                break;
+              case wsOWMFirst:
+                garminData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
+                garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+                garminData.hourly[h].conditionOther = garminData.hourly[h].condition; 
+                garminData.hourly[h].condition = hourly[h].condition; 
+                break;
+              case wsGarminOnly:
+                garminData.hourly[h].precipitationChanceOther = 0; 
+                garminData.hourly[h].conditionOther = 0;  
               break;
-            case wsOWMFirst:
-              garminData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
-              garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
-              garminData.hourly[h].conditionOther = garminData.hourly[h].condition; 
-              garminData.hourly[h].condition = hourly[h].condition; 
-              break;
-            case wsGarminOnly:
-              garminData.hourly[h].precipitationChanceOther = 0; 
-              garminData.hourly[h].conditionOther = 0;  
-            break;
-            case wsOWMOnly:
-              garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
-              garminData.hourly[h].precipitationChanceOther = 0; 
-              garminData.hourly[h].condition = hourly[h].condition; 
-              garminData.hourly[h].conditionOther = 0; 
-            break; 
+              case wsOWMOnly:
+                garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+                garminData.hourly[h].precipitationChanceOther = 0; 
+                garminData.hourly[h].condition = hourly[h].condition; 
+                garminData.hourly[h].conditionOther = 0; 
+              break; 
             }
           }
         }
             
+        garminData.minutely = minutely;    
         return garminData;      
       } catch (ex) {
         ex.printStackTrace();

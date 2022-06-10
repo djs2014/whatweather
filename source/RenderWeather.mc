@@ -102,11 +102,13 @@ class RenderWeather {
 
   // top is max (temp/humid), low is min(temp/humid)
   function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?) as Void {
-    var idx = convertToComfort(temperature, relativeHumidity, precipitationChance);
+    var comfort = Comfort.getComfort();
+    var idx = comfort.convertToComfort(temperature, relativeHumidity, precipitationChance);
     // System.println("Comfort x[" + x + "] comfort: " + idx);
     if (idx == COMFORT_NO) {
       return;
     }
+
     // var color = COLOR_WHITE_GREEN;
     // if (idx == COMFORT_NORMAL) {
     //   color = COLOR_WHITE_YELLOW;
@@ -122,14 +124,9 @@ class RenderWeather {
     }
 
     dc.setColor(color, color);
-    if (ds.smallField) {
-      var cTemp0 = $._comfortTemperature[0] as Lang.Number;
-      var cTemp1 = $._comfortTemperature[1] as Lang.Number;
-      var cHum0 = $._comfortHumidity[0] as Lang.Number;
-      var cHum1 = $._comfortHumidity[1] as Lang.Number;
-  
-      var yTop = ds.getYpostion(Utils.max(cTemp1, cHum1) as Lang.Number);
-      var yBottom = ds.getYpostion(Utils.min(cTemp0, cHum0) as Lang.Number);
+    if (ds.smallField) {      
+      var yTop = ds.getYpostion(Utils.max(comfort.temperatureMax, comfort.humidityMax) as Lang.Number);
+      var yBottom = ds.getYpostion(Utils.min(comfort.temperatureMin, comfort.humidityMin) as Lang.Number);
       var height = yBottom - yTop;
       dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);
       return;
@@ -831,14 +828,11 @@ class RenderWeather {
   }
 
   hidden function initComfortZones() as Void {
-    var cTemp0 = $._comfortTemperature[0] as Lang.Number;
-    var cTemp1 = $._comfortTemperature[1] as Lang.Number;
-    var cHum0 = $._comfortHumidity[0] as Lang.Number;
-    var cHum1 = $._comfortHumidity[1] as Lang.Number;
-    self.yHumTop = ds.getYpostion(cHum1);
-    self.yHumBottom = ds.getYpostion(cHum0);
-    self.yTempTop = ds.getYpostion(cTemp1);
-    self.yTempBottom = ds.getYpostion(cTemp0);
+    var comfort = Comfort.getComfort();    
+    self.yHumTop = ds.getYpostion(comfort.humidityMax);
+    self.yHumBottom = ds.getYpostion(comfort.humidityMin);
+    self.yTempTop = ds.getYpostion(comfort.temperatureMax);
+    self.yTempBottom = ds.getYpostion(comfort.temperatureMin);
   }
 
   hidden function getCloudPoints(center as Point, radius as Number) as Polygone { 

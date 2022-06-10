@@ -27,13 +27,14 @@ class WhatWeatherApp extends Application.AppBase {
 
   function onStop(state as Dictionary?) as Void {    }
 
- (:typecheck(disableBackgroundCheck))  
+  (:typecheck(disableBackgroundCheck))  
   function getInitialView() as Array<Views or InputDelegates> ? {    
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
     return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
   }
 
+  (:typecheck(disableBackgroundCheck))
   function onSettingsChanged() as Void { loadUserSettings(); }
 
   (:typecheck(disableBackgroundCheck))
@@ -89,6 +90,7 @@ class WhatWeatherApp extends Application.AppBase {
       // @@ TODO add in settings
       bgHandler.setMinimalGPSLevel(Utils.getApplicationPropertyAsNumber("minimalGPSquality", 3));
       bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
+
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
       if ($._showClouds || $._showUVIndexFactor > 0 || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE) {
         bgHandler.Enable(); 
@@ -96,21 +98,26 @@ class WhatWeatherApp extends Application.AppBase {
         bgHandler.Disable(); 
       }
 
-      System.println("Alerthandler");
       var alertHandler = getAlertHandler();     
       alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
-      System.println("Alerthandler 1");
       alertHandler.setAlertUVi($._alertLevelUVi);
-      System.println("Alerthandler 2");
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
-      System.println("Alerthandler 3");
       alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
-      System.println("Alerthandler 4");
       alertHandler.resetStatus();
 
       initComfortSettings();
       System.println("Comfort settings");
 
+      // if (ws == 0) {
+      //   $._weatherDataSource = wsGarminFirst;
+      // } else if (ws == 1) {
+      //   $._weatherDataSource = wsOWMFirst;
+      // } else if (ws == 2) {
+      //   $._weatherDataSource = wsGarminOnly;
+      // } else if (ws == 3) {
+      //   $._weatherDataSource = wsOWMOnly;
+      // }
+      
       var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
       $._weatherDataSource = ws as WeatherSource;
       Storage.setValue("weatherDataSource", ws);
@@ -127,20 +134,22 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))  
   hidden function initComfortSettings() as Void {
+      var comfort = Comfort.getComfort();
+
       var humMin = Utils.getApplicationPropertyAsNumber("comfortHumidityMin", 40);
       var humMax = Utils.getApplicationPropertyAsNumber("comfortHumidityMax", 60);
-      $._comfortHumidity[0] = Utils.min(humMin, humMax);
-      $._comfortHumidity[1] = Utils.max(humMin, humMax);
-
+      comfort.humidityMin = Utils.min(humMin, humMax).toNumber();
+      comfort.humidityMax = Utils.max(humMin, humMax).toNumber();
+    
       var tempMin = Utils.getApplicationPropertyAsNumber("comfortTempMin", 21);
       var tempMax = Utils.getApplicationPropertyAsNumber("comfortTempMax", 27);
-      $._comfortTemperature[0] = Utils.min(tempMin, tempMax);
-      $._comfortTemperature[1] = Utils.max(tempMin, tempMax);
+      comfort.temperatureMin = Utils.min(tempMin, tempMax).toNumber();
+      comfort.temperatureMax = Utils.max(tempMin, tempMax).toNumber();
 
       var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
       var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
-      $._comfortPrecipitationChance[0] = Utils.min(popMin, popMax);
-      $._comfortPrecipitationChance[1] = Utils.max(popMin, popMax);
+      comfort.precipitationChanceMin = Utils.min(popMin, popMax).toNumber();
+      comfort.precipitationChanceMax = Utils.max(popMin, popMax).toNumber();
     }
 
   public function getServiceDelegate() as Array<System.ServiceDelegate> {

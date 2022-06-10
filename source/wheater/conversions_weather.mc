@@ -4,62 +4,6 @@ import Toybox.Graphics;
 import Toybox.Lang;
 using WhatAppBase.Utils as Utils;
 
-// Somewhere from the internet.. Humans generally feel comfortable between
-// temperatures of 22 °C to 27 °C and a relative humidity of 40% to 60%.
-function convertToComfort(temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?) as Lang.Number {
-  if (temperature == null || relativeHumidity == null || precipitationChance == null) {
-    return COMFORT_NO;
-  }
-
-  var cTemp0 = $._comfortTemperature[0] as Lang.Number;
-  var cTemp1 = $._comfortTemperature[1] as Lang.Number;
-  var cHum0 = $._comfortHumidity[0] as Lang.Number;
-  var cHum1 = $._comfortHumidity[1] as Lang.Number;
-  var cPrec0 = $._comfortPrecipitationChance[0] as Lang.Number;
-  var cPrec1 = $._comfortPrecipitationChance[1] as Lang.Number;
-
-  if (temperature < offsetValue(cTemp0, 0.3) ||
-      relativeHumidity < offsetValue(cHum0, 0.3)) {
-    return COMFORT_NO;
-  }
-
-
-  var tempLow = Utils.compareTo(temperature, cTemp0);
-  var tempHigh = Utils.compareTo(temperature, cTemp1);
-
-  var humLow = Utils.compareTo(relativeHumidity, cHum0);
-  var humHigh = Utils.compareTo(relativeHumidity, cHum1);
-
-  var popLow = Utils.compareTo(precipitationChance, cPrec0);
-  var popHigh = Utils.compareTo(precipitationChance, cPrec1);
-
-  var popIdx = calculateComfortIdxInverted(popLow, popHigh);
-  if (popIdx < COMFORT_NORMAL) {
-    return COMFORT_NO;
-  }
-
-  var tempIdx = calculateComfortIdx(tempLow, tempHigh);
-  var humIdx = calculateComfortIdx(humLow, humHigh);
-  // System.println("Comfort tempIdx:" + tempIdx + " humIdx:" + humIdx);
-
-  if (tempIdx <= COMFORT_BELOW) {
-    return COMFORT_BELOW;
-  } else if (tempIdx == COMFORT_NORMAL) {
-    if (humIdx <= COMFORT_NORMAL) {
-      return COMFORT_NORMAL;
-    } else {
-      return COMFORT_HIGH;
-    }
-  } else {
-    if (humIdx <= COMFORT_NORMAL) {
-      return COMFORT_NORMAL;
-    } else {
-      return COMFORT_HIGH;
-    }
-  }
-  // return COMFORT_NO;
-}
-
 function offsetValue(value as Lang.Numeric, factor as Lang.Numeric) as Lang.Numeric {
    return value - (value * factor);
 }

@@ -3,7 +3,7 @@ import Toybox.System;
 import Toybox.Lang;
 using WhatAppBase.Utils as Utils;
 using WhatAppBase.Types as Types;
-
+// @@ getters 
 class DisplaySettings {
   hidden var dc as Graphics.Dc?;
   var font as Graphics.FontType = Graphics.FONT_LARGE;
@@ -130,20 +130,17 @@ class DisplaySettings {
     offsetX = offset;
     columnWidth = 0;
     if (nrOfColumns > 0) {
-      columnWidth =
-          (width - offsetX - (2 * margin) - (nrOfColumns - 1) * space) /
-          nrOfColumns;
+      columnWidth = ((width - offsetX - (2 * margin) - (nrOfColumns - 1) * space) / nrOfColumns).toNumber();
     }
-
     columnY = margin;
-    var correction = (width - offsetX - (2 * margin) - (nrOfColumns * columnWidth) - (nrOfColumns - 1) * space) / 2;
-    columnX = margin + correction;
+    var correction = ((width - offsetX - (2 * margin) - (nrOfColumns * columnWidth) - (nrOfColumns - 1) * space) / 2).toNumber();
+    columnX = (margin + correction).toNumber();
 
     // Height of the weather column, 2 lines for weather condition text
-    columnHeight = height - 2 * margin - heightWind - heightWc - (heightWt * 2);
+    columnHeight = (height - 2 * margin - heightWind - heightWc - (heightWt * 2)).toNumber();
 
     // Position of dashes under columns
-    dashesPosY = columnY + columnHeight;
+    dashesPosY = (columnY + columnHeight).toNumber();
   }
 
   function info() as Lang.String {

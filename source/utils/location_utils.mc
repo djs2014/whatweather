@@ -3,6 +3,8 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.Position;
+import Toybox.Weather;
+import Toybox.Time;
 
 module WhatAppBase {
   (:Utils) 
@@ -10,6 +12,9 @@ module WhatAppBase {
     class CurrentLocation {
       hidden var mLocation as Location?; 
       hidden var mAccuracy as Quality? = Position.QUALITY_NOT_AVAILABLE;
+
+      hidden var mSunrise as Moment?;
+      hidden var mSunset as Moment?;
 
       function initialize() {}
 
@@ -50,6 +55,7 @@ module WhatAppBase {
               }
               if (locationChanged(location)) {
                 System.println("Activity location lat/lon: " + location.toDegrees() + " accuracy: " + mAccuracy);
+                setSunRiseAndSunSet(location);
               }
             }
           }
@@ -62,6 +68,7 @@ module WhatAppBase {
               }
               if (locationChanged(location)) {
                 System.println("Position location lat/lon: " + location.toDegrees() + " accuracy: " + mAccuracy);
+                setSunRiseAndSunSet(location);
               }
             }
           }
@@ -93,8 +100,24 @@ module WhatAppBase {
 
         var newLocation = location as Location;
         var degrees = newLocation.toDegrees();
-        
+              
         return degrees[0] != currentDegrees[0] && degrees[1] != currentDegrees[1];        
+      }
+
+      hidden function setSunRiseAndSunSet(location as Location?) as Void {
+          if (location == null) { return; }
+          mSunrise = Weather.getSunrise(location as Location, Time.now());
+          mSunset = Weather.getSunset(location as Location, Time.now());
+      }
+
+      function isAtDaylightTime(time as Moment?, defValue as Boolean) as Boolean {
+        if (time == null || mSunrise == null || mSunset == null ) { return defValue; }
+        return (mSunrise as Moment).value() <= (time as Moment).value() && (time as Moment).value() <= (mSunset as Moment).value();        
+      }
+
+      function isAtNightTime(time as Moment?, defValue as Boolean) as Boolean {
+        if (time == null || mSunrise == null || mSunset == null ) { return defValue; }
+        return (time as Moment).value() < (mSunrise as Moment).value() && (mSunset as Moment).value() < (time as Moment).value();        
       }
 
       function getRelativeToObservation(latObservation as Double, lonObservation as Double) as String {

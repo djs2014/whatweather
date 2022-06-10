@@ -28,7 +28,17 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
     }
 
     function handleOWM() as Void {
-        try {             
+        try {        
+
+            var ws = Storage.getValue("weatherDataSource");
+            if (ws != null && ws instanceof(Number)) {
+                // wsGarminOnly = 2
+                if (ws == 2) {
+                    System.println("OWM disabled - wsGarminOnly");
+                    return;
+                }
+            }
+                
             var location = Storage.getValue("latest_latlng");                                
             var apiKey = Storage.getValue("openWeatherAPIKey");
             var proxy = Storage.getValue("openWeatherProxy");

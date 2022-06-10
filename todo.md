@@ -2,44 +2,40 @@
 --------------------
 
 MVP - 1 
-- show alert info on small field (abbreviated)
-- combine with bg data / rain pop 
-  - pop_other ==> side line diff color blue
-    - use condition icon if not different from default (color)
-    - show mode on screen (when paused?)
-    - garmin only + add missing
-    - owm only + add missing
-    - garmin first
-    - owm first
-    - bg enabled if owm first or show uvi/clouds
-- use intial stored gps location
-  - for current loc
-  - for garmin weather?
-  - for owm
-
-
-6 - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
-2 - layout garmin / owm
-	- uvi icon () ?
-x 3 - only add uvi / clouds (missing data on garmin weather)
-
-7 - set interval for weather call 0/5/10/15/20/25/30
-	0 = disabled
-	bgCounter callCounter modulo x 
-	
-6 - show night/sun down/up
+6 - show night/sun down/up  --> wind icon inverted ? / bar under black
 	grijs lichter, nacht -> grijs donker
+	isAtNightTime
+? - set interval for weather call 0/5/10/15/20/25/30
 7 -  buffered bitmaps (when weather not changed)
 	- draw wobbly line // aka the background
-8 - /test parameter -> owm response with mm rain data to test layout
-
+8 - /test parameter -> owm response with mm rain data to test layout (setting?)
 9 - property: weatherData.changed -> 
 	- new call to owm
 	- obstime /lat /lng / obsname diff
 10 - when owm location closer to current location then garmin location use owm for:
 	- precepation chance / weather etc..
 	- mark owm location green, garmin location light gray or something
-	- 
+
+x show alert info on small field (abbreviated)
+x combine with bg data / rain pop 
+  x pop_other ==> side line diff color blue
+    - use condition icon if not different from default (color)
+    ?- show mode on screen (when paused?)
+      - garmin only + add missing
+      - owm only + add missing
+      - garmin first
+      - owm first
+    x- bg enabled if owm first or show uvi/clouds
+?- use intial stored gps location
+  - for current loc
+  - for garmin weather?
+  - for owm
+
+
+x - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
+2 - layout garmin / owm
+	- uvi icon () ?
+
 
 MVP - 2
 1 

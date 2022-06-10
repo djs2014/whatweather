@@ -96,6 +96,9 @@
 	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>
+	<setting propertyKey="@Properties.comfortPopMin" title="@Strings.ComfortPopMin">
+		<settingConfig type="numeric" min="0" max="100" />
+	</setting>
 	<setting propertyKey="@Properties.comfortPopMax" title="@Strings.ComfortPopMax">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>
