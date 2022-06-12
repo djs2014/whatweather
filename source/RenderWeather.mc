@@ -31,14 +31,15 @@ class RenderWeather {
     Math.srand(System.getTimer());
   }
 
-  function drawUvIndexGraph(uvPoints as Lang.Array, factor as Lang.Number) as Void {
+  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number) as Void {
     try {
       var max = uvPoints.size();
       for (var i = 0; i < max; i += 1) {
         var uvp = uvPoints[i] as UvPoint;
         if (!uvp.isHidden) {
           var x = uvp.x;
-          var y = ds.getYpostion((uvp.y * factor));
+          var perc = Utils.percentageOf(uvp.uvi, maxUvIndex).toNumber();
+          var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
           drawUvPoint(x,y,r,uvp.uvi);          
         }

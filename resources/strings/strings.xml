@@ -14,8 +14,9 @@
     <string id="ShowTemperature">Show temperature</string>
     <string id="ShowRelativeHumidity">Show relative humidity</string>
     <string id="ShowComfort">Show comfort regions</string>
-    <string id="ShowUVIndexFactor">Show UV index (factor)</string>  
+    <string id="ShowUVIndex">Show UV index</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
+    <string id="MaxUVIndex">Max possible UV index</string>  
     <string id="AlertLevelprecipitationChance">Alert level precipitation chance</string>
     <string id="AlertLevelRainMMfirstHour">Alert level rain mm in first hour (if available)</string>
     <string id="AlertLevelUVi">Alert level UV index</string>   

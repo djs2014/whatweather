@@ -68,8 +68,11 @@ class WhatWeatherApp extends Application.AppBase {
       $._showObservationLocationName = Utils.getApplicationPropertyAsBoolean("showObservationLocationName", true);
       $._observationTimeDelayedMinutesThreshold = Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 30);
       $._showClouds = Utils.getApplicationPropertyAsBoolean("showClouds", true);
-      $._showUVIndexFactor = Utils.getApplicationPropertyAsNumber("showUVIndexFactor", 2);
+      
+      $._showUVIndex = Utils.getApplicationPropertyAsBoolean("showUVIndex", true);
+      $._maxUVIndex = Utils.getApplicationPropertyAsNumber("maxUVIndex", 20);
       $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
+
       $._showInfo = Utils.getApplicationPropertyAsNumber("showInfo", SHOW_INFO_TIME_Of_DAY);
       $._showInfo2 = Utils.getApplicationPropertyAsNumber("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
       $._showPrecipitationChanceAxis = Utils.getApplicationPropertyAsBoolean("showPrecipitationChanceAxis", true);
@@ -91,8 +94,11 @@ class WhatWeatherApp extends Application.AppBase {
       bgHandler.setMinimalGPSLevel(Utils.getApplicationPropertyAsNumber("minimalGPSquality", 3));
       bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
 
+      var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
+      $._weatherDataSource = ws as WeatherSource;
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
-      if ($._showClouds || $._showUVIndexFactor > 0 || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE) {
+      if ($._showClouds || $._showUVIndex || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE 
+      || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly) {
         bgHandler.Enable(); 
       } else {
         bgHandler.Disable(); 
@@ -118,8 +124,6 @@ class WhatWeatherApp extends Application.AppBase {
       //   $._weatherDataSource = wsOWMOnly;
       // }
       
-      var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
-      $._weatherDataSource = ws as WeatherSource;
       Storage.setValue("weatherDataSource", ws);
       Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
       Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));

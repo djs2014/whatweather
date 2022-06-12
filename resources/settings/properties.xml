@@ -3,8 +3,11 @@
 	<property id="maxMinuteForecast" type="number">0</property>
 	<property id="maxHoursForecast" type="number">8</property>
 	<property id="showClouds" type="boolean">true</property>
-	<property id="showUVIndexFactor" type="number">2</property>
+	
+	<property id="showUVIndex" type="boolean">true</property>
+	<property id="maxUVIndex" type="number">20</property>
 	<property id="hideUVIndexLowerThan" type="number">2</property>
+
 	<property id="alertLevelPrecipitationChance" type="number">70</property>
 	<property id="alertLevelRainMMfirstHour" type="number">0</property>
 	<property id="alertLevelUVi" type="number">6</property>

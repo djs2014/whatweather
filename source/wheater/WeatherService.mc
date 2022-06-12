@@ -79,14 +79,13 @@ class WeatherService  {
           cc.observationTime = new Time.Moment(Utils.getDictionaryValue(bg_cc, "dt", 0) as Number);
           
           cc.clouds = Utils.getDictionaryValue(bg_cc, "clouds", 0) as Number; 
-          cc.condition = Utils.getDictionaryValue(bg_cc, "weather", 0) as Number;
-          // var windBearing as Lang.Number? = null;
-          // var windSpeed as Lang.Float? = null;
-          // var relativeHumidity as Lang.Number? = null;
-          // var temperature as Lang.Number? = null;
-          // var weather as Lang.String = "";
+          cc.condition = Utils.getDictionaryValue(bg_cc, "condition", 0) as Number;
+          cc.windBearing = Utils.getDictionaryValue(bg_cc, "w_deg", 0) as Number;
+          cc.windSpeed = Utils.getDictionaryValue(bg_cc, "w_s", 0) as Float; 
+          cc.relativeHumidity = Utils.getDictionaryValue(bg_cc, "humid", 0) as Number;
+          cc.temperature = Utils.getDictionaryValue(bg_cc, "temp", 0) as Number;           
           cc.uvi = Utils.getDictionaryValue(bg_cc, "uvi", 0.0) as Float;
-          // -> not needed cc.weather = getValue(current["weather"], "");
+
           System.println("bgData Current: " + cc.info());   
         }
 
@@ -101,8 +100,11 @@ class WeatherService  {
               hf.clouds = Utils.getDictionaryValue(bg_hh[i], "clouds", 0) as Number;
               // OWM pop from o.o - 1
               hf.precipitationChance = ((Utils.getDictionaryValue(bg_hh[i], "pop", 0.0) as Float) * 100.0) as Number;
-              hf.condition = Utils.getDictionaryValue(bg_hh[i], "weather", 0) as Number; 
-              //hf.weather = getValue(current["weather"], "");
+              hf.condition = Utils.getDictionaryValue(bg_hh[i], "condition", 0) as Number; 
+              hf.windBearing = Utils.getDictionaryValue(bg_hh[i], "w_deg", 0) as Number;
+              hf.windSpeed = Utils.getDictionaryValue(bg_hh[i], "w_s", 0) as Float; 
+              hf.relativeHumidity = Utils.getDictionaryValue(bg_hh[i], "humid", 0) as Number;
+              hf.temperature = Utils.getDictionaryValue(bg_hh[i], "temp", 0) as Number;                 
               hf.uvi = Utils.getDictionaryValue(bg_hh[i], "uvi", 0.0) as Float; 
               
               System.println("bgData Hourly: " + hf.info());   
@@ -132,80 +134,97 @@ class WeatherService  {
 
     static function mergeWeather(garminData as WeatherData, bgData as WeatherData, source as WeatherSource) as WeatherData {
       try {
-        var current = bgData.current;
-        var hourly = bgData.hourly;
-        var minutely = bgData.minutely;
+        var wData;
+        switch(source) {
+          case wsGarminFirst:
+            wData = garminData;
+            break;
+          case wsOWMFirst:
+            wData = bgData;
+            break;
+          case wsGarminOnly:
+            return garminData;          
+          case wsOWMOnly:
+            return bgData;          
+        }
 
         if (garminData.hourly.size() == 0) {
           // No garmin data
           return bgData;
         }
+        if (bgData.hourly.size() == 0) {
+          // No bgData data
+          return garminData;
+        }
+        // var current = bgData.current;
+        // var hourly = bgData.hourly;
+        // var minutely = bgData.minutely;
+
         // @@TODO Only merge if changed 
-        // Add uvi data
-        // Add cloud data
-        // Add minutes
-                
-        garminData.current.uvi = current.uvi;
-        garminData.current.clouds = current.clouds;  
-        garminData.current.precipitationChanceOther = 0;
+
+
+        
         switch(source) {
           case wsGarminFirst:
-            garminData.current.precipitationChanceOther = current.precipitationChance; 
-            garminData.current.conditionOther = current.condition; 
+            wData.current.precipitationChanceOther = bgData.current.precipitationChance; 
+            wData.current.conditionOther = bgData.current.condition;             
+            wData.current.uvi = bgData.current.uvi;
+            wData.current.clouds = bgData.current.clouds;  
+            wData.minutely = bgData.minutely;    
            break;
           case wsOWMFirst:
-            garminData.current.precipitationChanceOther = garminData.current.precipitationChance; 
-            garminData.current.precipitationChance = current.precipitationChance; 
-            garminData.current.conditionOther = garminData.current.condition; 
-            garminData.current.condition = current.condition; 
+            wData.current.precipitationChanceOther = garminData.current.precipitationChance; 
+            // garminData.current.precipitationChance = current.precipitationChance; 
+            wData.current.conditionOther = garminData.current.condition; 
+            // garminData.current.condition = current.condition; 
            break;
-          case wsGarminOnly:
-            garminData.current.precipitationChanceOther = 0; 
-            garminData.current.conditionOther = 0;  
-           break;
-          case wsOWMOnly:
-            garminData.current.precipitationChance = current.precipitationChance; 
-            garminData.current.precipitationChanceOther = 0; 
-            garminData.current.condition = current.condition; 
-            garminData.current.conditionOther = 0; 
-           break; 
+          // case wsGarminOnly:
+          //   garminData.current.precipitationChanceOther = 0; 
+          //   garminData.current.conditionOther = 0;  
+          //  break;
+          // case wsOWMOnly:
+          //   garminData.current.precipitationChance = current.precipitationChance; 
+          //   garminData.current.precipitationChanceOther = 0; 
+          //   garminData.current.condition = current.condition; 
+          //   garminData.current.conditionOther = 0; 
+          //  break; 
         }
 
         // We assume start hour is for both set the same! Past hours will be purged.
         var maxH = garminData.hourly.size();
-        var maxBgH = hourly.size();          
+        var maxBgH = bgData.hourly.size();          
         for (var h = 0; h < maxH; h += 1) {
           if (h < maxBgH) {
-            garminData.hourly[h].uvi =  hourly[h].uvi;
-            garminData.hourly[h].clouds =  hourly[h].clouds;
-            garminData.hourly[h].precipitationChanceOther = 0;
+            // garminData.hourly[h].precipitationChanceOther = 0;
             switch(source) {
               case wsGarminFirst:
-                garminData.hourly[h].precipitationChanceOther = hourly[h].precipitationChance; 
-                garminData.hourly[h].conditionOther = hourly[h].condition; 
+                wData.hourly[h].precipitationChanceOther = bgData.hourly[h].precipitationChance; 
+                wData.hourly[h].conditionOther = bgData.hourly[h].condition; 
+                wData.hourly[h].uvi =  bgData.hourly[h].uvi;
+                wData.hourly[h].clouds =  bgData.hourly[h].clouds;
                 break;
               case wsOWMFirst:
-                garminData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
-                garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
-                garminData.hourly[h].conditionOther = garminData.hourly[h].condition; 
-                garminData.hourly[h].condition = hourly[h].condition; 
+                wData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
+                // wData.hourly[h].precipitationChance = bgData.hourly[h].precipitationChance; 
+                wData.hourly[h].conditionOther = garminData.hourly[h].condition; 
+                // wData.hourly[h].condition = bgData.hourly[h].condition; 
                 break;
-              case wsGarminOnly:
-                garminData.hourly[h].precipitationChanceOther = 0; 
-                garminData.hourly[h].conditionOther = 0;  
-              break;
-              case wsOWMOnly:
-                garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
-                garminData.hourly[h].precipitationChanceOther = 0; 
-                garminData.hourly[h].condition = hourly[h].condition; 
-                garminData.hourly[h].conditionOther = 0; 
-              break; 
+              // case wsGarminOnly:
+              //   garminData.hourly[h].precipitationChanceOther = 0; 
+              //   garminData.hourly[h].conditionOther = 0;  
+              // break;
+              // case wsOWMOnly:
+              //   garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
+              //   garminData.hourly[h].precipitationChanceOther = 0; 
+              //   garminData.hourly[h].condition = hourly[h].condition; 
+              //   garminData.hourly[h].conditionOther = 0; 
+              // break; 
             }
           }
         }
             
-        garminData.minutely = minutely;    
-        return garminData;      
+        
+        return wData;      
       } catch (ex) {
         ex.printStackTrace();
         return WeatherData.initEmpty();

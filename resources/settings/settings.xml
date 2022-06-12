@@ -46,12 +46,15 @@
 	<setting propertyKey="@Properties.showClouds" title="@Strings.ShowClouds">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showUVIndexFactor" title="@Strings.ShowUVIndexFactor">
-		<settingConfig type="numeric" min="0" max="3"/>
-	</setting>		
+	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
+		<settingConfig type="boolean" />
+	</setting>
 	<setting propertyKey="@Properties.hideUVIndexLowerThan" title="@Strings.HideUVIndexLowerThan">
 		<settingConfig type="numeric" min="-1" />
 	</setting>
+	<setting propertyKey="@Properties.maxUVIndex" title="@Strings.MaxUVIndex">
+		<settingConfig type="numeric" min="0" max="50"/>
+	</setting>		
 	
     <setting propertyKey="@Properties.showInfo" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">

@@ -353,7 +353,7 @@ class WhatWeatherView extends WatchUi.DataField {
           // rain other
           drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, current.precipitationChanceOther);
 
-          if ($._showUVIndexFactor > 0) {
+          if ($._showUVIndex) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
             uvp.calculateVisible(current.precipitationChance);
             uvPoints.add(uvp);
@@ -424,7 +424,7 @@ class WhatWeatherView extends WatchUi.DataField {
             // rain other
             drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
 
-            if ($._showUVIndexFactor > 0) {
+            if ($._showUVIndex) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
               uvp.calculateVisible(forecast.precipitationChance);
               uvPoints.add(uvp);
@@ -459,7 +459,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }  // hourlyForecast
 
-      if ($._showUVIndexFactor > 0) { render.drawUvIndexGraph(uvPoints, $._showUVIndexFactor); }
+      if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex); }
       if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, 1); }
       if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, 1); }
 

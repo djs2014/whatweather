@@ -33,8 +33,11 @@ var _showObservationTime as Lang.Boolean = true;
 var _showObservationLocationName as Lang.Boolean = true;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 var _showClouds as Lang.Boolean = true;
-var _showUVIndexFactor as Lang.Number = 2;
+
+var _showUVIndex as Lang.Boolean = true;
+var _maxUVIndex as Lang.Number = 20;
 var _hideUVIndexLowerThan as Lang.Number = 4;
+
 var _showInfo as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 var _showInfo2 as Lang.Number = SHOW_INFO_AMBIENT_PRESSURE;
 var _showPrecipitationChanceAxis as Lang.Boolean= true;

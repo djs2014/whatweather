@@ -1,10 +1,13 @@
 -> node.js: OWM pop = value 0.1 - 1  + example json
 --------------------
-
+@@ grade colors / flatland mode
 MVP - 1 
+add owm humidity + pressure + node docu example output to edge
++ test parameter with dummy data and fake time stamps
 6 - show night/sun down/up  --> wind icon inverted ? / bar under black
 	grijs lichter, nacht -> grijs donker
 	isAtNightTime
+x- max uvidx ipv factor tbv bereken perc en y pos
 ? - set interval for weather call 0/5/10/15/20/25/30
 7 -  buffered bitmaps (when weather not changed)
 	- draw wobbly line // aka the background
