@@ -21,6 +21,13 @@ class RenderWeather {
 
   hidden const NO_BEARING_SPEED = 0.3;
   hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
+  
+  // humidity is already percentage
+  // @@ TODO properties etc global settings object
+  hidden var maxTemperature as Lang.Number = 50; // celcius
+  //hidden var maxUvIndex as Lang.Number = 20;
+  hidden var maxPressure as Lang.Number = 1080;
+  hidden var minPressure as Lang.Number = 870;
 
   function initialize(dc as Dc, ds as DisplaySettings) {
     self.dc = dc;
@@ -29,6 +36,16 @@ class RenderWeather {
     self.devSettings = System.getDeviceSettings();
     initComfortZones();
     Math.srand(System.getTimer());
+  }
+
+  hidden function initComfortZones() as Void {
+    var comfort = Comfort.getComfort();    
+    self.yHumTop = ds.getYpostion(comfort.humidityMax);
+    self.yHumBottom = ds.getYpostion(comfort.humidityMin);
+    var perc = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+    self.yTempTop = ds.getYpostion(perc);
+    perc = Utils.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+    self.yTempBottom = ds.getYpostion(perc);
   }
 
   function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number) as Void {
@@ -58,43 +75,94 @@ class RenderWeather {
     dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
   }
 
+  // @@ factor -> maxTemperature
   function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) as Void {
-    //if (ds.smallField) { return; }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i] as Point;
 
         var x = p.x;
-        var y = ds.getYpostion(p.y * factor);
+        var perc = Utils.percentageOf(p.y, self.maxTemperature).toNumber();
+        var y = ds.getYpostion(perc);
         
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
-        dc.drawCircle(x, y, 3);
+
+        dc.drawRectangle(x-1, y-6, 3, 8);
+        //dc.drawCircle(x, y, 3);
         dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x, y, 2);
+        dc.drawLine(x, y, x, y-4);
+        dc.fillCircle(x, y+2, 2);
       }
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
+  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number) as Void {
+    try {
+      var max = points.size();
+      for (var i = 0; i < max; i += 1) {
+        var p = points[i] as Point;
+
+        var x = p.x;
+        var perc = Utils.percentageOf(p.y, self.maxTemperature).toNumber();
+        var y = ds.getYpostion(perc);
+        var r = 3;
+        var color = dewpointToColor(y.toFloat());
+        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(x, y+r-1, 2);
+
+        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);        
+        dc.drawLine(x-r, y, x, y-5);
+        dc.drawLine(x, y-5, x+r, y);
+        dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);     
+      }
+    } catch (ex) {
+      ex.printStackTrace();
+    }
+  }
+  
+  function drawPressureGraph(points as Lang.Array, factor as Lang.Number) as Void {
+    try {
+      var max = points.size();
+      for (var i = 0; i < max; i += 1) {
+        var p = points[i] as Point;
+
+        var x = p.x as Number;
+        var perc = Utils.percentageOf(p.y - self.minPressure, self.maxPressure - self.minPressure).toNumber();
+        var y = ds.getYpostion(perc).toNumber();
+        
+        dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+        var pts = [ [x-3, y], [x, y+5], [x+3, y]];
+        dc.fillPolygon(pts as Polygone);        
+      }
+    } catch (ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  // @@ factor always 1 remove it
   function drawHumidityGraph(points as Lang.Array, factor as Lang.Number) as Void {
-    // if (ds.smallField) {
-    //   return;
-    // }
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i] as Point;
         var x = p.x;
         var y = ds.getYpostion(p.y * factor);
-
+        var r = 3;
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
-        dc.drawCircle(x, y, 3);
+
         dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x, y, 2);
+        var pts = [ [x-r, y], [x, y-5], [x+r, y]];        
+        dc.fillPolygon(pts as Polygone);   
+        dc.setPenWidth(r);  
+        dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
+        dc.setPenWidth(1.0);          
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -117,17 +185,21 @@ class RenderWeather {
     //   color = COLOR_WHITE_ORANGE;
     // }
 
-    var color = WhatAppBase.Colors.COLOR_WHITE_GREEN_2;
-    if (idx == COMFORT_NORMAL) {
-      color = WhatAppBase.Colors.COLOR_WHITE_YELLOW_2;
-    } else if (idx == COMFORT_HIGH) {
-      color = WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_2;
-    }
+    var color = comfortToColor(idx);
+    //  WhatAppBase.Colors.COLOR_WHITE_GREEN_2;
+    // if (idx == COMFORT_NORMAL) {
+    //   color = WhatAppBase.Colors.COLOR_WHITE_YELLOW_2;
+    // } else if (idx == COMFORT_HIGH) {
+    //   color = WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_2;
+    // }
 
     dc.setColor(color, color);
     if (ds.smallField) {      
-      var yTop = ds.getYpostion(Utils.max(comfort.temperatureMax, comfort.humidityMax) as Lang.Number);
-      var yBottom = ds.getYpostion(Utils.min(comfort.temperatureMin, comfort.humidityMin) as Lang.Number);
+
+      var percTemperature = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+      var yTop = ds.getYpostion(Utils.max(percTemperature, comfort.humidityMax) as Lang.Number);
+      percTemperature = Utils.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+      var yBottom = ds.getYpostion(Utils.min(percTemperature, comfort.humidityMin) as Lang.Number);
       var height = yBottom - yTop;
       dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);
       return;
@@ -220,38 +292,38 @@ class RenderWeather {
     }
   }
 
-  function drawActiveAlert(activeAlerts as Array) as Void{
-    // if (ds.smallField) { return; } // @@TODO
+  // function drawActiveAlert(activeAlerts as Array) as Void{
+  //   // if (ds.smallField) { return; } // @@TODO
 
-    var max = activeAlerts.size();
-    if (max == 0) { return; }
+  //   var max = activeAlerts.size();
+  //   if (max == 0) { return; }
 
-    // every alert 20 px width
-    var alertW = 20;
-    var xStart = (ds.width - alertW * max)/ 2;
-    var x = xStart;
-    var y = 20;    
-    for (var idx = 0; idx < max; idx += 1) {
-      var aa = activeAlerts[idx] as ActiveAlert;
-      // TODO? get alerted condition/value
-      if (aa == aaUvi) {
-        drawUvPoint(x, y, 4, 6.0);
-      } else if (aa == aaPrecChance) {
-        // max % rain chance
+  //   // every alert 20 px width
+  //   var alertW = 20;
+  //   var xStart = (ds.width - alertW * max)/ 2;
+  //   var x = xStart;
+  //   var y = 20;    
+  //   for (var idx = 0; idx < max; idx += 1) {
+  //     var aa = activeAlerts[idx] as ActiveAlert;
+  //     // TODO? get alerted condition/value
+  //     if (aa == aaUvi) {
+  //       drawUvPoint(x, y, 4, 6.0);
+  //     } else if (aa == aaPrecChance) {
+  //       // max % rain chance
 
-      } else if (aa == aaRain1stHour) {
+  //     } else if (aa == aaRain1stHour) {
         
 
-      } else if (aa == aaWeather) {
-        // @@ current condition
+  //     } else if (aa == aaWeather) {
+  //       // @@ current condition
 
-      } else if (aa == aaWind) {    
-        // @@ current windspeed/bearing            
-        drawWind(new Point(x,y), 8, 45, 20.0);
-      }
-      x = x + alertW;
-    }    
-  }
+  //     } else if (aa == aaWind) {    
+  //       // @@ current windspeed/bearing            
+  //       drawWind(new Point(x,y), 8, 45, 20.0);
+  //     }
+  //     x = x + alertW;
+  //   }    
+  // }
 
   function drawGlossary() as Void {
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
@@ -826,14 +898,6 @@ class RenderWeather {
       var y1 = y + Math.sin(x);
       dc.drawPoint(x, y1);
     }
-  }
-
-  hidden function initComfortZones() as Void {
-    var comfort = Comfort.getComfort();    
-    self.yHumTop = ds.getYpostion(comfort.humidityMax);
-    self.yHumBottom = ds.getYpostion(comfort.humidityMin);
-    self.yTempTop = ds.getYpostion(comfort.temperatureMax);
-    self.yTempBottom = ds.getYpostion(comfort.temperatureMin);
   }
 
   hidden function getCloudPoints(center as Point, radius as Number) as Polygone { 

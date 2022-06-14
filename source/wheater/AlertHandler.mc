@@ -2,24 +2,26 @@ import Toybox.Lang;
 import Toybox.System;
 using WhatAppBase.Utils as Utils;
 
-enum ActiveAlert {
-  aaUvi,
-  aaRain1stHour,
-  aaPrecChance,
-  aaWind,
-  aaWeather
-}
+// enum ActiveAlert {
+//   aaUvi,
+//   aaRain1stHour,
+//   aaPrecChance,
+//   aaWind,
+//   aaWeather
+// }
 
 class AlertHandler {
   hidden var alertUvi as Lang.Number = 0;
   hidden var alertPrecipitationChance as Lang.Number = 0;
   hidden var alertRainMMfirstHour as Lang.Number = 0;
   hidden var alertWindSpeed as Lang.Number = 0;
+  hidden var alertDewpoint as Lang.Number = 0;
 
   var maxUvi as Lang.Float = 0.0;
   var maxPrecipitationChance as Lang.Number = 0;
   var maxRainMMfirstHour as Lang.Number = 0;
   var maxWindSpeed as Lang.Float = 0.0;
+  var maxDewpoint as Lang.Float = 0.0;
   
   hidden var WEATHER_NEUTRAL as Lang.Number = 0x00AAFF;  // COLOR_BLUE
 
@@ -32,25 +34,24 @@ class AlertHandler {
   hidden var statusRainMMfirstHour as Lang.Number = NEUTRAL;
   hidden var statusWeather as Lang.Number = NEUTRAL;
   hidden var statusWindSpeed as Lang.Number = NEUTRAL;
+  hidden var statusDewpoint as Lang.Number = NEUTRAL;
 
   hidden var allClearUvi as Lang.Boolean = true;
   hidden var allClearPrecipitationChance as Lang.Boolean = true;
   hidden var allClearRainMMfirstHour as Lang.Boolean = true;
   hidden var allClearWeather as Lang.Boolean = true;
   hidden var allClearWindSpeed as Lang.Boolean = true;
+  hidden var allClearDewpoint as Lang.Boolean = true;
 
   
   function setAlertPrecipitationChance(value as Lang.Number) as Void {
     alertPrecipitationChance = value;
   }
-
   function setAlertUVi(value as Lang.Number) as Void { alertUvi = value; }
-
   function setAlertRainMMfirstHour(value as Lang.Number) as Void { alertRainMMfirstHour = value; }
-
   //! is in beaufort
-
   function setAlertWindSpeed(value as Lang.Number) as Void { alertWindSpeed = value; }
+  function setAlertDewpoint(value as Lang.Number) as Void { alertDewpoint= value; }
 
   function infoUvi() as Lang.String {
     return Lang.format(
@@ -73,7 +74,8 @@ class AlertHandler {
     return (statusUvi == TRIGGERED) ||
            (statusPrecipitationChance == TRIGGERED) ||
            (statusRainMMfirstHour == TRIGGERED) ||
-           (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED);
+           (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED) || 
+           (statusDewpoint == TRIGGERED);
   }
 
   function infoHandledShort() as Array<String> {
@@ -92,6 +94,9 @@ class AlertHandler {
     }
     if (statusWindSpeed == HANDLED) {
       info.add("Ws");                
+    }   
+    if (statusDewpoint == HANDLED) {
+      info.add("Dp");                
     }        
     return info;    
   }
@@ -114,28 +119,31 @@ class AlertHandler {
       var beaufort = Utils.windSpeedToBeaufort(maxWindSpeed);
       info = info + " Ws" + beaufort.format("%d");
     }
+    if (statusDewpoint == HANDLED) {
+      info = info + " Dp" + maxDewpoint.format("%.1f");
+    }
     return info;
   }
 
-  function activeAlerts() as Array {
-    var info = [];
-    if (statusUvi == HANDLED) {
-      info.add(aaUvi);      
-    }
-    if (statusPrecipitationChance == HANDLED) {
-      info.add(aaPrecChance);          
-    }
-    if (statusRainMMfirstHour == HANDLED) {
-      info.add(aaRain1stHour);                
-    }
-    if (statusWeather == HANDLED) {
-      info.add(aaWeather);                
-    }
-    if (statusWindSpeed == HANDLED) {
-      info.add(aaWind);                
-    }
-    return info;    
-  }
+  // function activeAlerts() as Array {
+  //   var info = [];
+  //   if (statusUvi == HANDLED) {
+  //     info.add(aaUvi);      
+  //   }
+  //   if (statusPrecipitationChance == HANDLED) {
+  //     info.add(aaPrecChance);          
+  //   }
+  //   if (statusRainMMfirstHour == HANDLED) {
+  //     info.add(aaRain1stHour);                
+  //   }
+  //   if (statusWeather == HANDLED) {
+  //     info.add(aaWeather);                
+  //   }
+  //   if (statusWindSpeed == HANDLED) {
+  //     info.add(aaWind);                
+  //   }
+  //   return info;    
+  // }
 
   function currentlyTriggeredHandled() as Void{
     if (statusUvi == TRIGGERED) {
@@ -158,6 +166,10 @@ class AlertHandler {
       statusWindSpeed = HANDLED;
       allClearWindSpeed = true;
     }
+    if (statusDewpoint == TRIGGERED) {
+      statusDewpoint = HANDLED;
+      allClearDewpoint = true;
+    }
   }
 
   function resetStatus() as Void {
@@ -166,11 +178,13 @@ class AlertHandler {
     statusRainMMfirstHour = NEUTRAL;
     statusWeather = NEUTRAL;
     statusWindSpeed = NEUTRAL;
+    statusDewpoint = NEUTRAL;
 
     maxUvi = 0.0;
     maxPrecipitationChance = 0;
     maxRainMMfirstHour = 0;
     maxWindSpeed = 0.0;
+    maxDewpoint = 0.0;
   }
 
   function checkStatus() as Void {
@@ -190,6 +204,9 @@ class AlertHandler {
     if (allClearWindSpeed) {
       statusWindSpeed = NEUTRAL;      
     }
+    if (allClearDewpoint) {
+      statusDewpoint = NEUTRAL;      
+    }
     resetAllClear();
   }
 
@@ -199,6 +216,7 @@ class AlertHandler {
     allClearRainMMfirstHour = true;
     allClearWeather = true;
     allClearWindSpeed = true;
+    allClearDewpoint = true;
   }
 
   function processUvi(uvi as Lang.Float?) as Void {
@@ -277,5 +295,20 @@ class AlertHandler {
     // all clear again HANDLED -> NEUTRAL
     allClearWindSpeed = allClearWindSpeed && (statusWindSpeed == HANDLED &&
                                               beaufort < alertWindSpeed);    
+  }
+
+  function processDewpoint(dewPoint as Lang.Float?) as Void {
+    if (alertDewpoint <= 0 || dewPoint == null) {
+      return;
+    }
+    maxDewpoint = Utils.max(maxDewpoint, dewPoint) as Float;
+    // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
+    if (statusDewpoint == NEUTRAL && dewPoint >= alertDewpoint) {
+      statusDewpoint = TRIGGERED;
+    }
+
+    // all clear again HANDLED -> NEUTRAL
+    allClearDewpoint = allClearDewpoint && (statusDewpoint == HANDLED &&
+                                              dewPoint < alertDewpoint);    
   }
 }

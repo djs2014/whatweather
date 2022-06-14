@@ -42,8 +42,7 @@ class WeatherService  {
           current.windSpeed = forecast.windSpeed;
           current.relativeHumidity = forecast.relativeHumidity;
           current.temperature = forecast.temperature;
-          current.uvi = forecast.uvi;
-          current.weather = forecast.weather;
+          current.uvi = forecast.uvi;          
         }
       }
       return wData;
@@ -70,21 +69,23 @@ class WeatherService  {
           var currentEntry = current as Dictionary;
           if (firstEntryIsCurrent && bg_hh.size() > 0) { currentEntry = bg_hh[0]; }
           // First entry of hourly - > clouds + pop goes to current (it is the current hour) 
-          cc.precipitationChance = ((Utils.getDictionaryValue(currentEntry, "pop", 0.0) as Float) * 100.0) as Number; 
-          cc.forecastTime = new Time.Moment(Utils.getDictionaryValue(currentEntry, "dt", 0.0) as Number); 
+          cc.precipitationChance = ((Utils.getDictionaryValue(currentEntry, "pop", 0.0) as Float) * 100.0).toNumber(); 
+          cc.forecastTime = new Time.Moment((Utils.getDictionaryValue(currentEntry, "dt", 0.0) as Number).toNumber()); 
 
-          cc.lat = Utils.getDictionaryValue(bg_cc, "lat", 0.0d) as Double; 
-          cc.lon = Utils.getDictionaryValue(bg_cc, "lon", 0.0d) as Double; 
+          cc.lat = (Utils.getDictionaryValue(bg_cc, "lat", 0.0d) as Double).toDouble();
+          cc.lon = (Utils.getDictionaryValue(bg_cc, "lon", 0.0d) as Double).toDouble();
           cc.observationLocationName = cc.lat + "," + cc.lon;
           cc.observationTime = new Time.Moment(Utils.getDictionaryValue(bg_cc, "dt", 0) as Number);
           
-          cc.clouds = Utils.getDictionaryValue(bg_cc, "clouds", 0) as Number; 
-          cc.condition = Utils.getDictionaryValue(bg_cc, "condition", 0) as Number;
-          cc.windBearing = Utils.getDictionaryValue(bg_cc, "w_deg", 0) as Number;
-          cc.windSpeed = Utils.getDictionaryValue(bg_cc, "w_s", 0) as Float; 
-          cc.relativeHumidity = Utils.getDictionaryValue(bg_cc, "humid", 0) as Number;
-          cc.temperature = Utils.getDictionaryValue(bg_cc, "temp", 0) as Number;           
-          cc.uvi = Utils.getDictionaryValue(bg_cc, "uvi", 0.0) as Float;
+          cc.clouds = (Utils.getDictionaryValue(bg_cc, "clouds", 0) as Number).toNumber(); 
+          cc.condition = (Utils.getDictionaryValue(bg_cc, "cond", 0) as Number).toNumber();
+          cc.windBearing = (Utils.getDictionaryValue(bg_cc, "w_deg", 0) as Number).toNumber();
+          cc.windSpeed = (Utils.getDictionaryValue(bg_cc, "w_s", 0) as Float).toFloat(); 
+          cc.relativeHumidity = (Utils.getDictionaryValue(bg_cc, "humid", 0) as Number).toNumber();
+          cc.temperature = (Utils.getDictionaryValue(bg_cc, "temp", 0) as Number).toNumber(); // as Float;
+          cc.uvi = (Utils.getDictionaryValue(bg_cc, "uvi", 0.0) as Float).toFloat();
+          cc.pressure = (Utils.getDictionaryValue(bg_cc, "press", 0) as Number).toNumber();
+          cc.dewPoint = (Utils.getDictionaryValue(bg_cc, "dew_p", 0.0) as Float).toFloat();
 
           System.println("bgData Current: " + cc.info());   
         }
@@ -96,17 +97,19 @@ class WeatherService  {
           if (firstEntryIsCurrent) { startIdx = 1; }            	
           for (var i = startIdx; i < bg_hh.size(); i++) {
               var hf = new WeatherHourly();
-              hf.forecastTime = new Time.Moment(Utils.getDictionaryValue(bg_hh[i], "dt", 0.0) as Number);  
-              hf.clouds = Utils.getDictionaryValue(bg_hh[i], "clouds", 0) as Number;
+              hf.forecastTime = new Time.Moment((Utils.getDictionaryValue(bg_hh[i], "dt", 0.0) as Number).toNumber());  
+              hf.clouds = (Utils.getDictionaryValue(bg_hh[i], "clouds", 0) as Number).toNumber();
               // OWM pop from o.o - 1
-              hf.precipitationChance = ((Utils.getDictionaryValue(bg_hh[i], "pop", 0.0) as Float) * 100.0) as Number;
-              hf.condition = Utils.getDictionaryValue(bg_hh[i], "condition", 0) as Number; 
-              hf.windBearing = Utils.getDictionaryValue(bg_hh[i], "w_deg", 0) as Number;
-              hf.windSpeed = Utils.getDictionaryValue(bg_hh[i], "w_s", 0) as Float; 
-              hf.relativeHumidity = Utils.getDictionaryValue(bg_hh[i], "humid", 0) as Number;
-              hf.temperature = Utils.getDictionaryValue(bg_hh[i], "temp", 0) as Number;                 
-              hf.uvi = Utils.getDictionaryValue(bg_hh[i], "uvi", 0.0) as Float; 
-              
+              hf.precipitationChance = ((Utils.getDictionaryValue(bg_hh[i], "pop", 0.0) as Float) * 100.0).toNumber();
+              hf.condition = (Utils.getDictionaryValue(bg_hh[i], "cond", 0) as Number).toNumber(); 
+              hf.windBearing = (Utils.getDictionaryValue(bg_hh[i], "w_deg", 0) as Number).toNumber();
+              hf.windSpeed = (Utils.getDictionaryValue(bg_hh[i], "w_s", 0) as Float).toFloat();
+              hf.relativeHumidity = (Utils.getDictionaryValue(bg_hh[i], "humid", 0) as Number).toNumber();
+              hf.temperature = (Utils.getDictionaryValue(bg_hh[i], "temp", 0) as Number).toNumber();                 
+              hf.uvi = (Utils.getDictionaryValue(bg_hh[i], "uvi", 0.0) as Float).toFloat(); 
+              hf.pressure = (Utils.getDictionaryValue(bg_hh[i], "press", 0) as Number).toNumber();
+              hf.dewPoint = (Utils.getDictionaryValue(bg_hh[i], "dew_p", 0.0) as Float).toFloat();
+
               System.println("bgData Hourly: " + hf.info());   
               hh.add(hf);             
           }                
@@ -156,10 +159,6 @@ class WeatherService  {
           // No bgData data
           return garminData;
         }
-        // var current = bgData.current;
-        // var hourly = bgData.hourly;
-        // var minutely = bgData.minutely;
-
         // @@TODO Only merge if changed 
 
 
@@ -170,24 +169,14 @@ class WeatherService  {
             wData.current.conditionOther = bgData.current.condition;             
             wData.current.uvi = bgData.current.uvi;
             wData.current.clouds = bgData.current.clouds;  
-            wData.minutely = bgData.minutely;    
+            wData.current.dewPoint = bgData.current.dewPoint;
+            wData.current.pressure = bgData.current.pressure;   
+            wData.minutely = bgData.minutely; 
            break;
           case wsOWMFirst:
             wData.current.precipitationChanceOther = garminData.current.precipitationChance; 
-            // garminData.current.precipitationChance = current.precipitationChance; 
-            wData.current.conditionOther = garminData.current.condition; 
-            // garminData.current.condition = current.condition; 
-           break;
-          // case wsGarminOnly:
-          //   garminData.current.precipitationChanceOther = 0; 
-          //   garminData.current.conditionOther = 0;  
-          //  break;
-          // case wsOWMOnly:
-          //   garminData.current.precipitationChance = current.precipitationChance; 
-          //   garminData.current.precipitationChanceOther = 0; 
-          //   garminData.current.condition = current.condition; 
-          //   garminData.current.conditionOther = 0; 
-          //  break; 
+            wData.current.conditionOther = garminData.current.condition;             
+           break;          
         }
 
         // We assume start hour is for both set the same! Past hours will be purged.
@@ -202,28 +191,16 @@ class WeatherService  {
                 wData.hourly[h].conditionOther = bgData.hourly[h].condition; 
                 wData.hourly[h].uvi =  bgData.hourly[h].uvi;
                 wData.hourly[h].clouds =  bgData.hourly[h].clouds;
+                wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint;
+                wData.hourly[h].pressure = bgData.hourly[h].pressure;   
                 break;
               case wsOWMFirst:
                 wData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
-                // wData.hourly[h].precipitationChance = bgData.hourly[h].precipitationChance; 
                 wData.hourly[h].conditionOther = garminData.hourly[h].condition; 
-                // wData.hourly[h].condition = bgData.hourly[h].condition; 
-                break;
-              // case wsGarminOnly:
-              //   garminData.hourly[h].precipitationChanceOther = 0; 
-              //   garminData.hourly[h].conditionOther = 0;  
-              // break;
-              // case wsOWMOnly:
-              //   garminData.hourly[h].precipitationChance = hourly[h].precipitationChance; 
-              //   garminData.hourly[h].precipitationChanceOther = 0; 
-              //   garminData.hourly[h].condition = hourly[h].condition; 
-              //   garminData.hourly[h].conditionOther = 0; 
-              // break; 
+                break;              
             }
           }
-        }
-            
-        
+        }                  
         return wData;      
       } catch (ex) {
         ex.printStackTrace();

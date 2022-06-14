@@ -42,27 +42,31 @@ class WeatherCurrent {
   var observationLocationName as Lang.String = "";
   var observationTime as Time.Moment? = null;
   var forecastTime as Time.Moment? = null;
-  var clouds as Lang.Number = 0;
-  var precipitationChance as Lang.Number = 0;
-  var condition as Lang.Number = 0;
-  var precipitationChanceOther as Lang.Number = 0; // @nD
+  var clouds as Lang.Number = 0; // %
+  var precipitationChance as Lang.Number = 0; // %
+  var precipitationChanceOther as Lang.Number = 0; // %
+  var condition as Lang.Number = 0; 
   var conditionOther as Lang.Number = 0;
-  var windBearing as Lang.Number? = null;
-  var windSpeed as Lang.Float? = null;
-  var relativeHumidity as Lang.Number? = null;
-  var temperature as Lang.Number? = null;
-  var weather as Lang.String = "";
+  var windBearing as Lang.Number? = null; // degrees
+  var windSpeed as Lang.Float? = null; // m/sec
+  var relativeHumidity as Lang.Number? = null; // %
+  var temperature as Lang.Number? = null; // celcius
   var uvi as Lang.Float? = null;
+  var pressure as Lang.Number? = null; // hPa
+  var dewPoint as Lang.Float? = null; // celcius
 
+  function getDewPoint() as Lang.Number? {
+    if (dewPoint == null) { return null; }
+    return (dewPoint as Float).toNumber();
+  }
   function info() as Lang.String {
     return "WeatherCurrent:lat[" + lat + "]lon[" + lon + "]obsname[" +
            observationLocationName + "]obstime[" +
            Utils.getDateTimeString(observationTime) + "]time[" +
            Utils.getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
-           "]clouds[" + clouds + "]condition[" + condition + "]weather[" +
-           weather + "]uvi[" + uvi + "]windBearing[" + windBearing +
+           "]clouds[" + clouds + "]condition[" + condition + "]uvi[" + uvi + "]windBearing[" + windBearing +
            "]windSpeed[" + windSpeed + "]temperature[" + temperature +
-           "]humidity[" + relativeHumidity + "]";
+           "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
   }
 }
 
@@ -82,14 +86,20 @@ class WeatherHourly {
   var windSpeed as Lang.Float? = null;
   var relativeHumidity as Lang.Number? = null;
   var temperature as Lang.Number? = null;
-  var weather as Lang.String = "";
   var uvi as Lang.Float? = null;
+  var pressure as Lang.Number? = null; // hPa
+  var dewPoint as Lang.Float? = null; // celcius
+
+  function getDewPoint() as Lang.Number? {
+    if (dewPoint == null) { return null; }
+    return (dewPoint as Float).toNumber();
+  }
 
   function info() as Lang.String {
     return "WeatherHourly:time[" + Utils.getDateTimeString(forecastTime) + "]pop[" +
            precipitationChance + "]clouds[" + clouds + "]condition[" +
-           condition + "]weather[" + weather + "]uvi[" + uvi + "]windBearing[" +
+           condition + "]uvi[" + uvi + "]windBearing[" +
            windBearing + "]windSpeed[" + windSpeed + "]temperature[" +
-           temperature + "]humidity[" + relativeHumidity + "]";
+           temperature + "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
   }
 }

@@ -8,10 +8,15 @@
 	<property id="maxUVIndex" type="number">20</property>
 	<property id="hideUVIndexLowerThan" type="number">2</property>
 
+	<property id="showPressure" type="boolean">true</property>
+	<property id="showDewpoint" type="boolean">true</property>
+
 	<property id="alertLevelPrecipitationChance" type="number">70</property>
 	<property id="alertLevelRainMMfirstHour" type="number">0</property>
 	<property id="alertLevelUVi" type="number">6</property>
 	<property id="alertLevelWindSpeed" type="number">5</property>
+	<property id="alertLevelDewpoint" type="number">19</property>
+
 	<property id="showAlertLevel" type="boolean">false</property>
 	<property id="showPrecipitationChanceAxis" type="boolean">true</property>	
 	<property id="showObservationTime" type="boolean">true</property>

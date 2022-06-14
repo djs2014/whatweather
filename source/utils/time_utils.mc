@@ -32,16 +32,11 @@ module WhatAppBase {
       System.println("ensureXSecondsPassed difference: " + diff);
       return diff >= seconds;
     }
-
+  
     function getDateTimeString(moment as Time.Moment?) as String {
       if (moment != null && moment instanceof Time.Moment) {
         var date = Gregorian.info(moment, Time.FORMAT_SHORT);
-        // return date.day.format("%02d") + "-" + date.month.format("%02d") + "-" +
-        //        date.year.format("%d") + " " + date.hour.format("%02d") + ":" +
-        //        date.min.format("%02d") + ":" + date.sec.format("%02d");
-        // @@ TODO debug what is value of date
-        return 
-               date.year.format("%d") + " " + date.hour.format("%02d") + ":" +
+        return date.year.format("%d") + " " + date.hour.format("%02d") + ":" +
                date.min.format("%02d") + ":" + date.sec.format("%02d");
       }
       return "";

@@ -91,9 +91,9 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null) as Void {
     if (responseCode == 200 && responseData != null) {
         try { 
-                System.println(responseData);                
-                var data = responseData as String;            
-                Background.exit(data);
+                //System.println(responseData);   --> gives out of memory
+                var data = responseData as String;  
+                Background.exit(data);                
             } catch(ex instanceof Background.ExitDataSizeLimitException ) {
                 ex.printStackTrace();
                 System.println(responseData);

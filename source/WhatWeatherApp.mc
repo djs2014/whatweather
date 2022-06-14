@@ -78,11 +78,14 @@ class WhatWeatherApp extends Application.AppBase {
       $._showPrecipitationChanceAxis = Utils.getApplicationPropertyAsBoolean("showPrecipitationChanceAxis", true);
       $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
       $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
+      $._alertLevelDewpoint = Utils.getApplicationPropertyAsNumber("alertLevelDewpoint", 19);
 
       $._showWind = Utils.getApplicationPropertyAsNumber("showWind", SHOW_WIND_BEAUFORT);
       $._alertLevelWindSpeed = Utils.getApplicationPropertyAsNumber("alertLevelWindSpeed", 5);
       $._showTemperature = Utils.getApplicationPropertyAsBoolean("showTemperature", true);
       $._showRelativeHumidity = Utils.getApplicationPropertyAsBoolean("showRelativeHumidity", true);
+      $._showPressure = Utils.getApplicationPropertyAsBoolean("showPressure", true);
+      $._showDewpoint = Utils.getApplicationPropertyAsBoolean("showDewpoint", true);
       $._showComfort = Utils.getApplicationPropertyAsBoolean("showComfort", true);
       $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
 
@@ -109,20 +112,11 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.setAlertUVi($._alertLevelUVi);
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
       alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
+      alertHandler.setAlertDewpoint($._alertLevelDewpoint);
       alertHandler.resetStatus();
 
       initComfortSettings();
       System.println("Comfort settings");
-
-      // if (ws == 0) {
-      //   $._weatherDataSource = wsGarminFirst;
-      // } else if (ws == 1) {
-      //   $._weatherDataSource = wsOWMFirst;
-      // } else if (ws == 2) {
-      //   $._weatherDataSource = wsGarminOnly;
-      // } else if (ws == 3) {
-      //   $._weatherDataSource = wsOWMOnly;
-      // }
       
       Storage.setValue("weatherDataSource", ws);
       Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
@@ -165,7 +159,7 @@ class WhatWeatherApp extends Application.AppBase {
     System.println("Background data recieved");
     var bgHandler = getBGServiceHandler();
     bgHandler.onBackgroundData(data, self, :updateBgData);
-                      
+
     WatchUi.requestUpdate();
   }
 

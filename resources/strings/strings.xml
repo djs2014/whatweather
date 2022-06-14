@@ -13,6 +13,8 @@
     <string id="ShowWindBeaufort">Show wind in Beaufort</string>
     <string id="ShowTemperature">Show temperature</string>
     <string id="ShowRelativeHumidity">Show relative humidity</string>
+    <string id="ShowPressure">Show pressure (sealevel)</string>
+    <string id="ShowDewpoint">Show dew point</string>
     <string id="ShowComfort">Show comfort regions</string>
     <string id="ShowUVIndex">Show UV index</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
@@ -21,6 +23,7 @@
     <string id="AlertLevelRainMMfirstHour">Alert level rain mm in first hour (if available)</string>
     <string id="AlertLevelUVi">Alert level UV index</string>   
     <string id="AlertLevelWindSpeed">Alert level wind (Beaufort)</string>        
+    <string id="AlertLevelDewpoint">Alert level dewpoint (Celcius)</string>        
     <string id="ShowAlertLevel">Show alert level line</string>    
     <string id="ShowPrecipitationChanceAxis">Show precipitation chance axis (0,25,50,75,100) left and right</string>        
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>

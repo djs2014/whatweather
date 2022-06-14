@@ -15,7 +15,7 @@ const SHOW_INFO_AMBIENT_PRESSURE = 3;
 const SHOW_INFO_SEALEVEL_PRESSURE = 4;
 
 const COLOR_CLOUDS = 0xCCD1D1; 
-const COLOR_CLOUDS_NIGHT = 0xE5E8E8; 
+const COLOR_CLOUDS_NIGHT = 0xBFC9CA; 
 const COLOR_WHITE_BLUE = 0xE1E5F8;
 const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xFFFFE1;  // 0xFFFFAA;
@@ -48,15 +48,15 @@ var _showTemperature as Lang.Boolean = true;
 var _showRelativeHumidity as Lang.Boolean = true;
 var _showWeatherCondition as Lang.Boolean = true;
 var _showComfort as Lang.Boolean = true;
+var _showPressure as Lang.Boolean = true;
+var _showDewpoint as Lang.Boolean = true;
 
 var _showGlossary as Lang.Boolean = true;
 
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Number = 5;
-
+var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsGarminFirst;
-
-
 
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
   if (condition == null) {

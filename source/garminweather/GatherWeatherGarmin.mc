@@ -36,7 +36,6 @@ class GarminWeather {
       cc.observationTime = garCurrent.observationTime;
       cc.clouds = 0;    // Not available
       cc.uvi = null;    // Not available
-      cc.weather = "";  // @@ map condition
       cc.condition = Utils.getNumericValue(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
       cc.windBearing = garCurrent.windBearing;
       cc.windSpeed = garCurrent.windSpeed;
@@ -60,7 +59,6 @@ class GarminWeather {
             hf.clouds = 0;  // Not availablelastUpdateddity;
             hf.uvi = null;  // Not available
             hf.precipitationChance = Utils.getNumericValue(garForecast.precipitationChance, 0) as Lang.Number;
-            hf.weather = "";  // @@ map condition
             hf.condition = Utils.getNumericValue(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;            
             hf.windBearing = garForecast.windBearing;
             hf.windSpeed = garForecast.windSpeed;

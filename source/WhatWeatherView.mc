@@ -27,6 +27,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
 
   var mShowTemperature as Boolean = false;
+  var mShowDewpoint as Boolean = false;
+  var mShowPressure as Boolean = false;
   var mShowRelativeHumidity as Boolean = false;
   var mShowComfort as Boolean = false;
   var mShowComfortZones as Boolean = false;
@@ -91,6 +93,8 @@ class WhatWeatherView extends WatchUi.DataField {
       // @@ settings object
       if (ds.smallField || ds.wideField) {
         mShowTemperature = false;
+        mShowDewpoint = false;
+        mShowPressure = false;
         mShowRelativeHumidity = false;
         mShowComfort = $._showComfort;
         mShowComfortZones = false;
@@ -99,6 +103,8 @@ class WhatWeatherView extends WatchUi.DataField {
         mShowWeatherCondition = false;
       } else {
         mShowTemperature = $._showTemperature;
+        mShowDewpoint = $._showDewpoint;
+        mShowPressure = $._showPressure;
         mShowRelativeHumidity = $._showRelativeHumidity;
         mShowComfort = $._showComfort;
         mShowComfortZones = $._showComfort;
@@ -147,6 +153,9 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
     var bgHandler = getBGServiceHandler();
     if (!bgHandler.isEnabled()) { return; }
+    if (! ($._showClouds || $._showDewpoint || $._showUVIndex || $._showPressure 
+      || $._weatherDataSource == wsOWMFirst  || $._weatherDataSource == wsOWMOnly))  { return; }
+
     var color = ds.COLOR_TEXT;
     var obsTime = "";
     
@@ -270,6 +279,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var y = ds.columnY;
     var uvPoints = [];
     var tempPoints = [];
+    var dewPoints = [];
+    var pressurePoints = [];
     var humidityPoints = [];
     var windPoints = [];
     var color, colorOther, colorDashes, colorClouds;
@@ -334,6 +345,7 @@ class WhatWeatherView extends WatchUi.DataField {
           alertHandler.processWeather(colorOther.toNumber());
           alertHandler.processUvi(current.uvi);
           alertHandler.processWindSpeed(current.windSpeed);
+          alertHandler.processDewpoint(current.dewPoint);
 
           validSegment = validSegment + 1;
 
@@ -359,8 +371,10 @@ class WhatWeatherView extends WatchUi.DataField {
             uvPoints.add(uvp);
           }
 
-          if (mShowTemperature) { tempPoints.add(new Point(x + ds.columnWidth / 2, current.temperature)); }
+          if (mShowPressure) { pressurePoints.add(new Point(x + ds.columnWidth / 2, current.pressure)); }
           if (mShowRelativeHumidity) { humidityPoints.add( new Point(x + ds.columnWidth / 2, current.relativeHumidity)); }
+          if (mShowTemperature) { tempPoints.add(new Point(x + ds.columnWidth / 2, current.temperature)); }
+          if (mShowDewpoint) { dewPoints.add(new Point(x + ds.columnWidth / 2, current.getDewPoint())); }
           if (mShowWind != SHOW_WIND_NOTHING) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
 
           if (dashesUnderColumnHeight > 0) {
@@ -406,6 +420,7 @@ class WhatWeatherView extends WatchUi.DataField {
             alertHandler.processWeather(colorOther.toNumber());
             alertHandler.processUvi(forecast.uvi);
             alertHandler.processWindSpeed(forecast.windSpeed);
+            alertHandler.processDewpoint(forecast.dewPoint);
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
@@ -415,7 +430,9 @@ class WhatWeatherView extends WatchUi.DataField {
             colorClouds = COLOR_CLOUDS;
             var cHeight = 0;
             if ($._showClouds) { 
-              if (mCurrentLocation.isAtNightTime(forecast.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
+              if (mCurrentLocation.isAtNightTime(forecast.forecastTime, false)) { 
+                colorClouds = COLOR_CLOUDS_NIGHT;
+                 }
               cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
             // rain
@@ -429,8 +446,10 @@ class WhatWeatherView extends WatchUi.DataField {
               uvp.calculateVisible(forecast.precipitationChance);
               uvPoints.add(uvp);
             }
-            if (mShowTemperature) { tempPoints.add( new Point(x + ds.columnWidth / 2, forecast.temperature)); }
+            if (mShowPressure) { pressurePoints.add(new Point(x + ds.columnWidth / 2, forecast.pressure)); }
             if (mShowRelativeHumidity) { humidityPoints.add( new Point(x + ds.columnWidth / 2, forecast.relativeHumidity)); }
+            if (mShowTemperature) { tempPoints.add( new Point(x + ds.columnWidth / 2, forecast.temperature)); }
+            if (mShowDewpoint) { dewPoints.add(new Point(x + ds.columnWidth / 2, forecast.getDewPoint())); }
             if (mShowWind) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
 
             if (dashesUnderColumnHeight > 0) {              
@@ -462,6 +481,8 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex); }
       if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, 1); }
       if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, 1); }
+      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, 1); }
+      if (mShowPressure) { render.drawPressureGraph(pressurePoints, 1); }
 
       if (mShowComfortZones) { render.drawComfortZones(); }
 

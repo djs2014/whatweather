@@ -46,6 +46,12 @@
 	<setting propertyKey="@Properties.showClouds" title="@Strings.ShowClouds">
 		<settingConfig type="boolean" />
 	</setting>
+	<setting propertyKey="@Properties.showPressure" title="@Strings.ShowPressure">
+		<settingConfig type="boolean" />
+	</setting>
+	<setting propertyKey="@Properties.showDewpoint" title="@Strings.ShowDewpoint">
+		<settingConfig type="boolean" />
+	</setting>
 	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
 		<settingConfig type="boolean" />
 	</setting>
@@ -85,6 +91,9 @@
 		<settingConfig type="numeric" min="0" max="20" />
 	</setting>
 	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
+		<settingConfig type="numeric" min="0" />
+	</setting>	
+	<setting propertyKey="@Properties.alertLevelDewpoint" title="@Strings.AlertLevelDewpoint">
 		<settingConfig type="numeric" min="0" />
 	</setting>	
 	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">

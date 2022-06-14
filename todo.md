@@ -2,16 +2,34 @@
 --------------------
 @@ grade colors / flatland mode
 MVP - 1 
-add owm humidity + pressure + node docu example output to edge
+check memory background
+add pressure + node docu example output to edge
+dewpoint -> comfort (or calculate?)
+	pressure: line min=900 max = 1040 calc perc
+	dewpoint/temp: min = 0, max = 50 
+		<0 min = -10
+	dewpoint use comfort color based on value
+	hide dewpoint below x
+	dewpoint value to color -
+		- alert on dewpoint
+	set max temperature (same as for dewpoint)
+	if > alert -> color the icon (dewpoint)
+	
+https://api.castlephoto.info/owm_one
+http://localhost:4000/owm_one
+
+condition -> cond
+dew_p=>7.260000 --> dew_p=>7.26
+- remove last 4 digits
 + test parameter with dummy data and fake time stamps
+8 - /test parameter -> owm response with mm rain data to test layout (setting?)
 6 - show night/sun down/up  --> wind icon inverted ? / bar under black
 	grijs lichter, nacht -> grijs donker
-	isAtNightTime
+	
 x- max uvidx ipv factor tbv bereken perc en y pos
 ? - set interval for weather call 0/5/10/15/20/25/30
 7 -  buffered bitmaps (when weather not changed)
 	- draw wobbly line // aka the background
-8 - /test parameter -> owm response with mm rain data to test layout (setting?)
 9 - property: weatherData.changed -> 
 	- new call to owm
 	- obstime /lat /lng / obsname diff

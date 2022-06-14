@@ -106,8 +106,8 @@ module WhatAppBase {
 
       hidden function setSunRiseAndSunSet(location as Location?) as Void {
           if (location == null) { return; }
-          mSunrise = Weather.getSunrise(location as Location, Time.now());
-          mSunset = Weather.getSunset(location as Location, Time.now());
+          mSunrise = Weather.getSunrise(location as Location, Time.now()); // ex: 13-6-2022 05:20:43
+          mSunset = Weather.getSunset(location as Location, Time.now()); // ex: 13-6-2022 22:02:25          
       }
 
       function isAtDaylightTime(time as Moment?, defValue as Boolean) as Boolean {
@@ -116,8 +116,8 @@ module WhatAppBase {
       }
 
       function isAtNightTime(time as Moment?, defValue as Boolean) as Boolean {
-        if (time == null || mSunrise == null || mSunset == null ) { return defValue; }
-        return (time as Moment).value() < (mSunrise as Moment).value() && (mSunset as Moment).value() < (time as Moment).value();        
+        // mSunrise < mSunset 
+        return !isAtDaylightTime(time, defValue);
       }
 
       function getRelativeToObservation(latObservation as Double, lonObservation as Double) as String {
