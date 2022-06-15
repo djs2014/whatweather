@@ -25,14 +25,15 @@
 	<property id="showObservationLocationName" type="boolean">true</property>	
 	<property id="dashesUnderColumnHeight" type="number">2</property>
 	<property id="showColumnBorder" type="boolean">false</property>
-	<property id="showInfo" type="number">1</property>
-	<property id="showInfo2" type="number">4</property>
+	<property id="showInfoSmallField" type="number">1</property>
+	<property id="showInfoLargeField" type="number">0</property>
 	<property id="showWind" type="number">3</property>
 	<property id="showTemperature" type="boolean">true</property>
-	<property id="hideTemperatureLowerThan" type="number">11</property>
+	<property id="hideTemperatureLowerThan" type="number">8</property>
 	<property id="showRelativeHumidity" type="boolean">true</property>
 	<property id="showComfort" type="boolean">true</property>
 	<property id="showWeatherCondition" type="boolean">true</property>	
+	<property id="showActualWeather" type="boolean">true</property>	
 	<property id="comfortHumidityMin" type="number">40</property>	
 	<property id="comfortHumidityMax" type="number">60</property>	
 	<property id="comfortTempMin" type="number">21</property>	

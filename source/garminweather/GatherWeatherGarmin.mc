@@ -7,7 +7,7 @@ import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 
 class GarminWeather {
-  static function getLatestGarminWeather() as WeatherData {
+  static function getLatestGarminWeather() as WeatherData { 
     var WEATHER_CONDITION_UNKNOWN = 53;
     try {
       var garCurrent = Weather.getCurrentConditions();

@@ -62,7 +62,7 @@
 		<settingConfig type="numeric" min="0" max="50"/>
 	</setting>		
 	
-    <setting propertyKey="@Properties.showInfo" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
+    <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
             <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
@@ -71,7 +71,7 @@
 			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
         </settingConfig>
     </setting>      
-	 <setting propertyKey="@Properties.showInfo2" title="@Strings.ShowInfo" prompt="@Strings.ShowInfoPrompt">
+	 <setting propertyKey="@Properties.showInfoLargeField" title="@Strings.ShowInfoLargeField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
             <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
@@ -96,6 +96,11 @@
 	<setting propertyKey="@Properties.alertLevelDewpoint" title="@Strings.AlertLevelDewpoint">
 		<settingConfig type="numeric" min="0" />
 	</setting>	
+
+	<setting propertyKey="@Properties.hideTemperatureLowerThan" title="@Strings.HideTemperatureLowerThan">
+		<settingConfig type="numeric" min="-1" />
+	</setting>
+
 	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>

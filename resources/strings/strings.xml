@@ -32,13 +32,16 @@
     <string id="ObservationTimeDelayedMinutesThreshold">Show warning when time of observation is delayed for x minutes</string>
     <string id="ShowObservationLocationName">Show location of observation</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
-    <string id="ShowInfo">Show extra information</string>        
+    <string id="ShowInfoSmallField">Extra information (small field)</string>        
+    <string id="ShowInfoLargeField">Extra information (large field)</string>        
     <string id="ShowInfoPrompt">Select extra information</string>
     <string id="ShowInfoNothing">Nothing</string>
     <string id="ShowInfoTimeOfDay">Show the time of day</string>
     <string id="ShowInfoTemperature">Show temperature</string>
     <string id="ShowInfoAmbientPressure">Show pressure</string>
     <string id="ShowInfoSealevelPressure">Show mean sealevel pressure</string>
+    <string id="ShowActualWeather">Show actual weather</string>
+    <string id="HideTemperatureLowerThan">Hide temperature/dewpoint lower than (celcius)</string>
     <string id="ComfortHumidityMin">Comfort humidity(%) min</string>
     <string id="ComfortHumidityMax">Comfort humidity(%) max</string>
     <string id="ComfortTempMin">Comfort temperature(C) min</string>

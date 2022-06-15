@@ -80,20 +80,20 @@ class RenderWeather {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
-        var p = points[i] as Point;
+        var p = points[i] as WeatherPoint;
+        if (!p.isHidden) {
+          var x = p.x;
+          var perc = Utils.percentageOf(p.value, self.maxTemperature).toNumber();
+          var y = ds.getYpostion(perc);
+          
+          dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+          dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
 
-        var x = p.x;
-        var perc = Utils.percentageOf(p.y, self.maxTemperature).toNumber();
-        var y = ds.getYpostion(perc);
-        
-        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
-
-        dc.drawRectangle(x-1, y-6, 3, 8);
-        //dc.drawCircle(x, y, 3);
-        dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(x, y, x, y-4);
-        dc.fillCircle(x, y+2, 2);
+          dc.drawRectangle(x-1, y-6, 3, 8);
+          dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+          dc.drawLine(x, y, x, y-4);
+          dc.fillCircle(x, y+2, 2);
+        }
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -104,21 +104,22 @@ class RenderWeather {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
-        var p = points[i] as Point;
+        var p = points[i] as WeatherPoint;
+        if (!p.isHidden) {
+          var x = p.x;
+          var perc = Utils.percentageOf(p.value, self.maxTemperature).toNumber();
+          var y = ds.getYpostion(perc);
+          var r = 3;
+          var color = dewpointToColor(y.toFloat());
+          dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+          dc.fillCircle(x, y+r-1, 2);
 
-        var x = p.x;
-        var perc = Utils.percentageOf(p.y, self.maxTemperature).toNumber();
-        var y = ds.getYpostion(perc);
-        var r = 3;
-        var color = dewpointToColor(y.toFloat());
-        dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-        dc.fillCircle(x, y+r-1, 2);
-
-        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);        
-        dc.drawLine(x-r, y, x, y-5);
-        dc.drawLine(x, y-5, x+r, y);
-        dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);     
+          dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+          dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);        
+          dc.drawLine(x-r, y, x, y-5);
+          dc.drawLine(x, y-5, x+r, y);
+          dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);     
+        }
       }
     } catch (ex) {
       ex.printStackTrace();

@@ -11,6 +11,27 @@ enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1, wsGarminOnly = 2, wsOWMO
 
 (:typecheck(disableBackgroundCheck))  
 class WeatherService  {
+    static function isWeatherDataChanged(oldData as WeatherData?, newData as WeatherData?) as Boolean {
+      if (oldData == null && newData == null) { return false; }
+      if (oldData == null || newData == null) { return true; }      
+      var oD = oldData as WeatherData;
+      var nD = newData as WeatherData;
+
+      System.println("Time[" + Utils.getShortTimeString(oD.current.observationTime) + "]<>[" + Utils.getShortTimeString(nD.current.observationTime) + "]");
+      System.println("Lat[" + oD.current.lat + "]<>[" + nD.current.lat + "]");
+      System.println("Lon[" + oD.current.lon + "]<>[" + nD.current.lon + "]");
+      System.println("Name[" + oD.current.observationLocationName + "]<>[" + nD.current.observationLocationName + "]");
+
+      // var oTime = oD.current.observationTime.value().toString();
+      // var nTime = nD.current.observationTime.value().toString();
+      // var lat = oD.current.lat.toString();
+      // var lon = nD.current.lat.toString();
+      return nD.changed 
+        || (oD.current.observationTime != nD.current.observationTime)
+        || (oD.current.lat != nD.current.lat) || (oD.current.lon != nD.current.lon)
+        || (oD.current.observationLocationName != nD.current.observationLocationName);
+    }
+
     static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
       if (data == null) { return WeatherData.initEmpty(); }
       var wData = data as WeatherData;
@@ -128,7 +149,9 @@ class WeatherService  {
           }
         }
 
-        return new WeatherData(cc, mm, hh, cc.observationTime);     
+        var wd = new WeatherData(cc, mm, hh, cc.observationTime);     
+        wd.setChanged(true);
+        return wd;
       } catch (ex) {
         ex.printStackTrace();
         return WeatherData.initEmpty();
@@ -172,6 +195,7 @@ class WeatherService  {
             wData.current.dewPoint = bgData.current.dewPoint;
             wData.current.pressure = bgData.current.pressure;   
             wData.minutely = bgData.minutely; 
+            if (bgData.changed) { wData.changed = true; }
            break;
           case wsOWMFirst:
             wData.current.precipitationChanceOther = garminData.current.precipitationChance; 
@@ -184,7 +208,6 @@ class WeatherService  {
         var maxBgH = bgData.hourly.size();          
         for (var h = 0; h < maxH; h += 1) {
           if (h < maxBgH) {
-            // garminData.hourly[h].precipitationChanceOther = 0;
             switch(source) {
               case wsGarminFirst:
                 wData.hourly[h].precipitationChanceOther = bgData.hourly[h].precipitationChance; 

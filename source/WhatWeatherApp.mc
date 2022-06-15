@@ -73,8 +73,8 @@ class WhatWeatherApp extends Application.AppBase {
       $._maxUVIndex = Utils.getApplicationPropertyAsNumber("maxUVIndex", 20);
       $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
 
-      $._showInfo = Utils.getApplicationPropertyAsNumber("showInfo", SHOW_INFO_TIME_Of_DAY);
-      $._showInfo2 = Utils.getApplicationPropertyAsNumber("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
+      $._showInfoSmallField = Utils.getApplicationPropertyAsNumber("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
+      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);
       $._showPrecipitationChanceAxis = Utils.getApplicationPropertyAsBoolean("showPrecipitationChanceAxis", true);
       $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
       $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
@@ -89,6 +89,9 @@ class WhatWeatherApp extends Application.AppBase {
       $._showComfort = Utils.getApplicationPropertyAsBoolean("showComfort", true);
       $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
 
+      $._hideTemperatureLowerThan = Utils.getApplicationPropertyAsNumber("hideTemperatureLowerThan", 8);
+      $._showActualWeather = Utils.getApplicationPropertyAsBoolean("showActualWeather", false);
+
       $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
       
       var bgHandler =  getBGServiceHandler();
@@ -100,7 +103,7 @@ class WhatWeatherApp extends Application.AppBase {
       var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
       $._weatherDataSource = ws as WeatherSource;
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
-      if ($._showClouds || $._showUVIndex || $._showInfo == SHOW_INFO_TEMPERATURE || $._showInfo2 == SHOW_INFO_TEMPERATURE 
+      if ($._showClouds || $._showUVIndex || $._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
       || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly) {
         bgHandler.Enable(); 
       } else {
@@ -122,6 +125,7 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
       Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
       Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    
+      Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);                    
     
       System.println("User settings loaded");
     } catch (ex) {

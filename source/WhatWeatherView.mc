@@ -128,13 +128,19 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       // @@ Check if weather data has changed    
-      var weatherChanged = true;
+      
       var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
       $._bgData = WeatherService.purgePastWeatherdata($._bgData);
       $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData, $._weatherDataSource);
-      if (weatherChanged) {
-        onUpdateWeather(dc, ds, dashesUnderColumnHeight);
-      }
+      // var weatherChanged = WeatherService.isWeatherDataChanged($._mostRecentData, newWeatherData);
+      // $._mostRecentData = newWeatherData;      
+      // if (weatherChanged) {
+      //   System.println("Weather changed");
+      //   if ($._mostRecentData != null) {
+      //   ($._mostRecentData as WeatherData).setChanged(false);
+      //   }
+      // }
+      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
      
       if ($._showAlertLevel) {
         drawWarningLevel(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY,$._alertLevelPrecipitationChance);
@@ -190,10 +196,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var devSettings = System.getDeviceSettings();
     var info = "";
     var postfix = "";
-    var showInfo = $._showInfo2;
-    if (ds.smallField) {
-      showInfo = $._showInfo;
-    }
+    var showInfo = $._showInfoLargeField;
+    if (ds.smallField) { showInfo = $._showInfoSmallField; }
     switch (showInfo) {
       case SHOW_INFO_NOTHING:
         return;
@@ -373,8 +377,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
           if (mShowPressure) { pressurePoints.add(new Point(x + ds.columnWidth / 2, current.pressure)); }
           if (mShowRelativeHumidity) { humidityPoints.add( new Point(x + ds.columnWidth / 2, current.relativeHumidity)); }
-          if (mShowTemperature) { tempPoints.add(new Point(x + ds.columnWidth / 2, current.temperature)); }
-          if (mShowDewpoint) { dewPoints.add(new Point(x + ds.columnWidth / 2, current.getDewPoint())); }
+          if (mShowTemperature) { tempPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.temperature, $._hideTemperatureLowerThan)); }
+          if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.getDewPoint(), $._hideTemperatureLowerThan)); }
           if (mShowWind != SHOW_WIND_NOTHING) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
 
           if (dashesUnderColumnHeight > 0) {
@@ -448,8 +452,8 @@ class WhatWeatherView extends WatchUi.DataField {
             }
             if (mShowPressure) { pressurePoints.add(new Point(x + ds.columnWidth / 2, forecast.pressure)); }
             if (mShowRelativeHumidity) { humidityPoints.add( new Point(x + ds.columnWidth / 2, forecast.relativeHumidity)); }
-            if (mShowTemperature) { tempPoints.add( new Point(x + ds.columnWidth / 2, forecast.temperature)); }
-            if (mShowDewpoint) { dewPoints.add(new Point(x + ds.columnWidth / 2, forecast.getDewPoint())); }
+            if (mShowTemperature) { tempPoints.add( new WeatherPoint(x + ds.columnWidth / 2, forecast.temperature, $._hideTemperatureLowerThan)); }
+            if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, forecast.getDewPoint(), $._hideTemperatureLowerThan)); }
             if (mShowWind) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
 
             if (dashesUnderColumnHeight > 0) {              

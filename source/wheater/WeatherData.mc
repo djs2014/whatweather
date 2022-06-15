@@ -8,18 +8,20 @@ class WeatherData {
   var minutely as WeatherMinutely;
   var hourly as Lang.Array<WeatherHourly>;
   var lastUpdated as Time.Moment?;
-  var changed as Boolean = true;
+  var changed as Boolean = false;
 
   function initialize(current as WeatherCurrent, minutely as WeatherMinutely, hourly as Lang.Array<WeatherHourly>, lastUpdated as Time.Moment?) {    
     self.current = current;
     self.minutely = minutely;
     self.hourly = hourly;
     self.lastUpdated = lastUpdated;    
-    self.changed = true;
+    self.changed = false;
   }
 
   static function initEmpty() as WeatherData {
-    return new WeatherData(new WeatherCurrent(), new WeatherMinutely(), [] as Array<WeatherHourly>, Time.now());
+    var wd = new WeatherData(new WeatherCurrent(), new WeatherMinutely(), [] as Array<WeatherHourly>, Time.now());
+    wd.setChanged(true);
+    return wd;
   }
 
   function valid() as Lang.Boolean {

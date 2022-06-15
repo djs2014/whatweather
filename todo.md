@@ -1,17 +1,25 @@
 -> node.js: OWM pop = value 0.1 - 1  + example json
 --------------------
 @@ grade colors / flatland mode
+
+x memory -> display 8 hours -> get only 9 hours
+
 MVP - 1 
-check memory background
-add pressure + node docu example output to edge
-dewpoint -> comfort (or calculate?)
+weather data changed
+show actual temperature / pressure / 
+xhide dewpoint below x celcius - 8
+x	hideTemperatureLowerThan
+	showActualWeather
+x	 Point to WeatherPoint (x, value, minValue)
+
+x check memory background
+x add pressure + node docu example output to edge
+x dewpoint -> comfort (or calculate?)
 	pressure: line min=900 max = 1040 calc perc
 	dewpoint/temp: min = 0, max = 50 
 		<0 min = -10
-	dewpoint use comfort color based on value
-	hide dewpoint below x
-	dewpoint value to color -
-		- alert on dewpoint
+	x dewpoint use comfort color based on value
+	
 	set max temperature (same as for dewpoint)
 	if > alert -> color the icon (dewpoint)
 	

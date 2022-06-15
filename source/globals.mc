@@ -38,8 +38,8 @@ var _showUVIndex as Lang.Boolean = true;
 var _maxUVIndex as Lang.Number = 20;
 var _hideUVIndexLowerThan as Lang.Number = 4;
 
-var _showInfo as Lang.Number = SHOW_INFO_TIME_Of_DAY;
-var _showInfo2 as Lang.Number = SHOW_INFO_AMBIENT_PRESSURE;
+var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
+var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
 var _showPrecipitationChanceAxis as Lang.Boolean= true;
 
 var _alertLevelWindSpeed as Lang.Number = 5;
@@ -52,6 +52,9 @@ var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
 
 var _showGlossary as Lang.Boolean = true;
+
+var _hideTemperatureLowerThan as Lang.Number = 8;
+var _showActualWeather as Lang.Boolean = true;
 
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Number = 5;
