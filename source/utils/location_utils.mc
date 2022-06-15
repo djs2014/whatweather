@@ -107,11 +107,14 @@ module WhatAppBase {
       hidden function setSunRiseAndSunSet(location as Location?) as Void {
           if (location == null) { return; }
           mSunrise = Weather.getSunrise(location as Location, Time.now()); // ex: 13-6-2022 05:20:43
-          mSunset = Weather.getSunset(location as Location, Time.now()); // ex: 13-6-2022 22:02:25          
+          mSunset = Weather.getSunset(location as Location, Time.now()); // ex: 13-6-2022 22:02:25     
+          System.println("Sunrise:" + Utils.getShortTimeString(mSunrise) + " sunset: " + Utils.getShortTimeString(mSunset) );     
       }
 
       function isAtDaylightTime(time as Moment?, defValue as Boolean) as Boolean {
         if (time == null || mSunrise == null || mSunset == null ) { return defValue; }
+
+        // System.println("Sunrise:" + Utils.getShortTimeString(mSunrise) + "test: " +  Utils.getShortTimeString(time) + " sunset: " + Utils.getShortTimeString(mSunset) );  
         return (mSunrise as Moment).value() <= (time as Moment).value() && (time as Moment).value() <= (mSunset as Moment).value();        
       }
 

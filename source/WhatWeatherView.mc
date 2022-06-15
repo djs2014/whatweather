@@ -131,15 +131,15 @@ class WhatWeatherView extends WatchUi.DataField {
       
       var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
       $._bgData = WeatherService.purgePastWeatherdata($._bgData);
-      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData, $._weatherDataSource);
-      // var weatherChanged = WeatherService.isWeatherDataChanged($._mostRecentData, newWeatherData);
-      // $._mostRecentData = newWeatherData;      
-      // if (weatherChanged) {
-      //   System.println("Weather changed");
-      //   if ($._mostRecentData != null) {
-      //   ($._mostRecentData as WeatherData).setChanged(false);
-      //   }
-      // }
+      var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
+
+      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);      
+      var weatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
+      if (weatherChanged) {
+        System.println("Weather changed");
+        $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
+        $._bgData = WeatherService.setChanged($._bgData, false);    
+      }
       onUpdateWeather(dc, ds, dashesUnderColumnHeight);
      
       if ($._showAlertLevel) {
@@ -353,8 +353,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
           validSegment = validSegment + 1;
 
-          if (mShowComfort) { render.drawComfortColumn(x, current.temperature, current.relativeHumidity, current.precipitationChance); }
-
           if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
           var cHeight = 0;
@@ -363,6 +361,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mCurrentLocation.isAtNightTime(current.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
             cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); 
           }
+          if (mShowComfort) { render.drawComfortColumn(x, current.temperature, current.relativeHumidity, current.precipitationChance); }
           // rain
           var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
           if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
@@ -428,7 +427,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
-            if (mShowComfort) { render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity, forecast.precipitationChance); }
             if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
             colorClouds = COLOR_CLOUDS;
@@ -439,6 +437,7 @@ class WhatWeatherView extends WatchUi.DataField {
                  }
               cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
+            if (mShowComfort) { render.drawComfortColumn(x, forecast.temperature, forecast.relativeHumidity, forecast.precipitationChance); }
             // rain
             var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
             if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }

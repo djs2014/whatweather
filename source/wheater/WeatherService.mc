@@ -11,27 +11,6 @@ enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1, wsGarminOnly = 2, wsOWMO
 
 (:typecheck(disableBackgroundCheck))  
 class WeatherService  {
-    static function isWeatherDataChanged(oldData as WeatherData?, newData as WeatherData?) as Boolean {
-      if (oldData == null && newData == null) { return false; }
-      if (oldData == null || newData == null) { return true; }      
-      var oD = oldData as WeatherData;
-      var nD = newData as WeatherData;
-
-      System.println("Time[" + Utils.getShortTimeString(oD.current.observationTime) + "]<>[" + Utils.getShortTimeString(nD.current.observationTime) + "]");
-      System.println("Lat[" + oD.current.lat + "]<>[" + nD.current.lat + "]");
-      System.println("Lon[" + oD.current.lon + "]<>[" + nD.current.lon + "]");
-      System.println("Name[" + oD.current.observationLocationName + "]<>[" + nD.current.observationLocationName + "]");
-
-      // var oTime = oD.current.observationTime.value().toString();
-      // var nTime = nD.current.observationTime.value().toString();
-      // var lat = oD.current.lat.toString();
-      // var lon = nD.current.lat.toString();
-      return nD.changed 
-        || (oD.current.observationTime != nD.current.observationTime)
-        || (oD.current.lat != nD.current.lat) || (oD.current.lon != nD.current.lon)
-        || (oD.current.observationLocationName != nD.current.observationLocationName);
-    }
-
     static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
       if (data == null) { return WeatherData.initEmpty(); }
       var wData = data as WeatherData;
@@ -230,4 +209,57 @@ class WeatherService  {
         return WeatherData.initEmpty();
       }        
     }
+    
+    static function isWeatherDataChanged(current as WeatherDataCheck, newData as WeatherData?) as Boolean {
+
+      if (newData == null) { return true; }            
+      var newWeatherData = new WeatherDataCheck(newData);
+
+      var nD = newData as WeatherData;        
+      return nD.changed || !current.isEqual(newWeatherData);        
+    }
+
+    static function setChanged(data as WeatherData?, changed as Boolean) as WeatherData? {
+      if (data == null) { return data; }
+      var d = data as WeatherData;
+      d.setChanged(changed);
+      return d;
+    }
+}
+
+(:typecheck(disableBackgroundCheck))  
+class WeatherDataCheck {
+  var time as String = "";
+  var lat as String = "";
+  var lon as String = "";
+  var name as String = "";
+
+  function initialize(data as WeatherData?) {
+    if (data != null) {
+      var d = data as WeatherData;  
+      time = Utils.getShortTimeString(d.current.observationTime);
+      lat = getStringValue(d.current.lat);
+      lon = getStringValue(d.current.lon);
+      if (data.current.observationLocationName != null) { 
+        name = data.current.observationLocationName;
+      }
+    }
+  } 
+
+  function isEqual(item as WeatherDataCheck) as Boolean {
+
+    System.println("self [" + self.toString() + "]");
+    System.println("item [" + item.toString() + "]");
+      
+    return time.equals(item.time) && lat.equals(item.lat) && lon.equals(item.lon) && name.equals(item.name);
+  }
+
+  hidden function getStringValue(item as Double?) as String {
+    if (item == null) { return ""; }
+    return (item as Double).toString();
+  }
+
+  function toString() as String {
+    return "Time[" + time + "]lat[" + lat + "]lon[" + lon +"]name[" + name + "]";
+  }
 }
