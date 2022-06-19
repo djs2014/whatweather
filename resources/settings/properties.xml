@@ -17,7 +17,7 @@
 	<property id="alertLevelWindSpeed" type="number">5</property>
 	<property id="alertLevelDewpoint" type="number">19</property>
 
-	<property id="showAlertLevel" type="boolean">false</property>
+	<property id="showDetailsWhenPaused" type="boolean">true</property>
 	<property id="showPrecipitationChanceAxis" type="boolean">true</property>	
 	<property id="showObservationTime" type="boolean">true</property>
 	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>	

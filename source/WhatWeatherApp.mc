@@ -61,7 +61,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._maxMinuteForecast = Utils.getApplicationPropertyAsNumber("maxMinuteForecast", 0);
       $._maxHoursForecast = Utils.getApplicationPropertyAsNumber("maxHoursForecast", 8);
       $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
-      $._showAlertLevel = Utils.getApplicationPropertyAsBoolean("showAlertLevel", true);      
+      $._showDetailsWhenPaused = Utils.getApplicationPropertyAsBoolean("showDetailsWhenPaused", true);      
       $._dashesUnderColumnHeight = Utils.getApplicationPropertyAsNumber("dashesUnderColumnHeight", 2);
       $._showColumnBorder = Utils.getApplicationPropertyAsBoolean("showColumnBorder", false);
       $._showObservationTime = Utils.getApplicationPropertyAsBoolean("showObservationTime", true);

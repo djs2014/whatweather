@@ -59,6 +59,7 @@ class WeatherCurrent {
 
   function getDewPoint() as Lang.Number? {
     if (dewPoint == null) { return null; }
+    //if (!dewPoint instanceof(Numeric)) { return null; }
     return (dewPoint as Float).toNumber();
   }
   function info() as Lang.String {

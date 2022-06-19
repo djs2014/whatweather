@@ -77,10 +77,10 @@ class DisplaySettings {
         fieldType = Types.HiddenField;        
       } else if (width >= 246) {
         fieldType = Types.WideField;
-        if (height >= 100) {
-          fieldType = Types.LargeField;
-        } else if (height >= 322) {
+        if (height >= 322) {
           fieldType = Types.OneField;
+        } else if (height >= 100) {
+          fieldType = Types.LargeField;
         }
       }
       return fieldType;

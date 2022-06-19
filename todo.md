@@ -5,7 +5,12 @@
 x memory -> display 8 hours -> get only 9 hours
 
 MVP - 1 
-weather data changed
+? weather data changed -> buffered bitmap out of memory
+
+activity paused 
+	- top lines, shift down
+	- show max numbers: pressure, temp, dew etc.
+	- 	
 show actual temperature / pressure / 
 xhide dewpoint below x celcius - 8
 x	hideTemperatureLowerThan

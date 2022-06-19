@@ -48,7 +48,7 @@ class RenderWeather {
     self.yTempBottom = ds.getYpostion(perc);
   }
 
-  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number) as Void {
+  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number, showDetails as Lang.Boolean) as Void {
     try {
       var max = uvPoints.size();
       for (var i = 0; i < max; i += 1) {
@@ -58,7 +58,8 @@ class RenderWeather {
           var perc = Utils.percentageOf(uvp.uvi, maxUvIndex).toNumber();
           var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
-          drawUvPoint(x,y,r,uvp.uvi);          
+        
+          drawUvPoint(x,y,r,uvp.uvi as Float, showDetails);          
         }
       }
     } catch (ex) {
@@ -66,9 +67,14 @@ class RenderWeather {
     }
   }
 
-  function drawUvPoint(x as Lang.Number, y as Lang.Number, r as Lang.Number, uvi as Lang.Float?) as Void {
-    if (uvi == null || uvi == 0) { return; }
-    dc.setColor(uviToColor(uvi), Graphics.COLOR_TRANSPARENT);
+  function drawUvPoint(x as Lang.Number, y as Lang.Number, r as Lang.Number, uvi as Lang.Float, showDetails as Lang.Boolean) as Void {    
+    var color = uviToColor(uvi);
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+
+    if (showDetails) {
+      var h = dc.getFontHeight(Graphics.FONT_TINY);        
+      dc.drawText(x, y + h/2, Graphics.FONT_TINY, uvi.format("%.1f"),  Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+    }
     dc.fillCircle(x, y, r);
     var rh = (r + 2)/2;
     dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
@@ -76,7 +82,7 @@ class RenderWeather {
   }
 
   // @@ factor -> maxTemperature
-  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number) as Void {
+  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -86,6 +92,12 @@ class RenderWeather {
           var perc = Utils.percentageOf(p.value, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           
+          if (showDetails && p.value > 10) { // @@ config 
+            dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+            var h = dc.getFontHeight(Graphics.FONT_TINY);
+            dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+          }
+
           dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
           dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
 
@@ -100,7 +112,7 @@ class RenderWeather {
     }
   }
 
-  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number) as Void {
+  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -111,6 +123,13 @@ class RenderWeather {
           var y = ds.getYpostion(perc);
           var r = 3;
           var color = dewpointToColor(y.toFloat());
+
+          if (showDetails && p.value > 7) { // @@ config 
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            var h = dc.getFontHeight(Graphics.FONT_TINY);
+            dc.drawText(x, y + h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+          }
+
           dc.setColor(color, Graphics.COLOR_TRANSPARENT);
           dc.fillCircle(x, y+r-1, 2);
 
@@ -126,16 +145,22 @@ class RenderWeather {
     }
   }
   
-  function drawPressureGraph(points as Lang.Array, factor as Lang.Number) as Void {
+  function drawPressureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
-        var p = points[i] as Point;
+        var p = points[i] as WeatherPoint;
 
         var x = p.x as Number;
-        var perc = Utils.percentageOf(p.y - self.minPressure, self.maxPressure - self.minPressure).toNumber();
+        var perc = Utils.percentageOf(p.value - self.minPressure, self.maxPressure - self.minPressure).toNumber();
         var y = ds.getYpostion(perc).toNumber();
         
+        if (showDetails) {
+          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+          var h = dc.getFontHeight(Graphics.FONT_TINY);       
+          dc.drawText(x, y - h/2, Graphics.FONT_XTINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+        }
+
         dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
         var pts = [ [x-3, y], [x, y+5], [x+3, y]];
@@ -147,14 +172,21 @@ class RenderWeather {
   }
 
   // @@ factor always 1 remove it
-  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number) as Void {
+  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
-        var p = points[i] as Point;
+        var p = points[i] as WeatherPoint;
         var x = p.x;
-        var y = ds.getYpostion(p.y * factor);
+        var y = ds.getYpostion(p.value.toNumber()); // value is percentage
         var r = 3;
+
+        if (showDetails) {
+          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+          var h = dc.getFontHeight(Graphics.FONT_TINY);       
+          dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+        }
+
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
 
