@@ -7,7 +7,7 @@ using WhatAppBase.Utils as Utils;
 //   aaRain1stHour,
 //   aaPrecChance,
 //   aaWind,
-//   aaWeather
+//   aaCondition
 // }
 
 class AlertHandler {
@@ -23,7 +23,7 @@ class AlertHandler {
   var maxWindSpeed as Lang.Float = 0.0;
   var maxDewpoint as Lang.Float = 0.0;
   
-  hidden var WEATHER_NEUTRAL as Lang.Number = 0x00AAFF;  // COLOR_BLUE
+  hidden var CONDITION_NEUTRAL as Lang.Number = 0x00AAFF;  // COLOR_BLUE
 
   hidden const NEUTRAL = 0;
   hidden const TRIGGERED = 1;
@@ -32,14 +32,14 @@ class AlertHandler {
   hidden var statusUvi as Lang.Number = NEUTRAL;
   hidden var statusPrecipitationChance as Lang.Number = NEUTRAL;
   hidden var statusRainMMfirstHour as Lang.Number = NEUTRAL;
-  hidden var statusWeather as Lang.Number = NEUTRAL;
+  hidden var statusCondition as Lang.Number = NEUTRAL;
   hidden var statusWindSpeed as Lang.Number = NEUTRAL;
   hidden var statusDewpoint as Lang.Number = NEUTRAL;
 
   hidden var allClearUvi as Lang.Boolean = true;
   hidden var allClearPrecipitationChance as Lang.Boolean = true;
   hidden var allClearRainMMfirstHour as Lang.Boolean = true;
-  hidden var allClearWeather as Lang.Boolean = true;
+  hidden var allClearCondition as Lang.Boolean = true;
   hidden var allClearWindSpeed as Lang.Boolean = true;
   hidden var allClearDewpoint as Lang.Boolean = true;
 
@@ -74,7 +74,7 @@ class AlertHandler {
     return (statusUvi == TRIGGERED) ||
            (statusPrecipitationChance == TRIGGERED) ||
            (statusRainMMfirstHour == TRIGGERED) ||
-           (statusWeather == TRIGGERED) || (statusWindSpeed == TRIGGERED) || 
+           (statusCondition == TRIGGERED) || (statusWindSpeed == TRIGGERED) || 
            (statusDewpoint == TRIGGERED);
   }
 
@@ -89,8 +89,8 @@ class AlertHandler {
     if (statusRainMMfirstHour == HANDLED) {
       info.add("R");                
     }
-    if (statusWeather == HANDLED) {
-      info.add("W");                
+    if (statusCondition == HANDLED) {
+      info.add("C");                
     }
     if (statusWindSpeed == HANDLED) {
       info.add("Ws");                
@@ -112,8 +112,8 @@ class AlertHandler {
     if (statusRainMMfirstHour == HANDLED) {
       info = info + " R" + maxRainMMfirstHour.format("%d");
     }
-    if (statusWeather == HANDLED) {
-      info = info + " W";
+    if (statusCondition == HANDLED) {
+      info = info + " C";
     }
     if (statusWindSpeed == HANDLED) {
       var beaufort = Utils.windSpeedToBeaufort(maxWindSpeed);
@@ -136,8 +136,8 @@ class AlertHandler {
   //   if (statusRainMMfirstHour == HANDLED) {
   //     info.add(aaRain1stHour);                
   //   }
-  //   if (statusWeather == HANDLED) {
-  //     info.add(aaWeather);                
+  //   if (statusCondition == HANDLED) {
+  //     info.add(aaCondition);                
   //   }
   //   if (statusWindSpeed == HANDLED) {
   //     info.add(aaWind);                
@@ -158,9 +158,9 @@ class AlertHandler {
       statusRainMMfirstHour = HANDLED;
       allClearRainMMfirstHour = true;
     }
-    if (statusWeather == TRIGGERED) {
-      statusWeather = HANDLED;
-      allClearWeather = true;
+    if (statusCondition == TRIGGERED) {
+      statusCondition = HANDLED;
+      allClearCondition = true;
     }
     if (statusWindSpeed == TRIGGERED) {
       statusWindSpeed = HANDLED;
@@ -176,7 +176,7 @@ class AlertHandler {
     statusPrecipitationChance = NEUTRAL;
     statusUvi = NEUTRAL;
     statusRainMMfirstHour = NEUTRAL;
-    statusWeather = NEUTRAL;
+    statusCondition = NEUTRAL;
     statusWindSpeed = NEUTRAL;
     statusDewpoint = NEUTRAL;
 
@@ -198,8 +198,8 @@ class AlertHandler {
     if (allClearRainMMfirstHour) {
       statusRainMMfirstHour = NEUTRAL;      
     }
-    if (allClearWeather) {
-      statusWeather = NEUTRAL;      
+    if (allClearCondition) {
+      statusCondition = NEUTRAL;      
     }
     if (allClearWindSpeed) {
       statusWindSpeed = NEUTRAL;      
@@ -214,7 +214,7 @@ class AlertHandler {
     allClearUvi = true;
     allClearPrecipitationChance = true;
     allClearRainMMfirstHour = true;
-    allClearWeather = true;
+    allClearCondition = true;
     allClearWindSpeed = true;
     allClearDewpoint = true;
   }
@@ -272,13 +272,13 @@ class AlertHandler {
 
   function processWeather(colorValue as Lang.Number?) as Void{
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    if (statusWeather == NEUTRAL && colorValue != WEATHER_NEUTRAL) {
-      statusWeather = TRIGGERED;
+    if (statusCondition == NEUTRAL && colorValue != CONDITION_NEUTRAL) {
+      statusCondition = TRIGGERED;
     }
 
     // all clear again HANDLED -> NEUTRAL
-    allClearWeather = allClearWeather && (statusWeather == HANDLED &&
-                                          colorValue == WEATHER_NEUTRAL);
+    allClearCondition = allClearCondition && (statusCondition == HANDLED &&
+                                          colorValue == CONDITION_NEUTRAL);
   }
 
   function processWindSpeed(windSpeedMs as Lang.Float?) as Void {

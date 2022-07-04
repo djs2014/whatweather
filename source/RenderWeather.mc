@@ -48,7 +48,7 @@ class RenderWeather {
     self.yTempBottom = ds.getYpostion(perc);
   }
 
-  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number, showDetails as Lang.Boolean) as Void {
+  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = uvPoints.size();
       for (var i = 0; i < max; i += 1) {
@@ -82,7 +82,7 @@ class RenderWeather {
   }
 
   // @@ factor -> maxTemperature
-  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
+  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -93,8 +93,14 @@ class RenderWeather {
           var y = ds.getYpostion(perc);
           
           if (showDetails && p.value > 10) { // @@ config 
-            dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+            var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
             var h = dc.getFontHeight(Graphics.FONT_TINY);
+            if (yBlueBar < y) {
+              dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);   
+            } else {
+              dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);   
+            }     
+            // dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
 
@@ -112,7 +118,7 @@ class RenderWeather {
     }
   }
 
-  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
+  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -125,8 +131,14 @@ class RenderWeather {
           var color = dewpointToColor(y.toFloat());
 
           if (showDetails && p.value > 7) { // @@ config 
-            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            // var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
             var h = dc.getFontHeight(Graphics.FONT_TINY);
+            // if (yBlueBar < y) {
+            //   dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);   
+            // } else {
+            //   dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+            // }     
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, y + h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
 
@@ -145,7 +157,7 @@ class RenderWeather {
     }
   }
   
-  function drawPressureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
+  function drawPressureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -156,8 +168,13 @@ class RenderWeather {
         var y = ds.getYpostion(perc).toNumber();
         
         if (showDetails) {
-          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+          var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
           var h = dc.getFontHeight(Graphics.FONT_TINY);       
+          if (yBlueBar < (y - h)) {
+            dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);   
+          } else {
+            dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);   
+          }          
           dc.drawText(x, y - h/2, Graphics.FONT_XTINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
         }
 
@@ -172,7 +189,7 @@ class RenderWeather {
   }
 
   // @@ factor always 1 remove it
-  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean) as Void {
+  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -182,8 +199,15 @@ class RenderWeather {
         var r = 3;
 
         if (showDetails) {
-          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
+          // var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
           var h = dc.getFontHeight(Graphics.FONT_TINY);       
+          // background pop is taller + text is above y (0,0 is upper left coord)
+          // if (yBlueBar < (y - h)) {
+          //   dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);   
+          // } else {
+          //   dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);   
+          // }
+          dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);   
           dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
         }
 

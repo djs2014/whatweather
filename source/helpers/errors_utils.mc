@@ -4,6 +4,7 @@ import Toybox.Lang;
 
 (:background)
 module CommunicationsHelpers {
+
     class CustomErrors {
       public const ERROR_BG_NO_API_KEY = -9000;
       public const ERROR_BG_NO_POSITION = -9001;
@@ -49,6 +50,6 @@ module CommunicationsHelpers {
           if (error == CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT) {return "Response too large";}
           if (error == CustomErrors.ERROR_BG_INVALID_BACKGROUND_TIME) {return "Invalid bg time";}
 
-        return error as Lang.String;
+        return error.format("%d");
       }
 }

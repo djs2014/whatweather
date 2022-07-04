@@ -40,7 +40,6 @@ var _hideUVIndexLowerThan as Lang.Number = 4;
 
 var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
-var _showPrecipitationChanceAxis as Lang.Boolean= true;
 
 var _alertLevelWindSpeed as Lang.Number = 5;
 var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;

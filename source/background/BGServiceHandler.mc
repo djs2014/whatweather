@@ -1,4 +1,4 @@
-// Version 1.0.1
+// Version 1.0.2
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
@@ -7,6 +7,8 @@ import Toybox.Position;
 import Toybox.Time;
 import Toybox.Background;
 using WhatAppBase.Utils;
+using CommunicationsHelpers as Helpers;
+import Toybox.Application.Storage;
 
 class BGServiceHandler {    
     var mCurrentLocation as Utils.CurrentLocation?;
@@ -102,7 +104,7 @@ class BGServiceHandler {
         try {
             Background.deleteTemporalEvent();
             mBGActive = false;
-            mError =BGService.ERROR_BG_NONE;
+            // mError =BGService.ERROR_BG_NONE; //- Keep the last error
             System.println("stopBGservice stopped"); 
         } catch (ex) {
             ex.printStackTrace();
@@ -228,6 +230,11 @@ class BGServiceHandler {
         if (mError == BGService.ERROR_BG_HTTPSTATUS) {
             return "Http [" + mHttpStatus.format("%0d") + "]";
         }
-        return "";
+
+        var errorMsg = Storage.getValue("BGError");
+        if (errorMsg != null) { return errorMsg as String; }
+        return mError.format("%d");
+        // Datafield no Communications module  
+        //return Helpers.getCommunicationError(mError);        
     }
 }

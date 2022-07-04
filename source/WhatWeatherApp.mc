@@ -74,8 +74,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
 
       $._showInfoSmallField = Utils.getApplicationPropertyAsNumber("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
-      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);
-      $._showPrecipitationChanceAxis = Utils.getApplicationPropertyAsBoolean("showPrecipitationChanceAxis", true);
+      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);      
       $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
       $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
       $._alertLevelDewpoint = Utils.getApplicationPropertyAsNumber("alertLevelDewpoint", 19);
@@ -161,6 +160,13 @@ class WhatWeatherApp extends Application.AppBase {
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data) {
     System.println("Background data recieved");
+
+    if (data instanceof Lang.Number && data == 0) {
+      System.println("Response code is 0 -> reset bg service");
+      loadUserSettings();
+      return;
+    }
+    
     var bgHandler = getBGServiceHandler();
     bgHandler.onBackgroundData(data, self, :updateBgData);
 

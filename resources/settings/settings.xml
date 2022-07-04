@@ -131,9 +131,7 @@
 	<setting propertyKey="@Properties.showDetailsWhenPaused" title="@Strings.ShowDetailsWhenPaused">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showPrecipitationChanceAxis" title="@Strings.ShowPrecipitationChanceAxis">
-		<settingConfig type="boolean" />
-	</setting>		
+			
 	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
 		<settingConfig type="numeric" min="0" max="4" />
 	</setting>	
@@ -144,9 +142,9 @@
 		<settingConfig type="boolean" />
 	</setting>		
 
-	<setting propertyKey="@Properties.updateFrequencyWebReq" title="@Strings.UpdateFrequencyWebReq">
+	<!-- <setting propertyKey="@Properties.updateFrequencyWebReq" title="@Strings.UpdateFrequencyWebReq">
 		<settingConfig type="numeric" min="5" />
-	</setting>
+	</setting> -->
 
 	<setting propertyKey="@Properties.minimalGPSquality" title="@Strings.MinimalGPSquality" 
 	prompt="@Strings.MinimalGPSqualityPrompt">

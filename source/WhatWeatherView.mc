@@ -165,12 +165,8 @@ class WhatWeatherView extends WatchUi.DataField {
       // } else {
       //   onUpdateWeather(dc, ds, dashesUnderColumnHeight);
       // }
-     
-      // if ($._showAlertLevel) { // @@ needed?
-      //   drawWarningLevel(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY,$._alertLevelPrecipitationChance);
-      // }
-
-      if ($._showPrecipitationChanceAxis) { drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight); }
+                
+      drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
 
       showInfo(dc, ds);
 
@@ -181,6 +177,8 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
+    if ($._weatherDataSource == wsGarminOnly) { return; }
+    
     var bgHandler = getBGServiceHandler();
     if (!bgHandler.isEnabled()) { return; }
     if (! ($._showClouds || $._showDewpoint || $._showUVIndex || $._showPressure 
@@ -312,6 +310,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var previousCondition = -1;
     var weatherTextLine = 0;
     var alertHandler = getAlertHandler();
+    var blueBarPercentage = []; 
 
     try {
       if ($._mostRecentData != null && ($._mostRecentData as WeatherData).valid()) {
@@ -391,6 +390,7 @@ class WhatWeatherView extends WatchUi.DataField {
             uvp.calculateVisible(current.precipitationChance);
             uvPoints.add(uvp);
           }
+          if (mShowDetails) { blueBarPercentage.add(current.precipitationChance); }
 
           if (mShowPressure) { pressurePoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.pressure, 0)); }
           if (mShowRelativeHumidity) { humidityPoints.add( new WeatherPoint(x + ds.columnWidth / 2, current.relativeHumidity, 0)); }
@@ -462,6 +462,8 @@ class WhatWeatherView extends WatchUi.DataField {
             // rain other
             drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
 
+            if (mShowDetails) { blueBarPercentage.add(forecast.precipitationChance); }
+
             if ($._showUVIndex) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
               uvp.calculateVisible(forecast.precipitationChance);
@@ -499,11 +501,11 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }  // hourlyForecast
 
-      if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex, mShowDetails); }
-      if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, 1, mShowDetails); }
-      if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, 1, mShowDetails); }
-      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, 1, mShowDetails); }
-      if (mShowPressure) { render.drawPressureGraph(pressurePoints, 1, mShowDetails); }
+      if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex, mShowDetails, blueBarPercentage); }
+      if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, 1, mShowDetails, blueBarPercentage); }
+      if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, 1, mShowDetails, blueBarPercentage); }
+      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, 1, mShowDetails, blueBarPercentage); }
+      if (mShowPressure) { render.drawPressureGraph(pressurePoints, 1, mShowDetails, blueBarPercentage); }
 
       if (mShowComfortZones) { render.drawComfortZones(); } // @@ small field, not the lines
 
@@ -542,19 +544,7 @@ class WhatWeatherView extends WatchUi.DataField {
     } catch (ex) {
       ex.printStackTrace();
     }
-  }
-
-  function drawWarningLevel(dc as Dc, margin as Number, bar_height as Number, color as Graphics.ColorType, heightPerc as Number) as Void {
-    if (heightPerc <= 0) { return; }
-
-    var width = dc.getWidth();
-
-    // integer division truncates the result, use float values
-    var lineY = margin + bar_height - bar_height * (heightPerc / 100.0);
-
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawLine(margin, lineY, width - margin, lineY);
-  }
+  }  
 
   function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {
     dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
@@ -633,15 +623,5 @@ class WhatWeatherView extends WatchUi.DataField {
       Attention.playTone(Attention.TONE_CANARY);
     }
   }
-
-  // @@ TEST
-  // function getWhenNextRequest() as String {
-  //       var lastTime = Background.getLastTemporalEventTime();
-  //       if (lastTime == null) { return ""; }
-  //       var mUpdateFrequencyInMinutes = 5;
-  //       var elapsedSeconds = Time.now().value() - lastTime.value();
-  //       var secondsToNext = (mUpdateFrequencyInMinutes * 60) - elapsedSeconds;
-  //       return Utils.secondsToShortTimeString(secondsToNext, "{m}:{s}");
-  //   }
  
 }

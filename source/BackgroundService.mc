@@ -24,18 +24,24 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             Storage.setValue("Temperature", sensorInfo.temperature);            
         }
 
-        handleOWM();                
+        Storage.setValue("BGError", "");
+        var error = handleOWM();
+        if (error != 0) {
+            Storage.setValue("BGError", Helpers.getCommunicationError(error));
+            Background.exit(error);
+        }
     }
 
-    function handleOWM() as Void {
+    function handleOWM() as Number {
         try {        
 
             var ws = Storage.getValue("weatherDataSource");
             if (ws != null && ws instanceof(Number)) {
                 // wsGarminOnly = 2
-                if (ws == 2) {
+                if (ws == wsGarminOnly) {
                     System.println("OWM disabled - wsGarminOnly");
-                    return;
+                    Background.exit(0);
+                    return 0;
                 }
             }
                 
@@ -51,16 +57,19 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (proxy == null) { proxy=""; }            
             if (proxyApiKey == null) { proxyApiKey=""; }
             // @@ check error codes
-            if (location  == null) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_POSITION); }
-            if ((apiKey as String).length() == 0) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_API_KEY); }
-            if ((proxy as String).length() == 0) { Background.exit(Helpers.CustomErrors.ERROR_BG_NO_PROXY); }
+            if (location  == null) { return Helpers.CustomErrors.ERROR_BG_NO_POSITION; }
+            if ((apiKey as String).length() == 0) { return Helpers.CustomErrors.ERROR_BG_NO_API_KEY; }
+            if ((proxy as String).length() == 0) { return Helpers.CustomErrors.ERROR_BG_NO_PROXY; }
             if (maxhours == null) { maxhours = 8; }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
+            
             requestOWMData(lat, lon, apiKey as String, proxy as String, proxyApiKey as String, maxhours as Number);	
+
+            return 0;
         } catch(ex) {
             ex.printStackTrace();
-            Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
+            return Helpers.CustomErrors.ERROR_BG_EXCEPTION;
         }
     }
 
@@ -91,20 +100,20 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
    	}
 
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null) as Void {
-    if (responseCode == 200 && responseData != null) {
-        try { 
-                // !! Do not convert responseData to string (println etc..) --> gives out of memory
-                //System.println(responseData);   --> gives out of memory
-                // var data = responseData as String;  --> gives out of memory
-                Background.exit(responseData as PropertyValueType);                     
-            } catch(ex instanceof Background.ExitDataSizeLimitException ) {
-                ex.printStackTrace();
-                Background.exit(Helpers.CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
-            } catch(ex) {
-                System.println(responseData);
-                ex.printStackTrace();
-                Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
-            }
+        if (responseCode == 200 && responseData != null) {
+            try { 
+                    // !! Do not convert responseData to string (println etc..) --> gives out of memory
+                    //System.println(responseData);   --> gives out of memory
+                    // var data = responseData as String;  --> gives out of memory
+                    Background.exit(responseData as PropertyValueType);                     
+                } catch(ex instanceof Background.ExitDataSizeLimitException ) {
+                    ex.printStackTrace();
+                    Background.exit(Helpers.CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
+                } catch(ex) {
+                    System.println(responseData);
+                    ex.printStackTrace();
+                    Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
+                }
         } else {
             System.println("Not 200");
             System.println(responseData);

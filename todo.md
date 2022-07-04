@@ -1,25 +1,29 @@
+- git project node proxy server
 -> node.js: OWM pop = value 0.1 - 1  + example json
+-> other weather sources available?
+-> test param with minutely data
+-> enable minutely if needed
 --------------------
-@@ grade colors / flatland mode
+optimize
+	wobbly lines -> to array
+    - use profiler to check duration -> cache some code results (wobbly line)
+- radar -> offset to left x px
+LATER
+- show minutely (option / test)
+global Settings object
+	cleanup properties / settings
 
-x memory -> display 8 hours -> get only 9 hours
+docu -> screenshots + settings
 
-MVP - 1 
-? weather data changed -> buffered bitmap out of memory
+? showActualWeather -> how to display nice
+	show actual temperature / pressure /  replace current / add / none
 
-activity paused 
-	- top lines, shift down
-	- show max numbers: pressure, temp, dew etc.
-	- 	
-show actual temperature / pressure / 
-xhide dewpoint below x celcius - 8
-x	hideTemperatureLowerThan
-	showActualWeather
-x	 Point to WeatherPoint (x, value, minValue)
+- weather alert? -> garmin alert? possible?
+xshow errors:
+x- api key etc..
+x http->code 0 -> savesettings to trigger bg again
 
-x check memory background
-x add pressure + node docu example output to edge
-x dewpoint -> comfort (or calculate?)
+min/max configuration
 	pressure: line min=900 max = 1040 calc perc
 	dewpoint/temp: min = 0, max = 50 
 		<0 min = -10
@@ -27,52 +31,60 @@ x dewpoint -> comfort (or calculate?)
 	
 	set max temperature (same as for dewpoint)
 	if > alert -> color the icon (dewpoint)
+
+ test parameter with dummy data and fake time stamps
+ - /test parameter -> owm response with mm rain data to test layout (setting?)
+x  - show night/sun down/up  --> wind icon inverted ? / bar under black
+x	grijs lichter, nacht -> grijs donker
+? - set interval for weather call 0/5/10/15/20/25/30
+- 
+x memory -> display 8 hours -> get only 9 hours
+
+MVP - 1 
+? weather data changed -> buffered bitmap out of memory
+x show details:  font should be white if cloud/rain y+10 > point y 
+x	- array with max y coord cloud/rain
+x activity paused 
+x	- show max numbers: pressure, temp, dew etc.
+x hide dewpoint below x celcius - 8
+x	hideTemperatureLowerThan
+x	 Point to WeatherPoint (x, value, minValue)
+x check memory background
+x add pressure + node docu example output to edge
+x dewpoint -> comfort (or calculate?)
 	
 https://api.castlephoto.info/owm_one
 http://localhost:4000/owm_one
 
-condition -> cond
-dew_p=>7.260000 --> dew_p=>7.26
-- remove last 4 digits
-+ test parameter with dummy data and fake time stamps
-8 - /test parameter -> owm response with mm rain data to test layout (setting?)
-6 - show night/sun down/up  --> wind icon inverted ? / bar under black
-	grijs lichter, nacht -> grijs donker
-	
+x condition -> cond
+x dew_p=>7.260000 --> dew_p=>7.26
+x remove last 4 digits	
 x- max uvidx ipv factor tbv bereken perc en y pos
-? - set interval for weather call 0/5/10/15/20/25/30
+
 7 -  buffered bitmaps (when weather not changed)
 	- draw wobbly line // aka the background
-9 - property: weatherData.changed -> 
-	- new call to owm
-	- obstime /lat /lng / obsname diff
-10 - when owm location closer to current location then garmin location use owm for:
-	- precepation chance / weather etc..
-	- mark owm location green, garmin location light gray or something
 
 x show alert info on small field (abbreviated)
 x combine with bg data / rain pop 
   x pop_other ==> side line diff color blue
-    - use condition icon if not different from default (color)
-    ?- show mode on screen (when paused?)
-      - garmin only + add missing
-      - owm only + add missing
-      - garmin first
-      - owm first
+    x- use condition icon if not different from default (color)
+    x- show mode on screen (when paused?)
+    x  - garmin only + add missing
+    x  - owm only + add missing
+    x  - garmin first
+    x  - owm first
     x- bg enabled if owm first or show uvi/clouds
-?- use intial stored gps location
+x- use intial stored gps location
   - for current loc
   - for garmin weather?
   - for owm
 
 
 x - start bg process when valid (phone, position, parameters valid, option chose (like temperature))
-2 - layout garmin / owm
+x - layout garmin / owm
 	- uvi icon () ?
 
 
-MVP - 2
-1 
 # Todo
 	- Refactor the code, etc.
 	
@@ -86,16 +98,13 @@ MVP - 2
     	- merge owm data
     - colors as what apps
     - weather alert as icons (also on small field)
-    - detect bikerader -> offset time info
+    - detect bikerader -> offset display x time info
 ## Nice to have :-)
 	- Uv index,
 	- Minutely forecast.
 
 show stat/counter in display when bg active
 
-var _owmCounter = 0; 
-var _owmBGstatus = 0;
-check watchrain for all the checks needed
 
 ams 52.188950, 4.549666
 lasvegas 36.16373271614203, -115.1262537886411
@@ -112,4 +121,3 @@ https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
 PPS My personal preference is configuring the editor/IDE to use Unix-style endings, and setting core.autocrlf to false.
 
 
-{hourly=>[{dt=>1653926400, clouds=>36, uvi=>1.540000, pop=>0.100000, weather=>20}, {dt=>1653930000, clouds=>20, uvi=>0.790000, pop=>0.090000, weather=>20}, {dt=>1653933600, clouds=>36, uvi=>0.310000, pop=>0.050000, weather=>20}, {dt=>1653937200, clouds=>52, uvi=>0.090000, pop=>0, weather=>20}, {dt=>1653940800, clouds=>68, uvi=>0, pop=>0, weather=>20}, {dt=>1653944400, clouds=>84, uvi=>0, pop=>0, weather=>20}, {dt=>1653948000, clouds=>100, uvi=>0, pop=>0, weather=>20}, {dt=>1653951600, clouds=>100, uvi=>0, pop=>0, weather=>20}, {dt=>1653955200, clouds=>100, uvi=>0, pop=>0, weather=>20}, {dt=>1653958800, clouds=>100, uvi=>0, pop=>0.030000, weather=>20}, {dt=>1653962400, clouds=>100, uvi=>0, pop=>0.050000, weather=>20}, {dt=>1653966000, clouds=>100, uvi=>0, pop=>0.090000, weather=>20}, {dt=>1653969600, clouds=>100, uvi=>0, pop=>0.090000, weather=>20}, {dt=>1653973200, clouds=>100, uvi=>0.210000, pop=>0.090000, weather=>20}, {dt=>1653976800, clouds=>100, uvi=>0.560000, pop=>0.090000, weather=>20}], current=>{weather=>20, uvi=>0.790000, lon=>4.813800, clouds=>20, dt=>1653929007, tz_offset=>7200, lat=>52.201302}, minutely=>{dt_start=>1653929040, pops=>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}}

@@ -25,7 +25,7 @@
     <string id="AlertLevelWindSpeed">Alert level wind (Beaufort)</string>        
     <string id="AlertLevelDewpoint">Alert level dewpoint (Celcius)</string>        
     <string id="ShowDetailsWhenPaused">Show details (activity paused, one field)</string>    
-    <string id="ShowPrecipitationChanceAxis">Show precipitation chance axis (0,25,50,75,100) left and right</string>        
+    
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
     <string id="ShowColumnBorder">Show border of the columns</string>    
     <string id="ShowObservationTime">Show time of observation</string>
