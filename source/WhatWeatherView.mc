@@ -332,35 +332,34 @@ class WhatWeatherView extends WatchUi.DataField {
       var render = new RenderWeather(dc, ds);
 
       // @@ Test to find the bug in properties
-      if ( $._maxMinuteForecast > 0) {
-        var xMMstart = x; // @@ issue?
-        var popTotal = 0 as Lang.Number;
-        var columnWidth = 1;
-        var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
-        if (mm != null) {
-          ds.calculateColumnWidth(offset);
-          var max = mm.pops.size();
-          for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
-            var pop = mm.pops[i] as Lang.Number;
-            popTotal = popTotal + pop;
-            if (DEBUG_DETAILS) {
-              System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
-            }
+      // if ( $._maxMinuteForecast > 0) { @@ <-- $._maxMinuteForecast is not a number?
+      //   var xMMstart = x; // @@ issue?
+      //   var popTotal = 0 as Lang.Number;
+      //   var columnWidth = 1;
+      //   var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
+      //   if (mm != null) {
+      //     ds.calculateColumnWidth(offset);
+      //     var max = mm.pops.size();
+      //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+      //       var pop = mm.pops[i] as Lang.Number;
+      //       popTotal = popTotal + pop;
+      //       if (DEBUG_DETAILS) {
+      //         System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+      //       }
 
-            if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
-            drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
-            x = x + columnWidth;
-          }
-          x = x + ds.space;
-        }
-
-        if (dashesUnderColumnHeight > 0) {
-          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-          dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
-        }
-        x = xMMstart + offset;
-        mAlertHandler.processRainMMfirstHour(popTotal);
-      }
+      //       if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
+      //       drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+      //       x = x + columnWidth;
+      //     }
+      //     x = x + ds.space;
+      //   }
+      //   if (dashesUnderColumnHeight > 0) {
+      //     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      //     dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
+      //   }
+      //   x = xMMstart + offset;
+      //   mAlertHandler.processRainMMfirstHour(popTotal);
+      // }
 
       // @@ TODO donotrepeat current/hourly @@DRY
       var validSegment = 0;
@@ -380,7 +379,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
           validSegment = validSegment + 1;
 
-          if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
+          // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
           var cHeight = 0;
           colorClouds = COLOR_CLOUDS;
@@ -455,7 +454,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
-            if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
+            // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
             colorClouds = COLOR_CLOUDS;
             var cHeight = 0;

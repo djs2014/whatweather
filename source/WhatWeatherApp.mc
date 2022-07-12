@@ -69,7 +69,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
       $._showDetailsWhenPaused = Utils.getApplicationPropertyAsBoolean("showDetailsWhenPaused", true);      
       $._dashesUnderColumnHeight = Utils.getApplicationPropertyAsNumber("dashesUnderColumnHeight", 2);
-      $._showColumnBorder = Utils.getApplicationPropertyAsBoolean("showColumnBorder", false);
+      // $._showColumnBorder = Utils.getApplicationPropertyAsBoolean("showColumnBorder", false);
       $._showObservationTime = Utils.getApplicationPropertyAsBoolean("showObservationTime", true);
       $._showObservationLocationName = Utils.getApplicationPropertyAsBoolean("showObservationLocationName", true);
       $._observationTimeDelayedMinutesThreshold = Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 30);

@@ -137,13 +137,7 @@
 			
 	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
 		<settingConfig type="numeric" min="0" max="4" />
-	</setting>	
-    <!-- <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
-		<settingConfig type="boolean" />
-	</setting>					
-	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
-		<settingConfig type="boolean" />
-	</setting>		 -->
+	</setting>	  
 	
 	<setting propertyKey="@Properties.minimalGPSquality" title="@Strings.MinimalGPSquality" 
 	prompt="@Strings.MinimalGPSqualityPrompt">

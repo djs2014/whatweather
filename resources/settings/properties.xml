@@ -23,7 +23,7 @@
 	<property id="observationTimeCaption" type="string">As of </property>	
 	<property id="showObservationLocationName" type="boolean">true</property>	
 	<property id="dashesUnderColumnHeight" type="number">2</property>
-	<property id="showColumnBorder" type="boolean">false</property>
+	<!-- <property id="showColumnBorder" type="boolean">false</property> -->
 	<property id="showInfoSmallField" type="number">1</property>
 	<property id="showInfoLargeField" type="number">0</property>
 	<property id="showWind" type="number">3</property>
