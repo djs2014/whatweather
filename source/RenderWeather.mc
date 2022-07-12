@@ -271,12 +271,12 @@ class RenderWeather {
   function drawComfortZones() as Void {
     // if (ds.smallField) { return; }
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(0, ds.width, self.yHumTop);
-    drawWobblyLine(0, ds.width, self.yHumBottom);
+    drawWobblyLine(0, ds.width, self.yHumTop, 3);
+    drawWobblyLine(0, ds.width, self.yHumBottom, 3);
 
     dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(0, ds.width, self.yTempTop);
-    drawWobblyLine(0, ds.width, self.yTempBottom);
+    drawWobblyLine(0, ds.width, self.yTempTop, 3);
+    drawWobblyLine(0, ds.width, self.yTempBottom, 3);
   }
 
   function drawObservationLocation(name as Lang.String?) as Void {
@@ -796,7 +796,7 @@ class RenderWeather {
     var x2 = center.x + range / 2;
     var max = center.y + range / 2;
     for (var y = center.y - range / 2; y < max; y = y + 3) {
-      drawWobblyLine(x1, x2, y);
+      drawWobblyLine(x1, x2, y, 2);
     }
   }
 
@@ -950,10 +950,12 @@ class RenderWeather {
     return new Point(x.toNumber(), y.toNumber());
   }
 
-  hidden function drawWobblyLine(x1 as Number, x2 as Number, y as Number) as Void {
-    for (var x = x1; x <= x2; x++) {
+  hidden function drawWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Void {
+    var x = x1;
+    while (x <= x2) {    
       var y1 = y + Math.sin(x);
       dc.drawPoint(x, y1);
+      x = x + increment;
     }
   }
 

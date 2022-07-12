@@ -6,7 +6,6 @@ import Toybox.Sensor;
 import Toybox.Application.Storage;
 using Toybox.System;
 using WhatAppBase.Utils as Utils;
-//using Toybox.SensorHistory;
 
 class CurrentInfo {
   var lat as Lang.Double = 0.0d;
@@ -19,9 +18,9 @@ class CurrentInfo {
   function hasLocation() as Lang.Boolean { return self.lat != 0 && self.lon != 0; }
 
   function infoLocation()as Lang.String {
-    return Lang.format("current($1$,$2$)",
-                       [ lat.format("%.4f"), lon.format("%.4f") ]);
+    return Lang.format("current($1$,$2$)", [ lat.format("%.4f"), lon.format("%.4f") ]);
   }
+
   function getPosition(info as Activity.Info) as Void {
     try {
       _actiInfo = info;
@@ -101,16 +100,20 @@ class CurrentInfo {
     return null;
   }
 
-  function temperature() as Lang.Float? {
-    return Utils.getStorageValue("Temperature", null) as Lang.Float?;
+  // Distance in km
+  function elapsedDistance() as Lang.Float?{
+    var distance = null;    
+    if (_actiInfo != null) {
+      var info = _actiInfo as Activity.Info;
+      if (info has :elapsedDistance && info.elapsedDistance != null) {      
+        distance = info.elapsedDistance as Float / 1000.0;
+      }
+    }
+    return distance;
   }
 
-  // hidden function getLatestTemperatureHistory() {
-  //   if ((Toybox has :SensorHistory) && (SensorHistory has :getTemperatureHistory)) {
-	//       var temperatureHistory = SensorHistory.getTemperatureHistory({:period =>1, :order => SensorHistory.ORDER_NEWEST_FIRST});
-	//       return temperatureHistory.next().data;
-	//   }
-	//   return null;
-  // }
+  function temperature() as Lang.Float? {
+    return Utils.getStorageValue("Temperature", null) as Lang.Float?;
+  }  
   
 }

@@ -55,6 +55,7 @@
 	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
 		<settingConfig type="boolean" />
 	</setting>
+
 	<setting propertyKey="@Properties.hideUVIndexLowerThan" title="@Strings.HideUVIndexLowerThan">
 		<settingConfig type="numeric" min="-1" />
 	</setting>
@@ -69,6 +70,7 @@
             <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
 			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
 			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
+			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
         </settingConfig>
     </setting>      
 	 <setting propertyKey="@Properties.showInfoLargeField" title="@Strings.ShowInfoLargeField" prompt="@Strings.ShowInfoPrompt">
@@ -78,6 +80,7 @@
             <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
 			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
 			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
+			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
         </settingConfig>
     </setting>      
 	
@@ -135,17 +138,13 @@
 	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
 		<settingConfig type="numeric" min="0" max="4" />
 	</setting>	
-    <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
+    <!-- <setting propertyKey="@Properties.showColumnBorder" title="@Strings.ShowColumnBorder">
 		<settingConfig type="boolean" />
 	</setting>					
 	<setting propertyKey="@Properties.showGlossary" title="@Strings.ShowGlossary">
 		<settingConfig type="boolean" />
-	</setting>		
-
-	<!-- <setting propertyKey="@Properties.updateFrequencyWebReq" title="@Strings.UpdateFrequencyWebReq">
-		<settingConfig type="numeric" min="5" />
-	</setting> -->
-
+	</setting>		 -->
+	
 	<setting propertyKey="@Properties.minimalGPSquality" title="@Strings.MinimalGPSquality" 
 	prompt="@Strings.MinimalGPSqualityPrompt">
         <settingConfig type="list">

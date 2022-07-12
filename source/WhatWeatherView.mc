@@ -12,8 +12,8 @@ import Toybox.Background;
 using WhatAppBase.Utils as Utils;
 
 class WhatWeatherView extends WatchUi.DataField {
-  var mBGServiceHandler as BGServiceHandler?;
-  var mAlertHandler as AlertHandler?;
+  var mBGServiceHandler as BGServiceHandler;
+  var mAlertHandler as AlertHandler;
   var mCurrentLocation as Utils.CurrentLocation = new Utils.CurrentLocation();
 
   // @@ cleanup
@@ -23,7 +23,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mFontSmallH as Lang.Number = 0;
 
   hidden var ds as DisplaySettings = new DisplaySettings();
-  hidden var _currentInfo as CurrentInfo = new CurrentInfo();
+  hidden var mCurrentInfo as CurrentInfo = new CurrentInfo();
 
 
   var mShowTemperature as Boolean = false;
@@ -36,46 +36,57 @@ class WhatWeatherView extends WatchUi.DataField {
   var mShowWind as Number = SHOW_WIND_NOTHING;
   var mShowWeatherCondition as Boolean = false;
 
-  var mWeatherBuffer as Graphics.BufferedBitmap?;
-
+  var mWeatherChanged as Boolean = false;
   var mActivityPaused as Boolean = false;
   var mShowDetails as Boolean = false;
+  
+  // @@ TODO glossary rotate x conditions per 5 sec.
+  // var mGlossaryStart as Number = 0;
+  
 
   function initialize() {
     DataField.initialize();
-
-    var handler = getBGServiceHandler();
-    handler.setCurrentLocation(mCurrentLocation);  
-
+   
+    mBGServiceHandler = getApp().getBGServiceHandler();
+    mBGServiceHandler.setCurrentLocation(mCurrentLocation);  
+    mAlertHandler = getApp().getAlertHandler();
     mFontSmallH = Graphics.getFontHeight(mFontSmall);        
-  }
-
-  hidden function getAlertHandler() as AlertHandler {
-    if (mAlertHandler == null) {
-      mAlertHandler = getApp().getAlertHandler();
-    }
-    return mAlertHandler;
-  }
-
-  hidden function getBGServiceHandler() as BGServiceHandler {
-    if (mBGServiceHandler == null) {
-      mBGServiceHandler = getApp().getBGServiceHandler();
-    }
-    return mBGServiceHandler;
   }
   
   function onLayout(dc as Dc) as Void {
-   
+
+
   }
 
   function compute(info as Activity.Info) as Void {
-    _currentInfo.getPosition(info);
-    
-    var bgHandler = getBGServiceHandler();
-    bgHandler.onCompute(info);
-    bgHandler.autoScheduleService();   
-
+    System.println("compute");
+    mCurrentInfo.getPosition(info);
     mActivityPaused = activityIsPaused(info);    
+    
+    mBGServiceHandler.onCompute(info);
+    mBGServiceHandler.autoScheduleService();   
+
+
+
+    var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+    $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+    var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
+    $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);      
+        
+    // mAlertHandler.checkStatus();
+    mWeatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
+    // if (mWeatherChanged) {
+    //   System.println("weather changed");
+    //   $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
+    //   $._bgData = WeatherService.setChanged($._bgData, false);    
+    //   CheckWeatherForAlerts();      
+    // }
+    // if (mAlertHandler.isAnyAlertTriggered()) {
+    //   // backgroundColor = Graphics.COLOR_YELLOW;
+    //   playAlert();
+    //   mAlertHandler.currentlyTriggeredHandled();
+    // }          
+
   }
 
   // Display the value you computed here. This will be called once a second when
@@ -85,12 +96,11 @@ class WhatWeatherView extends WatchUi.DataField {
       if (dc has :setAntiAlias) { dc.setAntiAlias(true); }
 
       var backgroundColor = getBackgroundColor();
-      var alertHandler = getAlertHandler();
-      alertHandler.checkStatus();
-      if (alertHandler.isAnyAlertTriggered()) {
+      mAlertHandler.checkStatus();
+      if (mAlertHandler.isAnyAlertTriggered()) {
         backgroundColor = Graphics.COLOR_YELLOW;
         playAlert();
-        alertHandler.currentlyTriggeredHandled();
+        mAlertHandler.currentlyTriggeredHandled();
       }    
 
       var nrOfColumns = $._maxHoursForecast;
@@ -129,43 +139,14 @@ class WhatWeatherView extends WatchUi.DataField {
       if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
       ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
 
-      if ($._showGlossary && ds.oneField) {
-        var render = new RenderWeather(dc, ds);
-        render.drawGlossary();
-        return;
-      }
-            
-      var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-      $._bgData = WeatherService.purgePastWeatherdata($._bgData);
-      // var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
-      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);      
-
-      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
-
-      // Out of Memory :-(
-      // if (Graphics has :BufferedBitmap) {
-      //   var weatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
-      //   if (weatherChanged) {
-      //     System.println("Weather changed");
-      //     $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
-      //     $._bgData = WeatherService.setChanged($._bgData, false);    
-      //     if (Graphics has :BufferedBitmap) {
-      //       mWeatherBuffer = new Graphics.BufferedBitmap({
-      //             :width=>dc.getWidth(),
-      //             :height=>dc.getHeight(),         
-      //         });
-      //       var targetDc = mWeatherBuffer.getDc();
-      //       onUpdateWeather(targetDc, ds, dashesUnderColumnHeight);
-      //     }
-      //   } else {        
-      //     if (null != mWeatherBuffer) {
-      //         dc.drawBitmap(0, 0, mWeatherBuffer);
-      //     }
-      //   }
-      // } else {
-      //   onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+      // if ($._showGlossary && ds.oneField) {
+      //   var render = new RenderWeather(dc, ds);
+      //   render.drawGlossary();
+      //   return;
       // }
-                
+                  
+      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+                    
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
 
       showInfo(dc, ds);
@@ -179,8 +160,8 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
     if ($._weatherDataSource == wsGarminOnly) { return; }
     
-    var bgHandler = getBGServiceHandler();
-    if (!bgHandler.isEnabled()) { return; }
+    // var bgHandler = getBGServiceHandler();
+    if (!mBGServiceHandler.isEnabled()) { return; }
     if (! ($._showClouds || $._showDewpoint || $._showUVIndex || $._showPressure 
       || $._weatherDataSource == wsOWMFirst  || $._weatherDataSource == wsOWMOnly))  { return; }
 
@@ -189,7 +170,7 @@ class WhatWeatherView extends WatchUi.DataField {
     
     if (!ds.smallField && $._bgData != null) { obsTime = Utils.getShortTimeString(($._bgData as WeatherData).getObservationTime()); }
     
-    if (bgHandler.isDataDelayed()){
+    if (mBGServiceHandler.isDataDelayed()){
       color = Graphics.COLOR_RED;
       if (ds.smallField) { obsTime = "!"; }
     }
@@ -199,13 +180,13 @@ class WhatWeatherView extends WatchUi.DataField {
     if (ds.smallField || ds.wideField) {
       text = obsTime;
     } else {
-      var counter = "#" + bgHandler.getCounterStats();
-      var next = bgHandler.getWhenNextRequest("");    
+      var counter = "#" + mBGServiceHandler.getCounterStats();
+      var next = mBGServiceHandler.getWhenNextRequest("");    
       var status;
-      if (bgHandler.hasError()) {
-        status = bgHandler.getError();
+      if (mBGServiceHandler.hasError()) {
+        status = mBGServiceHandler.getError();
       } else {
-        status = bgHandler.getStatus();
+        status = mBGServiceHandler.getStatus();
       }
       text = obsTime + " " + counter + " " + status + "(" + next + ")";
     }
@@ -240,7 +221,7 @@ class WhatWeatherView extends WatchUi.DataField {
         break;
           
       case SHOW_INFO_TEMPERATURE:
-        var temperatureCelcius = _currentInfo.temperature();
+        var temperatureCelcius = mCurrentInfo.temperature();
         if (temperatureCelcius != null) {
           postfix = "°C";
           var temperature = temperatureCelcius;
@@ -257,7 +238,7 @@ class WhatWeatherView extends WatchUi.DataField {
         break;
      
       case SHOW_INFO_AMBIENT_PRESSURE:
-        var ap = _currentInfo.ambientPressure();
+        var ap = mCurrentInfo.ambientPressure();
         if (ap != null) {
           // pascal -> mbar (hPa)
           postfix = "hPa";
@@ -270,7 +251,7 @@ class WhatWeatherView extends WatchUi.DataField {
         break;   
 
       case SHOW_INFO_SEALEVEL_PRESSURE:
-        var sp = _currentInfo.meanSeaLevelPressure();
+        var sp = mCurrentInfo.meanSeaLevelPressure();
         if (sp != null) {
           // pascal -> mbar (hPa)
           postfix = "~hPa";
@@ -280,7 +261,37 @@ class WhatWeatherView extends WatchUi.DataField {
             info = (sp / 100).format("%.2f");
           }
         }
-        break;         
+        break;  
+
+      case SHOW_INFO_DISTANCE:
+        var distanceInKm = mCurrentInfo.elapsedDistance();
+        if (distanceInKm != null) {
+          postfix = "km";
+          var distance = distanceInKm;
+          if (devSettings.distanceUnits == System.UNIT_STATUTE) {
+            postfix = "mi";
+            distance = Utils.kilometerToMile(distanceInKm);
+          }
+          if (distance < 1) {
+            info = distance.format("%.3f");
+          } else {                        
+            if (ds.smallField) {
+              if (distance < 99) {
+                info = distance.format("%.2f");
+              } else {
+                info = distance.format("%.1f");
+              }
+            } else {
+              if (distance < 99) {
+                info = distance.format("%.3f");
+              } else {
+                info = distance.format("%.2f");
+              }
+            }
+          }
+        }
+        break;  
+
     }
 
     if (info.length() == 0) {
@@ -309,7 +320,6 @@ class WhatWeatherView extends WatchUi.DataField {
     var hourlyForecast = null;
     var previousCondition = -1;
     var weatherTextLine = 0;
-    var alertHandler = getAlertHandler();
     var blueBarPercentage = []; 
 
     try {
@@ -322,37 +332,37 @@ class WhatWeatherView extends WatchUi.DataField {
       var render = new RenderWeather(dc, ds);
 
       // @@ Test to find the bug in properties
-      // if ( $._maxMinuteForecast > 0) {
-      //   var xMMstart = x; // @@ issue?
-      //   var popTotal = 0 as Lang.Number;
-      //   var columnWidth = 1;
-      //   var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
-      //   if (mm != null) {
-      //     ds.calculateColumnWidth(offset);
-      //     var max = mm.pops.size();
-      //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
-      //       var pop = mm.pops[i] as Lang.Number;
-      //       popTotal = popTotal + pop;
-      //       if (DEBUG_DETAILS) {
-      //         System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
-      //       }
+      if ( $._maxMinuteForecast > 0) {
+        var xMMstart = x; // @@ issue?
+        var popTotal = 0 as Lang.Number;
+        var columnWidth = 1;
+        var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
+        if (mm != null) {
+          ds.calculateColumnWidth(offset);
+          var max = mm.pops.size();
+          for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+            var pop = mm.pops[i] as Lang.Number;
+            popTotal = popTotal + pop;
+            if (DEBUG_DETAILS) {
+              System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+            }
 
-      //       if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
-      //       drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
-      //       x = x + columnWidth;
-      //     }
-      //     x = x + ds.space;
-      //   }
+            if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
+            drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+            x = x + columnWidth;
+          }
+          x = x + ds.space;
+        }
 
-      //   if (dashesUnderColumnHeight > 0) {
-      //     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      //     dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
-      //   }
-      //   x = xMMstart + offset;
-      //   alertHandler.processRainMMfirstHour(popTotal);
-      // }
+        if (dashesUnderColumnHeight > 0) {
+          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+          dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
+        }
+        x = xMMstart + offset;
+        mAlertHandler.processRainMMfirstHour(popTotal);
+      }
 
-      // @@ TODO donotrepeat current/hourly
+      // @@ TODO donotrepeat current/hourly @@DRY
       var validSegment = 0;
       if ($._showCurrentForecast) {
         if (current != null) {
@@ -360,13 +370,13 @@ class WhatWeatherView extends WatchUi.DataField {
           colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
           if (DEBUG_DETAILS) { System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [ x, current.info(), color ])); }
 
-          alertHandler.processPrecipitationChance(current.precipitationChance);
-          alertHandler.processPrecipitationChance(current.precipitationChanceOther);
-          alertHandler.processWeather(color.toNumber());          
-          alertHandler.processWeather(colorOther.toNumber());
-          alertHandler.processUvi(current.uvi);
-          alertHandler.processWindSpeed(current.windSpeed);
-          alertHandler.processDewpoint(current.dewPoint);
+          mAlertHandler.processPrecipitationChance(current.precipitationChance);
+          mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
+          mAlertHandler.processWeather(color.toNumber());          
+          mAlertHandler.processWeather(colorOther.toNumber());
+          mAlertHandler.processUvi(current.uvi);
+          mAlertHandler.processWindSpeed(current.windSpeed);
+          mAlertHandler.processDewpoint(current.dewPoint);
 
           validSegment = validSegment + 1;
 
@@ -435,13 +445,13 @@ class WhatWeatherView extends WatchUi.DataField {
             
             color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
             colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE); 
-            alertHandler.processPrecipitationChance(forecast.precipitationChance);
-            alertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
-            alertHandler.processWeather(color.toNumber());
-            alertHandler.processWeather(colorOther.toNumber());
-            alertHandler.processUvi(forecast.uvi);
-            alertHandler.processWindSpeed(forecast.windSpeed);
-            alertHandler.processDewpoint(forecast.dewPoint);
+            mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
+            mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
+            mAlertHandler.processWeather(color.toNumber());
+            mAlertHandler.processWeather(colorOther.toNumber());
+            mAlertHandler.processUvi(forecast.uvi);
+            mAlertHandler.processWindSpeed(forecast.windSpeed);
+            mAlertHandler.processDewpoint(forecast.dewPoint);
 
             if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
@@ -514,33 +524,33 @@ class WhatWeatherView extends WatchUi.DataField {
         var distance = "";
         var distanceMetric = "km";
         var distanceInKm = 0;
-        if (DEBUG_DETAILS) { System.println(_currentInfo.infoLocation()); }
-        if (_currentInfo.hasLocation()) {
-          distanceInKm = Utils.getDistanceFromLatLonInKm( _currentInfo.lat, _currentInfo.lon, current.lat, current.lon);
+        if (DEBUG_DETAILS) { System.println(mCurrentInfo.infoLocation()); }
+        if (mCurrentInfo.hasLocation()) {
+          distanceInKm = Utils.getDistanceFromLatLonInKm( mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);
           distance = distanceInKm.format("%.2f");
           var deviceSettings = System.getDeviceSettings();
           if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
             distanceMetric = "mi";
             distance = Utils.kilometerToMile(distanceInKm).format("%.2f");
           }
-          var bearing = Utils.getRhumbLineBearing(_currentInfo.lat, _currentInfo.lon, current.lat, current.lon);                                            
+          var bearing = Utils.getRhumbLineBearing(mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);                                            
           var compassDirection = Utils.getCompassDirection(bearing);
           render.drawObservationLocation(Lang.format( "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
         }
 
+        // @@ mActivityPaused -> y offset to line 2
         if (mShowObservationLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
         if ($._showObservationTime) { render.drawObservationTime(current.observationTime); }
       }
 
       if (mShowWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
       if (ds.wideField) { 
-        render.drawAlertMessages(alertHandler.infoHandled());
+        render.drawAlertMessages(mAlertHandler.infoHandled());
       } else if (ds.smallField) { 
-        render.drawAlertMessagesVert(alertHandler.infoHandledShort());
+        render.drawAlertMessagesVert(mAlertHandler.infoHandledShort());
       } else {
-        render.drawAlertMessages(alertHandler.infoHandled());
-      }
-      // @@ TEST render.drawActiveAlert(alertHandler.activeAlerts());  
+        render.drawAlertMessages(mAlertHandler.infoHandled());
+      }      
     } catch (ex) {
       ex.printStackTrace();
     }
@@ -623,5 +633,54 @@ class WhatWeatherView extends WatchUi.DataField {
       Attention.playTone(Attention.TONE_CANARY);
     }
   }
- 
+
+  // function CheckWeatherForAlerts() as Void {
+  //   if ($._mostRecentData == null) { return; }
+  //   var data = $._mostRecentData as WeatherData;
+  //   if (!data.valid()) { return; }
+
+  //   if ( $._maxMinuteForecast > 0) {
+  //     var popTotal = 0 as Lang.Number;  
+  //     var max = data.minutely.pops.size();
+  //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+  //           var pop = data.minutely.pops[i] as Lang.Number;
+  //           popTotal = popTotal + pop;            
+  //     }
+  //     mAlertHandler.processRainMMfirstHour(popTotal);
+  //   }
+
+  //   var validSegment = 0;
+  //   var color, colorOther;
+  //   if ($._showCurrentForecast) {
+  //     var current = data.current;
+  //     color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
+  //     colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
+
+  //     mAlertHandler.processPrecipitationChance(current.precipitationChance);
+  //     mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
+  //     mAlertHandler.processWeather(color.toNumber());          
+  //     mAlertHandler.processWeather(colorOther.toNumber());
+  //     mAlertHandler.processUvi(current.uvi);
+  //     mAlertHandler.processWindSpeed(current.windSpeed);
+  //     mAlertHandler.processDewpoint(current.dewPoint);
+
+  //     validSegment = validSegment + 1;
+  //   }
+
+  //   var maxSegment = data.hourly.size();
+  //   for (var segment = 0; validSegment < $._maxHoursForecast && segment < maxSegment; segment += 1) {
+  //     var forecast = data.hourly[segment] as WeatherHourly;
+
+  //     color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
+  //     colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE); 
+  //     mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
+  //     mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
+  //     mAlertHandler.processWeather(color.toNumber());
+  //     mAlertHandler.processWeather(colorOther.toNumber());
+  //     mAlertHandler.processUvi(forecast.uvi);
+  //     mAlertHandler.processWindSpeed(forecast.windSpeed);
+  //     mAlertHandler.processDewpoint(forecast.dewPoint);
+  //   }    
+  // }
+
 }

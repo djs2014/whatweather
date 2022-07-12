@@ -13,6 +13,7 @@ const SHOW_INFO_TIME_Of_DAY = 1;
 const SHOW_INFO_TEMPERATURE = 2;
 const SHOW_INFO_AMBIENT_PRESSURE = 3;
 const SHOW_INFO_SEALEVEL_PRESSURE = 4;
+const SHOW_INFO_DISTANCE = 5;
 
 const COLOR_CLOUDS = 0xCCD1D1; 
 const COLOR_CLOUDS_NIGHT = 0xBFC9CA; 
@@ -50,7 +51,7 @@ var _showComfort as Lang.Boolean = true;
 var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
 
-var _showGlossary as Lang.Boolean = true;
+// var _showGlossary as Lang.Boolean = true;
 
 var _hideTemperatureLowerThan as Lang.Number = 8;
 var _showActualWeather as Lang.Boolean = true;

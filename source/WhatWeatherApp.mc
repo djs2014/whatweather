@@ -19,13 +19,19 @@ var _weatherDescriptions as Lang.Dictionary = {};
 
 (:background)
 class WhatWeatherApp extends Application.AppBase {
+  var mInBackground as Boolean = false;
   function initialize() {
     AppBase.initialize();       
   }
 
   function onStart(state as Dictionary?) as Void {    }
 
-  function onStop(state as Dictionary?) as Void {    }
+  function onStop(state as Dictionary?) as Void {  
+    if (!mInBackground) {
+      System.println("deleteTemporalEvent");
+      Background.deleteTemporalEvent();
+    }
+  }
 
   (:typecheck(disableBackgroundCheck))  
   function getInitialView() as Array<Views or InputDelegates> ? {    
@@ -86,7 +92,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._showPressure = Utils.getApplicationPropertyAsBoolean("showPressure", true);
       $._showDewpoint = Utils.getApplicationPropertyAsBoolean("showDewpoint", true);
       $._showComfort = Utils.getApplicationPropertyAsBoolean("showComfort", true);
-      $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
+      // $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
 
       $._hideTemperatureLowerThan = Utils.getApplicationPropertyAsNumber("hideTemperatureLowerThan", 8);
       $._showActualWeather = Utils.getApplicationPropertyAsBoolean("showActualWeather", false);
@@ -154,6 +160,7 @@ class WhatWeatherApp extends Application.AppBase {
     }
 
   public function getServiceDelegate() as Array<System.ServiceDelegate> {
+    mInBackground = true;
     return [new BackgroundServiceDelegate()] as Array<System.ServiceDelegate>;
   }
 

@@ -1,7 +1,7 @@
 <strings>
     <string id="AppName">What Weather</string>    
     <string id="AppNameBeta">What Weather Beta</string>    
-    <string id="ShowCurrentForecast">Show current forecast</string>
+    <string id="ShowCurrentForecast">Show current hour forecast</string>
     <string id="MaxHoursForecast">Maximum hours of forecast data</string> 
     <string id="MaxMinuteForecast">Maximum minute of forecast data first hour</string>
     <string id="ShowClouds">Show cloud %</string>
@@ -40,6 +40,7 @@
     <string id="ShowInfoTemperature">Show temperature</string>
     <string id="ShowInfoAmbientPressure">Show pressure</string>
     <string id="ShowInfoSealevelPressure">Show mean sealevel pressure</string>
+    <string id="ShowInfoDistance">Show elapsed distance</string>
     <string id="ShowActualWeather">Show actual weather</string>
     <string id="HideTemperatureLowerThan">Hide temperature/dewpoint lower than (celcius)</string>
     <string id="ComfortHumidityMin">Comfort humidity(%) min</string>
@@ -49,7 +50,7 @@
 	<string id="ComfortPopMin">Comfort precipitation(%) min</string>
 	<string id="ComfortPopMax">Comfort precipitation(%) max</string>
     <string id="ShowWeatherCondition">Show weather condition</string>	
-    <string id="ShowGlossary">Show glossary (single field)</string>	
+    <!-- <string id="ShowGlossary">Show glossary (single field)</string>	 -->
     
     <string id="WeatherDataSource">Weather source</string>
     <string id="WeatherDataSourcePrompt">Select weather source</string>
