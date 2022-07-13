@@ -11,9 +11,10 @@ using CommunicationsHelpers as Helpers;
 import Toybox.Application.Storage;
 
 class BGServiceHandler {    
+    const HTTP_OK as Number = 200;
     var mCurrentLocation as Utils.CurrentLocation?;
     var mError as Number = 0; 
-    var mHttpStatus as Number = BGService.HTTP_OK;
+    var mHttpStatus as Number = HTTP_OK;
     var mPhoneConnected as Boolean = false;    
     var mBGActive as Boolean = false;
     var mBGDisabled as Boolean = false;
@@ -44,11 +45,11 @@ class BGServiceHandler {
     }
     function isEnabled() as Boolean { return !mBGDisabled; }
     function isActive() as Boolean { return !mBGActive; }
-    function hasError() as Boolean { return mError != BGService.ERROR_BG_NONE || mHttpStatus != BGService.HTTP_OK; }
+    function hasError() as Boolean { return mError != Helpers.CustomErrors.ERROR_BG_NONE || mHttpStatus != HTTP_OK; }
     function reset() as Void {
         System.println("Reset BG service");
         mError = 0;
-        mHttpStatus = BGService.HTTP_OK;
+        mHttpStatus =HTTP_OK;
     }
     function onCompute(info as Activity.Info) as Void {
         mPhoneConnected = System.getDeviceSettings().phoneConnected;        
@@ -63,7 +64,7 @@ class BGServiceHandler {
         try {
             testOnNonFatalError();            
             
-            // @@ disable temporary when position not changed ( less than x km distance) and last call < x minutes?
+            // @@?? disable temporary when position not changed ( less than x km distance) and last call < x minutes?
             if (hasError()) {                
                 stopBGservice();
                 return;
@@ -71,6 +72,7 @@ class BGServiceHandler {
 
             startBGservice();            
         } catch (ex) {
+            System.println(ex.getErrorMessage());
             ex.printStackTrace();
         } 
         // Doesnt work!
@@ -83,18 +85,19 @@ class BGServiceHandler {
     }
     
     hidden function testOnNonFatalError() as Void {
-        if (mError == BGService.ERROR_BG_GPS_LEVEL || mError == BGService.ERROR_BG_NO_PHONE || mError == BGService.ERROR_BG_NO_POSITION ) {
-            mError =BGService.ERROR_BG_NONE;
+        if (mError == Helpers.CustomErrors.ERROR_BG_GPS_LEVEL || mError == Helpers.CustomErrors.ERROR_BG_NO_PHONE || mError == Helpers.CustomErrors.ERROR_BG_NO_POSITION
+            || mError == Helpers.CustomErrors.ERROR_BG_EXCEPTION ) {
+            mError = Helpers.CustomErrors.ERROR_BG_NONE;
         }
         
         if (!mPhoneConnected) {
-            mError =BGService.ERROR_BG_NO_PHONE;            
+            mError = Helpers.CustomErrors.ERROR_BG_NO_PHONE;            
         } else if (mCurrentLocation != null) {
             var currentLocation = mCurrentLocation as Utils.CurrentLocation;
             if (currentLocation.getAccuracy() < mMinimalGPSLevel) { 
-                mError =BGService.ERROR_BG_GPS_LEVEL;                    
+                mError = Helpers.CustomErrors.ERROR_BG_GPS_LEVEL;                    
             } else if (!currentLocation.hasLocation()) {
-                mError =BGService.ERROR_BG_NO_POSITION;
+                mError = Helpers.CustomErrors.ERROR_BG_NO_POSITION;
             }
         }     
     }
@@ -107,8 +110,9 @@ class BGServiceHandler {
             // mError =BGService.ERROR_BG_NONE; //- Keep the last error
             System.println("stopBGservice stopped"); 
         } catch (ex) {
+            System.println(ex.getErrorMessage());
             ex.printStackTrace();
-            mError =BGService.ERROR_BG_EXCEPTION;
+            mError = Helpers.CustomErrors.ERROR_BG_EXCEPTION;
             mBGActive = false;
         } 
     }
@@ -125,21 +129,22 @@ class BGServiceHandler {
         
         try {
             if (Toybox.System has :ServiceDelegate) {
-                Background.registerForTemporalEvent(new Time.Duration(mUpdateFrequencyInMinutes * 60));
                 mBGActive = true;
-                mError =BGService.ERROR_BG_NONE;
-                mHttpStatus = BGService.HTTP_OK;
+                mError = Helpers.CustomErrors.ERROR_BG_NONE;
+                mHttpStatus =HTTP_OK;
+                Background.registerForTemporalEvent(new Time.Duration(mUpdateFrequencyInMinutes * 60));
                 System.println("startBGservice registerForTemporalEvent [" +
                             mUpdateFrequencyInMinutes + "] minutes scheduled");
             } else {
                 System.println("Unable to start BGservice (no registerForTemporalEvent)");
                 mBGActive = false;
-                mError =BGService.ERROR_BG_NOT_SUPPORTED;
-                System.exit(); // @@ ??
+                mError = Helpers.CustomErrors.ERROR_BG_NOT_SUPPORTED;
+                // System.exit(); // @@ ??
             }
         } catch (ex) {
+            System.println(ex.getErrorMessage());
             ex.printStackTrace();
-            mError =BGService.ERROR_BG_EXCEPTION;
+            mError = Helpers.CustomErrors.ERROR_BG_EXCEPTION;
             mBGActive = false;
         } 
     }
@@ -162,13 +167,13 @@ class BGServiceHandler {
                 mError = code;
             } else {
                 mHttpStatus = code;
-                mError = BGService.ERROR_BG_HTTPSTATUS;
+                mError = Helpers.CustomErrors.ERROR_BG_HTTPSTATUS;
             }
             System.println("onBackgroundData error responsecode: " + data);
         } else {
-            mHttpStatus = BGService.HTTP_OK;
+            mHttpStatus =HTTP_OK;
             mData = data;
-            mError = BGService.ERROR_BG_NONE;
+            mError = Helpers.CustomErrors.ERROR_BG_NONE;
             mRequestCounter = mRequestCounter + 1;
             if (obj != null) {
                 var processData = new Lang.Method(obj, cbProcessData);
@@ -194,47 +199,9 @@ class BGServiceHandler {
     }
 
     function getError() as Lang.String {
-        if (mHttpStatus != BGService.HTTP_OK) {
+        if (mHttpStatus != HTTP_OK) {
              return "Http [" + mHttpStatus.format("%0d") + "]";    
-        }
-        if (mError == BGService.ERROR_BG_NONE) {
-            return "";
-        }
-        if (mError == BGService.ERROR_BG_NO_API_KEY) {
-            return "ApiKey?";
-        }
-        if (mError == BGService.ERROR_BG_NO_POSITION) {
-            return "Position?";
-        }
-        if (mError == BGService.ERROR_BG_NO_PROXY) {
-            return "Proxy?";
-        }
-        if (mError == BGService.ERROR_BG_EXCEPTION) {
-            return "Error?";
-        }
-        if (mError == BGService.ERROR_BG_EXIT_DATA_SIZE_LIMIT) {
-            return "Memory?";
-        }
-        if (mError == BGService.ERROR_BG_INVALID_BACKGROUND_TIME) {
-            return "ScheduleTime?";
-        }
-        if (mError == BGService.ERROR_BG_NOT_SUPPORTED) {
-            return "Supported?";
-        }
-        if (mError == BGService.ERROR_BG_NO_PHONE) {
-            return "Phone?";
-        }
-        if (mError == BGService.ERROR_BG_GPS_LEVEL) {
-            return "Gps quality?";
-        }
-        if (mError == BGService.ERROR_BG_HTTPSTATUS) {
-            return "Http [" + mHttpStatus.format("%0d") + "]";
-        }
-
-        var errorMsg = Storage.getValue("BGError");
-        if (errorMsg != null) { return errorMsg as String; }
-        return mError.format("%d");
-        // Datafield no Communications module  
-        //return Helpers.getCommunicationError(mError);        
+        }        
+        return Helpers.getCommunicationError(mError, mHttpStatus);        
     }
 }

@@ -63,6 +63,7 @@ class RenderWeather {
         }
       }
     } catch (ex) {
+      System.println(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -114,6 +115,7 @@ class RenderWeather {
         }
       }
     } catch (ex) {
+      System.println(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }

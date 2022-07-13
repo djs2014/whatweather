@@ -27,10 +27,11 @@ class WhatWeatherApp extends Application.AppBase {
   function onStart(state as Dictionary?) as Void {    }
 
   function onStop(state as Dictionary?) as Void {  
-    if (!mInBackground) {
-      System.println("deleteTemporalEvent");
-      Background.deleteTemporalEvent();
-    }
+    // @@ when activity is stopping?
+    // if (!mInBackground) {
+    //   System.println("deleteTemporalEvent");
+    //   Background.deleteTemporalEvent();
+    // }
   }
 
   (:typecheck(disableBackgroundCheck))  
@@ -108,8 +109,8 @@ class WhatWeatherApp extends Application.AppBase {
       var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
       $._weatherDataSource = ws as WeatherSource;
       // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
-      if ($._showClouds || $._showUVIndex || $._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
-      || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly) {
+      if ($._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
+      || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
         bgHandler.Enable(); 
       } else {
         bgHandler.Disable(); 
@@ -134,6 +135,7 @@ class WhatWeatherApp extends Application.AppBase {
     
       System.println("User settings loaded");
     } catch (ex) {
+      System.println(ex.getErrorMessage());
       ex.printStackTrace();
       System.println(ex.getErrorMessage());
     }

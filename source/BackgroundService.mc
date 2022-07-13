@@ -23,11 +23,11 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         if (sensorInfo has :temperature && sensorInfo.temperature != null) {
             Storage.setValue("Temperature", sensorInfo.temperature);            
         }
-
-        Storage.setValue("BGError", "");
+       
+        System.println("BackgroundServiceDelegate handleOWM");
         var error = handleOWM();
-        if (error != 0) {
-            Storage.setValue("BGError", Helpers.getCommunicationError(error));
+        System.println("BackgroundServiceDelegate result handleOWM " + error);
+        if (error != 0) {            
             Background.exit(error);
         }
     }
@@ -68,6 +68,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
             return 0;
         } catch(ex) {
+            System.println(ex.getErrorMessage());
             ex.printStackTrace();
             return Helpers.CustomErrors.ERROR_BG_EXCEPTION;
         }
@@ -100,6 +101,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
    	}
 
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null) as Void {
+        System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
         if (responseCode == 200 && responseData != null) {
             try { 
                     // !! Do not convert responseData to string (println etc..) --> gives out of memory
@@ -107,11 +109,13 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                     // var data = responseData as String;  --> gives out of memory
                     Background.exit(responseData as PropertyValueType);                     
                 } catch(ex instanceof Background.ExitDataSizeLimitException ) {
+                    System.println(ex.getErrorMessage());
                     ex.printStackTrace();
                     Background.exit(Helpers.CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
                 } catch(ex) {
-                    System.println(responseData);
+                    System.println(ex.getErrorMessage());
                     ex.printStackTrace();
+                    //System.println(responseData);
                     Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
                 }
         } else {

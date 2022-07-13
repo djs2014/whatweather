@@ -7,9 +7,11 @@
 optimize
 	wobbly increment x, y .. 5 px
 	@@DRY 
-	
-	wobbly lines -> to array
+	calculate dewpoint for garmin..?
+	xx wobbly lines -> to array
     - use profiler to check duration -> cache some code results (wobbly line)
+    - remove unused code
+    - show wind info current hour on small field
 - radar -> offset to left x px
 LATER
 - show minutely (option / test)

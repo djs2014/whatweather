@@ -36,7 +36,7 @@ class WhatWeatherView extends WatchUi.DataField {
   var mShowWind as Number = SHOW_WIND_NOTHING;
   var mShowWeatherCondition as Boolean = false;
 
-  var mWeatherChanged as Boolean = false;
+  // var mWeatherChanged as Boolean = false;
   var mActivityPaused as Boolean = false;
   var mShowDetails as Boolean = false;
   
@@ -59,7 +59,6 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function compute(info as Activity.Info) as Void {
-    System.println("compute");
     mCurrentInfo.getPosition(info);
     mActivityPaused = activityIsPaused(info);    
     
@@ -67,14 +66,13 @@ class WhatWeatherView extends WatchUi.DataField {
     mBGServiceHandler.autoScheduleService();   
 
 
-
-    var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-    $._bgData = WeatherService.purgePastWeatherdata($._bgData);
-    var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
-    $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);      
-        
+    // Not working on EDGE830
+    // var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+    // $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+    // var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
+    // $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);              
     // mAlertHandler.checkStatus();
-    mWeatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
+    // mWeatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
     // if (mWeatherChanged) {
     //   System.println("weather changed");
     //   $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
@@ -145,6 +143,10 @@ class WhatWeatherView extends WatchUi.DataField {
       //   return;
       // }
                   
+      var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+      $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);   
+
       onUpdateWeather(dc, ds, dashesUnderColumnHeight);
                     
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
@@ -162,8 +164,7 @@ class WhatWeatherView extends WatchUi.DataField {
     
     // var bgHandler = getBGServiceHandler();
     if (!mBGServiceHandler.isEnabled()) { return; }
-    if (! ($._showClouds || $._showDewpoint || $._showUVIndex || $._showPressure 
-      || $._weatherDataSource == wsOWMFirst  || $._weatherDataSource == wsOWMOnly))  { return; }
+    if (! ($._weatherDataSource == wsOWMFirst  || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst))  { return; }
 
     var color = ds.COLOR_TEXT;
     var obsTime = "";
