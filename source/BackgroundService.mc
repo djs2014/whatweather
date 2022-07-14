@@ -6,7 +6,7 @@ import Toybox.Background;
 import Toybox.Sensor;
 import Toybox.Application.Storage;
 import Toybox.Communications;
-using CommunicationsHelpers as Helpers;
+// using CommunicationsHelpers as Helpers;
 
 (:background)
 class BackgroundServiceDelegate extends System.ServiceDelegate {
@@ -57,9 +57,9 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (proxy == null) { proxy=""; }            
             if (proxyApiKey == null) { proxyApiKey=""; }
             // @@ check error codes
-            if (location  == null) { return Helpers.CustomErrors.ERROR_BG_NO_POSITION; }
-            if ((apiKey as String).length() == 0) { return Helpers.CustomErrors.ERROR_BG_NO_API_KEY; }
-            if ((proxy as String).length() == 0) { return Helpers.CustomErrors.ERROR_BG_NO_PROXY; }
+            if (location  == null) { return CustomErrors.ERROR_BG_NO_POSITION; }
+            if ((apiKey as String).length() == 0) { return CustomErrors.ERROR_BG_NO_API_KEY; }
+            if ((proxy as String).length() == 0) { return CustomErrors.ERROR_BG_NO_PROXY; }
             if (maxhours == null) { maxhours = 8; }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
@@ -68,9 +68,10 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
             return 0;
         } catch(ex) {
+            System.println("1");
             System.println(ex.getErrorMessage());
             ex.printStackTrace();
-            return Helpers.CustomErrors.ERROR_BG_EXCEPTION;
+            return CustomErrors.ERROR_BG_EXCEPTION;
         }
     }
 
@@ -80,6 +81,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => {
                 "Content-Type" => Communications.REQUEST_CONTENT_TYPE_JSON,
+                "Accept" => "application/json",
                 "Authorization" => proxyApiKey
                 },
             :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON	
@@ -104,19 +106,22 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
         if (responseCode == 200 && responseData != null) {
             try { 
+                    System.println("onReceiveOpenWeatherResponse responseData not null");
                     // !! Do not convert responseData to string (println etc..) --> gives out of memory
                     //System.println(responseData);   --> gives out of memory
                     // var data = responseData as String;  --> gives out of memory
                     Background.exit(responseData as PropertyValueType);                     
                 } catch(ex instanceof Background.ExitDataSizeLimitException ) {
+                    System.println("2a");
                     System.println(ex.getErrorMessage());
                     ex.printStackTrace();
-                    Background.exit(Helpers.CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
+                    Background.exit(CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
                 } catch(ex) {
+                    System.println("2b");
                     System.println(ex.getErrorMessage());
                     ex.printStackTrace();
                     //System.println(responseData);
-                    Background.exit(Helpers.CustomErrors.ERROR_BG_EXCEPTION);
+                    Background.exit(CustomErrors.ERROR_BG_EXCEPTION);
                 }
         } else {
             System.println("Not 200");

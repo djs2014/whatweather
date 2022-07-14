@@ -101,10 +101,10 @@ class WhatWeatherApp extends Application.AppBase {
       $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
       
       var bgHandler =  getBGServiceHandler();
-      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 10));
-      // @@ TODO add in settings
+      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 10));      
       bgHandler.setMinimalGPSLevel(Utils.getApplicationPropertyAsNumber("minimalGPSquality", 3));
-      bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
+      // Always req per 5 minutes.
+      // bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
 
       var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
       $._weatherDataSource = ws as WeatherSource;

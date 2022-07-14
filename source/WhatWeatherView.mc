@@ -34,6 +34,7 @@ class WhatWeatherView extends WatchUi.DataField {
   var mShowComfortZones as Boolean = false;
   var mShowObservationLocationName as Boolean = false;
   var mShowWind as Number = SHOW_WIND_NOTHING;
+  var mShowWindFirst as Boolean = false;
   var mShowWeatherCondition as Boolean = false;
 
   // var mWeatherChanged as Boolean = false;
@@ -115,6 +116,8 @@ class WhatWeatherView extends WatchUi.DataField {
         mShowComfortZones = false;
         mShowObservationLocationName = false;
         mShowWind = SHOW_WIND_NOTHING;
+        mShowWindFirst = false;
+        if ($._showWind != SHOW_WIND_NOTHING) { mShowWindFirst = true; }
         mShowWeatherCondition = false;
       } else {
         mShowTemperature = $._showTemperature;
@@ -125,6 +128,7 @@ class WhatWeatherView extends WatchUi.DataField {
         mShowComfortZones = $._showComfort;
         mShowObservationLocationName = $._showObservationLocationName;
         mShowWind = $._showWind;
+        mShowWindFirst = false;
         mShowWeatherCondition = $._showWeatherCondition;
       }
       mShowDetails = $._showDetailsWhenPaused && mActivityPaused && ds.oneField;
@@ -406,7 +410,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowRelativeHumidity) { humidityPoints.add( new WeatherPoint(x + ds.columnWidth / 2, current.relativeHumidity, 0)); }
           if (mShowTemperature) { tempPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.temperature, $._hideTemperatureLowerThan)); }
           if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.getDewPoint(), $._hideTemperatureLowerThan)); }
-          if (mShowWind != SHOW_WIND_NOTHING) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
+          if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
 
           if (dashesUnderColumnHeight > 0) {
             colorDashes = Graphics.COLOR_DK_GRAY;
@@ -483,7 +487,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mShowRelativeHumidity) { humidityPoints.add( new WeatherPoint(x + ds.columnWidth / 2, forecast.relativeHumidity, 0)); }
             if (mShowTemperature) { tempPoints.add( new WeatherPoint(x + ds.columnWidth / 2, forecast.temperature, $._hideTemperatureLowerThan)); }
             if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, forecast.getDewPoint(), $._hideTemperatureLowerThan)); }
-            if (mShowWind) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
+            if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
 
             if (dashesUnderColumnHeight > 0) {              
               colorDashes = Graphics.COLOR_DK_GRAY;
@@ -537,19 +541,21 @@ class WhatWeatherView extends WatchUi.DataField {
           var compassDirection = Utils.getCompassDirection(bearing);
           render.drawObservationLocation(Lang.format( "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
         }
-
-        // @@ mActivityPaused -> y offset to line 2
+        
         if (mShowObservationLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
         if ($._showObservationTime) { render.drawObservationTime(current.observationTime); }
       }
 
-      if (mShowWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
+      if (mShowWindFirst) {
+        render.drawWindInfoFirstColumn(windPoints);
+      } else if (mShowWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
+      
       if (ds.wideField) { 
-        render.drawAlertMessages(mAlertHandler.infoHandled());
+        render.drawAlertMessages(mAlertHandler.infoHandled(), false);
       } else if (ds.smallField) { 
         render.drawAlertMessagesVert(mAlertHandler.infoHandledShort());
       } else {
-        render.drawAlertMessages(mAlertHandler.infoHandled());
+        render.drawAlertMessages(mAlertHandler.infoHandled(), mActivityPaused);
       }      
     } catch (ex) {
       ex.printStackTrace();

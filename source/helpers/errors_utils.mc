@@ -2,25 +2,26 @@ import Toybox.System;
 // import Toybox.Communications; Not possible in datafield
 import Toybox.Lang;
 
+// module CommunicationsHelpers {
+
 (:background)
-module CommunicationsHelpers {
+class CustomErrors {
+  static const ERROR_BG_NONE as Number = 0;      
+  static const ERROR_BG_NO_API_KEY as Number = -9000;
+  static const ERROR_BG_NO_POSITION as Number = -9001;
+  static const ERROR_BG_NO_PROXY as Number = -9002;
+  static const ERROR_BG_EXCEPTION as Number = -9003;
+  static const ERROR_BG_EXIT_DATA_SIZE_LIMIT as Number = -9004;
+  static const ERROR_BG_INVALID_BACKGROUND_TIME as Number = -9005;  
+  static const ERROR_BG_NOT_SUPPORTED as Number = -9006;
+  static const ERROR_BG_HTTPSTATUS as Number = -9007;
+  static const ERROR_BG_NO_PHONE as Number = -9008;
+  static const ERROR_BG_GPS_LEVEL as Number = -9009;
+}
 
-    class CustomErrors {
-      public const ERROR_BG_NONE as Number = 0;      
-      public const ERROR_BG_NO_API_KEY as Number = -9000;
-      public const ERROR_BG_NO_POSITION as Number = -9001;
-      public const ERROR_BG_NO_PROXY as Number = -9002;
-      public const ERROR_BG_EXCEPTION as Number = -9003;
-      public const ERROR_BG_EXIT_DATA_SIZE_LIMIT as Number = -9004;
-      public const ERROR_BG_INVALID_BACKGROUND_TIME as Number = -9005;  
-      public const ERROR_BG_NOT_SUPPORTED as Number = -9006;
-      public const ERROR_BG_HTTPSTATUS as Number = -9007;
-      public const ERROR_BG_NO_PHONE as Number = -9008;
-      public const ERROR_BG_GPS_LEVEL as Number = -9009;
-    }
-
-    function getCommunicationError(error as Lang.Number?, http as Lang.Number?) as String {
-          if (error == null) {return "";}
+    function getCommunicationError(errorNr as Lang.Number?, http as Lang.Number?) as String {
+          if (errorNr == null) {return "";}
+          var error = errorNr as Number;
           if (error == 0) {return "Unknown";} //Communications.UNKNOWN_ERROR
           if (error == -1) {return "BLE error";} //Communications.BLE_ERROR
           if (error == -2) {return "BLE host timeout";} // Communications.BLE_HOST_TIMEOUT
@@ -66,4 +67,4 @@ module CommunicationsHelpers {
 
         return error.format("%d");
       }
-}
+// }

@@ -310,6 +310,15 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
+  function drawWindInfoFirstColumn(windPoints as Array) as Void {
+    var max = windPoints.size();
+    if (max == 0) { return; }
+    var wp = windPoints[0] as WindPoint;    
+    var radius = 8;
+    var center = new Point(wp.x + ds.columnWidth / 2, ds.columnY + ds.columnHeight/2);
+    drawWind(center, radius, wp.bearing, wp.speed);
+  }
+
   function drawWindInfo(windPoints as Array) as Void {
     // if (ds.smallField) { return; }
     var max = windPoints.size();
@@ -322,15 +331,17 @@ class RenderWeather {
   function drawWindInfoInColumn(x as Lang.Number, windBearingInDegrees as Lang.Number, windSpeed as Lang.Float) as Void {
     // if (ds.smallField) { return; }
     var radius = 8;
-    var center = new Point(x + ds.columnWidth / 2,        ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2);
+    var center = new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2);
     drawWind(center, radius, windBearingInDegrees, windSpeed);
   }
 
-  function drawAlertMessages(activeAlerts as Lang.String?) as Void{  
+  function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void{  
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) { return; }
 
-    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);    
-    dc.drawText(ds.width / 2, TOP_ADDITIONAL_INFO, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
+    var y = TOP_ADDITIONAL_INFO;
+    if (onSecondLine) { y = topAdditionalInfo2; }
+    dc.drawText(ds.width / 2, y, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
   }
 
   function drawAlertMessagesVert(activeAlerts as Array<String>) as Void {

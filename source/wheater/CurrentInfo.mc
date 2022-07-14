@@ -15,7 +15,7 @@ class CurrentInfo {
   hidden var _posnInfo as Position.Info? ;
   function initialize() { }
 
-  function hasLocation() as Lang.Boolean { return self.lat != 0 && self.lon != 0; }
+  function hasLocation() as Lang.Boolean { return self.lat != 0 && self.lon != 0 && self.lat != 180 && self.lon != 180; }
 
   function infoLocation()as Lang.String {
     return Lang.format("current($1$,$2$)", [ lat.format("%.4f"), lon.format("%.4f") ]);
