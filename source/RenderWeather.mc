@@ -229,32 +229,17 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?) as Void {
+  function drawComfortColumn(x as Lang.Number, dewpoint as Lang.Float?) as Void {
     var comfort = Comfort.getComfort();
-    var idx = comfort.convertToComfort(temperature, relativeHumidity, precipitationChance);
-    // System.println("Comfort x[" + x + "] comfort: " + idx);
-    if (idx == COMFORT_NO) {
-      return;
-    }
+    // temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?
+    // var idx = comfort.convertToComfort(temperature, relativeHumidity, precipitationChance);
+    // if (idx == COMFORT_NO) {      return;    }
+    // var color = comfortToColor(idx);
 
-    // var color = COLOR_WHITE_GREEN;
-    // if (idx == COMFORT_NORMAL) {
-    //   color = COLOR_WHITE_YELLOW;
-    // } else if (idx == COMFORT_HIGH) {
-    //   color = COLOR_WHITE_ORANGE;
-    // }
-
-    var color = comfortToColor(idx);
-    //  WhatAppBase.Colors.COLOR_WHITE_GREEN_2;
-    // if (idx == COMFORT_NORMAL) {
-    //   color = WhatAppBase.Colors.COLOR_WHITE_YELLOW_2;
-    // } else if (idx == COMFORT_HIGH) {
-    //   color = WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_2;
-    // }
-
+    var color = dewpointToColor(dewpoint);    
+    
     dc.setColor(color, color);
     if (ds.smallField) {      
-
       var percTemperature = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
       var yTop = ds.getYpostion(Utils.max(percTemperature, comfort.humidityMax) as Lang.Number);
       percTemperature = Utils.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();

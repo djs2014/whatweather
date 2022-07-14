@@ -71,12 +71,12 @@ https://en.wikipedia.org/wiki/Ultraviolet_index
 
 https://en.wikipedia.org/wiki/Dew_point
 
-<= 10 Celcius - A little dry 		COLOR_WHITE_BLUE_3
-<= 12 Extreme comfortable 			COLOR_WHITE_DK_BLUE_3
-<= 16 Comfortable 					COLOR_WHITE_DK_BLUE_4
-<= 18 OK, but a little high 		COLOR_WHITE_LT_GREEN_3
-<= 21 A little uncomfortable		COLOR_WHITE_YELLOW_3
-<= 24 Humid, extreme uncomfortable	COLOR_WHITE_ORANGE_3
-<= 26 Very uncomfortable, rather oppressive COLOR_WHITE_ORANGERED2_3
-> Severely high						COLOR_WHITE_PURPLE_3
+<= 10 Celcius - A little dry 		COLOR_WHITE_LT_GREEN_3
+<= 12 Extreme comfortable 			COLOR_WHITE_GREEN_3
+<= 16 Comfortable 					COLOR_WHITE_YELLOW_3
+<= 18 OK, but a little high 		COLOR_WHITE_ORANGE_3
+<= 21 A little uncomfortable		COLOR_WHITE_RED_3
+<= 24 Humid, extreme uncomfortable	COLOR_WHITE_DK_RED_3
+<= 26 Very uncomfortable, rather oppressive COLOR_WHITE_PURPLE_3
+> Severely high						COLOR_WHITE_DK_PURPLE_3
 > 

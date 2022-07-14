@@ -11,7 +11,11 @@ TL;DR;
 optimize
 	wobbly increment x, y .. 5 px
 	@@DRY 
-	calculate dewpoint for garmin..?
+	x calculate dewpoint for garmin..?
+	x	https://learnmetrics.com/dew-point-calculator-chart-formula/
+	-> color scale
+	cels/farenh etc.. when paused.
+	docu - colors dewpoint etc.
 	xx wobbly lines -> to array
     - use profiler to check duration -> cache some code results (wobbly line)
     - remove unused code

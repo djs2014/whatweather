@@ -52,21 +52,21 @@ function dewpointToColor(dp as Lang.Float?) as Lang.Number {
   }
 
   if (dp <= 10) {
-    return WhatAppBase.Colors.COLOR_WHITE_BLUE_3;
-  } else if (dp <= 12) {
-    return WhatAppBase.Colors.COLOR_WHITE_DK_BLUE_3;
-  } else if (dp <= 16) {
-    return WhatAppBase.Colors.COLOR_WHITE_DK_BLUE_4;
-  } else if (dp <= 18) {
     return WhatAppBase.Colors.COLOR_WHITE_LT_GREEN_3;
-  } else if (dp <= 21) {
+  } else if (dp <= 12) {
+    return WhatAppBase.Colors.COLOR_WHITE_GREEN_3;
+  } else if (dp <= 16) {
     return WhatAppBase.Colors.COLOR_WHITE_YELLOW_3;
-  } else if (dp <= 24) {
+  } else if (dp <= 18) {
     return WhatAppBase.Colors.COLOR_WHITE_ORANGE_3;
+  } else if (dp <= 21) {
+    return WhatAppBase.Colors.COLOR_WHITE_RED_3;
+  } else if (dp <= 24) {
+    return WhatAppBase.Colors.COLOR_WHITE_DK_RED_3;
   } else if (dp <= 26) {
-    return WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_3;
-  } else {
     return WhatAppBase.Colors.COLOR_WHITE_PURPLE_3;
+  } else {
+    return WhatAppBase.Colors.COLOR_WHITE_DK_PURPLE_3;
   }
 }
 function uviToColor(uvi as Lang.Float?) as Lang.Number {

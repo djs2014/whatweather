@@ -40,7 +40,8 @@ class GarminWeather {
       cc.windBearing = garCurrent.windBearing;
       cc.windSpeed = garCurrent.windSpeed;
       cc.temperature = garCurrent.temperature;
-      cc.relativeHumidity = garCurrent.relativeHumidity;
+      cc.relativeHumidity = garCurrent.relativeHumidity;      
+      cc.dewPoint = calculateDewpoint(cc.temperature,cc.relativeHumidity);
 
       if (DEBUG_DETAILS) {
         System.println("Gar Current: " + cc.info());
@@ -64,6 +65,7 @@ class GarminWeather {
             hf.windSpeed = garForecast.windSpeed;
             hf.temperature = garForecast.temperature;
             hf.relativeHumidity = garForecast.relativeHumidity;
+            hf.dewPoint = calculateDewpoint(hf.temperature,hf.relativeHumidity);
             if (DEBUG_DETAILS) { System.println("Gar Hourly: " + hf.info()); }
             hh.add(hf);
           }
@@ -75,5 +77,11 @@ class GarminWeather {
       ex.printStackTrace();
       return WeatherData.initEmpty();
     }
+  }
+
+  static function calculateDewpoint(temperatureCelcius as Number?, relativeHumidity as Number?) as Float {
+    if (temperatureCelcius == null || relativeHumidity == null) { return 0.0; }
+    // https://learnmetrics.com/dew-point-calculator-chart-formula/      
+    return (temperatureCelcius as Number) - ((100 - (relativeHumidity as Number)) / 5.0);
   }
 }

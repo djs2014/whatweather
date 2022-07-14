@@ -169,11 +169,12 @@ class WeatherService  {
         switch(source) {
           case wsGarminFirst:
             wData.current.precipitationChanceOther = bgData.current.precipitationChance; 
-            wData.current.conditionOther = bgData.current.condition;             
-            wData.current.uvi = bgData.current.uvi;
-            wData.current.clouds = bgData.current.clouds;  
-            wData.current.dewPoint = bgData.current.dewPoint;
-            wData.current.pressure = bgData.current.pressure;   
+            wData.current.conditionOther = bgData.current.condition; 
+            if (wData.current.uvi == null) { wData.current.uvi = bgData.current.uvi; }
+            if (wData.current.clouds == null) { wData.current.clouds = bgData.current.clouds; }  
+            if (wData.current.dewPoint == null) { wData.current.dewPoint = bgData.current.dewPoint; }
+            if (wData.current.pressure == null) { wData.current.pressure = bgData.current.pressure; }  
+
             wData.minutely = bgData.minutely; 
             if (bgData.changed) { wData.changed = true; }
            break;
@@ -192,10 +193,10 @@ class WeatherService  {
               case wsGarminFirst:
                 wData.hourly[h].precipitationChanceOther = bgData.hourly[h].precipitationChance; 
                 wData.hourly[h].conditionOther = bgData.hourly[h].condition; 
-                wData.hourly[h].uvi =  bgData.hourly[h].uvi;
-                wData.hourly[h].clouds =  bgData.hourly[h].clouds;
-                wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint;
-                wData.hourly[h].pressure = bgData.hourly[h].pressure;   
+                if (wData.hourly[h].uvi == null) { wData.hourly[h].uvi =  bgData.hourly[h].uvi; }
+                if (wData.hourly[h].clouds == null) { wData.hourly[h].clouds =  bgData.hourly[h].clouds; }
+                if (wData.hourly[h].dewPoint == null) { wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint; }
+                if (wData.hourly[h].pressure == null) { wData.hourly[h].pressure = bgData.hourly[h].pressure; }  
                 break;
               case wsOWMFirst:
                 wData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 
