@@ -392,7 +392,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mCurrentLocation.isAtNightTime(current.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
             cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); 
           }
-          if (mShowComfort) { render.drawComfortColumn(x, current.dewPoint); }
+          if (mShowComfort) { render.drawComfortColumn(x, current.temperature, current.dewPoint); }
           // rain
           var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
           if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
@@ -469,7 +469,7 @@ class WhatWeatherView extends WatchUi.DataField {
                  }
               cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
-            if (mShowComfort) { render.drawComfortColumn(x, forecast.dewPoint); }
+            if (mShowComfort) { render.drawComfortColumn(x, forecast.temperature, forecast.dewPoint); }
             // rain
             var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
             if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }

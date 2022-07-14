@@ -229,7 +229,7 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(x as Lang.Number, dewpoint as Lang.Float?) as Void {
+  function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
     var comfort = Comfort.getComfort();
     // temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?
     // var idx = comfort.convertToComfort(temperature, relativeHumidity, precipitationChance);

@@ -16,9 +16,10 @@ optimize
 	-> color scale
 	cels/farenh etc.. when paused.
 	docu - colors dewpoint etc.
+	@@ -> temp below x -> 
 	xx wobbly lines -> to array
     - use profiler to check duration -> cache some code results (wobbly line)
-    - remove unused code
+    - remove unused code -> comfort ..
     - show wind info current hour on small field
 - radar -> offset to left x px
 LATER

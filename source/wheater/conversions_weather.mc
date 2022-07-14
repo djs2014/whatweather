@@ -48,10 +48,16 @@ function comfortToColor(comfort as Lang.Number?) as Lang.Number {
 }
 function dewpointToColor(dp as Lang.Float?) as Lang.Number {
   if (dp == null) {
-    return WhatAppBase.Colors.COLOR_WHITE_GRAY_3;
+    return WhatAppBase.Colors.COLOR_WHITE_GRAY_2;
   }
 
-  if (dp <= 10) {
+  if (dp <= 4) {
+    return WhatAppBase.Colors.COLOR_WHITE_GRAY_3;
+  } else if (dp <= 6) {
+    return WhatAppBase.Colors.COLOR_WHITE_LT_GREEN_1;
+  } else if (dp <= 8) {
+    return WhatAppBase.Colors.COLOR_WHITE_LT_GREEN_2;
+  } else if (dp <= 10) {
     return WhatAppBase.Colors.COLOR_WHITE_LT_GREEN_3;
   } else if (dp <= 12) {
     return WhatAppBase.Colors.COLOR_WHITE_GREEN_3;
