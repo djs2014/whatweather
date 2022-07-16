@@ -3,106 +3,198 @@ import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Time;
 import Toybox.System;
+import Toybox.Background;
+import Toybox.Application.Storage;
 using Toybox.Position;
+using WhatAppBase.Utils as Utils;
 
-var _mostRecentData = null;
+var _BGServiceHandler as BGServiceHandler?; 
+var _alertHandler as AlertHandler?;
+var _bgData as WeatherData?;
 
+(:background)
+var _mostRecentData as WeatherData?;
+(:background)
+var _weatherDescriptions as Lang.Dictionary = {};
+
+(:background)
 class WhatWeatherApp extends Application.AppBase {
+  var mInBackground as Boolean = false;
   function initialize() {
-    AppBase.initialize();
-    $._mostRecentData = new WeatherData();        
-    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions);
+    AppBase.initialize();       
   }
 
-  // onStart() is called on application start up
-    function onStart(state as Dictionary?) as Void {
+  function onStart(state as Dictionary?) as Void {    }
+
+  function onStop(state as Dictionary?) as Void {  
+    // @@ when activity is stopping?
+    // if (!mInBackground) {
+    //   System.println("deleteTemporalEvent");
+    //   Background.deleteTemporalEvent();
+    // }
+  }
+
+  (:typecheck(disableBackgroundCheck))  
+  function getInitialView() as Array<Views or InputDelegates> ? {    
+    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
+    loadUserSettings();
+    return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
+  }
+
+  (:typecheck(disableBackgroundCheck))
+  function onSettingsChanged() as Void { loadUserSettings(); }
+
+  (:typecheck(disableBackgroundCheck))
+  function getBGServiceHandler() as BGServiceHandler {
+    if ($._BGServiceHandler == null) {
+      $._BGServiceHandler = new BGServiceHandler();
     }
+    return $._BGServiceHandler;
+  }
 
-    // onStop() is called when your application is exiting
-    function onStop(state as Dictionary?) as Void {
+  (:typecheck(disableBackgroundCheck))
+  function getAlertHandler() as AlertHandler {
+    if ($._alertHandler == null) {
+      $._alertHandler = new AlertHandler();
     }
+    return $._alertHandler;
+  }
 
-    //! Return the initial view of your application here
-    function getInitialView() as Array<Views or InputDelegates> ? {
-      loadUserSettings();
-      return [new WhatWeatherView()] as Array < Views or InputDelegates > ;
-    }
+  (:typecheck(disableBackgroundCheck))
+  function loadUserSettings() as Void {
+    try {
+      System.println("Loading user settings");  
+      $._showCurrentForecast = Utils.getApplicationPropertyAsBoolean("showCurrentForecast", true);
+      $._maxMinuteForecast = Utils.getApplicationPropertyAsNumber("maxMinuteForecast", 0);
+      $._maxHoursForecast = Utils.getApplicationPropertyAsNumber("maxHoursForecast", 8);
+      $._showDetailsWhenPaused = Utils.getApplicationPropertyAsBoolean("showDetailsWhenPaused", true);      
+      $._dashesUnderColumnHeight = Utils.getApplicationPropertyAsNumber("dashesUnderColumnHeight", 2);
+      
+      $._observationTimeDelayedMinutesThreshold = Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 30);
+      $._showClouds = Utils.getApplicationPropertyAsBoolean("showClouds", true);
+     
+      $._showInfoSmallField = Utils.getApplicationPropertyAsNumber("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
+      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);      
+      $._showCurrentWind = Utils.getApplicationPropertyAsBoolean("showCurrentWind", true);
 
-    function onSettingsChanged() { loadUserSettings(); }
+      $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
+      $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
+      $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
+      $._alertLevelDewpoint = Utils.getApplicationPropertyAsNumber("alertLevelDewpoint", 19);
+      $._alertLevelWindSpeed = Utils.getApplicationPropertyAsNumber("alertLevelWindSpeed", 5);
 
-    function loadUserSettings() {
-      try {
-        $._showCurrentForecast =
-            getBooleanProperty("showCurrentForecast", true);
-        $._maxMinuteForecast = getNumberProperty("maxMinuteForecast", 60);
-        $._maxHoursForecast = getNumberProperty("maxHoursForecast", 8);
-        $._alertLevelPrecipitationChance =
-            getNumberProperty("alertLevelPrecipitationChance", 70);
-        $._showAlertLevel = getBooleanProperty("showAlertLevel", true);
-        $._showMaxPrecipitationChance =
-            getBooleanProperty("showMaxPrecipitationChance", true);
-        $._dashesUnderColumnHeight =
-            getNumberProperty("dashesUnderColumnHeight", 2);
-        $._showColumnBorder = getBooleanProperty("showColumnBorder", false);
-        $._showObservationTime =
-            getBooleanProperty("showObservationTime", true);
-        $._showObservationLocationName =
-            getBooleanProperty("showObservationLocationName", true);
-        $._observationTimeDelayedMinutesThreshold =
-            getNumberProperty("observationTimeDelayedMinutesThreshold", 30);
-        $._showClouds = getBooleanProperty("showClouds", true);
-        $._showUVIndexFactor = getBooleanProperty("showUVIndexFactor", 2);
-        $._hideUVIndexLowerThan = getNumberProperty("hideUVIndexLowerThan", 4);
-        $._showInfo = getNumberProperty("showInfo", SHOW_INFO_TIME_Of_DAY);
-        $._showInfo2 = getNumberProperty("showInfo2", SHOW_INFO_AMBIENT_PRESSURE);
-        $._showPrecipitationChanceAxis =
-            getBooleanProperty("showPrecipitationChanceAxis", true);
-        $._alertLevelUVi = getNumberProperty("alertLevelUVi", 6);
-        $._alertLevelRainMMfirstHour =
-            getNumberProperty("alertLevelRainMMfirstHour", 5);
+      $._showUVIndex = Utils.getApplicationPropertyAsBoolean("showUVIndex", true);
+      $._maxUVIndex = Utils.getApplicationPropertyAsNumber("maxUVIndex", 20);
+      $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
 
-        $._showWind = getNumberProperty("showWind", SHOW_WIND_BEAUFORT);
-        $._alertLevelWindSpeed = getNumberProperty("alertLevelWindSpeed", 5);
-        $._showTemperature = getBooleanProperty("showTemperature", true);        
-        $._showRelativeHumidity = getBooleanProperty("showRelativeHumidity", true);
-        $._showComfort = getBooleanProperty("showComfort", true);
-        $._showGlossary = getBooleanProperty("showGlossary", false);
-  
-        $._showWeatherCondition = getBooleanProperty("showWeatherCondition", true);
-        $._alwaysUpdateGarminWeather = getBooleanProperty("alwaysUpdateGarminWeather", false);
+      $._showWind = Utils.getApplicationPropertyAsNumber("showWind", SHOW_WIND_BEAUFORT);
+      $._showTemperature = Utils.getApplicationPropertyAsBoolean("showTemperature", true);
+      $._hideTemperatureLowerThan = Utils.getApplicationPropertyAsNumber("hideTemperatureLowerThan", 8);
+      $._maxTemperature = Utils.getApplicationPropertyAsNumber("maxTemperature", 50);
+      $._maxPressure = Utils.getApplicationPropertyAsNumber("maxPressure", 1080);
+      $._minPressure = Utils.getApplicationPropertyAsNumber("minPressure", 870);
+      
+      $._showRelativeHumidity = Utils.getApplicationPropertyAsBoolean("showRelativeHumidity", true);
+      $._showPressure = Utils.getApplicationPropertyAsBoolean("showPressure", true);
+      $._showDewpoint = Utils.getApplicationPropertyAsBoolean("showDewpoint", true);
+      $._showComfortZone = Utils.getApplicationPropertyAsBoolean("showComfortZone", true);
+      $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
 
-        $._alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
-        $._alertHandler.setAlertUVi($._alertLevelUVi);
-        $._alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
-        $._alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
-        $._alertHandler.resetStatus();
 
-        initComfortSettings();
-        System.println("Settings loaded");
-      } catch (ex) {
-        ex.printStackTrace();
+      $._showActualWeather = Utils.getApplicationPropertyAsBoolean("showActualWeather", false);
+
+      
+      var bgHandler =  getBGServiceHandler();
+      bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 10));      
+      bgHandler.setMinimalGPSLevel(Utils.getApplicationPropertyAsNumber("minimalGPSquality", 3));
+      // Always req per 5 minutes.
+      // bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
+
+      var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
+      $._weatherDataSource = ws as WeatherSource;      
+      if ($._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
+      || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
+        bgHandler.Enable(); 
+      } else {
+        bgHandler.Disable(); 
       }
-    }
 
+      var alertHandler = getAlertHandler();     
+      alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
+      alertHandler.setAlertUVi($._alertLevelUVi);
+      alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
+      alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
+      alertHandler.setAlertDewpoint($._alertLevelDewpoint);
+      alertHandler.resetStatus();
+
+      initComfortSettings();
+      System.println("Comfort settings");
+      
+      Storage.setValue("weatherDataSource", ws);
+      Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
+      Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
+      Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    
+      Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);                    
     
-    function initComfortSettings() {
-      var humMin = getNumberProperty("comfortHumidityMin", 40);
-      var humMax = getNumberProperty("comfortHumidityMax", 60);
-      $._comfortHumidity[0] = min(humMin, humMax);
-      $._comfortHumidity[1] = max(humMin, humMax);
-
-      var tempMin = getNumberProperty("comfortTempMin", 21);
-      var tempMax = getNumberProperty("comfortTempMax", 27);
-      $._comfortTemperature[0] = min(tempMin, tempMax);
-      $._comfortTemperature[1] = max(tempMin, tempMax);
-
-      var popMin = getNumberProperty("comfortPopMin", 0);
-      var popMax = getNumberProperty("comfortPopMax", 40);
-      $._comfortPrecipitationChance[0] = min(popMin, popMax);
-      $._comfortPrecipitationChance[1] = max(popMin, popMax);
+      System.println("User settings loaded");
+    } catch (ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
+      System.println(ex.getErrorMessage());
     }
+  }
+
+  (:typecheck(disableBackgroundCheck))  
+  hidden function initComfortSettings() as Void {
+      var comfort = Comfort.getComfort();
+
+      var humMin = Utils.getApplicationPropertyAsNumber("comfortHumidityMin", 40);
+      var humMax = Utils.getApplicationPropertyAsNumber("comfortHumidityMax", 60);
+      comfort.humidityMin = Utils.min(humMin, humMax).toNumber();
+      comfort.humidityMax = Utils.max(humMin, humMax).toNumber();
+    
+      var tempMin = Utils.getApplicationPropertyAsNumber("comfortTempMin", 19);
+      var tempMax = Utils.getApplicationPropertyAsNumber("comfortTempMax", 27);
+      comfort.temperatureMin = Utils.min(tempMin, tempMax).toNumber();
+      comfort.temperatureMax = Utils.max(tempMin, tempMax).toNumber();
+
+      // var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
+      // var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
+      // comfort.precipitationChanceMin = Utils.min(popMin, popMax).toNumber();
+      // comfort.precipitationChanceMax = Utils.max(popMin, popMax).toNumber();
+    }
+
+  public function getServiceDelegate() as Array<System.ServiceDelegate> {
+    mInBackground = true;
+    return [new BackgroundServiceDelegate()] as Array<System.ServiceDelegate>;
+  }
+
+  (:typecheck(disableBackgroundCheck))
+  function onBackgroundData(data) {
+    System.println("Background data recieved");
+
+    if (data instanceof Lang.Number && data == 0) {
+      System.println("Response code is 0 -> reset bg service");
+      loadUserSettings();
+      return;
+    }
+    
+    var bgHandler = getBGServiceHandler();
+    bgHandler.onBackgroundData(data, self, :updateBgData);
+
+    WatchUi.requestUpdate();
+  }
+
+  (:typecheck(disableBackgroundCheck))
+  function updateBgData(bgHandler as BGServiceHandler, data as Dictionary) as Void {
+    // First entry hourly in OWM is current entry
+    var bgData = WeatherService.toWeatherData(data, true);
+    $._bgData = bgData;
+    bgHandler.setLastObservationMoment(bgData.getObservationTime());    
+  }
 }
 
 function getApp() as WhatWeatherApp {
   return Application.getApp() as WhatWeatherApp;
 }
+

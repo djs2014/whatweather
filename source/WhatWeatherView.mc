@@ -1,104 +1,215 @@
 import Toybox.Graphics;
-import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.Weather;
 import Toybox.Attention;
-using Toybox.Time.Gregorian as Calendar;
-using Toybox.Position;
+import Toybox.Activity;
+import Toybox.Time;
+import Toybox.Time.Gregorian;
+import Toybox.Position;
+import Toybox.Application.Storage;
+import Toybox.Background;
+using WhatAppBase.Utils as Utils;
 
 class WhatWeatherView extends WatchUi.DataField {
+  var mBGServiceHandler as BGServiceHandler;
+  var mAlertHandler as AlertHandler;
+  var mCurrentLocation as Utils.CurrentLocation = new Utils.CurrentLocation();
+
   // @@ cleanup
-  hidden var mFont = Graphics.FONT_LARGE;
-  hidden var mFontPostfix = Graphics.FONT_TINY;
-  hidden var mFontSmall = Graphics.FONT_XTINY;
-  hidden var mFontSmallH;
+  hidden var mFont as Graphics.FontType = Graphics.FONT_LARGE;
+  hidden var mFontPostfix as Graphics.FontType = Graphics.FONT_TINY;
+  hidden var mFontSmall as Graphics.FontType = Graphics.FONT_XTINY;
+  hidden var mFontSmallH as Lang.Number = 0;
 
-  hidden var ds as DisplaySettings;
-  hidden var _currentInfo as CurrentInfo;
+  hidden var ds as DisplaySettings = new DisplaySettings();
+  hidden var mCurrentInfo as CurrentInfo = new CurrentInfo();
 
-  hidden var _posnInfo as Info ? ;
+
+  var mShowTemperature as Boolean = false;
+  var mShowDewpoint as Boolean = false;
+  var mShowPressure as Boolean = false;
+  var mShowRelativeHumidity as Boolean = false;
+  var mShowComfortZone as Boolean = false;
+  var mShowComfortBorders as Boolean = false;
+  var mShowObservationLocationName as Boolean = false;
+  var mShowWind as Number = SHOW_WIND_NOTHING;
+  var mShowWindFirst as Boolean = false;
+  var mShowWeatherCondition as Boolean = false;
+
+  // var mWeatherChanged as Boolean = false;
+  var mActivityPaused as Boolean = false;
+  var mShowDetails as Boolean = false;
+  
+  // @@ TODO glossary rotate x conditions per 5 sec.
+  // var mGlossaryStart as Number = 0;
+  
 
   function initialize() {
     DataField.initialize();
-    mFontSmallH = Graphics.getFontHeight(mFontSmall);
+   
+    mBGServiceHandler = getApp().getBGServiceHandler();
+    mBGServiceHandler.setCurrentLocation(mCurrentLocation);  
+    mAlertHandler = getApp().getAlertHandler();
+    mFontSmallH = Graphics.getFontHeight(mFontSmall);        
+  }
+  
+  function onLayout(dc as Dc) as Void {
 
-    _currentInfo = new CurrentInfo();
-    ds = new DisplaySettings();
+
   }
 
-  function onLayout(dc as Dc) as Void {}
-
   function compute(info as Activity.Info) as Void {
-    _currentInfo.getPosition(info);
+    mCurrentInfo.getPosition(info);
+    mActivityPaused = activityIsPaused(info);    
+    
+    mBGServiceHandler.onCompute(info);
+    mBGServiceHandler.autoScheduleService();   
+
+
+    // Not working on EDGE830
+    // var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+    // $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+    // var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
+    // $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);              
+    // mAlertHandler.checkStatus();
+    // mWeatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
+    // if (mWeatherChanged) {
+    //   System.println("weather changed");
+    //   $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
+    //   $._bgData = WeatherService.setChanged($._bgData, false);    
+    //   CheckWeatherForAlerts();      
+    // }
+    // if (mAlertHandler.isAnyAlertTriggered()) {
+    //   // backgroundColor = Graphics.COLOR_YELLOW;
+    //   playAlert();
+    //   mAlertHandler.currentlyTriggeredHandled();
+    // }          
+
   }
 
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
   function onUpdate(dc as Dc) as Void {
-    if (dc has :setAntiAlias) {
-      dc.setAntiAlias(true);
-    }
+    try {
+      if (dc has :setAntiAlias) { dc.setAntiAlias(true); }
 
-    var backgroundColor = getBackgroundColor();
-    $._alertHandler.checkStatus();
-    if ($._alertHandler.isAnyAlertTriggered()) {
-      backgroundColor = Graphics.COLOR_YELLOW;
-      playAlert();
-      $._alertHandler.currentlyTriggeredHandled();
-    }    
+      var backgroundColor = getBackgroundColor();
+      mAlertHandler.checkStatus();
+      if (mAlertHandler.isAnyAlertTriggered()) {
+        backgroundColor = Graphics.COLOR_YELLOW;
+        playAlert();
+        mAlertHandler.currentlyTriggeredHandled();
+      }    
 
-    var nrOfColumns = $._maxHoursForecast;
-    ds.setDc(dc, backgroundColor);
-    ds.clearScreen();
-  
-    var heightWind = ($._showWind && !ds.smallField) ? 15 : 0;
-    var heightWc = ($._showWeatherCondition && !ds.smallField) ? 15 : 0;
-    var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
-    var dashesUnderColumnHeight = $._dashesUnderColumnHeight;
-    if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
-    ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
+      var nrOfColumns = $._maxHoursForecast;
+      ds.setDc(dc, backgroundColor);
+      ds.clearScreen();
+    
+      // @@ settings object
+      if (ds.smallField || ds.wideField) {
+        mShowTemperature = false;
+        mShowDewpoint = false;
+        mShowPressure = false;
+        mShowRelativeHumidity = false;
+        mShowComfortZone = $._showComfortZone;
+        mShowComfortBorders = false;
+        mShowObservationLocationName = false;
+        mShowWind = SHOW_WIND_NOTHING;
+        mShowWindFirst = $._showCurrentWind;        
+        mShowWeatherCondition = false;
+      } else {
+        mShowTemperature = $._showTemperature;
+        mShowDewpoint = $._showDewpoint;
+        mShowPressure = $._showPressure;
+        mShowRelativeHumidity = $._showRelativeHumidity;
+        mShowComfortZone = $._showComfortZone;
+        mShowComfortBorders = $._showComfortZone;
+        mShowObservationLocationName = true;
+        mShowWind = $._showWind;
+        mShowWindFirst = false;
+        mShowWeatherCondition = $._showWeatherCondition;
+      }
+      mShowDetails = $._showDetailsWhenPaused && mActivityPaused && ds.oneField;
 
-    if ($._showGlossary && ds.oneField) {
-      var render = new RenderWeather(dc, ds);
-      render.drawGlossary();
-      return;
-    }
+      var heightWind = (mShowWind == SHOW_WIND_NOTHING || ds.smallField || ds.wideField) ? 0 : 15;
+      var heightWc = (!mShowWeatherCondition || ds.smallField || ds.wideField) ? 0 : 15;
 
-    GarminWeather.getLatestGarminWeather();
-    onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+      var heightWt = (ds.oneField) ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
+      var dashesUnderColumnHeight = $._dashesUnderColumnHeight;
+      if (heightWind > 0 || heightWc > 0 ) { dashesUnderColumnHeight = 0; }
+      ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
 
-    if ($._showMaxPrecipitationChance) {
-      drawMaxPrecipitationChance(dc, ds.margin, ds.columnHeight,
-                                 Graphics.COLOR_LT_GRAY,
-                                 $._alertHandler.maxPrecipitationChance);
-    }
+      // if ($._showGlossary && ds.oneField) {
+      //   var render = new RenderWeather(dc, ds);
+      //   render.drawGlossary();
+      //   return;
+      // }
+                  
+      var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
+      $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);   
 
-    if ($._showAlertLevel) {
-      drawWarningLevel(dc, ds.margin, ds.columnHeight, Graphics.COLOR_LT_GRAY,
-                       $._alertLevelPrecipitationChance);
-    }
-
-    if ($._showPrecipitationChanceAxis) {
+      onUpdateWeather(dc, ds, dashesUnderColumnHeight);
+                    
       drawPrecipitationChanceAxis(dc, ds.margin, ds.columnHeight);
-    }
 
-    showInfo(dc, ds);
+      showInfo(dc, ds);
+
+      showBgInfo(dc, ds);    
+    } catch (ex) {
+      ex.printStackTrace();
+    }  
   }
 
-  function showInfo(dc as Dc, ds as DisplaySettings) as Void {
+  hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
+    if ($._weatherDataSource == wsGarminOnly) { return; }
+    
+    // var bgHandler = getBGServiceHandler();
+    if (!mBGServiceHandler.isEnabled()) { return; }
+    if (! ($._weatherDataSource == wsOWMFirst  || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst))  { return; }
+
+    var color = ds.COLOR_TEXT;
+    var obsTime = "";
+    
+    if (!ds.smallField && $._bgData != null) { obsTime = Utils.getShortTimeString(($._bgData as WeatherData).getObservationTime()); }
+    
+    if (mBGServiceHandler.isDataDelayed()){
+      color = Graphics.COLOR_RED;
+      if (ds.smallField) { obsTime = "!"; }
+    }
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+
+    var text;
+    if (ds.smallField || ds.wideField) {
+      text = obsTime;
+    } else {
+      var counter = "#" + mBGServiceHandler.getCounterStats();
+      var next = mBGServiceHandler.getWhenNextRequest("");    
+      var status;
+      if (mBGServiceHandler.hasError()) {
+        status = mBGServiceHandler.getError();
+      } else {
+        status = mBGServiceHandler.getStatus();
+      }
+      text = obsTime + " " + counter + " " + status + "(" + next + ")";
+    }
+    
+    var textWH = dc.getTextDimensions(text, Graphics.FONT_XTINY);
+    dc.drawText(dc.getWidth() - textWH[0], dc.getHeight() - textWH[1], Graphics.FONT_XTINY, text, Graphics.TEXT_JUSTIFY_LEFT);  
+  }
+
+  hidden function showInfo(dc as Dc, ds as DisplaySettings) as Void {
     var devSettings = System.getDeviceSettings();
     var info = "";
     var postfix = "";
-    var showInfo = $._showInfo2;
-    if (ds.smallField) {
-      showInfo = $._showInfo;
-    }
+    var showInfo = $._showInfoLargeField;
+    if (ds.smallField) { showInfo = $._showInfoSmallField; }
     switch (showInfo) {
       case SHOW_INFO_NOTHING:
         return;
       case SHOW_INFO_TIME_Of_DAY:
-        var now = Calendar.info(Time.now(), Time.FORMAT_SHORT);
+        var now = Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var nowMin = now.min;
         var nowHour = now.hour;
         if (!devSettings.is24Hour) {
@@ -112,32 +223,15 @@ class WhatWeatherView extends WatchUi.DataField {
         }
         info = (nowHour.format("%02d") + ":" + nowMin.format("%02d"));
         break;
-      case SHOW_INFO_ALTITUDE:
-        var altitude = _currentInfo.altitude();
-        if (altitude != null) {
-          var currentAltitude = altitude;
-          postfix = "m";
-          if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-            postfix = "f";
-            currentAltitude = meterToFeet(altitude);
-          }
-          info = currentAltitude.toNumber().toString();
-        }
-        break;
-      case SHOW_INFO_HEADING:
-        var compassDirection = _currentInfo.compassDirection();
-        if (compassDirection != null) {
-          info = compassDirection;
-        }
-        break;
+          
       case SHOW_INFO_TEMPERATURE:
-        var temperatureCelcius = _currentInfo.temperature();
+        var temperatureCelcius = mCurrentInfo.temperature();
         if (temperatureCelcius != null) {
           postfix = "°C";
           var temperature = temperatureCelcius;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "°F";
-            temperature = celciusToFarenheit(temperatureCelcius);
+            temperature = Utils.celciusToFarenheit(temperatureCelcius);
           }
           if (ds.smallField) {
             info = temperature.format("%.0f");
@@ -146,15 +240,9 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
         break;
-      case SHOW_INFO_HEARTRATE:
-        var hr = _currentInfo.heartRate();
-        if (hr != null) {
-          postfix = "bpm";
-          info = hr.format("%d");
-        }
-        break;
+     
       case SHOW_INFO_AMBIENT_PRESSURE:
-        var ap = _currentInfo.ambientPressure();
+        var ap = mCurrentInfo.ambientPressure();
         if (ap != null) {
           // pascal -> mbar (hPa)
           postfix = "hPa";
@@ -164,15 +252,29 @@ class WhatWeatherView extends WatchUi.DataField {
             info = (ap / 100).format("%.2f");
           }
         }
-        break;
+        break;   
+
+      case SHOW_INFO_SEALEVEL_PRESSURE:
+        var sp = mCurrentInfo.meanSeaLevelPressure();
+        if (sp != null) {
+          // pascal -> mbar (hPa)
+          postfix = "~hPa";
+          if (ds.smallField) {
+            info = (sp / 100).format("%.0f");
+          } else {
+            info = (sp / 100).format("%.2f");
+          }
+        }
+        break;  
+
       case SHOW_INFO_DISTANCE:
-        var distanceInKm = _currentInfo.elapsedDistance();
+        var distanceInKm = mCurrentInfo.elapsedDistance();
         if (distanceInKm != null) {
           postfix = "km";
           var distance = distanceInKm;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "mi";
-            distance = kilometerToMile(distanceInKm);
+            distance = Utils.kilometerToMile(distanceInKm);
           }
           if (distance < 1) {
             info = distance.format("%.3f");
@@ -192,7 +294,8 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
         }
-        break;
+        break;  
+
     }
 
     if (info.length() == 0) {
@@ -202,140 +305,125 @@ class WhatWeatherView extends WatchUi.DataField {
     var wp = dc.getTextWidthInPixels(postfix, mFontPostfix);
     var xi = ds.width / 2 - (wi + wp) / 2;
     dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(xi, ds.height / 2, mFont, info,
-                Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
-    dc.drawText(xi + wi + 1, ds.height / 2, mFontPostfix, postfix,
-                Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(xi, ds.height / 2, mFont, info, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    dc.drawText(xi + wi + 1, ds.height / 2, mFontPostfix, postfix, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function onUpdateWeather(dc as Dc, ds as DisplaySettings, dashesUnderColumnHeight) as Void {
+  function onUpdateWeather(dc as Dc, ds as DisplaySettings, dashesUnderColumnHeight as Lang.Number) as Void {
     var x = ds.columnX;
     var y = ds.columnY;
     var uvPoints = [];
     var tempPoints = [];
+    var dewPoints = [];
+    var pressurePoints = [];
     var humidityPoints = [];
     var windPoints = [];
-    var color;
+    var color, colorOther, colorDashes, colorClouds;
     var mm = null;
     var current = null;
     var hourlyForecast = null;
     var previousCondition = -1;
     var weatherTextLine = 0;
+    var blueBarPercentage = []; 
 
     try {
-      if ($._mostRecentData != null && $._mostRecentData.valid()) {
-        mm = $._mostRecentData.minutely;
-        current = $._mostRecentData.current;
-        hourlyForecast = $._mostRecentData.hourly;
+      if ($._mostRecentData != null && ($._mostRecentData as WeatherData).valid()) {
+        mm = ($._mostRecentData as WeatherData).minutely;
+        current = ($._mostRecentData as WeatherData).current;
+        hourlyForecast = ($._mostRecentData as WeatherData).hourly;
       }
 
       var render = new RenderWeather(dc, ds);
 
-      if ($._maxMinuteForecast > 0) {
-        var xMMstart = x;
-        var popTotal = 0;
-        var columnWidth = 1;
-        var offset = ($._maxMinuteForecast * columnWidth) + ds.space;
-        ds.calculateColumnWidth(offset);
-        if (mm != null) {
-          var max = mm.pops.size();
-          for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
-            var pop = mm.pops[i];
-            popTotal = popTotal + pop;
-            if (DEBUG_DETAILS) {
-              System.println(
-                  Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
-            }
+      // @@ Test to find the bug in properties
+      // if ( $._maxMinuteForecast > 0) { @@ <-- $._maxMinuteForecast is not a number?
+      //   var xMMstart = x; // @@ issue?
+      //   var popTotal = 0 as Lang.Number;
+      //   var columnWidth = 1;
+      //   var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
+      //   if (mm != null) {
+      //     ds.calculateColumnWidth(offset);
+      //     var max = mm.pops.size();
+      //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+      //       var pop = mm.pops[i] as Lang.Number;
+      //       popTotal = popTotal + pop;
+      //       if (DEBUG_DETAILS) {
+      //         System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+      //       }
 
-            if ($._showColumnBorder) {
-              drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight);
-            }
-            drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y,
-                                               columnWidth, ds.columnHeight,
-                                               pop);
-            x = x + columnWidth;
-          }
-          x = x + ds.space;
-        }
+      //       if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
+      //       drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+      //       x = x + columnWidth;
+      //     }
+      //     x = x + ds.space;
+      //   }
+      //   if (dashesUnderColumnHeight > 0) {
+      //     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      //     dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
+      //   }
+      //   x = xMMstart + offset;
+      //   mAlertHandler.processRainMMfirstHour(popTotal);
+      // }
 
-        if (dashesUnderColumnHeight > 0) {
-          dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-          dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight,
-                           ($._maxMinuteForecast * columnWidth),
-                           dashesUnderColumnHeight);
-        }
-        x = xMMstart + offset;
-        $._alertHandler.processRainMMfirstHour(popTotal);
-      }
-
+      // @@ TODO donotrepeat current/hourly @@DRY
       var validSegment = 0;
       if ($._showCurrentForecast) {
         if (current != null) {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
-          if (DEBUG_DETAILS) {
-            System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]",
-                                       [ x, current.info(), color ]));
-          }
+          colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
+          if (DEBUG_DETAILS) { System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [ x, current.info(), color ])); }
 
-          $._alertHandler.processPrecipitationChance(current.precipitationChance);
-          $._alertHandler.processWeather(color.toNumber());
-          $._alertHandler.processUvi(current.uvi);
-          $._alertHandler.processWindSpeed(current.windSpeed);
+          mAlertHandler.processPrecipitationChance(current.precipitationChance);
+          mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
+          mAlertHandler.processWeather(color.toNumber());          
+          mAlertHandler.processWeather(colorOther.toNumber());
+          mAlertHandler.processUvi(current.uvi);
+          mAlertHandler.processWindSpeed(current.windSpeed);
+          mAlertHandler.processDewpoint(current.dewPoint);
 
           validSegment = validSegment + 1;
 
-          if ($._showComfort) {
-            render.drawComfortColumn(x, current.temperature,
-                                     current.relativeHumidity,
-                                     current.precipitationChance);
-          }
+          // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
-          if ($._showColumnBorder) {
-            drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
-                             ds.columnHeight);
+          var cHeight = 0;
+          colorClouds = COLOR_CLOUDS;
+          if ($._showClouds) { 
+            if (mCurrentLocation.isAtNightTime(current.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
+            cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); 
           }
-
-          if ($._showClouds) {
-            drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY,
-                                          ds.columnWidth, ds.columnHeight,
-                                          current.clouds);
-          }
-
+          if (mShowComfortZone) { render.drawComfortColumn(x, current.temperature, current.dewPoint); }
           // rain
-          drawColumnPrecipitationChance(dc, color, x, ds.columnY,
-                                        ds.columnWidth, ds.columnHeight,
-                                        current.precipitationChance);
+          var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
+          if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
+          // rain other
+          drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, current.precipitationChanceOther);
 
-          if ($._showUVIndexFactor > 0 && current.uvi != null) {
+          if ($._showUVIndex) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
             uvp.calculateVisible(current.precipitationChance);
             uvPoints.add(uvp);
           }
+          if (mShowDetails) { blueBarPercentage.add(current.precipitationChance); }
 
-          if ($._showTemperature) {
-            tempPoints.add(
-                new Point(x + ds.columnWidth / 2, current.temperature));
-          }
-          if ($._showRelativeHumidity) {
-            humidityPoints.add(
-                new Point(x + ds.columnWidth / 2, current.relativeHumidity));
-          }
-          if ($._showWind) {
-            windPoints.add(
-                new WindPoint(x, current.windBearing, current.windSpeed));
-          }
+          if (mShowPressure) { pressurePoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.pressure, 0)); }
+          if (mShowRelativeHumidity) { humidityPoints.add( new WeatherPoint(x + ds.columnWidth / 2, current.relativeHumidity, 0)); }
+          if (mShowTemperature) { tempPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.temperature, $._hideTemperatureLowerThan)); }
+          if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, current.getDewPoint(), $._hideTemperatureLowerThan)); }
+          if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) { windPoints.add( new WindPoint(x, current.windBearing, current.windSpeed)); }
 
           if (dashesUnderColumnHeight > 0) {
-            color = Graphics.COLOR_DK_GRAY;
-            if (current.precipitationChance == 0) {
-              color =getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
+            colorDashes = Graphics.COLOR_DK_GRAY;
+            if (current.precipitationChance == 0) { colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY); }
+            dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth, dashesUnderColumnHeight);
+            if (color != colorOther && current.precipitationChanceOther == 0) {
+              colorDashes = getConditionColor(current.conditionOther, Graphics.COLOR_DK_GRAY);
+              dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+              dc.fillRectangle(x + (ds.columnWidth/3 * 2), ds.columnY + ds.columnHeight, ds.columnWidth/3, dashesUnderColumnHeight);
             }
-            dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-            dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
-                             dashesUnderColumnHeight);
           }
 
-          if ($._showWeatherCondition) {
+          if (mShowWeatherCondition) {
             render.drawWeatherCondition(x, current.condition);   
             if (previousCondition != current.condition) {
               render.drawWeatherConditionText(x, current.condition, weatherTextLine);
@@ -349,79 +437,70 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if (hourlyForecast != null) {
         var maxSegment = hourlyForecast.size();
-        for (var segment = 0;
-             validSegment < $._maxHoursForecast && segment < maxSegment;
-             segment += 1) {
-          var forecast = hourlyForecast[segment];
-          if (DEBUG_DETAILS) {
-            System.println(forecast.info());
-          }
+        for (var segment = 0; validSegment < $._maxHoursForecast && segment < maxSegment; segment += 1) {
+          var forecast = hourlyForecast[segment] as WeatherHourly;
+          if (DEBUG_DETAILS) { System.println(forecast.info()); }
 
           // Only forecast for the future
-          var fcTime = Calendar.info(forecast.forecastTime, Time.FORMAT_SHORT);
+          var fcTime = Gregorian.info(forecast.forecastTime, Time.FORMAT_SHORT);
           if (forecast.forecastTime.compare(Time.now()) >= 0) {
             validSegment += 1;
             
             color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
+            colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE); 
+            mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
+            mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
+            mAlertHandler.processWeather(color.toNumber());
+            mAlertHandler.processWeather(colorOther.toNumber());
+            mAlertHandler.processUvi(forecast.uvi);
+            mAlertHandler.processWindSpeed(forecast.windSpeed);
+            mAlertHandler.processDewpoint(forecast.dewPoint);
 
-            $._alertHandler.processPrecipitationChance(forecast.precipitationChance);
-            $._alertHandler.processWeather(color.toNumber());
-            $._alertHandler.processUvi(forecast.uvi);
-            $._alertHandler.processWindSpeed(forecast.windSpeed);
+            if (DEBUG_DETAILS) { System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",[ x, forecast.info(), color ])); }
 
-            if (DEBUG_DETAILS) {
-              System.println(
-                  Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]",
-                              [ x, forecast.info(), color ]));
-            }
-            if ($._showComfort) {
-              render.drawComfortColumn(x, forecast.temperature,
-                                       forecast.relativeHumidity,
-                                       forecast.precipitationChance);
-            }
-            if ($._showColumnBorder) {
-              drawColumnBorder(dc, x, ds.columnY, ds.columnWidth,
-                               ds.columnHeight);
-            }
+            // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
-            if ($._showClouds) {
-              drawColumnPrecipitationChance(dc, COLOR_CLOUDS, x, ds.columnY,
-                                            ds.columnWidth, ds.columnHeight,
-                                            forecast.clouds);
+            colorClouds = COLOR_CLOUDS;
+            var cHeight = 0;
+            if ($._showClouds) { 
+              if (mCurrentLocation.isAtNightTime(forecast.forecastTime, false)) { 
+                colorClouds = COLOR_CLOUDS_NIGHT;
+                 }
+              cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
+            if (mShowComfortZone) { render.drawComfortColumn(x, forecast.temperature, forecast.dewPoint); }
             // rain
-            drawColumnPrecipitationChance(dc, color, x, ds.columnY,
-                                          ds.columnWidth, ds.columnHeight,
-                                          forecast.precipitationChance);
+            var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
+            if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }
+            // rain other
+            drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
 
-            if ($._showUVIndexFactor > 0 && forecast.uvi != null) {
+            if (mShowDetails) { blueBarPercentage.add(forecast.precipitationChance); }
+
+            if ($._showUVIndex) {
               var uvp = new UvPoint(x + ds.columnWidth / 2, forecast.uvi);
               uvp.calculateVisible(forecast.precipitationChance);
               uvPoints.add(uvp);
             }
-            if ($._showTemperature) {
-              tempPoints.add(
-                  new Point(x + ds.columnWidth / 2, forecast.temperature));
-            }
-            if ($._showRelativeHumidity) {
-              humidityPoints.add(
-                  new Point(x + ds.columnWidth / 2, forecast.relativeHumidity));
-            }
-            if ($._showWind) {
-              windPoints.add(
-                  new WindPoint(x, forecast.windBearing, forecast.windSpeed));
-            }
+            if (mShowPressure) { pressurePoints.add(new WeatherPoint(x + ds.columnWidth / 2, forecast.pressure, 0)); }
+            if (mShowRelativeHumidity) { humidityPoints.add( new WeatherPoint(x + ds.columnWidth / 2, forecast.relativeHumidity, 0)); }
+            if (mShowTemperature) { tempPoints.add( new WeatherPoint(x + ds.columnWidth / 2, forecast.temperature, $._hideTemperatureLowerThan)); }
+            if (mShowDewpoint) { dewPoints.add(new WeatherPoint(x + ds.columnWidth / 2, forecast.getDewPoint(), $._hideTemperatureLowerThan)); }
+            if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) { windPoints.add( new WindPoint(x, forecast.windBearing, forecast.windSpeed)); }
+
             if (dashesUnderColumnHeight > 0) {              
-              color = Graphics.COLOR_DK_GRAY;
-              if (forecast.precipitationChance == 0) {
-                color = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
+              colorDashes = Graphics.COLOR_DK_GRAY;
+              if (forecast.precipitationChance == 0) { colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY); }
+              dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+              dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth, dashesUnderColumnHeight);
+              if (color != colorOther && forecast.precipitationChanceOther == 0) {
+                colorDashes = getConditionColor(forecast.conditionOther, Graphics.COLOR_DK_GRAY);
+                dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
+                dc.fillRectangle(x + (ds.columnWidth/3 *2), ds.columnY + ds.columnHeight, ds.columnWidth/3, dashesUnderColumnHeight);
               }
-              dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-              dc.fillRectangle(x, ds.columnY + ds.columnHeight, ds.columnWidth,
-                               dashesUnderColumnHeight);
             }
 
-            if ($._showWeatherCondition) {
+            if (mShowWeatherCondition) {
               render.drawWeatherCondition(x, forecast.condition);
               if (previousCondition != forecast.condition) {
                 weatherTextLine = (weatherTextLine == 0)? 1:0;
@@ -435,92 +514,54 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }  // hourlyForecast
 
-      if ($._showUVIndexFactor > 0) {
-        render.drawUvIndexGraph(uvPoints, $._showUVIndexFactor);
-      }
-      if ($._showTemperature) {
-        render.drawTemperatureGraph(tempPoints, 1);
-      }
-      if ($._showRelativeHumidity) {
-        render.drawHumidityGraph(humidityPoints, 1);
-      }
+      if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex, mShowDetails, blueBarPercentage); }
+      if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, mShowDetails, blueBarPercentage); }
+      if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, mShowDetails, blueBarPercentage); }
+      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, mShowDetails, blueBarPercentage); }
+      if (mShowPressure) { render.drawPressureGraph(pressurePoints, mShowDetails, blueBarPercentage); }
 
-      if ($._showComfort) {
-        render.drawComfortZones();
-      }
+      if (mShowComfortBorders) { render.drawComfortBorders(); } 
 
       if (current != null) {
         // Always show position of observation
         var distance = "";
         var distanceMetric = "km";
         var distanceInKm = 0;
-        if (DEBUG_DETAILS) {
-          System.println(_currentInfo.infoLocation());
-        }
-        if (_currentInfo.hasLocation()) {
-          distanceInKm = getDistanceFromLatLonInKm(
-              _currentInfo.lat, _currentInfo.lon, current.lat, current.lon);
+        if (DEBUG_DETAILS) { System.println(mCurrentInfo.infoLocation()); }
+        if (mCurrentInfo.hasLocation()) {
+          distanceInKm = Utils.getDistanceFromLatLonInKm( mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);
           distance = distanceInKm.format("%.2f");
           var deviceSettings = System.getDeviceSettings();
           if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
-            // 1 Mile = 1.609344 Kilometers
             distanceMetric = "mi";
-            distance = kilometerToMile(distanceInKm).format("%.2f");
+            distance = Utils.kilometerToMile(distanceInKm).format("%.2f");
           }
-          var bearing = getRhumbLineBearing(_currentInfo.lat, _currentInfo.lon,
-                                            current.lat, current.lon);                                            
-          var compassDirection = getCompassDirection(bearing);
-          render.drawObservationLocation(Lang.format(
-              "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
+          var bearing = Utils.getRhumbLineBearing(mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);                                            
+          var compassDirection = Utils.getCompassDirection(bearing);
+          render.drawObservationLocation(Lang.format( "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
         }
-
-        if ($._showObservationLocationName) {
-          render.drawObservationLocation2(current.observationLocationName);
-        }
-        // render.drawBGserviceInformation();
-        if ($._showObservationTime) {
-          render.drawObservationTime(current.observationTime);
-        }
+        
+        if (mShowObservationLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
+        render.drawObservationTime(current.observationTime); 
       }
 
-      if ($._showWind) {
-        render.drawWindInfo(windPoints);
-      }
-      render.drawAlertMessages($._alertHandler.infoHandled());
-
+      if (mShowWindFirst) {
+        render.drawWindInfoFirstColumn(windPoints);
+      } else if (mShowWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
+      
+      if (ds.wideField) { 
+        render.drawAlertMessages(mAlertHandler.infoHandled(), false);
+      } else if (ds.smallField) { 
+        render.drawAlertMessagesVert(mAlertHandler.infoHandledShort());
+      } else {
+        render.drawAlertMessages(mAlertHandler.infoHandled(), mActivityPaused);
+      }      
     } catch (ex) {
       ex.printStackTrace();
     }
-  }
+  }  
 
-  function drawWarningLevel(dc, margin, bar_height, color, heightPerc) {
-    if (heightPerc <= 0) {
-      return;
-    }
-
-    var width = dc.getWidth();
-
-    // integer division truncates the result, use float values
-    var lineY = margin + bar_height - bar_height * (heightPerc / 100.0);
-
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawLine(margin, lineY, width - margin, lineY);
-  }
-
-  function drawMaxPrecipitationChance(dc, margin, bar_height, color,
-                                      precipitationChance) {
-    var y = margin + bar_height - bar_height * (precipitationChance / 100.0) -
-            mFontSmallH - 2;
-    // Do not overwrite Location name
-    if (y < (mFontSmallH + 10)) {
-      return;
-    }
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(margin, y, mFontSmall, precipitationChance.format("%02d"),
-                Graphics.TEXT_JUSTIFY_LEFT);
-  }
-
-  function drawPrecipitationChanceAxis(dc, margin, bar_height) {
+  function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {
     dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
     var width = dc.getWidth();
     var x2 = width - margin;
@@ -541,33 +582,110 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.drawLine(x2, y0, width, y0);
   }
 
-  function drawColumnBorder(dc, x, y, width, height) {
+  function drawColumnBorder(dc as Dc, x as Number, y as Number, width as Number, height as Number) as Void {
     dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
     dc.drawRectangle(x, y, width, height);
   }
 
-  function drawColumnPrecipitationChance(dc, color, x, y, bar_width, bar_height,
-                                         precipitationChance) {
+  function drawColumnPrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, precipitationChance as Number) as Number{
+    if (precipitationChance == 0) { return 0; }
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    var barFilledHeight =
-        bar_height -
-        (bar_height - ((bar_height.toFloat() / 100.0) * precipitationChance));
+    var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * precipitationChance));
+    var barFilledY = y + bar_height - barFilledHeight;
+    dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
+
+    //
+    if (mShowDetails && precipitationChance > 50 && precipitationChance < 100) {
+      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+      var h = dc.getFontHeight(Graphics.FONT_SMALL);
+      dc.drawText(x + bar_width / 2, barFilledY + h, Graphics.FONT_SMALL, precipitationChance.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+    }
+    return barFilledHeight.toNumber();
+  }
+  
+  function drawLinePrecipitationChance(dc as Dc, colorLeftLine as Graphics.ColorType, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, line_width as Number,
+    precipitationChance as Number) as Number {
+    if (precipitationChance == 0) { return 0; }
+    var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * precipitationChance));
+    var barFilledY = y + bar_height - barFilledHeight;
+    // var lineWidth = bar_width / 3;
+    var posX = x + bar_width - line_width;
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+    dc.fillRectangle(posX, barFilledY, line_width, barFilledHeight);
+    if (colorLeftLine != color) {
+      dc.setColor(colorLeftLine, Graphics.COLOR_TRANSPARENT);
+      dc.fillRectangle(posX, barFilledY, 1, barFilledHeight);    
+    }
+    return barFilledHeight.toNumber();
+  }
+
+  function drawColumnPrecipitationMillimeters(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, popmm as Number) as Void{
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+    var barFilledHeight = bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * popmm));
     var barFilledY = y + bar_height - barFilledHeight;
     dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
   }
 
-  function drawColumnPrecipitationMillimeters(dc, color, x, y, bar_width,
-                                              bar_height, popmm) {
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    var barFilledHeight =
-        bar_height - (bar_height - ((bar_height.toFloat() / 100.0) * popmm));
-    var barFilledY = y + bar_height - barFilledHeight;
-    dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
+  function activityIsPaused(info as Activity.Info) as Boolean {
+      if (info has :timerState) {
+        return info.timerState == Activity.TIMER_STATE_PAUSED;
+      }
+      return false;
   }
 
-  function playAlert() {
+  function playAlert() as Void{
     if (Attention has : playTone) {
       Attention.playTone(Attention.TONE_CANARY);
     }
   }
+
+  // function CheckWeatherForAlerts() as Void {
+  //   if ($._mostRecentData == null) { return; }
+  //   var data = $._mostRecentData as WeatherData;
+  //   if (!data.valid()) { return; }
+
+  //   if ( $._maxMinuteForecast > 0) {
+  //     var popTotal = 0 as Lang.Number;  
+  //     var max = data.minutely.pops.size();
+  //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+  //           var pop = data.minutely.pops[i] as Lang.Number;
+  //           popTotal = popTotal + pop;            
+  //     }
+  //     mAlertHandler.processRainMMfirstHour(popTotal);
+  //   }
+
+  //   var validSegment = 0;
+  //   var color, colorOther;
+  //   if ($._showCurrentForecast) {
+  //     var current = data.current;
+  //     color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
+  //     colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
+
+  //     mAlertHandler.processPrecipitationChance(current.precipitationChance);
+  //     mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
+  //     mAlertHandler.processWeather(color.toNumber());          
+  //     mAlertHandler.processWeather(colorOther.toNumber());
+  //     mAlertHandler.processUvi(current.uvi);
+  //     mAlertHandler.processWindSpeed(current.windSpeed);
+  //     mAlertHandler.processDewpoint(current.dewPoint);
+
+  //     validSegment = validSegment + 1;
+  //   }
+
+  //   var maxSegment = data.hourly.size();
+  //   for (var segment = 0; validSegment < $._maxHoursForecast && segment < maxSegment; segment += 1) {
+  //     var forecast = data.hourly[segment] as WeatherHourly;
+
+  //     color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
+  //     colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE); 
+  //     mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
+  //     mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
+  //     mAlertHandler.processWeather(color.toNumber());
+  //     mAlertHandler.processWeather(colorOther.toNumber());
+  //     mAlertHandler.processUvi(forecast.uvi);
+  //     mAlertHandler.processWindSpeed(forecast.windSpeed);
+  //     mAlertHandler.processDewpoint(forecast.dewPoint);
+  //   }    
+  // }
+
 }

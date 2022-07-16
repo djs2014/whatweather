@@ -1,7 +1,7 @@
 <strings>
     <string id="AppName">What Weather</string>    
     <string id="AppNameBeta">What Weather Beta</string>    
-    <string id="ShowCurrentForecast">Show current forecast</string>
+    <string id="ShowCurrentForecast">Show current hour forecast</string>
     <string id="MaxHoursForecast">Maximum hours of forecast data</string> 
     <string id="MaxMinuteForecast">Maximum minute of forecast data first hour</string>
     <string id="ShowClouds">Show cloud %</string>
@@ -13,38 +13,59 @@
     <string id="ShowWindBeaufort">Show wind in Beaufort</string>
     <string id="ShowTemperature">Show temperature</string>
     <string id="ShowRelativeHumidity">Show relative humidity</string>
-    <string id="ShowComfort">Show comfort regions</string>
-    <string id="ShowUVIndexFactor">Show UV index (factor)</string>  
+    <string id="ShowPressure">Show pressure (sealevel)</string>
+    <string id="ShowDewpoint">Show dew point</string>
+    <string id="ShowComfortZone">Show comfort zone (temp)</string>
+    <string id="ShowUVIndex">Show UV index</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
+    <string id="MaxUVIndex">Max possible UV index</string>  
     <string id="AlertLevelprecipitationChance">Alert level precipitation chance</string>
     <string id="AlertLevelRainMMfirstHour">Alert level rain mm in first hour (if available)</string>
     <string id="AlertLevelUVi">Alert level UV index</string>   
     <string id="AlertLevelWindSpeed">Alert level wind (Beaufort)</string>        
-    <string id="ShowAlertLevel">Show alert level line</string>
-    <string id="ShowMaxPrecipitationChance">Show maximum precipitation chance on top of first column</string>    
-    <string id="ShowPrecipitationChanceAxis">Show precipitation chance axis (0,25,50,75,100) left and right</string>        
+    <string id="AlertLevelDewpoint">Alert level dewpoint (Celcius)</string>        
+    <string id="ShowDetailsWhenPaused">Show details (activity paused, one field)</string>    
+    
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
-    <string id="ShowColumnBorder">Show border of the columns</string>    
-    <string id="ShowObservationTime">Show time of observation</string>
     <string id="ObservationTimeDelayedMinutesThreshold">Show warning when time of observation is delayed for x minutes</string>
-    <string id="ShowObservationLocationName">Show location of observation</string>
+    <string id="ShowCurrentWind">Show current wind (small field)</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
-    <string id="ShowInfo">Show extra information</string>        
+    <string id="ShowInfoSmallField">Extra information (small field)</string>        
+    <string id="ShowInfoLargeField">Extra information (large field)</string>        
     <string id="ShowInfoPrompt">Select extra information</string>
     <string id="ShowInfoNothing">Nothing</string>
     <string id="ShowInfoTimeOfDay">Show the time of day</string>
-    <string id="ShowInfoAltitude">Show altitude</string>
-    <string id="ShowInfoHeading">Show heading</string>
     <string id="ShowInfoTemperature">Show temperature</string>
-    <string id="ShowInfoHeartrate">Show heartrate</string>
     <string id="ShowInfoAmbientPressure">Show pressure</string>
-    <string id="ShowInfoDistance">Show distance</string>
+    <string id="ShowInfoSealevelPressure">Show mean sealevel pressure</string>
+    <string id="ShowInfoDistance">Show elapsed distance</string>
+    <string id="ShowActualWeather">Show actual weather</string>
+    <string id="HideTemperatureLowerThan">Hide temperature/dewpoint lower than (celcius)</string>
     <string id="ComfortHumidityMin">Comfort humidity(%) min</string>
     <string id="ComfortHumidityMax">Comfort humidity(%) max</string>
     <string id="ComfortTempMin">Comfort temperature(C) min</string>
     <string id="ComfortTempMax">Comfort temperature(C) max</string>
-	<string id="ComfortPopMax">Comfort precipitation(%) max</string>
+	
     <string id="ShowWeatherCondition">Show weather condition</string>	
-    <string id="ShowGlossary">Show glossary (single field)</string>	
-    <string id="AlwaysUpdateGarminWeather">Dev. always update weather object</string>
+    <string id="MaxTemperature">Max possible temperature(C)</string>	
+    <string id="MaxPressure">Max possible pressure(hPa)</string>	
+    <string id="MinPressure">Min possible pressure(hPa)</string>	
+        
+    <string id="WeatherDataSource">Weather source</string>
+    <string id="WeatherDataSourcePrompt">Select weather source</string>
+    <string id="WeatherDataSourceGarminFirst">Garmin first</string>
+    <string id="WeatherDataSourceOWMFirst">OWM first</string>  
+    <string id="WeatherDataSourceGarmin">Garmin</string>
+    <string id="WeatherDataSourceOWM">OWM (Open weather map)</string>    
+    <string id="OpenWeatherAPIKey">Open weather map API key</string>
+    <string id="OpenWeatherProxy">OWM Proxy (to compress OWM-json)</string>
+    <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   
+    
+    <string id="MinimalGPSquality">Minimal GPS quality to start BG service</string>
+    <string id="MinimalGPSqualityPrompt">Select minimal GPS quality</string>    
+    <string id="GpsQualityNotAvailable">Not available</string>
+    <string id="GpsQualityLastKnown">Last known</string>
+    <string id="GpsQualityPoor">Poor</string>
+    <string id="GpsQualityUsable">Usable</string>
+    <string id="GpsQualityGood">Good</string>
 </strings>
