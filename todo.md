@@ -1,27 +1,24 @@
 - git project node proxy server
--> node.js: OWM pop = value 0.1 - 1  + example json
--> other weather sources available?
--> test param with minutely data
--> enable minutely if needed
+	-> node.js: OWM pop = value 0.1 - 1  + example json
+	-> other weather sources available?
+	-> test param with minutely data
+	-> enable minutely if needed
 --------------------
 TL;DR;
  - properties without in settings anymore -> weird bugs 
  - don't use Toybox.Communications in import for foreground app (even if it is not used)
- - 
-optimize
-	wobbly increment x, y .. 5 px
-	@@DRY 
-	x calculate dewpoint for garmin..?
-	x	https://learnmetrics.com/dew-point-calculator-chart-formula/
-	-> color scale
-	cels/farenh etc.. when paused.
-	docu - colors dewpoint etc.
-	@@ -> temp below x -> 
-	xx wobbly lines -> to array
+
+
+    - show wind info current hour on small field option
+    - comfort zone -> only temp range option -> show the color band.
+	- max temp etc..  fix the magic constants
+optimize	
+	@@DRY	
+	cels/farenh etc.. when paused.		
     - use profiler to check duration -> cache some code results (wobbly line)
     - remove unused code -> comfort ..
-    - show wind info current hour on small field
-- radar -> offset to left x px
+    - radar -> offset to left x px
+
 LATER
 - show minutely (option / test)
 global Settings object
@@ -31,8 +28,8 @@ docu -> screenshots + settings
 
 ? showActualWeather -> how to display nice
 	show actual temperature / pressure /  replace current / add / none
-
 - weather alert? -> garmin alert? possible?
+- 
 xshow errors:
 x- api key etc..
 x http->code 0 -> savesettings to trigger bg again
@@ -66,7 +63,9 @@ x	 Point to WeatherPoint (x, value, minValue)
 x check memory background
 x add pressure + node docu example output to edge
 x dewpoint -> comfort (or calculate?)
-	
+	x calculate dewpoint for garmin..?
+	x	https://learnmetrics.com/dew-point-calculator-chart-formula/
+	-> color scale
 https://api.castlephoto.info/owm_one
 http://localhost:4000/owm_one
 

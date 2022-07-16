@@ -30,8 +30,8 @@ class WhatWeatherView extends WatchUi.DataField {
   var mShowDewpoint as Boolean = false;
   var mShowPressure as Boolean = false;
   var mShowRelativeHumidity as Boolean = false;
-  var mShowComfort as Boolean = false;
-  var mShowComfortZones as Boolean = false;
+  var mShowComfortZone as Boolean = false;
+  var mShowComfortBorders as Boolean = false;
   var mShowObservationLocationName as Boolean = false;
   var mShowWind as Number = SHOW_WIND_NOTHING;
   var mShowWindFirst as Boolean = false;
@@ -112,21 +112,20 @@ class WhatWeatherView extends WatchUi.DataField {
         mShowDewpoint = false;
         mShowPressure = false;
         mShowRelativeHumidity = false;
-        mShowComfort = $._showComfort;
-        mShowComfortZones = false;
+        mShowComfortZone = $._showComfortZone;
+        mShowComfortBorders = false;
         mShowObservationLocationName = false;
         mShowWind = SHOW_WIND_NOTHING;
-        mShowWindFirst = false;
-        if ($._showWind != SHOW_WIND_NOTHING) { mShowWindFirst = true; }
+        mShowWindFirst = $._showCurrentWind;        
         mShowWeatherCondition = false;
       } else {
         mShowTemperature = $._showTemperature;
         mShowDewpoint = $._showDewpoint;
         mShowPressure = $._showPressure;
         mShowRelativeHumidity = $._showRelativeHumidity;
-        mShowComfort = $._showComfort;
-        mShowComfortZones = $._showComfort;
-        mShowObservationLocationName = $._showObservationLocationName;
+        mShowComfortZone = $._showComfortZone;
+        mShowComfortBorders = $._showComfortZone;
+        mShowObservationLocationName = true;
         mShowWind = $._showWind;
         mShowWindFirst = false;
         mShowWeatherCondition = $._showWeatherCondition;
@@ -392,7 +391,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mCurrentLocation.isAtNightTime(current.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
             cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); 
           }
-          if (mShowComfort) { render.drawComfortColumn(x, current.temperature, current.dewPoint); }
+          if (mShowComfortZone) { render.drawComfortColumn(x, current.temperature, current.dewPoint); }
           // rain
           var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.precipitationChance);
           if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
@@ -469,7 +468,7 @@ class WhatWeatherView extends WatchUi.DataField {
                  }
               cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
-            if (mShowComfort) { render.drawComfortColumn(x, forecast.temperature, forecast.dewPoint); }
+            if (mShowComfortZone) { render.drawComfortColumn(x, forecast.temperature, forecast.dewPoint); }
             // rain
             var rHeight = drawColumnPrecipitationChance(dc, color, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.precipitationChance);
             if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }
@@ -516,12 +515,12 @@ class WhatWeatherView extends WatchUi.DataField {
       }  // hourlyForecast
 
       if ($._showUVIndex) { render.drawUvIndexGraph(uvPoints, $._maxUVIndex, mShowDetails, blueBarPercentage); }
-      if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, 1, mShowDetails, blueBarPercentage); }
-      if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, 1, mShowDetails, blueBarPercentage); }
-      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, 1, mShowDetails, blueBarPercentage); }
-      if (mShowPressure) { render.drawPressureGraph(pressurePoints, 1, mShowDetails, blueBarPercentage); }
+      if (mShowTemperature) { render.drawTemperatureGraph(tempPoints, mShowDetails, blueBarPercentage); }
+      if (mShowRelativeHumidity) { render.drawHumidityGraph(humidityPoints, mShowDetails, blueBarPercentage); }
+      if (mShowDewpoint) { render.drawDewpointGraph(dewPoints, mShowDetails, blueBarPercentage); }
+      if (mShowPressure) { render.drawPressureGraph(pressurePoints, mShowDetails, blueBarPercentage); }
 
-      if (mShowComfortZones) { render.drawComfortZones(); } // @@ small field, not the lines
+      if (mShowComfortBorders) { render.drawComfortBorders(); } 
 
       if (current != null) {
         // Always show position of observation
@@ -543,7 +542,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
         
         if (mShowObservationLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
-        if ($._showObservationTime) { render.drawObservationTime(current.observationTime); }
+        render.drawObservationTime(current.observationTime); 
       }
 
       if (mShowWindFirst) {

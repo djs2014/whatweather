@@ -3,7 +3,7 @@ import Toybox.System;
 import Toybox.Lang;
 using WhatAppBase.Utils as Utils;
 using WhatAppBase.Types as Types;
-// @@ getters 
+
 class DisplaySettings {
   hidden var dc as Graphics.Dc?;
   var font as Graphics.FontType = Graphics.FONT_LARGE;

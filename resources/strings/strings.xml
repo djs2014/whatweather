@@ -15,7 +15,7 @@
     <string id="ShowRelativeHumidity">Show relative humidity</string>
     <string id="ShowPressure">Show pressure (sealevel)</string>
     <string id="ShowDewpoint">Show dew point</string>
-    <string id="ShowComfort">Show comfort regions</string>
+    <string id="ShowComfortZone">Show comfort zone (temp)</string>
     <string id="ShowUVIndex">Show UV index</string>  
     <string id="HideUVIndexLowerThan">Hide UV index when precipitation chance and lower than</string>         
     <string id="MaxUVIndex">Max possible UV index</string>  
@@ -27,10 +27,8 @@
     <string id="ShowDetailsWhenPaused">Show details (activity paused, one field)</string>    
     
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
-    <!-- <string id="ShowColumnBorder">Show border of the columns</string>     -->
-    <string id="ShowObservationTime">Show time of observation</string>
     <string id="ObservationTimeDelayedMinutesThreshold">Show warning when time of observation is delayed for x minutes</string>
-    <string id="ShowObservationLocationName">Show location of observation</string>
+    <string id="ShowCurrentWind">Show current wind (small field)</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
     <string id="ShowInfoSmallField">Extra information (small field)</string>        
     <string id="ShowInfoLargeField">Extra information (large field)</string>        
@@ -47,11 +45,12 @@
     <string id="ComfortHumidityMax">Comfort humidity(%) max</string>
     <string id="ComfortTempMin">Comfort temperature(C) min</string>
     <string id="ComfortTempMax">Comfort temperature(C) max</string>
-	<string id="ComfortPopMin">Comfort precipitation(%) min</string>
-	<string id="ComfortPopMax">Comfort precipitation(%) max</string>
+	
     <string id="ShowWeatherCondition">Show weather condition</string>	
-    <!-- <string id="ShowGlossary">Show glossary (single field)</string>	 -->
-    
+    <string id="MaxTemperature">Max possible temperature(C)</string>	
+    <string id="MaxPressure">Max possible pressure(hPa)</string>	
+    <string id="MinPressure">Min possible pressure(hPa)</string>	
+        
     <string id="WeatherDataSource">Weather source</string>
     <string id="WeatherDataSourcePrompt">Select weather source</string>
     <string id="WeatherDataSourceGarminFirst">Garmin first</string>

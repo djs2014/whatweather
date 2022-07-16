@@ -67,38 +67,42 @@ class WhatWeatherApp extends Application.AppBase {
       $._showCurrentForecast = Utils.getApplicationPropertyAsBoolean("showCurrentForecast", true);
       $._maxMinuteForecast = Utils.getApplicationPropertyAsNumber("maxMinuteForecast", 0);
       $._maxHoursForecast = Utils.getApplicationPropertyAsNumber("maxHoursForecast", 8);
-      $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
       $._showDetailsWhenPaused = Utils.getApplicationPropertyAsBoolean("showDetailsWhenPaused", true);      
       $._dashesUnderColumnHeight = Utils.getApplicationPropertyAsNumber("dashesUnderColumnHeight", 2);
-      // $._showColumnBorder = Utils.getApplicationPropertyAsBoolean("showColumnBorder", false);
-      $._showObservationTime = Utils.getApplicationPropertyAsBoolean("showObservationTime", true);
-      $._showObservationLocationName = Utils.getApplicationPropertyAsBoolean("showObservationLocationName", true);
+      
       $._observationTimeDelayedMinutesThreshold = Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 30);
       $._showClouds = Utils.getApplicationPropertyAsBoolean("showClouds", true);
-      
+     
+      $._showInfoSmallField = Utils.getApplicationPropertyAsNumber("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
+      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);      
+      $._showCurrentWind = Utils.getApplicationPropertyAsBoolean("showCurrentWind", true);
+
+      $._alertLevelPrecipitationChance = Utils.getApplicationPropertyAsNumber("alertLevelPrecipitationChance", 70);
+      $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
+      $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
+      $._alertLevelDewpoint = Utils.getApplicationPropertyAsNumber("alertLevelDewpoint", 19);
+      $._alertLevelWindSpeed = Utils.getApplicationPropertyAsNumber("alertLevelWindSpeed", 5);
+
       $._showUVIndex = Utils.getApplicationPropertyAsBoolean("showUVIndex", true);
       $._maxUVIndex = Utils.getApplicationPropertyAsNumber("maxUVIndex", 20);
       $._hideUVIndexLowerThan = Utils.getApplicationPropertyAsNumber("hideUVIndexLowerThan", 4);
 
-      $._showInfoSmallField = Utils.getApplicationPropertyAsNumber("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
-      $._showInfoLargeField = Utils.getApplicationPropertyAsNumber("showInfoLargeField", SHOW_INFO_NOTHING);      
-      $._alertLevelUVi = Utils.getApplicationPropertyAsNumber("alertLevelUVi", 6);
-      $._alertLevelRainMMfirstHour = Utils.getApplicationPropertyAsNumber("alertLevelRainMMfirstHour", 5);
-      $._alertLevelDewpoint = Utils.getApplicationPropertyAsNumber("alertLevelDewpoint", 19);
-
       $._showWind = Utils.getApplicationPropertyAsNumber("showWind", SHOW_WIND_BEAUFORT);
-      $._alertLevelWindSpeed = Utils.getApplicationPropertyAsNumber("alertLevelWindSpeed", 5);
       $._showTemperature = Utils.getApplicationPropertyAsBoolean("showTemperature", true);
+      $._hideTemperatureLowerThan = Utils.getApplicationPropertyAsNumber("hideTemperatureLowerThan", 8);
+      $._maxTemperature = Utils.getApplicationPropertyAsNumber("maxTemperature", 50);
+      $._maxPressure = Utils.getApplicationPropertyAsNumber("maxPressure", 1080);
+      $._minPressure = Utils.getApplicationPropertyAsNumber("minPressure", 870);
+      
       $._showRelativeHumidity = Utils.getApplicationPropertyAsBoolean("showRelativeHumidity", true);
       $._showPressure = Utils.getApplicationPropertyAsBoolean("showPressure", true);
       $._showDewpoint = Utils.getApplicationPropertyAsBoolean("showDewpoint", true);
-      $._showComfort = Utils.getApplicationPropertyAsBoolean("showComfort", true);
-      // $._showGlossary = Utils.getApplicationPropertyAsBoolean("showGlossary", false);
+      $._showComfortZone = Utils.getApplicationPropertyAsBoolean("showComfortZone", true);
+      $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
 
-      $._hideTemperatureLowerThan = Utils.getApplicationPropertyAsNumber("hideTemperatureLowerThan", 8);
+
       $._showActualWeather = Utils.getApplicationPropertyAsBoolean("showActualWeather", false);
 
-      $._showWeatherCondition = Utils.getApplicationPropertyAsBoolean("showWeatherCondition", true);
       
       var bgHandler =  getBGServiceHandler();
       bgHandler.setObservationTimeDelayedMinutes(Utils.getApplicationPropertyAsNumber("observationTimeDelayedMinutesThreshold", 10));      
@@ -107,8 +111,7 @@ class WhatWeatherApp extends Application.AppBase {
       // bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
 
       var ws =  Utils.getApplicationPropertyAsNumber("weatherDataSource", 0);
-      $._weatherDataSource = ws as WeatherSource;
-      // @@ Enable handler if show temperature or show clouds/uvi (-> use owm) 
+      $._weatherDataSource = ws as WeatherSource;      
       if ($._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
       || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
         bgHandler.Enable(); 
@@ -150,15 +153,15 @@ class WhatWeatherApp extends Application.AppBase {
       comfort.humidityMin = Utils.min(humMin, humMax).toNumber();
       comfort.humidityMax = Utils.max(humMin, humMax).toNumber();
     
-      var tempMin = Utils.getApplicationPropertyAsNumber("comfortTempMin", 21);
+      var tempMin = Utils.getApplicationPropertyAsNumber("comfortTempMin", 19);
       var tempMax = Utils.getApplicationPropertyAsNumber("comfortTempMax", 27);
       comfort.temperatureMin = Utils.min(tempMin, tempMax).toNumber();
       comfort.temperatureMax = Utils.max(tempMin, tempMax).toNumber();
 
-      var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
-      var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
-      comfort.precipitationChanceMin = Utils.min(popMin, popMax).toNumber();
-      comfort.precipitationChanceMax = Utils.max(popMin, popMax).toNumber();
+      // var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
+      // var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
+      // comfort.precipitationChanceMin = Utils.min(popMin, popMax).toNumber();
+      // comfort.precipitationChanceMax = Utils.max(popMin, popMax).toNumber();
     }
 
   public function getServiceDelegate() as Array<System.ServiceDelegate> {

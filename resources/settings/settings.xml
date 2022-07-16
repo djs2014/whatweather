@@ -37,7 +37,7 @@
 	<setting propertyKey="@Properties.showRelativeHumidity" title="@Strings.ShowRelativeHumidity">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showComfort" title="@Strings.ShowComfort">
+	<setting propertyKey="@Properties.showComfortZone" title="@Strings.ShowComfortZone">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.showWeatherCondition" title="@Strings.ShowWeatherCondition">
@@ -103,6 +103,15 @@
 	<setting propertyKey="@Properties.hideTemperatureLowerThan" title="@Strings.HideTemperatureLowerThan">
 		<settingConfig type="numeric" min="-1" />
 	</setting>
+	<setting propertyKey="@Properties.maxTemperature" title="@Strings.MaxTemperature">
+		<settingConfig type="numeric" min="0" max="100"/>
+	</setting>	
+	<setting propertyKey="@Properties.maxPressure" title="@Strings.MaxPressure">
+		<settingConfig type="numeric" min="0" max="1200"/>
+	</setting>	
+	<setting propertyKey="@Properties.minPressure" title="@Strings.MinPressure">
+		<settingConfig type="numeric" min="0" max="1200"/>
+	</setting>	
 
 	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
 		<settingConfig type="numeric" min="0" max="100" />
@@ -115,20 +124,11 @@
 	</setting>
 	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
 		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.comfortPopMin" title="@Strings.ComfortPopMin">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.comfortPopMax" title="@Strings.ComfortPopMax">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.showObservationTime" title="@Strings.ShowObservationTime">
-		<settingConfig type="boolean" />
-	</setting>
+	</setting>	
 	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
 		<settingConfig type="numeric" min="0" max="60" />
 	</setting>	
-	<setting propertyKey="@Properties.showObservationLocationName" title="@Strings.ShowObservationLocationName">
+	<setting propertyKey="@Properties.showCurrentWind" title="@Strings.ShowCurrentWind">
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.showDetailsWhenPaused" title="@Strings.ShowDetailsWhenPaused">

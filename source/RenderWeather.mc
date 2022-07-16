@@ -22,10 +22,8 @@ class RenderWeather {
   hidden const NO_BEARING_SPEED = 0.3;
   hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
   
-  // humidity is already percentage
-  // @@ TODO properties etc global settings object
+  // humidity is already percentage  
   hidden var maxTemperature as Lang.Number = 50; // celcius
-  //hidden var maxUvIndex as Lang.Number = 20;
   hidden var maxPressure as Lang.Number = 1080;
   hidden var minPressure as Lang.Number = 870;
 
@@ -34,6 +32,10 @@ class RenderWeather {
     self.ds = ds;
     topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
     self.devSettings = System.getDeviceSettings();
+
+    self.maxTemperature = $._maxTemperature;
+    self.maxPressure = $._maxPressure;
+    self.minPressure = $._minPressure;
     initComfortZones();
     Math.srand(System.getTimer());
   }
@@ -81,9 +83,8 @@ class RenderWeather {
     dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
     dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
   }
-
-  // @@ factor -> maxTemperature
-  function drawTemperatureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  
+  function drawTemperatureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -120,7 +121,7 @@ class RenderWeather {
     }
   }
 
-  function drawDewpointGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawDewpointGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -132,14 +133,8 @@ class RenderWeather {
           var r = 3;
           var color = dewpointToColor(y.toFloat());
 
-          if (showDetails && p.value > 7) { // @@ config 
-            // var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
+          if (showDetails && p.value > 7) { // @@ config             
             var h = dc.getFontHeight(Graphics.FONT_TINY);
-            // if (yBlueBar < y) {
-            //   dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);   
-            // } else {
-            //   dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);   
-            // }     
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             dc.drawText(x, y + h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
@@ -159,7 +154,7 @@ class RenderWeather {
     }
   }
   
-  function drawPressureGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawPressureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -190,8 +185,7 @@ class RenderWeather {
     }
   }
 
-  // @@ factor always 1 remove it
-  function drawHumidityGraph(points as Lang.Array, factor as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawHumidityGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -201,14 +195,7 @@ class RenderWeather {
         var r = 3;
 
         if (showDetails) {
-          // var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
           var h = dc.getFontHeight(Graphics.FONT_TINY);       
-          // background pop is taller + text is above y (0,0 is upper left coord)
-          // if (yBlueBar < (y - h)) {
-          //   dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);   
-          // } else {
-          //   dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);   
-          // }
           dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);   
           dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
         }
@@ -231,11 +218,7 @@ class RenderWeather {
   // top is max (temp/humid), low is min(temp/humid)
   function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
     var comfort = Comfort.getComfort();
-    // temperature as Lang.Number?, relativeHumidity as Lang.Number?, precipitationChance as Lang.Number?
-    // var idx = comfort.convertToComfort(temperature, relativeHumidity, precipitationChance);
-    // if (idx == COMFORT_NO) {      return;    }
-    // var color = comfortToColor(idx);
-
+    
     var color = dewpointToColor(dewpoint);    
     
     dc.setColor(color, color);
@@ -255,8 +238,7 @@ class RenderWeather {
                      self.yTempBottom - self.yTempTop);
   }
 
-  function drawComfortZones() as Void {
-    // if (ds.smallField) { return; }
+  function drawComfortBorders() as Void {
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
     drawWobblyLine(0, ds.width, self.yHumTop, 3);
     drawWobblyLine(0, ds.width, self.yHumBottom, 3);
@@ -346,39 +328,6 @@ class RenderWeather {
       dc.drawText(textX, y, ds.fontSmall, aa, Graphics.TEXT_JUSTIFY_LEFT);
     }
   }
-
-  // function drawActiveAlert(activeAlerts as Array) as Void{
-  //   // if (ds.smallField) { return; } // @@TODO
-
-  //   var max = activeAlerts.size();
-  //   if (max == 0) { return; }
-
-  //   // every alert 20 px width
-  //   var alertW = 20;
-  //   var xStart = (ds.width - alertW * max)/ 2;
-  //   var x = xStart;
-  //   var y = 20;    
-  //   for (var idx = 0; idx < max; idx += 1) {
-  //     var aa = activeAlerts[idx] as ActiveAlert;
-  //     // TODO? get alerted condition/value
-  //     if (aa == aaUvi) {
-  //       drawUvPoint(x, y, 4, 6.0);
-  //     } else if (aa == aaPrecChance) {
-  //       // max % rain chance
-
-  //     } else if (aa == aaRain1stHour) {
-        
-
-  //     } else if (aa == aaWeather) {
-  //       // @@ current condition
-
-  //     } else if (aa == aaWind) {    
-  //       // @@ current windspeed/bearing            
-  //       drawWind(new Point(x,y), 8, 45, 20.0);
-  //     }
-  //     x = x + alertW;
-  //   }    
-  // }
 
   function drawGlossary() as Void {
     dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);

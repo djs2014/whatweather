@@ -17,11 +17,8 @@
 	<property id="alertLevelWindSpeed" type="number">5</property>
 	<property id="alertLevelDewpoint" type="number">19</property>
 
-	<property id="showDetailsWhenPaused" type="boolean">true</property>	
-	<property id="showObservationTime" type="boolean">true</property>
-	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>	
-	<property id="observationTimeCaption" type="string">As of </property>	
-	<property id="showObservationLocationName" type="boolean">true</property>	
+	<property id="showDetailsWhenPaused" type="boolean">true</property>		
+	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>		
 	<property id="dashesUnderColumnHeight" type="number">2</property>
 	<property id="showInfoSmallField" type="number">1</property>
 	<property id="showInfoLargeField" type="number">0</property>
@@ -29,17 +26,20 @@
 	<property id="showTemperature" type="boolean">true</property>
 	<property id="hideTemperatureLowerThan" type="number">8</property>
 	<property id="showRelativeHumidity" type="boolean">true</property>
-	<property id="showComfort" type="boolean">true</property>
+	<property id="showComfortZone" type="boolean">true</property>
 	<property id="showWeatherCondition" type="boolean">true</property>	
 	<property id="showActualWeather" type="boolean">true</property>	
 	<property id="comfortHumidityMin" type="number">40</property>	
 	<property id="comfortHumidityMax" type="number">60</property>	
-	<property id="comfortTempMin" type="number">21</property>	
+	<property id="comfortTempMin" type="number">19</property>	
 	<property id="comfortTempMax" type="number">27</property>	
-	<property id="comfortPopMin" type="number">0</property>	
-	<property id="comfortPopMax" type="number">40</property>	
-	<property id="showGlossary" type="boolean">false</property>	
 	
+	<property id="maxTemperature" type="number">50</property>	
+	<property id="maxPressure" type="number">1080</property>	
+	<property id="minPressure" type="number">870</property>	
+
+	<property id="showCurrentWind" type="boolean">true</property>	
+			
 	<property id="minimalGPSquality" type="number">3</property>	
 	
 	<property id="weatherDataSource" type="number">0</property>

@@ -56,7 +56,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (apiKey == null) { apiKey=""; }            
             if (proxy == null) { proxy=""; }            
             if (proxyApiKey == null) { proxyApiKey=""; }
-            // @@ check error codes
+                        
             if (location  == null) { return CustomErrors.ERROR_BG_NO_POSITION; }
             if ((apiKey as String).length() == 0) { return CustomErrors.ERROR_BG_NO_API_KEY; }
             if ((proxy as String).length() == 0) { return CustomErrors.ERROR_BG_NO_PROXY; }

@@ -4,48 +4,6 @@ import Toybox.Graphics;
 import Toybox.Lang;
 using WhatAppBase.Utils as Utils;
 
-function offsetValue(value as Lang.Numeric, factor as Lang.Numeric) as Lang.Numeric {
-   return value - (value * factor);
-}
-
-function calculateComfortIdx(levelLow as Lang.Numeric, levelHigh as Lang.Numeric) as Lang.Number {
-  if (levelLow >= 0 && levelHigh <= 0) {
-    return COMFORT_NORMAL;
-  }
-  if (levelLow < 0) {
-    return COMFORT_BELOW;
-  }
-  if (levelHigh > 0) {
-    return COMFORT_HIGH;
-  }
-  return COMFORT_BELOW;
-}
-
-function calculateComfortIdxInverted(levelLow as Lang.Numeric, levelHigh as Lang.Numeric) as Lang.Number {
-  if (levelLow >= 0 && levelHigh <= 0) {
-    return COMFORT_NORMAL;
-  }
-  if (levelLow < 0) {
-    return COMFORT_HIGH;
-  }
-  if (levelHigh > 0) {
-    return COMFORT_BELOW;
-  }
-  return COMFORT_BELOW;
-}
-
-function comfortToColor(comfort as Lang.Number?) as Lang.Number {
-  if (comfort == COMFORT_NO) {
-    return Graphics.COLOR_TRANSPARENT;
-  }
-  var color = WhatAppBase.Colors.COLOR_WHITE_GREEN_2;
-  if (comfort == COMFORT_NORMAL) {
-    color = WhatAppBase.Colors.COLOR_WHITE_YELLOW_2;
-  } else if (comfort == COMFORT_HIGH) {
-    color = WhatAppBase.Colors.COLOR_WHITE_ORANGERED2_2;
-  }
-  return color;
-}
 function dewpointToColor(dp as Lang.Float?) as Lang.Number {
   if (dp == null) {
     return WhatAppBase.Colors.COLOR_WHITE_GRAY_2;

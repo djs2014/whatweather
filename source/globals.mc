@@ -29,9 +29,7 @@ var _maxMinuteForecast as Lang.Number = 0;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _showDetailsWhenPaused as Lang.Boolean = true;
 var _dashesUnderColumnHeight as Lang.Number = 2;
-// var _showColumnBorder as Lang.Boolean = false;
-var _showObservationTime as Lang.Boolean = true;
-var _showObservationLocationName as Lang.Boolean = true;
+var _showCurrentWind as Lang.Boolean = true;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 var _showClouds as Lang.Boolean = true;
 
@@ -47,14 +45,17 @@ var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;
 var _showTemperature as Lang.Boolean = true;
 var _showRelativeHumidity as Lang.Boolean = true;
 var _showWeatherCondition as Lang.Boolean = true;
-var _showComfort as Lang.Boolean = true;
+var _showComfortZone as Lang.Boolean = true;
 var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
 
-// var _showGlossary as Lang.Boolean = true;
-
 var _hideTemperatureLowerThan as Lang.Number = 8;
 var _showActualWeather as Lang.Boolean = true;
+
+var _maxTemperature as Lang.Number = 50; // celcius
+var _maxPressure as Lang.Number = 1080;
+var _minPressure as Lang.Number = 870;
+
 
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Number = 5;
