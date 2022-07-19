@@ -229,7 +229,7 @@ class WhatWeatherView extends WatchUi.DataField {
         if (temperatureCelcius != null) {
           postfix = "°C";
           var temperature = temperatureCelcius;
-          if (devSettings.distanceUnits == System.UNIT_STATUTE) {
+          if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
             postfix = "°F";
             temperature = Utils.celciusToFarenheit(temperatureCelcius);
           }
@@ -628,11 +628,11 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function activityIsPaused(info as Activity.Info) as Boolean {
       if (info has :timerState) {
-        return info.timerState == Activity.TIMER_STATE_PAUSED;
+        return info.timerState == Activity.TIMER_STATE_PAUSED || info.timerState == Activity.TIMER_STATE_OFF;
       }
       return false;
   }
-
+  
   function playAlert() as Void{
     if (Attention has : playTone) {
       Attention.playTone(Attention.TONE_CANARY);

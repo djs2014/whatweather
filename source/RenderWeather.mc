@@ -101,9 +101,12 @@ class RenderWeather {
               dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);   
             } else {
               dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);   
-            }     
-            // dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+            }                 
+            var temperature = p.value;
+            if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
+              temperature = Utils.celciusToFarenheit(temperature);
+            }            
+            dc.drawText(x, y - h/2, Graphics.FONT_TINY, temperature.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
 
           dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
@@ -136,7 +139,11 @@ class RenderWeather {
           if (showDetails && p.value > 7) { // @@ config             
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-            dc.drawText(x, y + h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+            var dewpoint = p.value;
+            if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
+              dewpoint = Utils.celciusToFarenheit(dewpoint);
+            }   
+            dc.drawText(x, y + h/2, Graphics.FONT_TINY, dewpoint.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
 
           dc.setColor(color, Graphics.COLOR_TRANSPARENT);

@@ -18,7 +18,7 @@ optimize
     - use profiler to check duration -> cache some code results (wobbly line)
     - remove unused code -> comfort ..
     - radar -> offset to left x px
-
+- firstwind -> hide when lower than x beaufort.
 LATER
 - show minutely (option / test)
 global Settings object
