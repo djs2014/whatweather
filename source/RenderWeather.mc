@@ -369,7 +369,7 @@ class RenderWeather {
 
       // draw icon
       var center = new Point((x + ds.columnWidth / 2) as Number, y);
-      _drawWeatherCondition(center, conditionNr);
+      _drawWeatherCondition(center, conditionNr, false);
 
       // draw description
       y = y + 5;
@@ -397,39 +397,39 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherCondition(x as Lang.Number, condition as Lang.Number) as Void{
-    _drawWeatherCondition( new Point( x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2), condition);
+  function drawWeatherCondition(x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void{
+    _drawWeatherCondition( new Point( x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2), condition, nightTime);
   }
 
-  function _drawWeatherCondition(center as Point, condition as Lang.Number) as Void {
+  function _drawWeatherCondition(center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
     if (condition == null) { return; }
     // if (condition == null || ds.smallField) { return; }
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {
-      drawConditionClear(center, 3, 6, 0);
+      drawConditionClear(center, 3, 6, 120, nightTime);
       return;
     }
     if (condition == Weather.CONDITION_PARTLY_CLEAR) {
-      drawConditionClear(center.move(3, -2), 2, 4, 60);
+      drawConditionClear(center.move(3, -2), 2, 4, 60, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.move(0, 3), 4));
       return;
     }
 
     if (condition == Weather.CONDITION_MOSTLY_CLEAR) {
-      drawConditionClear(center.move(3, -2), 2, 4, 30);
+      drawConditionClear(center.move(3, -2), 2, 4, 30, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.move(0, 3), 4));
       return;
     }
     if (condition == Weather.CONDITION_CLEAR) {
-      drawConditionClear(center, 3, 6, 30);
+      drawConditionClear(center, 3, 6, 30, nightTime);
       return;
     }
     // clouds
     if (condition == Weather.CONDITION_PARTLY_CLOUDY) {
-      drawConditionClear(center.move(3, -3), 2, 4, 60);    
+      drawConditionClear(center.move(3, -3), 2, 4, 60, nightTime);    
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center, 4));
       return;
@@ -812,10 +812,10 @@ class RenderWeather {
     }
   }
 
-  hidden function drawConditionClear(center as Point, radius as Number, radiusOuter as Number, increment as Number) as Void{
+  hidden function drawConditionClear(center as Point, radius as Number, radiusOuter as Number, increment as Number, nightTime as Boolean) as Void{
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(center.x, center.y, radius);
-    if (increment <= 0) {
+    if (increment <= 0 || nightTime) {
       return;
     }
     var angle = 0;
