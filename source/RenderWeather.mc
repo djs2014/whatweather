@@ -403,7 +403,7 @@ class RenderWeather {
 
   function _drawWeatherCondition(center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
     if (condition == null) { return; }
-    // if (condition == null || ds.smallField) { return; }
+    
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {
@@ -812,12 +812,21 @@ class RenderWeather {
     }
   }
 
+  hidden function drawMoon(center as Point, radius as Number)  as Void{
+    dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+    dc.setPenWidth(radius);  
+    dc.drawArc(center.x, center.y, radius, Graphics.ARC_COUNTER_CLOCKWISE, 90, 270);
+    dc.setPenWidth(1.0);     
+  }
+
   hidden function drawConditionClear(center as Point, radius as Number, radiusOuter as Number, increment as Number, nightTime as Boolean) as Void{
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-    dc.drawCircle(center.x, center.y, radius);
-    if (increment <= 0 || nightTime) {
+    if (nightTime) {
+      drawMoon(center, radius);      
       return;
     }
+    dc.drawCircle(center.x, center.y, radius);
+    if (increment <= 0) { return; }
     var angle = 0;
     while (angle < 360) {
       var p1 = pointOnCircle(radius, angle, center);

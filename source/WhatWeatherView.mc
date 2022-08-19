@@ -464,6 +464,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
             colorClouds = COLOR_CLOUDS;
             nightTime = mCurrentLocation.isAtNightTime(forecast.forecastTime, false);
+            
             var cHeight = 0;
             if ($._showClouds) { 
               if (nightTime) { colorClouds = COLOR_CLOUDS_NIGHT; }
