@@ -397,6 +397,12 @@ class RenderWeather {
     }
   }
 
+  function drawSunsetIndication(x as Lang.Number) as Void{
+    if (!ds.oneField) { return; }
+    var yOffset = ds.heightWt;
+    drawMoon(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
+  }
+
   function drawWeatherCondition(x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void{
     _drawWeatherCondition( new Point( x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2), condition, nightTime);
   }
@@ -812,17 +818,17 @@ class RenderWeather {
     }
   }
 
-  hidden function drawMoon(center as Point, radius as Number)  as Void{
+  hidden function drawMoon(x as Number, y as Number, radius as Number)  as Void{
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-    dc.setPenWidth(radius);  
-    dc.drawArc(center.x, center.y, radius, Graphics.ARC_COUNTER_CLOCKWISE, 90, 270);
+    dc.setPenWidth(radius * 1.5);  
+    dc.drawArc(x, y, radius, Graphics.ARC_COUNTER_CLOCKWISE, 95, 275);
     dc.setPenWidth(1.0);     
   }
 
   hidden function drawConditionClear(center as Point, radius as Number, radiusOuter as Number, increment as Number, nightTime as Boolean) as Void{
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     if (nightTime) {
-      drawMoon(center, radius);      
+      drawMoon(center.x, center.y, radius);      
       return;
     }
     dc.drawCircle(center.x, center.y, radius);

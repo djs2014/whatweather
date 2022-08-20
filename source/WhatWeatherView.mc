@@ -326,6 +326,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var weatherTextLine = 0;
     var blueBarPercentage = []; 
     var nightTime = false;
+    var sunsetPassed = false;
 
     try {
       if ($._mostRecentData != null && ($._mostRecentData as WeatherData).valid()) {
@@ -387,7 +388,7 @@ class WhatWeatherView extends WatchUi.DataField {
           // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
           var cHeight = 0;
-          nightTime = mCurrentLocation.isAtNightTime(current.forecastTime, false);
+          nightTime = mCurrentLocation.isAtNightTime(current.forecastTime, false);          
           colorClouds = COLOR_CLOUDS;
           if ($._showClouds) { 
             if (nightTime) { colorClouds = COLOR_CLOUDS_NIGHT; }
@@ -427,6 +428,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
           if (mShowWeatherCondition) {
             render.drawWeatherCondition(x, current.condition, nightTime);   
+            if (nightTime && !sunsetPassed) {
+              render.drawSunsetIndication(x);
+              sunsetPassed = true;
+            }
             if (previousCondition != current.condition) {
               render.drawWeatherConditionText(x, current.condition, weatherTextLine);
               previousCondition = current.condition;
@@ -504,11 +509,15 @@ class WhatWeatherView extends WatchUi.DataField {
 
             if (mShowWeatherCondition) {
               render.drawWeatherCondition(x, forecast.condition, nightTime);
+              if (nightTime && !sunsetPassed) {
+                render.drawSunsetIndication(x);
+                sunsetPassed = true;
+              }
               if (previousCondition != forecast.condition) {
                 weatherTextLine = (weatherTextLine == 0)? 1:0;
                 render.drawWeatherConditionText(x, forecast.condition, weatherTextLine);
                 previousCondition = forecast.condition;
-               }
+              }
             }
 
             x = x + ds.columnWidth + ds.space;
