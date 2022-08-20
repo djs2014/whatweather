@@ -15,7 +15,7 @@ class DisplaySettings {
   var COLOR_TEXT_I as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL2 as Lang.Number = Graphics.COLOR_LT_GRAY;
-
+  
   var nightMode as Lang.Boolean = false;
   var width as Lang.Number = 0;
   var height as Lang.Number = 0;

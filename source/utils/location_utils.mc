@@ -120,7 +120,7 @@ module WhatAppBase {
 
       function isAtNightTime(time as Moment?, defValue as Boolean) as Boolean {
         // mSunrise < mSunset 
-        return !isAtDaylightTime(time, defValue);
+        return !isAtDaylightTime(time, !defValue); // ! default value
       }
 
       function getRelativeToObservation(latObservation as Double, lonObservation as Double) as String {

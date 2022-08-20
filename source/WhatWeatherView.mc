@@ -325,6 +325,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var previousCondition = -1;
     var weatherTextLine = 0;
     var blueBarPercentage = []; 
+    var nightTime = false;
+    var sunsetPassed = false;
 
     try {
       if ($._mostRecentData != null && ($._mostRecentData as WeatherData).valid()) {
@@ -386,9 +388,10 @@ class WhatWeatherView extends WatchUi.DataField {
           // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
           var cHeight = 0;
+          nightTime = mCurrentLocation.isAtNightTime(current.forecastTime, false);          
           colorClouds = COLOR_CLOUDS;
           if ($._showClouds) { 
-            if (mCurrentLocation.isAtNightTime(current.forecastTime, false)) { colorClouds = COLOR_CLOUDS_NIGHT; }
+            if (nightTime) { colorClouds = COLOR_CLOUDS_NIGHT; }
             cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.clouds); 
           }
           if (mShowComfortZone) { render.drawComfortColumn(x, current.temperature, current.dewPoint); }
@@ -424,7 +427,11 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           if (mShowWeatherCondition) {
-            render.drawWeatherCondition(x, current.condition);   
+            render.drawWeatherCondition(x, current.condition, nightTime);   
+            if (nightTime && !sunsetPassed) {
+              render.drawSunsetIndication(x);
+              sunsetPassed = true;
+            }
             if (previousCondition != current.condition) {
               render.drawWeatherConditionText(x, current.condition, weatherTextLine);
               previousCondition = current.condition;
@@ -461,11 +468,11 @@ class WhatWeatherView extends WatchUi.DataField {
             // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
 
             colorClouds = COLOR_CLOUDS;
+            nightTime = mCurrentLocation.isAtNightTime(forecast.forecastTime, false);
+            
             var cHeight = 0;
             if ($._showClouds) { 
-              if (mCurrentLocation.isAtNightTime(forecast.forecastTime, false)) { 
-                colorClouds = COLOR_CLOUDS_NIGHT;
-                 }
+              if (nightTime) { colorClouds = COLOR_CLOUDS_NIGHT; }
               cHeight = drawColumnPrecipitationChance(dc, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.clouds); 
             }
             if (mShowComfortZone) { render.drawComfortColumn(x, forecast.temperature, forecast.dewPoint); }
@@ -501,12 +508,16 @@ class WhatWeatherView extends WatchUi.DataField {
             }
 
             if (mShowWeatherCondition) {
-              render.drawWeatherCondition(x, forecast.condition);
+              render.drawWeatherCondition(x, forecast.condition, nightTime);
+              if (nightTime && !sunsetPassed) {
+                render.drawSunsetIndication(x);
+                sunsetPassed = true;
+              }
               if (previousCondition != forecast.condition) {
                 weatherTextLine = (weatherTextLine == 0)? 1:0;
                 render.drawWeatherConditionText(x, forecast.condition, weatherTextLine);
                 previousCondition = forecast.condition;
-               }
+              }
             }
 
             x = x + ds.columnWidth + ds.space;
