@@ -40,7 +40,8 @@ class WhatWeatherView extends WatchUi.DataField {
   // var mWeatherChanged as Boolean = false;
   var mActivityPaused as Boolean = false;
   var mShowDetails as Boolean = false;
-  
+  var mTimerState as Number = 0;
+
   // @@ TODO glossary rotate x conditions per 5 sec.
   // var mGlossaryStart as Number = 0;
   
@@ -62,7 +63,8 @@ class WhatWeatherView extends WatchUi.DataField {
   function compute(info as Activity.Info) as Void {
     mCurrentInfo.getPosition(info);
     mActivityPaused = activityIsPaused(info);    
-    
+
+    if (info has :timerState && info.timerState != null) { mTimerState = info.timerState as Lang.Number; }
     mBGServiceHandler.onCompute(info);
     mBGServiceHandler.autoScheduleService();   
 
@@ -551,8 +553,9 @@ class WhatWeatherView extends WatchUi.DataField {
           var compassDirection = Utils.getCompassDirection(bearing);
           render.drawObservationLocation(Lang.format( "$1$ $2$ ($3$)", [ distance, distanceMetric, compassDirection ]));
         }
-        
-        if (mShowObservationLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
+        var showLocationName = mShowObservationLocationName;
+        if (mTimerState == Activity.TIMER_STATE_PAUSED && mAlertHandler.hasAlertsHandled()) { showLocationName = false; }
+        if (showLocationName) { render.drawObservationLocationLine2(current.observationLocationName); }        
         render.drawObservationTime(current.observationTime); 
       }
 

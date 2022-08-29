@@ -4,6 +4,8 @@
 	-> test param with minutely data
 	-> enable minutely if needed
 --------------------
+
+- show alerts
 TL;DR;
  - properties without in settings anymore -> weird bugs 
  - don't use Toybox.Communications in import for foreground app (even if it is not used)

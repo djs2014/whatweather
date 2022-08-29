@@ -78,6 +78,15 @@ class AlertHandler {
            (statusDewpoint == TRIGGERED);
   }
 
+  function hasAlertsHandled() as Lang.Boolean {
+    return (statusUvi == HANDLED) 
+      || (statusPrecipitationChance == HANDLED)
+      || (statusRainMMfirstHour == HANDLED) 
+      || (statusCondition == HANDLED) 
+      || (statusWindSpeed == HANDLED)
+      || (statusDewpoint == HANDLED); 
+  }
+
   function infoHandledShort() as Array<String> {
     var info = [] as Array<String>;
     if (statusUvi == HANDLED) {
