@@ -288,7 +288,7 @@ class RenderWeather {
     var max = windPoints.size();
     if (max == 0) { return; }
     var wp = windPoints[0] as WindPoint;    
-    var radius = 8;
+    var radius = 10;
     var center = new Point(wp.x + ds.columnWidth / 2, ds.columnY + ds.columnHeight/2);
     drawWind(center, radius, wp.bearing, wp.speed);
   }
@@ -846,6 +846,12 @@ class RenderWeather {
   hidden function drawWind(center as Point, radius as Number, windBearingInDegrees as Number, windSpeedMs as Float) as Void {
     var hasAlert = false;
     var text = "";
+    var wsFont = Graphics.FONT_XTINY;
+    var wsFontAlert = Graphics.FONT_TINY;
+    if (radius >= 10) {
+      wsFont = Graphics.FONT_SMALL;
+      wsFontAlert = Graphics.FONT_MEDIUM;
+    }
     if (windSpeedMs != null) {
       var beaufort = Utils.windSpeedToBeaufort(windSpeedMs);
       hasAlert = ($._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed);
@@ -866,7 +872,7 @@ class RenderWeather {
           text = value.format("%d");
         }
       }
-      radius = Utils.min(radius, dc.getTextWidthInPixels(text, Graphics.FONT_XTINY)) + 1;
+      radius = Utils.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
     }
 
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
@@ -900,15 +906,14 @@ class RenderWeather {
     dc.fillCircle(center.x, center.y, radius - 1);
 
     // Windspeed
-    var wsFont = Graphics.FONT_XTINY;
+   
     if (hasAlert) {
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-      wsFont = Graphics.FONT_TINY;
+      wsFont = wsFontAlert;
     } else {
       dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     }
-    var w = dc.getTextWidthInPixels(text, wsFont);
-    dc.drawText(center.x - w / 2, center.y, wsFont, text, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+    dc.drawText(center.x, center.y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function pointOnCircle(radius as Lang.Numeric, angleInDegrees as Lang.Numeric, center as Point) as Point {

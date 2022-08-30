@@ -306,6 +306,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var wi = dc.getTextWidthInPixels(info, mFont);
     var wp = dc.getTextWidthInPixels(postfix, mFontPostfix);
     var xi = ds.width / 2 - (wi + wp) / 2;
+    if (mShowWindFirst && ds.smallField) { xi = xi + dc.getTextWidthInPixels("0", mFont) / 2; }
     dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
     dc.drawText(xi, ds.height / 2, mFont, info, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     dc.drawText(xi + wi + 1, ds.height / 2, mFontPostfix, postfix, Graphics.TEXT_JUSTIFY_LEFT);
