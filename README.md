@@ -99,3 +99,10 @@ https://en.wikipedia.org/wiki/Dew_point
 > Severely high						
 
 ![Dewpoint colors](/other/images/colors_dewpoint.png "Color scheme dewpoint")
+
+## Troubleshooting
+
+# When using OWM data
+
+Http[<error code>] are http errors regarding the OWM API.
+For example: http[401] -> "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info." The API key for accessing Open Weather Map is invalid.
