@@ -56,11 +56,15 @@
     <string id="WeatherDataSourceGarminFirst">Garmin first</string>
     <string id="WeatherDataSourceOWMFirst">OWM first</string>  
     <string id="WeatherDataSourceGarmin">Garmin</string>
-    <string id="WeatherDataSourceOWM">OWM (Open weather map)</string>    
+    <string id="WeatherDataSourceOWM">OWM (Open weather map)</string>  
     <string id="OpenWeatherAPIKey">Open weather map API key</string>
     <string id="OpenWeatherProxy">OWM Proxy (to compress OWM-json)</string>
     <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   
-    
+    <string id="OpenWeatherAPIVersion">OWM API version</string>       
+    <string id="OpenWeatherAPIVersionPrompt">Select OWM API version</string>       
+    <string id="OpenWeatherAPIVersion25">onecall 2.5</string>       
+    <string id="OpenWeatherAPIVersion30">onecall 3.0</string>       
+
     <string id="MinimalGPSquality">Minimal GPS quality to start BG service</string>
     <string id="MinimalGPSqualityPrompt">Select minimal GPS quality</string>    
     <string id="GpsQualityNotAvailable">Not available</string>

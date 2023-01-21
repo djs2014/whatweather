@@ -47,11 +47,18 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                 
             var location = Storage.getValue("latest_latlng");                                
             var apiKey = Storage.getValue("openWeatherAPIKey");
+            var apiVersion = "2.5";
+            var apiV = Storage.getValue("openWeatherAPIVersion");
+            if (apiV != null && apiV instanceof(Number)) {
+                if (apiV == owmOneCall30) {
+                    apiVersion = "3.0";
+                }
+            }
             var proxy = Storage.getValue("openWeatherProxy");
             var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
             var maxhours = Storage.getValue("openWeatherMaxHours");
 
-        	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$] maxhours[$4$]",[proxy, location , apiKey, maxhours]));    
+        	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$] apiVersion[$4$] maxhours[$5$]",[proxy, location , apiKey, apiVersion, maxhours]));    
 
             if (apiKey == null) { apiKey=""; }            
             if (proxy == null) { proxy=""; }            
@@ -64,7 +71,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
             
-            requestOWMData(lat, lon, apiKey as String, proxy as String, proxyApiKey as String, maxhours as Number);	
+            requestOWMData(lat, lon, apiKey as String, apiVersion as String, proxy as String, proxyApiKey as String, maxhours as Number);	
 
             return 0;
         } catch(ex) {
@@ -75,8 +82,8 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         }
     }
 
-    function requestOWMData(lat as Lang.Double, lon as Lang.Double, apiKey as Lang.String, proxy as Lang.String, proxyApiKey as Lang.String, maxhours as Lang.Number) as Void {
-		System.println(Lang.format("requestOWMData proxyurl[$1$] location[$2$,$3$] apiKey[$4$] proxyApiKey[$5$] maxhours[$6$]", [proxy, lat, lon , apiKey, proxyApiKey, maxhours]));    
+    function requestOWMData(lat as Lang.Double, lon as Lang.Double, apiKey as Lang.String, apiVersion as Lang.String, proxy as Lang.String, proxyApiKey as Lang.String, maxhours as Lang.Number) as Void {
+		System.println(Lang.format("requestOWMData proxyurl[$1$] location[$2$,$3$] apiKey[$4$] apiVersion[$5$] proxyApiKey[$6$] maxhours[$7$]", [proxy, lat, lon , apiKey, apiVersion, proxyApiKey, maxhours]));    
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => {
@@ -92,6 +99,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         // OWM json is too big for connect IQ background app, so proxy needed to minify the json
 		var url = proxy;        
         var params = {
+            "version" => apiVersion,
             "lat" => lat,
             "lon" => lon,
             // "exclude" => "daily,alerts",

@@ -170,7 +170,7 @@ class BGServiceHandler {
                 mHttpStatus = code;
                 mError = CustomErrors.ERROR_BG_HTTPSTATUS;
             }
-            System.println("onBackgroundData error responsecode: " + data);
+            System.println("onBackgroundData error responsecode: " + data);           
         } else {
             mHttpStatus =HTTP_OK;
             mData = data;

@@ -10,6 +10,9 @@ using WhatAppBase.Colors as Colors;
 (:background)
 enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1, wsGarminOnly = 2, wsOWMOnly = 3 }
 
+(:background)
+enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
+
 (:typecheck(disableBackgroundCheck))  
 class WeatherService  {
     static function purgePastWeatherdata(data as WeatherData?) as WeatherData {

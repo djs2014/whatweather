@@ -49,7 +49,7 @@ class WhatWeatherApp extends Application.AppBase {
     if ($._BGServiceHandler == null) {
       $._BGServiceHandler = new BGServiceHandler();
     }
-    return $._BGServiceHandler;
+    return $._BGServiceHandler as BGServiceHandler;
   }
 
   (:typecheck(disableBackgroundCheck))
@@ -57,7 +57,7 @@ class WhatWeatherApp extends Application.AppBase {
     if ($._alertHandler == null) {
       $._alertHandler = new AlertHandler();
     }
-    return $._alertHandler;
+    return $._alertHandler as AlertHandler;
   }
 
   (:typecheck(disableBackgroundCheck))
@@ -132,6 +132,7 @@ class WhatWeatherApp extends Application.AppBase {
       
       Storage.setValue("weatherDataSource", ws);
       Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
+      Storage.setValue("openWeatherAPIVersion", Utils.getApplicationPropertyAsNumber("openWeatherAPIVersion", 1));
       Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
       Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    
       Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);                    

@@ -3,6 +3,8 @@
 	-> other weather sources available?
 	-> test param with minutely data
 	-> enable minutely if needed
+	-> if owm response 401 / not authorized -> pass response back to device
+		->> or use response 200 with OWM message
 --------------------
 
 - show alerts

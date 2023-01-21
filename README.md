@@ -106,3 +106,8 @@ https://en.wikipedia.org/wiki/Dew_point
 
 Http[<error code>] are http errors regarding the OWM API.
 For example: http[401] -> "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info." The API key for accessing Open Weather Map is invalid.
+
+OWM call used:
+https://openweathermap.org/api/one-call-api
+
+https://api.openweathermap.org/data/2.5/onecall?lat=33.44&lon=-94.04&exclude=hourly,daily&appid={API key}
