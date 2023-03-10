@@ -1,9 +1,15 @@
-- git project node proxy server
+what weather - api key etc in storage, overwrite if value in settings
+-> fix for loosing settings ..
+
+- git project node proxy server add in same project..
 	-> node.js: OWM pop = value 0.1 - 1  + example json
 	-> other weather sources available?
 	-> test param with minutely data
 	-> enable minutely if needed
+	-> if owm response 401 / not authorized -> pass response back to device
+		->> or use response 200 with OWM message
 --------------------
+Added (:typecheck(false)) because of compiler bugs in strict mode.
 
 - show alerts
 TL;DR;

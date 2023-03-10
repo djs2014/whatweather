@@ -15,15 +15,15 @@ class Comfort {
 //   var precipitationChanceMax as Number = 40;
 
   function initialize() {
-
   }
+}
 
-  static function getComfort() as Comfort {
+(:typecheck(disableBackgroundCheck))
+function getComfort() as Comfort {
     if ($._Comfort == null) {
       $._Comfort = new Comfort();
     }
-    return $._Comfort;
-  }
+    return $._Comfort as Comfort;
+}
 
     
-}

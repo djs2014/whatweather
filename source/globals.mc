@@ -79,7 +79,6 @@ function split(strIn as Lang.String?, splitter as Lang.String) as Array {
   if (strIn == null) {
     return array;
   }
-  var index = 0;
   var location = strIn.find(splitter);
   
   while (location != null) {

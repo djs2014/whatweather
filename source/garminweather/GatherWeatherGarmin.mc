@@ -6,12 +6,12 @@ import Toybox.Time;
 import Toybox.Time.Gregorian;
 using WhatAppBase.Utils as Utils;
 
-class GarminWeather {
-  static function getLatestGarminWeather() as WeatherData { 
+// class GarminWeather {
+  function getLatestGarminWeather() as WeatherData { 
     var WEATHER_CONDITION_UNKNOWN = 53;
     try {
       var garCurrent = Weather.getCurrentConditions();
-      if (garCurrent == null) { return WeatherData.initEmpty(); }
+      if (garCurrent == null) { return emptyWeatherData(); }
     
       var cc = new WeatherCurrent();
       cc.precipitationChance = Utils.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
@@ -75,13 +75,13 @@ class GarminWeather {
       return new WeatherData(cc, mm, hh, cc.observationTime);      
     } catch (ex) {
       ex.printStackTrace();
-      return WeatherData.initEmpty();
+      return emptyWeatherData();
     }
   }
 
-  static function calculateDewpoint(temperatureCelcius as Number?, relativeHumidity as Number?) as Float {
+  function calculateDewpoint(temperatureCelcius as Number?, relativeHumidity as Number?) as Float {
     if (temperatureCelcius == null || relativeHumidity == null) { return 0.0; }
     // https://learnmetrics.com/dew-point-calculator-chart-formula/      
     return (temperatureCelcius as Number) - ((100 - (relativeHumidity as Number)) / 5.0);
   }
-}
+//}

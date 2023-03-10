@@ -39,7 +39,7 @@ module WhatAppBase {
     }
 
     function valueOfPercentage(percentage as Numeric?, maxValue as Numeric?) as Numeric {
-      if (percentage == null || maxValue == null) { return maxValue;}
+      if (percentage == null || maxValue == null) { return maxValue as Numeric;}
       return (maxValue * (percentage / 100.0));
     }
 

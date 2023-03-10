@@ -6,6 +6,12 @@
             <listEntry value="2">@Strings.WeatherDataSourceGarmin</listEntry>
             <listEntry value="3">@Strings.WeatherDataSourceOWM</listEntry>            
         </settingConfig>
+    </setting>    
+	<setting propertyKey="@Properties.openWeatherAPIVersion" title="@Strings.OpenWeatherAPIVersion" prompt="@Strings.OpenWeatherAPIVersionPrompt">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OpenWeatherAPIVersion25</listEntry>
+            <listEntry value="1">@Strings.OpenWeatherAPIVersion30</listEntry>                        
+        </settingConfig>
     </setting>
  	<setting propertyKey="@Properties.openWeatherAPIKey" title="@Strings.OpenWeatherAPIKey">
 		<settingConfig type="alphanumeric" />
