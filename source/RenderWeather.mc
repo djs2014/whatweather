@@ -41,7 +41,7 @@ class RenderWeather {
   }
 
   hidden function initComfortZones() as Void {
-    var comfort = Comfort.getComfort();    
+    var comfort = getComfort();    
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
     self.yHumBottom = ds.getYpostion(comfort.humidityMin);
     var perc = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
@@ -224,7 +224,7 @@ class RenderWeather {
 
   // top is max (temp/humid), low is min(temp/humid)
   function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
-    var comfort = Comfort.getComfort();
+    var comfort = getComfort();
     
     var color = dewpointToColor(dewpoint);    
     

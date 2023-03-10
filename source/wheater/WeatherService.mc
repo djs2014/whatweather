@@ -14,9 +14,9 @@ enum WeatherSource { wsGarminFirst = 0, wsOWMFirst = 1, wsGarminOnly = 2, wsOWMO
 enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
 
 (:typecheck(disableBackgroundCheck))  
-class WeatherService  {
-    static function purgePastWeatherdata(data as WeatherData?) as WeatherData {
-      if (data == null) { return WeatherData.initEmpty(); }
+//class WeatherService  {
+    function purgePastWeatherdata(data as WeatherData?) as WeatherData {
+      if (data == null) { return emptyWeatherData(); }
       var wData = data as WeatherData;
       var max = wData.hourly.size();
       var idxCurrent = -1;
@@ -53,9 +53,10 @@ class WeatherService  {
     }
 
     // For OWM first entry contains current data
-    static function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as WeatherData {
+    (:typecheck(disableBackgroundCheck))  
+    function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as WeatherData {
       try {
-        if (data == null) { return WeatherData.initEmpty(); }
+        if (data == null) { return emptyWeatherData(); }
         var bgData = data as Dictionary;
 
         var cc = new WeatherCurrent(); 
@@ -137,16 +138,15 @@ class WeatherService  {
         return wd;
       } catch (ex) {
         ex.printStackTrace();
-        return WeatherData.initEmpty();
+        return emptyWeatherData();
       }       
     }
-
-    static function mergeWeather(garminData as WeatherData, bgData as WeatherData, source as WeatherSource) as WeatherData {
+    (:typecheck(disableBackgroundCheck))  
+    function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, source as WeatherSource) as WeatherData {
       try {
-        var wData;
+        var wData = garminData;
         switch(source) {
-          case wsGarminFirst:
-            wData = garminData;
+          case wsGarminFirst:           
             break;
           case wsOWMFirst:
             wData = bgData;
@@ -211,11 +211,11 @@ class WeatherService  {
         return wData;      
       } catch (ex) {
         ex.printStackTrace();
-        return WeatherData.initEmpty();
+        return emptyWeatherData();
       }        
     }
-    
-    static function isWeatherDataChanged(current as WeatherDataCheck, newData as WeatherData?) as Boolean {
+    (:typecheck(disableBackgroundCheck))  
+    function isWeatherDataChanged(current as WeatherDataCheck, newData as WeatherData?) as Boolean {
 
       if (newData == null) { return true; }            
       var newWeatherData = new WeatherDataCheck(newData);
@@ -223,14 +223,14 @@ class WeatherService  {
       var nD = newData as WeatherData;        
       return nD.changed || !current.isEqual(newWeatherData);        
     }
-
-    static function setChanged(data as WeatherData?, changed as Boolean) as WeatherData? {
+    (:typecheck(disableBackgroundCheck))  
+    function setWeatherDataChanged(data as WeatherData?, changed as Boolean) as WeatherData? {
       if (data == null) { return data; }
       var d = data as WeatherData;
       d.setChanged(changed);
       return d;
     }
-}
+// }
 
 (:typecheck(disableBackgroundCheck))  
 class WeatherDataCheck {

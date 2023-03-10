@@ -36,7 +36,7 @@ module WhatAppBase {
 
       function getAccuracy() as Quality {
         if (mAccuracy == null) { return Position.QUALITY_NOT_AVAILABLE; }
-        return mAccuracy;
+        return mAccuracy  as Quality;
       }
       
       function getLocation() as Location? {

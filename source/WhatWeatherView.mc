@@ -70,16 +70,16 @@ class WhatWeatherView extends WatchUi.DataField {
 
 
     // Not working on EDGE830
-    // var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-    // $._bgData = WeatherService.purgePastWeatherdata($._bgData);
+    // var garminWeather = purgePastWeatherdata(getLatestGarminWeather());
+    // $._bgData = purgePastWeatherdata($._bgData);
     // var currentWeatherDataCheck = new WeatherDataCheck($._mostRecentData);
-    // $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);              
+    // $._mostRecentData = mergeWeatherData(garminWeather, $._bgData as WeatherData, $._weatherDataSource);              
     // mAlertHandler.checkStatus();
-    // mWeatherChanged = WeatherService.isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
+    // mWeatherChanged = isWeatherDataChanged(currentWeatherDataCheck, $._mostRecentData);
     // if (mWeatherChanged) {
     //   System.println("weather changed");
-    //   $._mostRecentData = WeatherService.setChanged($._mostRecentData, false);        
-    //   $._bgData = WeatherService.setChanged($._bgData, false);    
+    //   $._mostRecentData = setWeatherDataChanged($._mostRecentData, false);        
+    //   $._bgData = setWeatherDataChanged($._bgData, false);    
     //   CheckWeatherForAlerts();      
     // }
     // if (mAlertHandler.isAnyAlertTriggered()) {
@@ -148,9 +148,9 @@ class WhatWeatherView extends WatchUi.DataField {
       //   return;
       // }
                   
-      var garminWeather = WeatherService.purgePastWeatherdata(GarminWeather.getLatestGarminWeather());
-      $._bgData = WeatherService.purgePastWeatherdata($._bgData);
-      $._mostRecentData = WeatherService.mergeWeather(garminWeather, $._bgData as WeatherData, $._weatherDataSource);   
+      var garminWeather = purgePastWeatherdata(getLatestGarminWeather());
+      $._bgData = purgePastWeatherdata($._bgData);
+      $._mostRecentData = mergeWeatherData(garminWeather, $._bgData as WeatherData, $._weatherDataSource);   
 
       onUpdateWeather(dc, ds, dashesUnderColumnHeight);
                     

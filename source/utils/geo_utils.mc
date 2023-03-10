@@ -18,7 +18,7 @@ module WhatAppBase {
                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
       var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       var d = R * c;  // Distance in km
-      return d;
+      return d as Float;
     }
 
     function deg2rad(deg as Numeric) as Double or Float { return deg * (Math.PI / 180); }

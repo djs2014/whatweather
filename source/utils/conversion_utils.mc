@@ -50,14 +50,14 @@ module WhatAppBase {
       if (metersPerSecond == null) {
         return 0.0f;
       }
-      return (metersPerSecond * 60 * 60) / 1000.0;
+      return ((metersPerSecond * 60 * 60) / 1000.0) as Float;
     }
 
     function celciusToFarenheit(celcius as Numeric?) as Float {
       if (celcius == null) {
         return 0.0f;
       }
-      return ((celcius * 9 / 5) + 32);
+      return ((celcius * 9 / 5) + 32) as Float;
     }
 
     // pascal -> mbar (hPa)
@@ -65,21 +65,21 @@ module WhatAppBase {
       if (pascal == null) {
         return 0.0f;
       }
-      return pascal / 100.0;
+      return (pascal / 100.0) as Float;
     }
 
     function meterToFeet(meter as Numeric?) as Float {
       if (meter == null) {
         return 0.0f;
       }
-      return meter * FEET;
+      return (meter * FEET) as Float;
     }
 
     function kilometerToMile(km as Numeric?) as Float {
       if (km == null) {
         return 0.0f;
       }
-      return km / MILE;
+      return (km / MILE) as Float;
     }
 
     // kilogram to pounds
@@ -87,12 +87,12 @@ module WhatAppBase {
       if (kg == null) {
         return 0.0f;
       }
-      return kg * POUND;
+      return (kg * POUND) as Float;
     }
 
     function removeLeadingZero(value as String) as String{
       if (value.substring(0, 1) == "0.") {
-        return value.substring(2, value.length());
+        return (value.substring(2, value.length())) as String;
       }
       return value;
     }

@@ -7,48 +7,7 @@ module WhatAppBase {
   (:Utils) 
   module Utils {
 
-    
-
-    function getApplicationPropertyAsNumber(key as Application.PropertyKeyType, dflt as Lang.Number) as Lang.Number {
-      try {
-        var val = Toybox.Application.Properties.getValue(key);
-        if (val != null || !(val instanceof Number)) { 
-          System.println("Use default property value [" + key as String + "]");
-          return val as Number;
-        }
-      } catch (e) {
-        return dflt;
-      }
-      return dflt;
-    }
-
-    function getApplicationPropertyAsString(key as Application.PropertyKeyType, dflt as Lang.String) as Lang.String {
-      try {
-        var val = Toybox.Application.Properties.getValue(key);
-        if (val != null || !(val instanceof String)) { 
-          System.println("Use default property value [" + key as String + "]");
-          return val as String;
-        }
-      } catch (e) {
-        return dflt;
-      }
-      return dflt;
-    }
-
-    function getApplicationPropertyAsBoolean(key as Application.PropertyKeyType, dflt as Lang.Boolean) as Lang.Boolean {
-      try {
-        var val = Toybox.Application.Properties.getValue(key);
-        if (val != null || !(val instanceof Boolean)) { 
-          System.println("Use default property value [" + key as String + "]");
-          return val as Boolean;
-        }
-      } catch (e) {
-        return dflt;
-      }
-      return dflt;
-    }
-
-    function getApplicationProperty(key as Application.PropertyKeyType, dflt as Application.PropertyValueType) as Application.PropertyValueType {
+    function getApplicationProperty(key as Application.PropertyKeyType, dflt as Application.PropertyValueType ) as Application.PropertyValueType {
       try {
         var val = Toybox.Application.Properties.getValue(key);
         if (val != null) { return val; }
@@ -91,6 +50,5 @@ module WhatAppBase {
       }
       return value;
     }
-
   }
 }

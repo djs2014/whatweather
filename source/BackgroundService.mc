@@ -110,7 +110,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         Communications.makeWebRequest(url, params, options, responseCallBack);
    	}
 
-    function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null) as Void {
+    function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null or Lang.String) as Void {
         System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
         if (responseCode == 200 && responseData != null) {
             try { 
