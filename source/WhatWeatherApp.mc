@@ -110,7 +110,7 @@ class WhatWeatherApp extends Application.AppBase {
       // Always req per 5 minutes.
       // bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
 
-      var ws =  Utils.getApplicationProperty("weatherDataSource", 0) as Number;
+      var ws =  Utils.getApplicationProperty("weatherDataSource", 1) as Number;
       $._weatherDataSource = ws as WeatherSource;      
       if ($._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
       || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
@@ -190,13 +190,13 @@ class WhatWeatherApp extends Application.AppBase {
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data) {
     System.println("Background data recieved");
+    //System.println(data);
 
     if (data instanceof Lang.Number && data == 0) {
       System.println("Response code is 0 -> reset bg service");
       loadUserSettings();
       return;
     }
-    
     var bgHandler = getBGServiceHandler();
     bgHandler.onBackgroundData(data, self, :updateBgData);
 
@@ -208,7 +208,7 @@ class WhatWeatherApp extends Application.AppBase {
     // First entry hourly in OWM is current entry
     var bgData = toWeatherData(data, true);
     $._bgData = bgData;
-    bgHandler.setLastObservationMoment(bgData.getObservationTime());    
+    bgHandler.setLastObservationMoment(bgData.getObservationTime());        
   }
 }
 
