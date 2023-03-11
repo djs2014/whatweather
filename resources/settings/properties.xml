@@ -42,7 +42,7 @@
 			
 	<property id="minimalGPSquality" type="number">3</property>	
 	
-	<property id="weatherDataSource" type="number">0</property>
+	<property id="weatherDataSource" type="number">1</property>
 	<property id="openWeatherAPIVersion" type="number">0</property>
 	<property id="openWeatherAPIKey" type="string"></property>
 	<property id="openWeatherProxy" type="string">https://api.castlephoto.info/owm_one</property>
