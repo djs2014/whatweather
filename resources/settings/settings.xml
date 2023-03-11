@@ -29,6 +29,10 @@
 	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
 		<settingConfig type="numeric" min="0" max="12" />
 	</setting>	
+	<setting propertyKey="@Properties.maxMinuteForecast" title="@Strings.MaxMinuteForecast">
+		<settingConfig type="numeric" min="0" max="60" />
+	</setting>	
+	
 	<setting propertyKey="@Properties.showWind" title="@Strings.ShowWind" prompt="@Strings.ShowWindPrompt">
 		 <settingConfig type="list">
             <listEntry value="0">@Strings.ShowWindNothing</listEntry>

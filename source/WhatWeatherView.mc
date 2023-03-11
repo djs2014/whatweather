@@ -341,34 +341,38 @@ class WhatWeatherView extends WatchUi.DataField {
       var render = new RenderWeather(dc, ds);
 
       // @@ Test to find the bug in properties
-      // if ( $._maxMinuteForecast > 0) { @@ <-- $._maxMinuteForecast is not a number?
-      //   var xMMstart = x; // @@ issue?
-      //   var popTotal = 0 as Lang.Number;
-      //   var columnWidth = 1;
-      //   var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
-      //   if (mm != null) {
-      //     ds.calculateColumnWidth(offset);
-      //     var max = mm.pops.size();
-      //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
-      //       var pop = mm.pops[i] as Lang.Number;
-      //       popTotal = popTotal + pop;
-      //       if (DEBUG_DETAILS) {
-      //         System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
-      //       }
+      if ( $._maxMinuteForecast > 0) { //@@ <-- $._maxMinuteForecast is not a number?
+        var max = 0;
+        if (mm != null) {
+          max = mm.pops.size();
+        }
+        if (max > 0) {          
+          var xMMstart = x;
+          var popTotal = 0 as Lang.Number;
+          var columnWidth = 1;
+          var offset = (($._maxMinuteForecast * columnWidth) + ds.space).toNumber();
+        
+          ds.calculateColumnWidth(offset);
+          for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+            var pop = (mm as WeatherMinutely).pops[i] as Lang.Number;
+            popTotal = popTotal + pop;
+            if (DEBUG_DETAILS) {
+              System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+            }
 
-      //       if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
-      //       drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
-      //       x = x + columnWidth;
-      //     }
-      //     x = x + ds.space;
-      //   }
-      //   if (dashesUnderColumnHeight > 0) {
-      //     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      //     dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
-      //   }
-      //   x = xMMstart + offset;
-      //   mAlertHandler.processRainMMfirstHour(popTotal);
-      // }
+            // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
+            drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+            x = x + columnWidth;
+          }
+          x = x + ds.space;
+          if (dashesUnderColumnHeight > 0) {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+            dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, ($._maxMinuteForecast * columnWidth), dashesUnderColumnHeight);
+          }
+          x = xMMstart + offset;
+          mAlertHandler.processRainMMfirstHour(popTotal);
+        }
+      }
 
       // @@ TODO donotrepeat current/hourly @@DRY
       var validSegment = 0;
@@ -597,10 +601,10 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.drawLine(x2, y0, width, y0);
   }
 
-  function drawColumnBorder(dc as Dc, x as Number, y as Number, width as Number, height as Number) as Void {
-    dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-    dc.drawRectangle(x, y, width, height);
-  }
+  // function drawColumnBorder(dc as Dc, x as Number, y as Number, width as Number, height as Number) as Void {
+  //   dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+  //   dc.drawRectangle(x, y, width, height);
+  // }
 
   function drawColumnPrecipitationChance(dc as Dc, color as Graphics.ColorType, x as Number, y as Number, bar_width as Number, bar_height as Number, precipitationChance as Number) as Number{
     if (precipitationChance == 0) { return 0; }
@@ -659,15 +663,15 @@ class WhatWeatherView extends WatchUi.DataField {
   //   var data = $._mostRecentData as WeatherData;
   //   if (!data.valid()) { return; }
 
-  //   if ( $._maxMinuteForecast > 0) {
-  //     var popTotal = 0 as Lang.Number;  
-  //     var max = data.minutely.pops.size();
-  //     for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
-  //           var pop = data.minutely.pops[i] as Lang.Number;
-  //           popTotal = popTotal + pop;            
-  //     }
-  //     mAlertHandler.processRainMMfirstHour(popTotal);
-  //   }
+    // if ( $._maxMinuteForecast > 0) {
+    //   var popTotal = 0 as Lang.Number;  
+    //   var max = data.minutely.pops.size();
+    //   for (var i = 0; i < max && i < $._maxMinuteForecast; i += 1) {
+    //         var pop = data.minutely.pops[i] as Lang.Number;
+    //         popTotal = popTotal + pop;            
+    //   }
+    //   mAlertHandler.processRainMMfirstHour(popTotal);
+    // }
 
   //   var validSegment = 0;
   //   var color, colorOther;
