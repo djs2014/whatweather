@@ -72,7 +72,7 @@ using WhatAppBase.Utils as Utils;
         }
       }
 
-      return new WeatherData(cc, mm, hh, cc.observationTime);      
+      return new WeatherData(cc, mm, hh, [] as Array<WeatherAlert>, cc.observationTime);      
     } catch (ex) {
       ex.printStackTrace();
       return emptyWeatherData();

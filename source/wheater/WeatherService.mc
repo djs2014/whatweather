@@ -62,59 +62,65 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
         var cc = new WeatherCurrent(); 
 		    var hh = [] as Array<WeatherHourly>;
         var mm = new WeatherMinutely();
+        var al = [] as Array<WeatherAlert>;
 
         var current = bgData["current"];
         var hourly = bgData["hourly"]; 
         var minutely = bgData["minutely"];
-        
+        var alerts = bgData["alerts"];
+
         if (current != null && hourly != null) {
           var bg_cc = current as Dictionary;
           var bg_hh = hourly as Array<Dictionary>;
-
-          var currentEntry = current as Dictionary;
-          if (firstEntryIsCurrent && bg_hh.size() > 0) { currentEntry = bg_hh[0]; }
-          // First entry of hourly - > clouds + pop goes to current (it is the current hour) 
-          cc.precipitationChance = ((Utils.getDictionaryValue(currentEntry, "pop", 0.0) as Float) * 100.0).toNumber(); 
-          cc.forecastTime = new Time.Moment((Utils.getDictionaryValue(currentEntry, "dt", 0.0) as Number).toNumber()); 
 
           cc.lat = (Utils.getDictionaryValue(bg_cc, "lat", 0.0d) as Double).toDouble();
           cc.lon = (Utils.getDictionaryValue(bg_cc, "lon", 0.0d) as Double).toDouble();
           cc.observationLocationName = cc.lat + "," + cc.lon;
           cc.observationTime = new Time.Moment(Utils.getDictionaryValue(bg_cc, "dt", 0) as Number);
+
+          var carr = Utils.getDictionaryValue(bg_cc, "data", [] as Array<Numeric>) as Array<Numeric>;                   
+          var firstHour = carr;
+          if (firstEntryIsCurrent && bg_hh.size() > 0) { firstHour = bg_hh[0] as Array<Numeric>; }
+          // First entry of hourly - > clouds + pop goes to current (it is the current hour) 
+          // @@ todo, fix proxy to get pop value from daily
+          cc.forecastTime = new Time.Moment((Utils.getNumericValue(firstHour[0], 0.0) as Number).toNumber()); 
+          cc.clouds = (Utils.getNumericValue(firstHour[1], 0) as Number).toNumber(); 
+          cc.precipitationChance = ((Utils.getNumericValue(firstHour[2], 0.0) as Float) * 100.0).toNumber(); 
           
-          cc.clouds = (Utils.getDictionaryValue(bg_cc, "clouds", 0) as Number).toNumber(); 
-          cc.condition = (Utils.getDictionaryValue(bg_cc, "cond", 0) as Number).toNumber();
-          cc.windBearing = (Utils.getDictionaryValue(bg_cc, "w_deg", 0) as Number).toNumber();
-          cc.windSpeed = (Utils.getDictionaryValue(bg_cc, "w_s", 0) as Float).toFloat(); 
-          cc.relativeHumidity = (Utils.getDictionaryValue(bg_cc, "humid", 0) as Number).toNumber();
-          cc.temperature = (Utils.getDictionaryValue(bg_cc, "temp", 0) as Number).toNumber(); // as Float;
-          cc.uvi = (Utils.getDictionaryValue(bg_cc, "uvi", 0.0) as Float).toFloat();
-          cc.pressure = (Utils.getDictionaryValue(bg_cc, "press", 0) as Number).toNumber();
-          cc.dewPoint = (Utils.getDictionaryValue(bg_cc, "dew_p", 0.0) as Float).toFloat();
+          cc.condition = (Utils.getNumericValue(carr[3], 0) as Number).toNumber();
+          cc.uvi = (Utils.getNumericValue(carr[4], 0.0) as Float).toFloat();
+          cc.windSpeed = (Utils.getNumericValue(carr[5], 0) as Float).toFloat(); 
+          cc.windBearing = (Utils.getNumericValue(carr[6], 0) as Number).toNumber();
+          cc.temperature = (Utils.getNumericValue(carr[7], 0) as Number).toNumber(); // as Float;
+          cc.pressure = (Utils.getNumericValue(carr[8], 0) as Number).toNumber();
+          cc.relativeHumidity = (Utils.getNumericValue(carr[9], 0) as Number).toNumber();
+          cc.dewPoint = (Utils.getNumericValue(carr[10], 0.0) as Float).toFloat();
 
           System.println("bgData Current: " + cc.info());   
         }
 
         if (hourly != null) {
-          var bg_hh = hourly as Array<Dictionary>;
+          // there are only values in array to compress the payload
+          var bg_hh = hourly as Array<Array>;
           var startIdx = 0;
 
           if (firstEntryIsCurrent) { startIdx = 1; }            	
           for (var i = startIdx; i < bg_hh.size(); i++) {
               var hf = new WeatherHourly();
-              hf.forecastTime = new Time.Moment((Utils.getDictionaryValue(bg_hh[i], "dt", 0.0) as Number).toNumber());  
-              hf.clouds = (Utils.getDictionaryValue(bg_hh[i], "clouds", 0) as Number).toNumber();
+              var arr = bg_hh[i] as Array<Numeric>;
+              hf.forecastTime = new Time.Moment((Utils.getNumericValue(arr[0], 0) as Number).toNumber());  
+              hf.clouds = (Utils.getNumericValue(arr[1] , 0) as Number).toNumber();
               // OWM pop from o.o - 1
-              hf.precipitationChance = ((Utils.getDictionaryValue(bg_hh[i], "pop", 0.0) as Float) * 100.0).toNumber();
-              hf.condition = (Utils.getDictionaryValue(bg_hh[i], "cond", 0) as Number).toNumber(); 
-              hf.windBearing = (Utils.getDictionaryValue(bg_hh[i], "w_deg", 0) as Number).toNumber();
-              hf.windSpeed = (Utils.getDictionaryValue(bg_hh[i], "w_s", 0) as Float).toFloat();
-              hf.relativeHumidity = (Utils.getDictionaryValue(bg_hh[i], "humid", 0) as Number).toNumber();
-              hf.temperature = (Utils.getDictionaryValue(bg_hh[i], "temp", 0) as Number).toNumber();                 
-              hf.uvi = (Utils.getDictionaryValue(bg_hh[i], "uvi", 0.0) as Float).toFloat(); 
-              hf.pressure = (Utils.getDictionaryValue(bg_hh[i], "press", 0) as Number).toNumber();
-              hf.dewPoint = (Utils.getDictionaryValue(bg_hh[i], "dew_p", 0.0) as Float).toFloat();
-
+              hf.precipitationChance = ((Utils.getNumericValue(arr[2], 0.0) as Float) * 100.0).toNumber();
+              hf.condition = (Utils.getNumericValue(arr[3], 0) as Number).toNumber(); 
+              hf.uvi = (Utils.getNumericValue(arr[4], 0.0) as Float).toFloat(); 
+              hf.windSpeed = (Utils.getNumericValue(arr[5], 0) as Float).toFloat();
+              hf.windBearing = (Utils.getNumericValue(arr[6], 0) as Number).toNumber();
+              hf.temperature = (Utils.getNumericValue(arr[7], 0) as Number).toNumber();                 
+              hf.pressure = (Utils.getNumericValue(arr[8], 0) as Number).toNumber();
+              hf.relativeHumidity = (Utils.getNumericValue(arr[9], 0) as Number).toNumber();
+              hf.dewPoint = (Utils.getNumericValue(arr[10], 0.0) as Float).toFloat();
+           
               System.println("bgData Hourly: " + hf.info());   
               hh.add(hf);             
           }                
@@ -133,7 +139,20 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
           }
         }
 
-        var wd = new WeatherData(cc, mm, hh, cc.observationTime);     
+        if (alerts != null) {
+          var bg_al = alerts as Array<Array>;
+          for (var i = 0; i < bg_al.size(); i++) {
+              var wal = new WeatherAlert();
+              var warr = bg_al[i] as Array<Numeric or String>;
+              wal.event = Utils.getStringValue(warr[0] as String, "") as String;
+              wal.start = new Time.Moment((Utils.getNumericValue(warr[1] as Number, 0.0) as Number).toNumber());  
+              wal.end = new Time.Moment((Utils.getNumericValue(warr[2] as Number, 0.0) as Number).toNumber());  
+              wal.description = Utils.getStringValue(warr[3] as String, "") as String;
+              System.println("bgData Alert: " + wal.info());   
+              al.add(wal); 
+          }
+        }
+        var wd = new WeatherData(cc, mm, hh, al, cc.observationTime);     
         wd.setChanged(true);
         return wd;
       } catch (ex) {
@@ -179,6 +198,7 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
             if (wData.current.pressure == null) { wData.current.pressure = bgData.current.pressure; }  
 
             wData.minutely = bgData.minutely; 
+            wData.alerts = bgData.alerts;
             if (bgData.changed) { wData.changed = true; }
            break;
           case wsOWMFirst:

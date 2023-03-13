@@ -1,6 +1,6 @@
 <properties>
 	<property id="showCurrentForecast" type="boolean">true</property>
-	<property id="maxMinuteForecast" type="number">0</property>
+	<!-- <property id="maxMinuteForecast" type="number">0</property> -->
 	<property id="maxHoursForecast" type="number">8</property>
 	<property id="showClouds" type="boolean">true</property>
 	
@@ -38,13 +38,17 @@
 	<property id="maxPressure" type="number">1080</property>	
 	<property id="minPressure" type="number">870</property>	
 
-	<property id="showCurrentWind" type="boolean">true</property>	
-			
+	<property id="showCurrentWind" type="boolean">true</property>				
+	<property id="showWeatherAlerts" type="boolean">true</property>	
+	<property id="showMinuteForecast" type="boolean">true</property>	
+	
 	<property id="minimalGPSquality" type="number">3</property>	
 	
-	<property id="weatherDataSource" type="number">1</property>
-	<property id="openWeatherAPIVersion" type="number">0</property>
+	<property id="weatherDataSource" type="number">0</property>
+	<property id="openWeatherAPIVersion" type="number">1</property>
 	<property id="openWeatherAPIKey" type="string"></property>
 	<property id="openWeatherProxy" type="string">https://api.castlephoto.info/owm_one</property>
 	<property id="openWeatherProxyAPIKey" type="string">0548b3c7-61bc-4afc-b6e5-616f19d3cf23</property>	
+
+	<property id="useTestData" type="boolean">false</property>	
 </properties>

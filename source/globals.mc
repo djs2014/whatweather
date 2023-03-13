@@ -25,7 +25,7 @@ const COLOR_WHITE_ORANGE = 0xFFE9E1;  // 0xF1AC4A;
 // @@ Make settings object -> + toString
 var _showCurrentForecast as Lang.Boolean = true;
 var _maxHoursForecast as Lang.Number = 8;
-var _maxMinuteForecast as Lang.Number = 0;
+var _showMinuteForecast as Lang.Boolean = true;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _showDetailsWhenPaused as Lang.Boolean = true;
 var _dashesUnderColumnHeight as Lang.Number = 2;
@@ -48,6 +48,7 @@ var _showWeatherCondition as Lang.Boolean = true;
 var _showComfortZone as Lang.Boolean = true;
 var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
+var _showWeatherAlerts as Lang.Boolean = true;
 
 var _hideTemperatureLowerThan as Lang.Number = 8;
 var _showActualWeather as Lang.Boolean = true;

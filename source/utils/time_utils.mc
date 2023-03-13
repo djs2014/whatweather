@@ -35,9 +35,9 @@ module WhatAppBase {
   
     function getDateTimeString(moment as Time.Moment?) as String {
       if (moment != null && moment instanceof Time.Moment) {
-        var date = Gregorian.info(moment, Time.FORMAT_SHORT);
-        return date.year.format("%d") + " " + date.hour.format("%02d") + ":" +
-               date.min.format("%02d") + ":" + date.sec.format("%02d");
+        var start = Gregorian.info(moment, Time.FORMAT_SHORT);
+        return Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [start.year, start.month, start.day, 
+          start.hour.format("%02d"), start.min.format("%02d"), start.sec.format("%02d")]);
       }
       return "";
     }

@@ -29,8 +29,8 @@
 	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
 		<settingConfig type="numeric" min="0" max="12" />
 	</setting>	
-	<setting propertyKey="@Properties.maxMinuteForecast" title="@Strings.MaxMinuteForecast">
-		<settingConfig type="numeric" min="0" max="60" />
+	<setting propertyKey="@Properties.showMinuteForecast" title="@Strings.ShowMinuteForecast">
+		<settingConfig type="boolean" />
 	</setting>	
 	
 	<setting propertyKey="@Properties.showWind" title="@Strings.ShowWind" prompt="@Strings.ShowWindPrompt">
@@ -65,13 +65,18 @@
 	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
 		<settingConfig type="boolean" />
 	</setting>
-
 	<setting propertyKey="@Properties.hideUVIndexLowerThan" title="@Strings.HideUVIndexLowerThan">
 		<settingConfig type="numeric" min="-1" />
 	</setting>
 	<setting propertyKey="@Properties.maxUVIndex" title="@Strings.MaxUVIndex">
 		<settingConfig type="numeric" min="0" max="50"/>
 	</setting>		
+	<setting propertyKey="@Properties.showCurrentWind" title="@Strings.ShowCurrentWind">
+		<settingConfig type="boolean" />
+	</setting>
+	<setting propertyKey="@Properties.showWeatherAlerts" title="@Strings.ShowWeatherAlerts">
+		<settingConfig type="boolean" />
+	</setting>
 	
     <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
@@ -138,9 +143,6 @@
 	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
 		<settingConfig type="numeric" min="0" max="60" />
 	</setting>	
-	<setting propertyKey="@Properties.showCurrentWind" title="@Strings.ShowCurrentWind">
-		<settingConfig type="boolean" />
-	</setting>
 	<setting propertyKey="@Properties.showDetailsWhenPaused" title="@Strings.ShowDetailsWhenPaused">
 		<settingConfig type="boolean" />
 	</setting>
@@ -159,4 +161,8 @@
             <listEntry value="4">@Strings.GpsQualityGood</listEntry>            	
         </settingConfig>
     </setting>    	
+
+	<setting propertyKey="@Properties.useTestData" title="@Strings.UseTestData">
+		<settingConfig type="boolean" />
+	</setting>
 </settings>

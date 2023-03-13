@@ -3,7 +3,7 @@
     <string id="AppNameBeta">What Weather Beta</string>    
     <string id="ShowCurrentForecast">Show current hour forecast</string>
     <string id="MaxHoursForecast">Maximum hours of forecast data</string> 
-    <string id="MaxMinuteForecast">Maximum minute of forecast data first hour</string>
+    <!-- <string id="MaxMinuteForecast">Maximum minute of forecast data first hour</string> -->
     <string id="ShowClouds">Show cloud %</string>
     <string id="ShowWind">Show wind</string>
     <string id="ShowWindPrompt">Select wind information</string>
@@ -29,6 +29,8 @@
     <string id="DashesUnderColumnHeight">Height of dashes under the columns</string>
     <string id="ObservationTimeDelayedMinutesThreshold">Show warning when time of observation is delayed for x minutes</string>
     <string id="ShowCurrentWind">Show current wind (small field)</string>
+    <string id="ShowWeatherAlerts">Show weather alerts (OWM)</string>
+    <string id="ShowMinuteForecast">Show mm of rain first hour (OWM 3.0)</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
     <string id="ShowInfoSmallField">Extra information (small field)</string>        
     <string id="ShowInfoLargeField">Extra information (large field)</string>        
@@ -72,4 +74,6 @@
     <string id="GpsQualityPoor">Poor</string>
     <string id="GpsQualityUsable">Usable</string>
     <string id="GpsQualityGood">Good</string>
+
+    <string id="UseTestData">Use test data</string>
 </strings>

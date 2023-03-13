@@ -65,7 +65,7 @@ class WhatWeatherApp extends Application.AppBase {
     try {
       System.println("Loading user settings");  
       $._showCurrentForecast = Utils.getApplicationProperty("showCurrentForecast", true) as Boolean;
-      $._maxMinuteForecast = Utils.getApplicationProperty("maxMinuteForecast", 0) as Number;
+      $._showMinuteForecast = Utils.getApplicationProperty("showMinuteForecast", true) as Boolean;
       $._maxHoursForecast = Utils.getApplicationProperty("maxHoursForecast", 8) as Number;
       $._showDetailsWhenPaused = Utils.getApplicationProperty("showDetailsWhenPaused", true) as Boolean;      
       $._dashesUnderColumnHeight = Utils.getApplicationProperty("dashesUnderColumnHeight", 2) as Number;
@@ -99,7 +99,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._showDewpoint = Utils.getApplicationProperty("showDewpoint", true) as Boolean;  
       $._showComfortZone = Utils.getApplicationProperty("showComfortZone", true) as Boolean;  
       $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Boolean;  
-
+      $._showWeatherAlerts = Utils.getApplicationProperty("showWeatherAlerts", true) as Boolean;  
 
       $._showActualWeather = Utils.getApplicationProperty("showActualWeather", false) as Boolean;  
 
@@ -110,7 +110,7 @@ class WhatWeatherApp extends Application.AppBase {
       // Always req per 5 minutes.
       // bgHandler.setUpdateFrequencyInMinutes(Utils.getApplicationPropertyAsNumber("updateFrequencyWebReq", 5));
 
-      var ws =  Utils.getApplicationProperty("weatherDataSource", 1) as Number;
+      var ws =  Utils.getApplicationProperty("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;      
       if ($._showInfoSmallField == SHOW_INFO_TEMPERATURE || $._showInfoLargeField == SHOW_INFO_TEMPERATURE 
       || $._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
@@ -134,13 +134,16 @@ class WhatWeatherApp extends Application.AppBase {
       setStorageValueIfChanged("openWeatherAPIKey");
       setStorageValueIfChanged("openWeatherProxy");
       setStorageValueIfChanged("openWeatherProxyAPIKey");
-
-      // Storage.setValue("openWeatherAPIKey", Utils.getApplicationPropertyAsString("openWeatherAPIKey",""));
       Storage.setValue("openWeatherAPIVersion", Utils.getApplicationProperty("openWeatherAPIVersion", 1) as Number);
-      // Storage.setValue("openWeatherProxy", Utils.getApplicationPropertyAsString("openWeatherProxy",""));
-      // Storage.setValue("openWeatherProxyAPIKey", Utils.getApplicationPropertyAsString("openWeatherProxyAPIKey",""));                    
+      Storage.setValue("useTestData", Utils.getApplicationProperty("useTestData", false) as Boolean);
 
-      Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);                    
+      Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);    
+      if ($._showMinuteForecast) {               
+        Storage.setValue("openWeatherMaxMinutes", 60);                    
+      } else {
+        Storage.setValue("openWeatherMaxMinutes", 0);                    
+      }
+      Storage.setValue("openWeatherAlerts", $._showWeatherAlerts);                    
     
       System.println("User settings loaded");
     } catch (ex) {
@@ -155,7 +158,7 @@ class WhatWeatherApp extends Application.AppBase {
       var propertyValue = Utils.getApplicationProperty(key,"") as String;
       if (propertyValue != null && propertyValue.length() > 0) {
         var storageValue = Storage.getValue(key) as String;
-        if (!storageValue.equals(propertyValue)) {
+        if (storageValue== null || !storageValue.equals(propertyValue)) {
           Storage.setValue(key, propertyValue);
           System.println("Storage [" + key + "] set to [" + propertyValue + "]" );
         }
@@ -174,12 +177,7 @@ class WhatWeatherApp extends Application.AppBase {
       var tempMin = Utils.getApplicationProperty("comfortTempMin", 19) as Number;
       var tempMax = Utils.getApplicationProperty("comfortTempMax", 27) as Number;
       comfort.temperatureMin = Utils.min(tempMin, tempMax).toNumber();
-      comfort.temperatureMax = Utils.max(tempMin, tempMax).toNumber();
-
-      // var popMin = Utils.getApplicationPropertyAsNumber("comfortPopMin", 0);
-      // var popMax = Utils.getApplicationPropertyAsNumber("comfortPopMax", 40);
-      // comfort.precipitationChanceMin = Utils.min(popMin, popMax).toNumber();
-      // comfort.precipitationChanceMax = Utils.max(popMin, popMax).toNumber();
+      comfort.temperatureMax = Utils.max(tempMin, tempMax).toNumber();      
     }
 
   public function getServiceDelegate() as Array<System.ServiceDelegate> {
@@ -195,8 +193,9 @@ class WhatWeatherApp extends Application.AppBase {
     if (data instanceof Lang.Number && data == 0) {
       System.println("Response code is 0 -> reset bg service");
       loadUserSettings();
-      return;
-    }
+      return;      
+    } 
+
     var bgHandler = getBGServiceHandler();
     bgHandler.onBackgroundData(data, self, :updateBgData);
 

@@ -1,5 +1,25 @@
-what weather - api key etc in storage, overwrite if value in settings
--> fix for loosing settings ..
+handle OWM error -> {json}
+- OWM response error --> error code 200 met payload {error: {"cod":"400","message":"wrong latitude"} }
+- code must be 200, else no data
+ 
+52.188950, 4.549666
+180, 180
+x test mm prediction -> only when paid subscription
+x if no mm data, then don't show
+x update antagonist server + git proj
+show OWM weather alert 
+- minimize weather alerts payload (+ description)
+- check minimized values
+- text check width to place \n linebreaks.
+- option enable alerts setting
+- if more than 1, extra call to get cached alerts
+- display lat/lng current if garmin?
+- 180.00000 is wrong latitude
+
+<property id="showWeatherAlerts" type="boolean">true</property>	
+	<property id="showMinuteForecast" type="boolean">true</property>	
+	
+x what weather - api key etc in storage, overwrite if value in settings
 
 - git project node proxy server add in same project..
 	-> node.js: OWM pop = value 0.1 - 1  + example json
@@ -11,7 +31,8 @@ what weather - api key etc in storage, overwrite if value in settings
 --------------------
 Added (:typecheck(false)) because of compiler bugs in strict mode.
 
-- show alerts
+- show alerts play sound, 
+- 
 TL;DR;
  - properties without in settings anymore -> weird bugs 
  - don't use Toybox.Communications in import for foreground app (even if it is not used)

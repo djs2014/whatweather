@@ -18,6 +18,7 @@ class BGServiceHandler {
     var mPhoneConnected as Boolean = false;    
     var mBGActive as Boolean = false;
     var mBGDisabled as Boolean = false;
+    var mErrorMessage as String = "";
 
     var mUpdateFrequencyInMinutes as Number = 5;
     var mRequestCounter as Number = 0; 
@@ -50,6 +51,7 @@ class BGServiceHandler {
         System.println("Reset BG service");
         mError = 0;
         mHttpStatus =HTTP_OK;
+        mErrorMessage = "";
     }
     function onCompute(info as Activity.Info) as Void {
         mPhoneConnected = System.getDeviceSettings().phoneConnected;        
@@ -87,7 +89,7 @@ class BGServiceHandler {
     hidden function testOnNonFatalError() as Void {
         if (mError == CustomErrors.ERROR_BG_GPS_LEVEL || mError == CustomErrors.ERROR_BG_NO_PHONE || mError == CustomErrors.ERROR_BG_NO_POSITION
             || mError == CustomErrors.ERROR_BG_EXCEPTION ) {
-            mError = CustomErrors.ERROR_BG_NONE;
+            mError = CustomErrors.ERROR_BG_NONE;            
         }
         
         if (!mPhoneConnected) {
@@ -99,7 +101,7 @@ class BGServiceHandler {
             } else if (!currentLocation.hasLocation()) {
                 mError = CustomErrors.ERROR_BG_NO_POSITION;
             }
-        }     
+        } 
     }
 
     function stopBGservice() as Void {
@@ -161,6 +163,7 @@ class BGServiceHandler {
  
     function onBackgroundData(data as Application.PropertyValueType, obj as Object, cbProcessData as Symbol) as Void {                
         mLastRequestMoment = Time.now();
+        mErrorMessage = "";
         if (data instanceof Lang.Number) {
             // Check for known error else http status
             var code = data as Lang.Number;
@@ -170,17 +173,28 @@ class BGServiceHandler {
                 mHttpStatus = code;
                 mError = CustomErrors.ERROR_BG_HTTPSTATUS;
             }
-            System.println("onBackgroundData error responsecode: " + data);           
-        } else {
-            mHttpStatus =HTTP_OK;
-            mData = data;
-            mError = CustomErrors.ERROR_BG_NONE;
-            mRequestCounter = mRequestCounter + 1;
-            if (obj != null) {
-                var processData = new Lang.Method(obj, cbProcessData);
-                processData.invoke(self, data);
+            System.println("onBackgroundData error responsecode: " + data);   
+            return;        
+        } 
+
+        if (data != null) {
+            var bgData = data as Dictionary;
+            if (bgData["error"] != null && bgData["status"] != null) {
+                mErrorMessage = Lang.format("$1$ $2$",[bgData["status"] as Number, bgData["error"] as String]);
+                System.println("onBackgroundData error OWM: " + mErrorMessage);   
+                return;
             }
-        }    
+        }
+
+        mHttpStatus = HTTP_OK;
+        mData = data;
+        mError = CustomErrors.ERROR_BG_NONE;
+        mRequestCounter = mRequestCounter + 1;
+        if (obj != null) {
+            var processData = new Lang.Method(obj, cbProcessData);
+            processData.invoke(self, data);
+        }
+    
     }
     function setLastObservationMoment(moment as Time.Moment?) as Void {
         mLastObservationMoment = moment;
@@ -205,4 +219,10 @@ class BGServiceHandler {
         }        
         return getCommunicationError(mError, mHttpStatus);        
     }
+
+     function getErrorMessage() as Lang.String {
+        if (mErrorMessage == null) { return ""; }
+        if (mErrorMessage.length() > 30) { return  mErrorMessage.substring(0, 30) as String; }                
+        return mErrorMessage;
+     }
 }
