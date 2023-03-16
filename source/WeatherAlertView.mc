@@ -7,19 +7,28 @@ import Toybox.WatchUi;
 import Toybox.System;
 using WhatAppBase.Utils as Utils;
 
+var gWeatherAlertViewRef as WeakReference? = null;
+
 class WeatherAlertView extends WatchUi.DataFieldAlert {
 
     hidden var mAlert as WeatherAlert;
     hidden var mDescription as String = "";
+    // hidden var mCounter as Number;
     public function initialize(alert as WeatherAlert) {
         DataFieldAlert.initialize();
 
-        mAlert = alert;               
+        mAlert = alert;           
+        // mCounter = 10;    
     }
 
-    public function onUpdate(dc as Dc) as Void {    
+    public function onUpdate(dc as Dc) as Void {   
+        // mCounter = mCounter - 1;
+        // if (mCounter < 0)  {
+        //     WatchUi.popView(SLIDE_DOWN);
+        //     return;
+        // }
         if (mAlert == null) { return; }
-        var height = dc.getHeight() / 3;
+        var height = dc.getHeight() / 2.5;
         var y = dc.getHeight() - height;
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
         dc.fillRectangle(0, y, dc.getWidth(), height);   
@@ -49,11 +58,12 @@ class WeatherAlertView extends WatchUi.DataFieldAlert {
                 desc = mDescription;
             } else {
                 var textWidth = dc.getTextWidthInPixels(desc, Graphics.FONT_TINY);
+                // @@ TODO: split text and calculate witdh until fit screen width .. or is there a IQ function for this?
                 if (textWidth > dc.getWidth()) {
-                    desc = Utils.stringReplacePos(desc, desc.length() / 2,  " ", "\n");
+                    desc = Utils.stringReplacePos(desc, desc.length() / 2,  " ", "\n", 1);
                 }
             }
-            dc.drawText(1, y, Graphics.FONT_TINY, desc, Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(1, y, Graphics.FONT_TINY, desc, Graphics.TEXT_JUSTIFY_LEFT);
             y = y + lineHeight;
         }
     }
@@ -69,8 +79,10 @@ class WeatherAlertHandler {
 
     public function handle(alerts as Array<WeatherAlert>) as Void {
 
-        var max = alerts.size();
-        max = 1; // @@ only display one at the time
+        // Alert is already being displayed
+        if (gWeatherAlertViewRef != null && gWeatherAlertViewRef.stillAlive()) { return; }
+
+        var max = alerts.size();        
         for (var idx = 0; idx < max; idx++) {
             var alert = alerts[idx] as WeatherAlert;
             if (alert.handled) { continue; }
@@ -85,7 +97,9 @@ class WeatherAlertHandler {
 
                 setDisplayed(key);
                 alert.handled = true;
-                WatchUi.DataField.showAlert(new $.WeatherAlertView(alert));
+                var weatherAlertView = new $.WeatherAlertView(alert);
+                WatchUi.DataField.showAlert(weatherAlertView);
+                gWeatherAlertViewRef = weatherAlertView.weak();
                 return;
             }
         }    

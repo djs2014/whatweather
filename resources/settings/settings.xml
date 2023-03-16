@@ -64,10 +64,7 @@
 	</setting>
 	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
 		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.hideUVIndexLowerThan" title="@Strings.HideUVIndexLowerThan">
-		<settingConfig type="numeric" min="-1" />
-	</setting>
+	</setting>	
 	<setting propertyKey="@Properties.maxUVIndex" title="@Strings.MaxUVIndex">
 		<settingConfig type="numeric" min="0" max="50"/>
 	</setting>		
@@ -114,10 +111,7 @@
 	<setting propertyKey="@Properties.alertLevelDewpoint" title="@Strings.AlertLevelDewpoint">
 		<settingConfig type="numeric" min="0" />
 	</setting>	
-
-	<setting propertyKey="@Properties.hideTemperatureLowerThan" title="@Strings.HideTemperatureLowerThan">
-		<settingConfig type="numeric" min="-1" />
-	</setting>
+	
 	<setting propertyKey="@Properties.maxTemperature" title="@Strings.MaxTemperature">
 		<settingConfig type="numeric" min="0" max="100"/>
 	</setting>	
@@ -139,18 +133,8 @@
 	</setting>
 	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
 		<settingConfig type="numeric" min="0" max="100" />
-	</setting>	
-	<setting propertyKey="@Properties.observationTimeDelayedMinutesThreshold" title="@Strings.ObservationTimeDelayedMinutesThreshold">
-		<settingConfig type="numeric" min="0" max="60" />
-	</setting>	
-	<setting propertyKey="@Properties.showDetailsWhenPaused" title="@Strings.ShowDetailsWhenPaused">
-		<settingConfig type="boolean" />
-	</setting>
-			
-	<setting propertyKey="@Properties.dashesUnderColumnHeight" title="@Strings.DashesUnderColumnHeight">
-		<settingConfig type="numeric" min="0" max="4" />
-	</setting>	  
-	
+	</setting>		
+				
 	<setting propertyKey="@Properties.minimalGPSquality" title="@Strings.MinimalGPSquality" 
 	prompt="@Strings.MinimalGPSqualityPrompt">
         <settingConfig type="list">
@@ -162,7 +146,7 @@
         </settingConfig>
     </setting>    	
 
-	<setting propertyKey="@Properties.useTestData" title="@Strings.UseTestData">
-		<settingConfig type="boolean" />
+	<setting propertyKey="@Properties.testScenario" title="@Strings.TestScenario">
+		<settingConfig type="numeric" min="0" max="2" />		
 	</setting>
 </settings>

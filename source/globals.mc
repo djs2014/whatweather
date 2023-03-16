@@ -22,20 +22,16 @@ const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xFFFFE1;  // 0xFFFFAA;
 const COLOR_WHITE_ORANGE = 0xFFE9E1;  // 0xF1AC4A;
 
-// @@ Make settings object -> + toString
 var _showCurrentForecast as Lang.Boolean = true;
 var _maxHoursForecast as Lang.Number = 8;
 var _showMinuteForecast as Lang.Boolean = true;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
-var _showDetailsWhenPaused as Lang.Boolean = true;
-var _dashesUnderColumnHeight as Lang.Number = 2;
 var _showCurrentWind as Lang.Boolean = true;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 var _showClouds as Lang.Boolean = true;
 
 var _showUVIndex as Lang.Boolean = true;
 var _maxUVIndex as Lang.Number = 20;
-var _hideUVIndexLowerThan as Lang.Number = 4;
 
 var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
@@ -50,16 +46,13 @@ var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
 var _showWeatherAlerts as Lang.Boolean = true;
 
-var _hideTemperatureLowerThan as Lang.Number = 8;
-var _showActualWeather as Lang.Boolean = true;
-
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;
 var _minPressure as Lang.Number = 870;
 
 
 var _alertLevelUVi as Lang.Number = 6;
-var _alertLevelRainMMfirstHour as Lang.Number = 5;
+var _alertLevelRainMMfirstHour as Lang.Number = 2;
 var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsGarminFirst;
 
@@ -73,21 +66,4 @@ function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
     return $._weatherDescriptions[key] as Lang.String;
   }
   return null;
-}
-
-function split(strIn as Lang.String?, splitter as Lang.String) as Array {
-  var array = [];
-  if (strIn == null) {
-    return array;
-  }
-  var location = strIn.find(splitter);
-  
-  while (location != null) {
-    array.add(strIn.substring(0, location));
-    strIn = strIn.substring(location + splitter.length(), strIn.length()) as Lang.String;
-    location = strIn.find(splitter);
-  }
-  array.add(strIn);
-
-  return array;
 }

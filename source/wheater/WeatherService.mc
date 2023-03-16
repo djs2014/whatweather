@@ -131,9 +131,9 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
           mm.forecastTime = new Time.Moment(Utils.getDictionaryValue(bg_mm, "dt_start", 0.0) as Number);  
           var pops = bg_mm["pops"];
           if (pops != null) {
-            var bg_pops = pops as Array<Number>;
+            var bg_pops = pops as Array<Float>;
             for (var i = 0; i < bg_pops.size(); i++) {
-              mm.pops.add(bg_pops[i]);
+              mm.pops.add(bg_pops[i] as Float);
             }
             System.println("Size of minutely: " + mm.pops.size()); 
           }
@@ -263,8 +263,8 @@ class WeatherDataCheck {
     if (data != null) {
       var d = data as WeatherData;  
       time = Utils.getShortTimeString(d.current.observationTime);
-      lat = getStringValue(d.current.lat);
-      lon = getStringValue(d.current.lon);
+      lat = getDoubleAsStringValue(d.current.lat);
+      lon = getDoubleAsStringValue(d.current.lon);
       if (data.current.observationLocationName != null) { 
         name = data.current.observationLocationName;
       }
@@ -279,7 +279,7 @@ class WeatherDataCheck {
     return time.equals(item.time) && lat.equals(item.lat) && lon.equals(item.lon) && name.equals(item.name);
   }
 
-  hidden function getStringValue(item as Double?) as String {
+  hidden function getDoubleAsStringValue(item as Double?) as String {
     if (item == null) { return ""; }
     return (item as Double).toString();
   }

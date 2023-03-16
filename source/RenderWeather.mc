@@ -21,7 +21,7 @@ class RenderWeather {
 
   hidden const NO_BEARING_SPEED = 0.3;
   hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
-  
+    
   // humidity is already percentage  
   hidden var maxTemperature as Lang.Number = 50; // celcius
   hidden var maxPressure as Lang.Number = 1080;
@@ -336,55 +336,7 @@ class RenderWeather {
     }
   }
 
-  function drawGlossary() as Void {
-    dc.setColor(Graphics.COLOR_ORANGE, Graphics.COLOR_TRANSPARENT);
-    var fontHeight = dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY);
-
-    var conditionNr = 0;
-    var conditionNrMax = 53;
-    var y = ds.margin;
-    var x = ds.margin;
-    var currentX = x;
-    var columnMaxWidth = ds.columnWidth + ds.space;
-    var maxHeight = ds.height - ds.margin;
-    var iHeight = 10;
-
-    while (y <= ds.height && conditionNr <= conditionNrMax) {
-      y = y + iHeight;
-
-      var text = getWeatherConditionText(conditionNr);
-      var tw = columnMaxWidth;
-      if (text != null) {
-        tw = dc.getTextWidthInPixels(text, Graphics.FONT_SYSTEM_XTINY);
-        columnMaxWidth = Utils.max(columnMaxWidth, tw);
-      }
-      
-      if (y + iHeight > maxHeight) {
-        // next column
-        currentX = currentX + columnMaxWidth + ds.space;
-        x = currentX;
-        y = ds.margin + iHeight;
-        columnMaxWidth = Utils.max(ds.columnWidth + ds.space, tw);
-      }
-
-      // draw icon
-      var center = new Point((x + ds.columnWidth / 2) as Number, y);
-      _drawWeatherCondition(center, conditionNr, false);
-
-      // draw description
-      y = y + 5;
-      if (text != null) {
-        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, y, Graphics.FONT_SYSTEM_XTINY, text,
-                    Graphics.TEXT_JUSTIFY_LEFT);
-        y = y + fontHeight;
-      }
-
-      dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      dc.drawLine(x, y, x + tw, y);
-      conditionNr++;
-    }
-  }
+  
 
   function drawWeatherConditionText(x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
     if (ds.oneField) {

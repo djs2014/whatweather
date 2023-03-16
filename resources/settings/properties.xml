@@ -1,34 +1,28 @@
 <properties>
 	<property id="showCurrentForecast" type="boolean">true</property>
-	<!-- <property id="maxMinuteForecast" type="number">0</property> -->
 	<property id="maxHoursForecast" type="number">8</property>
 	<property id="showClouds" type="boolean">true</property>
 	
 	<property id="showUVIndex" type="boolean">true</property>
 	<property id="maxUVIndex" type="number">20</property>
-	<property id="hideUVIndexLowerThan" type="number">2</property>
 
 	<property id="showPressure" type="boolean">true</property>
 	<property id="showDewpoint" type="boolean">true</property>
 
 	<property id="alertLevelPrecipitationChance" type="number">70</property>
-	<property id="alertLevelRainMMfirstHour" type="number">0</property>
+	<property id="alertLevelRainMMfirstHour" type="number">2</property>
 	<property id="alertLevelUVi" type="number">6</property>
 	<property id="alertLevelWindSpeed" type="number">5</property>
 	<property id="alertLevelDewpoint" type="number">19</property>
 
-	<property id="showDetailsWhenPaused" type="boolean">true</property>		
-	<property id="observationTimeDelayedMinutesThreshold" type="number">30</property>		
-	<property id="dashesUnderColumnHeight" type="number">2</property>
 	<property id="showInfoSmallField" type="number">1</property>
 	<property id="showInfoLargeField" type="number">0</property>
 	<property id="showWind" type="number">3</property>
 	<property id="showTemperature" type="boolean">true</property>
-	<property id="hideTemperatureLowerThan" type="number">8</property>
 	<property id="showRelativeHumidity" type="boolean">true</property>
 	<property id="showComfortZone" type="boolean">true</property>
 	<property id="showWeatherCondition" type="boolean">true</property>	
-	<property id="showActualWeather" type="boolean">true</property>	
+	
 	<property id="comfortHumidityMin" type="number">40</property>	
 	<property id="comfortHumidityMax" type="number">60</property>	
 	<property id="comfortTempMin" type="number">19</property>	
@@ -50,5 +44,5 @@
 	<property id="openWeatherProxy" type="string">https://api.castlephoto.info/owm_one</property>
 	<property id="openWeatherProxyAPIKey" type="string">0548b3c7-61bc-4afc-b6e5-616f19d3cf23</property>	
 
-	<property id="useTestData" type="boolean">false</property>	
+	<property id="testScenario" type="number">0</property>	
 </properties>

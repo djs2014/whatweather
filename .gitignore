@@ -1,6 +1,7 @@
-bin/
-other/logs/
-export/
-export_beta/
-private/
+bin
+other/logs
+export
+export_beta
+private
+export_beta/whatweather.iq
 export_beta/whatweather.iq

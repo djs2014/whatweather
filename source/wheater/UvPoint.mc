@@ -6,6 +6,7 @@ class UvPoint {
   var y as Lang.Number = 0;
   var isHidden as Lang.Boolean;
   var uvi as Lang.Float?;
+  var hideUVIndexLowerThan as Number = 2;
 
   function initialize(x as Lang.Number, uvi as Lang.Float?) {
     self.x = x;
@@ -19,7 +20,7 @@ class UvPoint {
     if (precipitationChance == null || uvi == null) {
       self.isHidden = true;
     } else {
-      self.isHidden = (uvi as Float <= $._hideUVIndexLowerThan) && (precipitationChance > 0);
+      self.isHidden = (uvi as Float <= hideUVIndexLowerThan) && (precipitationChance > 0);
     }
   }
 
