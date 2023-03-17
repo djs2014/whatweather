@@ -1,12 +1,13 @@
-no minutely? -- make boolean field value in storage etc.
+- minutely
+- show owm weather alert
+  - enable in settings + enable in device
+    - activity profiles - select profile - alerts - add connect iq - what weather
+    - NB. what weather datafield should be in this profile
+hide minutely when less than mm 0.1
 
-
-- minutely - starts at moment of call
-  - display # minutes when start to rain,
-  - or show grid per 10 min ..
-  - layout
-
+????
 alerts:
+minutely text color night mode
 
 - current hour == is for whole day ? default off..
   

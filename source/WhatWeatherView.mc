@@ -59,14 +59,18 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function compute(info as Activity.Info) as Void {
-    mCurrentInfo.getPosition(info);
-    mActivityPaused = activityIsPaused(info);    
+    try {
+      mCurrentInfo.getPosition(info);
+      mActivityPaused = activityIsPaused(info);    
 
-    if (info has :timerState && info.timerState != null) { mTimerState = info.timerState as Lang.Number; }
-    mBGServiceHandler.onCompute(info);
-    mBGServiceHandler.autoScheduleService();   
+      if (info has :timerState && info.timerState != null) { mTimerState = info.timerState as Lang.Number; }
+      mBGServiceHandler.onCompute(info);
+      mBGServiceHandler.autoScheduleService();   
 
-
+      handleWeatherAlerts();
+    } catch (ex) {
+      ex.printStackTrace();
+    }  
     // Not working on EDGE830
     // var garminWeather = purgePastWeatherdata(getLatestGarminWeather());
     // $._bgData = purgePastWeatherdata($._bgData);
@@ -151,8 +155,7 @@ class WhatWeatherView extends WatchUi.DataField {
       showInfo(dc, ds);
 
       showBgInfo(dc, ds);    
-
-      handleWeatherAlerts(dc);
+      
     } catch (ex) {
       ex.printStackTrace();
     }  
@@ -332,13 +335,14 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var render = new RenderWeather(dc, ds);
-
+      var xOffsetWindFirstColumn = 0;
       if ( $._showMinuteForecast) { 
         var max = 0;
         if (mm != null) {
           max = mm.pops.size();
         }
-        if (max > 0) {          
+        if (max > 0) {         // @@TODO max < x ...etc
+          xOffsetWindFirstColumn = 60; 
           var xMMstart = x;
           var popTotal = 0.0 as Lang.Float;
           var columnWidth = 1;
@@ -365,7 +369,7 @@ class WhatWeatherView extends WatchUi.DataField {
             var rainTextTime = "in " + rainInXminutes.format("%d") + " min";
             if (ds.smallField) { 
               rainTextTime = rainInXminutes.format("%d") + " min";
-              dc.drawText(xMMstart, ds.columnY + (ds.columnHeight / 2), Graphics.FONT_XTINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
+              dc.drawText(xMMstart, ds.columnY + (ds.columnHeight * 0.7), Graphics.FONT_XTINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
             } else if (ds.wideField) {
               dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 2 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTotal, Graphics.TEXT_JUSTIFY_LEFT);              
               dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 1 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
@@ -574,8 +578,8 @@ class WhatWeatherView extends WatchUi.DataField {
         render.drawObservationTime(current.observationTime); 
       }
 
-      if (mShowWindFirst) {
-        render.drawWindInfoFirstColumn(windPoints);
+      if (mShowWindFirst) {        
+        render.drawWindInfoFirstColumn(windPoints, xOffsetWindFirstColumn);
       } else if (mShowWind != SHOW_WIND_NOTHING) { render.drawWindInfo(windPoints); }
       
       if (ds.wideField) { 
@@ -672,7 +676,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
   }
 
-  function handleWeatherAlerts(dc as Dc) as Void {
+  function handleWeatherAlerts() as Void {
     if (!$._showWeatherAlerts || !(WatchUi.DataField has :showAlert) || $._mostRecentData == null) { return; }
     var alerts = ($._mostRecentData as WeatherData).alerts;
     if (alerts.size() == 0) { return; }

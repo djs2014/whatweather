@@ -284,12 +284,12 @@ class RenderWeather {
                 Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawWindInfoFirstColumn(windPoints as Array) as Void {
+  function drawWindInfoFirstColumn(windPoints as Array, xOffset as Number) as Void {
     var max = windPoints.size();
     if (max == 0) { return; }
     var wp = windPoints[0] as WindPoint;    
     var radius = 10;
-    var center = new Point(wp.x + ds.columnWidth / 2, ds.columnY + ds.columnHeight/2);
+    var center = new Point(wp.x + (ds.columnWidth / 2) - xOffset, ds.columnY + ds.columnHeight/2);
     drawWind(center, radius, wp.bearing, wp.speed);
   }
 

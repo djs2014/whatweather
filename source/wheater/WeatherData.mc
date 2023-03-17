@@ -40,6 +40,7 @@ class WeatherCurrent {
 
 class WeatherMinutely {
   var forecastTime as Time.Moment? = null;
+  var max as Float = 0.0;
   var pops as Array<Float> = [] as Array<Float>;
 }
 

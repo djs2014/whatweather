@@ -129,6 +129,7 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
         if (minutely != null) {
           var bg_mm = minutely as Dictionary;
           mm.forecastTime = new Time.Moment(Utils.getDictionaryValue(bg_mm, "dt_start", 0.0) as Number);  
+          mm.max = Utils.getDictionaryValue(bg_mm, "max", 0.0) as Float;
           var pops = bg_mm["pops"];
           if (pops != null) {
             var bg_pops = pops as Array<Float>;
