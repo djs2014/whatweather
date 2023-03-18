@@ -337,53 +337,54 @@ class WhatWeatherView extends WatchUi.DataField {
       var render = new RenderWeather(dc, ds);
       var xOffsetWindFirstColumn = 0;
       if ( $._showMinuteForecast) { 
-        var max = 0;
+        var maxIdx = 0;
         if (mm != null) {
-          max = mm.pops.size();
-        }
-        if (max > 0) {         // @@TODO max < x ...etc
-          xOffsetWindFirstColumn = 60; 
-          var xMMstart = x;
-          var popTotal = 0.0 as Lang.Float;
-          var columnWidth = 1;
-          var offset = ((max * columnWidth) + ds.space).toNumber();
-          var rainInXminutes = 0;
-          ds.calculateColumnWidth(offset);
-          for (var i = 0; i < max && i < 60; i += 1) {
-            var pop = (mm as WeatherMinutely).pops[i];
-            popTotal = popTotal + pop / 60.0; // pop is mm/hour, pop is for 1 minute
-            if (DEBUG_DETAILS) {
-              System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+          maxIdx = mm.pops.size();
+          
+          if (maxIdx > 0 && mm.max > 0.049) {        
+            xOffsetWindFirstColumn = 60; 
+            var xMMstart = x;
+            var popTotal = 0.0 as Lang.Float;
+            var columnWidth = 1;
+            var offset = ((maxIdx * columnWidth) + ds.space).toNumber();
+            var rainInXminutes = 0;
+            ds.calculateColumnWidth(offset);
+            for (var i = 0; i < maxIdx && i < 60; i += 1) {
+              var pop = (mm as WeatherMinutely).pops[i];
+              popTotal = popTotal + pop / 60.0; // pop is mm/hour, pop is for 1 minute
+              if (DEBUG_DETAILS) {
+                System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
+              }
+              if (pop > 0 && rainInXminutes == 0) { rainInXminutes = i; }
+              // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
+              // pop is float? 
+              // * 10.0 
+              drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+              x = x + columnWidth;
             }
-            if (pop > 0 && rainInXminutes == 0) { rainInXminutes = i; }
-            // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
-            // pop is float? 
-            // * 10.0 
-            drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
-            x = x + columnWidth;
-          }
-          if (popTotal > 0.0) {    
-            // total mm in x minutes
-            dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);            
-            var rainTextTotal = popTotal.format("%.1f") + " mm";
-            var rainTextTime = "in " + rainInXminutes.format("%d") + " min";
-            if (ds.smallField) { 
-              rainTextTime = rainInXminutes.format("%d") + " min";
-              dc.drawText(xMMstart, ds.columnY + (ds.columnHeight * 0.7), Graphics.FONT_XTINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
-            } else if (ds.wideField) {
-              dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 2 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTotal, Graphics.TEXT_JUSTIFY_LEFT);              
-              dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 1 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
-            } else {
-              dc.drawText(xMMstart, ds.columnY + ds.columnHeight, Graphics.FONT_TINY, rainTextTotal, Graphics.TEXT_JUSTIFY_LEFT);
-              dc.drawText(xMMstart, ds.columnY + ds.columnHeight + dc.getFontHeight(Graphics.FONT_XTINY), Graphics.FONT_TINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);
-            }            
-            x = x + ds.space;
-            if (dashesUnderColumnHeight > 0) {
-              dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-              dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, (max * columnWidth), dashesUnderColumnHeight);
+            if (popTotal > 0.0) {    
+              // total mm in x minutes
+              dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);            
+              var rainTextTotal = popTotal.format("%.1f") + " mm";
+              var rainTextTime = "in " + rainInXminutes.format("%d") + " min";
+              if (ds.smallField) { 
+                rainTextTime = rainInXminutes.format("%d") + " min";
+                dc.drawText(xMMstart, ds.columnY + (ds.columnHeight * 0.7), Graphics.FONT_XTINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
+              } else if (ds.wideField) {
+                dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 2 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTotal, Graphics.TEXT_JUSTIFY_LEFT);              
+                dc.drawText(xMMstart, ds.columnY + ds.columnHeight - 1 * dc.getFontHeight(Graphics.FONT_TINY), Graphics.FONT_TINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);              
+              } else {
+                dc.drawText(xMMstart, ds.columnY + ds.columnHeight, Graphics.FONT_TINY, rainTextTotal, Graphics.TEXT_JUSTIFY_LEFT);
+                dc.drawText(xMMstart, ds.columnY + ds.columnHeight + dc.getFontHeight(Graphics.FONT_XTINY), Graphics.FONT_TINY, rainTextTime, Graphics.TEXT_JUSTIFY_LEFT);
+              }            
+              x = x + ds.space;
+              if (dashesUnderColumnHeight > 0) {
+                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, (maxIdx * columnWidth), dashesUnderColumnHeight);
+              }
+              x = xMMstart + offset;
+              mAlertHandler.processRainMMfirstHour(popTotal);
             }
-            x = xMMstart + offset;
-            mAlertHandler.processRainMMfirstHour(popTotal);
           }
         }
       }
