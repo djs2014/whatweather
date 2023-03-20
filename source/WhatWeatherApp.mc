@@ -134,13 +134,13 @@ class WhatWeatherApp extends Application.AppBase {
       System.println("User settings loaded");
     } catch (ex) {
       System.println(ex.getErrorMessage());
-      ex.printStackTrace();
-      System.println(ex.getErrorMessage());
+      ex.printStackTrace();      
     }
   }
 
   (:typecheck(disableBackgroundCheck))
   function setStorageValueIfChanged(key as String) as Void {
+    try {
       var propertyValue = Utils.getApplicationProperty(key,"") as String;
       if (propertyValue != null && propertyValue.length() > 0) {
         var storageValue = Storage.getValue(key) as String;
@@ -149,6 +149,10 @@ class WhatWeatherApp extends Application.AppBase {
           System.println("Storage [" + key + "] set to [" + propertyValue + "]" );
         }
       }
+    } catch(ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();      
+    }
   }
 
   (:typecheck(disableBackgroundCheck))  
