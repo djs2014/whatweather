@@ -340,22 +340,23 @@ class WhatWeatherView extends WatchUi.DataField {
         var maxIdx = 0;
         if (mm != null) {
           maxIdx = mm.pops.size();
-          
+
           if (maxIdx > 0 && mm.max > 0.049) {        
             xOffsetWindFirstColumn = 60; 
+            var mmMinutesDelayed = Utils.getMinutesDelayed(mm.forecastTime);
             var xMMstart = x;
             var popTotal = 0.0 as Lang.Float;
             var columnWidth = 1;
             var offset = ((maxIdx * columnWidth) + ds.space).toNumber();
             var rainInXminutes = 0;
             ds.calculateColumnWidth(offset);
-            for (var i = 0; i < maxIdx && i < 60; i += 1) {
+            for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
               var pop = (mm as WeatherMinutely).pops[i];
               popTotal = popTotal + pop / 60.0; // pop is mm/hour, pop is for 1 minute
               if (DEBUG_DETAILS) {
                 System.println( Lang.format("minutely x[$1$] pop[$2$]", [ x, pop ]));
               }
-              if (pop > 0 && rainInXminutes == 0) { rainInXminutes = i; }
+              if (pop > 0 && rainInXminutes == 0) { rainInXminutes = i - mmMinutesDelayed; }
               // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
               // pop is float? 
               // * 10.0 
@@ -678,6 +679,9 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function handleWeatherAlerts() as Void {
+    if (!(WatchUi.DataField has :showAlert)) {
+      return;
+    } 
     if (!$._showWeatherAlerts || !(WatchUi.DataField has :showAlert) || $._mostRecentData == null) { return; }
     var alerts = ($._mostRecentData as WeatherData).alerts;
     if (alerts.size() == 0) { return; }

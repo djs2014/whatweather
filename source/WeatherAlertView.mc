@@ -78,12 +78,11 @@ class WeatherAlertHandler {
     public function setDisplayed(key as String) as Void { mAlertDisplayed.add(key); }
 
     public function handle(alerts as Array<WeatherAlert>) as Void {
-
-        // Alert is already being displayed
-        if (gWeatherAlertViewRef != null && gWeatherAlertViewRef.stillAlive()) { return; }
-
         var max = alerts.size();        
         for (var idx = 0; idx < max; idx++) {
+            // Alert is already being displayed
+            if (gWeatherAlertViewRef != null && gWeatherAlertViewRef.stillAlive()) { return; }
+
             var alert = alerts[idx] as WeatherAlert;
             if (alert.handled) { continue; }
             if (alert.start != null && alert.end != null) {

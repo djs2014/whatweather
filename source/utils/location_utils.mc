@@ -72,7 +72,7 @@ module WhatAppBase {
               }
             }
           }
-          if (location != null) {
+          if (location != null && validLocation(location)) {
             mLocation = location;
           } else if (mLocation != null) {
             mAccuracy = Position.QUALITY_LAST_KNOWN;
@@ -98,12 +98,23 @@ module WhatAppBase {
         var currentLocation = mLocation as Location;
         var currentDegrees = currentLocation.toDegrees();
 
-        var newLocation = location as Location;
+        var newLocation = location as Location;              
+        if (!validLocation(newLocation)) { return false;}
+
         var degrees = newLocation.toDegrees();
-              
         return degrees[0] != currentDegrees[0] && degrees[1] != currentDegrees[1];        
       }
 
+      hidden function validLocation(location as Location?) as Boolean {
+        if (location == null) { return false; }
+        var degrees = (location as Location).toDegrees();
+              
+        if ((degrees[0] >= 179.99 || degrees[0] <= -179.99) && (degrees[1] >= 179.99 || degrees[1] <= - 179.99)) {
+           System.println("Invalid location lat/lon: " + degrees + " accuracy: " + mAccuracy);
+           return false;
+        }
+        return true;
+      }
       hidden function setSunRiseAndSunSet(location as Location?) as Void {
           if (location == null) { return; }
           mSunrise = Weather.getSunrise(location as Location, Time.now()); // ex: 13-6-2022 05:20:43

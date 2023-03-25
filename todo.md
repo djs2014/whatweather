@@ -1,4 +1,12 @@
+smallfield 1040
+ - height <= 93
+ - 
+ - >
 - minutely
+-> when rain first hour.
+-> shift the mm graphic per minute
+
+
 - show owm weather alert
   - enable in settings + enable in device
     - activity profiles - select profile - alerts - add connect iq - what weather
@@ -14,7 +22,7 @@ minutely text color night mode
 x handle OWM error -> {json}
 - OWM response error --> error code 200 met payload {error: {"cod":"400","message":"wrong latitude"} }
 - code must be 200, else no data
-
+- check lat lng valid in onbackground service before call
 
 Added (:typecheck(false)) because of compiler bugs in strict mode.
 

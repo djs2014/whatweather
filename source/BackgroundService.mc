@@ -34,7 +34,6 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
     function handleOWM() as Number {
         try {        
-
             var ws = Storage.getValue("weatherDataSource");
             if (ws != null && ws instanceof(Number)) {
                 // wsGarminOnly = 2
@@ -77,6 +76,10 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (testScenario == null) { testScenario = 0; }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
+            if ((lat >= 179.99 || lat <= -179.99) && (lon >= 179.99 || lon <= -179.99)) {
+                System.println("1 Invalid location lat[" + lat + "] lon[" + lon + "] exit background service");                
+                return CustomErrors.ERROR_BG_NO_POSITION;
+            }
             
             var params = {
                 "proxy" => "2.0",
@@ -118,28 +121,30 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
    	}
 
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null or Lang.String) as Void {
-        System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
-        if (responseCode == 200 && responseData != null) {
-            try { 
+        try { 
+            var curTime = System.getClockTime();
+            System.println("onReceiveOpenWeatherResponse time " + curTime.hour.format("%02d") + ":" + curTime.min.format("%02d") + ":" + curTime.sec.format("%02d"));
+            System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
+            if (responseCode == 200 && responseData != null) {
                 System.println("onReceiveOpenWeatherResponse responseData not null");
                 // !! Do not convert responseData to string (println etc..) --> gives out of memory
                 //System.println(responseData);   --> gives out of memory
                 // var data = responseData as String;  --> gives out of memory
                 Background.exit(responseData as PropertyValueType);                                         
-            } catch(ex instanceof Background.ExitDataSizeLimitException ) {
-                System.println(ex.getErrorMessage());
-                ex.printStackTrace();
-                Background.exit(CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
-            } catch(ex) {
-                System.println(ex.getErrorMessage());
-                ex.printStackTrace();
-                //System.println(responseData);
-                Background.exit(CustomErrors.ERROR_BG_EXCEPTION);
-            }        
-        } else {
-            System.println("Not 200");
-            System.println(responseData);
-            Background.exit(responseCode);
-        }
+            } else {
+                System.println("Not 200");
+                System.println(responseData);
+                Background.exit(responseCode);
+            }
+        } catch(ex instanceof Background.ExitDataSizeLimitException ) {
+            System.println(ex.getErrorMessage());
+            ex.printStackTrace();
+            Background.exit(CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
+        } catch(ex) {
+            System.println(ex.getErrorMessage());
+            ex.printStackTrace();
+            //System.println(responseData);
+            Background.exit(CustomErrors.ERROR_BG_EXCEPTION);
+        }        
     }
 }
