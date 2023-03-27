@@ -27,7 +27,7 @@
 		<settingConfig type="boolean" />
 	</setting>
 	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
-		<settingConfig type="numeric" min="0" max="12" />
+		<settingConfig type="numeric" min="0" max="24" />
 	</setting>	
 	<setting propertyKey="@Properties.showMinuteForecast" title="@Strings.ShowMinuteForecast">
 		<settingConfig type="boolean" />

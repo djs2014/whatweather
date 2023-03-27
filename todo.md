@@ -1,3 +1,4 @@
+
 - minutely
 -> when rain first hour.
 -> shift the mm graphic per minute
