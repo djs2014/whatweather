@@ -71,9 +71,9 @@
 	<setting propertyKey="@Properties.showCurrentWind" title="@Strings.ShowCurrentWind">
 		<settingConfig type="boolean" />
 	</setting>
-	<setting propertyKey="@Properties.showWeatherAlerts" title="@Strings.ShowWeatherAlerts">
+	<!-- <setting propertyKey="@Properties.showWeatherAlerts" title="@Strings.ShowWeatherAlerts">
 		<settingConfig type="boolean" />
-	</setting>
+	</setting> -->
 	
     <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">

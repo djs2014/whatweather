@@ -24,7 +24,7 @@
     <string id="AlertLevelDewpoint">Alert dewpoint (Celcius)</string>        
         
     <string id="ShowCurrentWind">Show current wind (small field)</string>
-    <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string>
+    <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
     <string id="ShowMinuteForecast">Show rain first hour (OWM 3.0)</string>
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
     <string id="ShowInfoSmallField">Extra information (small field)</string>        

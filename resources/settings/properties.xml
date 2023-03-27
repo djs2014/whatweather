@@ -33,7 +33,7 @@
 	<property id="minPressure" type="number">870</property>	
 
 	<property id="showCurrentWind" type="boolean">true</property>				
-	<property id="showWeatherAlerts" type="boolean">true</property>	
+	<!-- <property id="showWeatherAlerts" type="boolean">true</property>	 -->
 	<property id="showMinuteForecast" type="boolean">true</property>	
 	
 	<property id="minimalGPSquality" type="number">3</property>	

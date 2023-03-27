@@ -1,17 +1,12 @@
-smallfield 1040
- - height <= 93
- - 
- - >
 - minutely
 -> when rain first hour.
 -> shift the mm graphic per minute
 
 
 - show owm weather alert
-  - enable in settings + enable in device
+  - enable 
     - activity profiles - select profile - alerts - add connect iq - what weather
     - NB. what weather datafield should be in this profile
-hide minutely when less than mm 0.1
 
 ????
 alerts:

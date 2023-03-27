@@ -44,7 +44,7 @@ var _showWeatherCondition as Lang.Boolean = true;
 var _showComfortZone as Lang.Boolean = true;
 var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
-var _showWeatherAlerts as Lang.Boolean = true;
+// var _showWeatherAlerts as Lang.Boolean = true;
 
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;

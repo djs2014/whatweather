@@ -57,11 +57,11 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
             var maxhours = Storage.getValue("openWeatherMaxHours");
             var minutely = Storage.getValue("openWeatherMinutely");
-            var openWeatherAlerts = Storage.getValue("openWeatherAlerts");
+            // var openWeatherAlerts = Storage.getValue("openWeatherAlerts");
             var testScenario = Storage.getValue("testScenario");
  
         	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$] apiVersion[$4$] maxhours[$5$] openWeatherMinutely[$6$] testScenario[$7$] openWeatherAlerts[$8$]",
-                [proxyUrl, location , apiKey, apiVersion, maxhours, minutely, testScenario, openWeatherAlerts]));    
+                [proxyUrl, location , apiKey, apiVersion, maxhours, minutely, testScenario, true]));    
 
             if (apiKey == null) { apiKey=""; }            
             if (proxyUrl == null) { proxyUrl=""; }            
@@ -72,7 +72,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if ((proxyUrl as String).length() == 0) { return CustomErrors.ERROR_BG_NO_PROXY; }
             if (maxhours == null) { maxhours = 8; }
             if (minutely == null) { minutely = true; }
-            if (openWeatherAlerts == null) { openWeatherAlerts = true; }
+            // if (openWeatherAlerts == null) { openWeatherAlerts = true; }
             if (testScenario == null) { testScenario = 0; }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
@@ -86,7 +86,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                 "version" => apiVersion as String,
                 "lat" => lat,
                 "lon" => lon,
-                "alerts" => openWeatherAlerts as Boolean,
+                "alerts" => true as Boolean,
                 "maxhours" => maxhours as Number,
                 "minutely" => minutely as Boolean,
                 "testScenario" => testScenario as Number,

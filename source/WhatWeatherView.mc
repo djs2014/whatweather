@@ -679,10 +679,8 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function handleWeatherAlerts() as Void {
-    if (!(WatchUi.DataField has :showAlert)) {
-      return;
-    } 
-    if (!$._showWeatherAlerts || !(WatchUi.DataField has :showAlert) || $._mostRecentData == null) { return; }
+    if (!(WatchUi.DataField has :showAlert) || $._mostRecentData == null) { return; }
+    // if (!$._showWeatherAlerts || !(WatchUi.DataField has :showAlert) || $._mostRecentData == null) { return; }
     var alerts = ($._mostRecentData as WeatherData).alerts;
     if (alerts.size() == 0) { return; }
         

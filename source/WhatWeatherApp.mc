@@ -94,7 +94,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._showDewpoint = Utils.getApplicationProperty("showDewpoint", true) as Boolean;  
       $._showComfortZone = Utils.getApplicationProperty("showComfortZone", true) as Boolean;  
       $._showWeatherCondition = Utils.getApplicationProperty("showWeatherCondition", true) as Boolean;  
-      $._showWeatherAlerts = Utils.getApplicationProperty("showWeatherAlerts", true) as Boolean;  
+      // $._showWeatherAlerts = Utils.getApplicationProperty("showWeatherAlerts", true) as Boolean;  
 
       var bgHandler =  getBGServiceHandler();
       bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
@@ -129,7 +129,7 @@ class WhatWeatherApp extends Application.AppBase {
 
       Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);    
       Storage.setValue("openWeatherMinutely", $._showMinuteForecast as Boolean);                          
-      Storage.setValue("openWeatherAlerts", $._showWeatherAlerts);                    
+      // Storage.setValue("openWeatherAlerts", $._showWeatherAlerts);                    
     
       System.println("User settings loaded");
     } catch (ex) {
