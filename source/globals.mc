@@ -21,6 +21,7 @@ const COLOR_WHITE_BLUE = 0xE1E5F8;
 const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xFFFFE1;  // 0xFFFFAA;
 const COLOR_WHITE_ORANGE = 0xFFE9E1;  // 0xF1AC4A;
+const COLOR_MM_RAIN =  0x154360; // DARK_BLUE_10
 
 var _showCurrentForecast as Lang.Boolean = true;
 var _maxHoursForecast as Lang.Number = 8;

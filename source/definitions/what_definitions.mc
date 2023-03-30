@@ -1,3 +1,5 @@
+import Toybox.Lang;
+import Toybox.System;
 module WhatAppBase {
   (:Types)
   module Types {

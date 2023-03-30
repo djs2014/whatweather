@@ -21,6 +21,8 @@ class WeatherCurrent {
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
   var dewPoint as Lang.Float? = null; // celcius
+  var rain1hr as Lang.Float = 0.0f; // mm / hour
+  var snow1hr as Lang.Float = 0.0f; // mm / hour
 
   function getDewPoint() as Lang.Number? {
     if (dewPoint == null) { return null; }
@@ -34,7 +36,7 @@ class WeatherCurrent {
            Utils.getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
            "]clouds[" + clouds + "]condition[" + condition + "]uvi[" + uvi + "]windBearing[" + windBearing +
            "]windSpeed[" + windSpeed + "]temperature[" + temperature +
-           "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
+           "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "] rain[" + rain1hr + "] snow[" + snow1hr + "]";
   }
 }
 
@@ -57,7 +59,9 @@ class WeatherHourly {
   var temperature as Lang.Number? = null;
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
-  var dewPoint as Lang.Float? = null; // celcius
+  var dewPoint as Lang.Float? = null; // celcius @@ float or decimal -> check memory
+  var rain1hr as Lang.Float = 0.0f; // mm / hour
+  var snow1hr as Lang.Float = 0.0f; // mm / hour
 
   function getDewPoint() as Lang.Number? {
     if (dewPoint == null) { return null; }
@@ -69,7 +73,7 @@ class WeatherHourly {
            precipitationChance + "]clouds[" + clouds + "]condition[" +
            condition + "]uvi[" + uvi + "]windBearing[" +
            windBearing + "]windSpeed[" + windSpeed + "]temperature[" +
-           temperature + "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
+           temperature + "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "] rain[" + rain1hr + "] snow[" + snow1hr + "]";
   }
 }
 

@@ -142,9 +142,9 @@ class WhatWeatherApp extends Application.AppBase {
   function setStorageValueIfChanged(key as String) as Void {
     try {
       var propertyValue = Utils.getApplicationProperty(key,"") as String;
-      if (propertyValue != null && propertyValue.length() > 0) {
-        var storageValue = Storage.getValue(key) as String;
-        if (storageValue== null || !storageValue.equals(propertyValue)) {
+      if (propertyValue.length() > 0) {
+        var storageValue = Storage.getValue(key);
+        if (storageValue== null || !(storageValue as String).equals(propertyValue)) {
           Storage.setValue(key, propertyValue);
           System.println("Storage [" + key + "] set to [" + propertyValue + "]" );
         }

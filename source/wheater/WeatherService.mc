@@ -71,7 +71,7 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
 
         if (current != null && hourly != null) {
           var bg_cc = current as Dictionary;
-          var bg_hh = hourly as Array<Dictionary>;
+          var bg_hh = hourly as Array<Array<Numeric>>;
 
           cc.lat = (Utils.getDictionaryValue(bg_cc, "lat", 0.0d) as Double).toDouble();
           cc.lon = (Utils.getDictionaryValue(bg_cc, "lon", 0.0d) as Double).toDouble();
@@ -95,6 +95,8 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
           cc.pressure = (Utils.getNumericValue(carr[8], 0) as Number).toNumber();
           cc.relativeHumidity = (Utils.getNumericValue(carr[9], 0) as Number).toNumber();
           cc.dewPoint = (Utils.getNumericValue(carr[10], 0.0) as Float).toFloat();
+          cc.rain1hr= (Utils.getNumericValue(carr[11], 0.0) as Float).toFloat();
+          cc.snow1hr= (Utils.getNumericValue(carr[12], 0.0) as Float).toFloat();
 
           System.println("bgData Current: " + cc.info());   
         }
@@ -120,7 +122,9 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
               hf.pressure = (Utils.getNumericValue(arr[8], 0) as Number).toNumber();
               hf.relativeHumidity = (Utils.getNumericValue(arr[9], 0) as Number).toNumber();
               hf.dewPoint = (Utils.getNumericValue(arr[10], 0.0) as Float).toFloat();
-           
+              hf.rain1hr= (Utils.getNumericValue(arr[11], 0.0) as Float).toFloat();
+              hf.snow1hr= (Utils.getNumericValue(arr[12], 0.0) as Float).toFloat();
+
               System.println("bgData Hourly: " + hf.info());   
               hh.add(hf);             
           }                
@@ -197,6 +201,8 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
             if (wData.current.clouds == null) { wData.current.clouds = bgData.current.clouds; }  
             if (wData.current.dewPoint == null) { wData.current.dewPoint = bgData.current.dewPoint; }
             if (wData.current.pressure == null) { wData.current.pressure = bgData.current.pressure; }  
+            if (wData.current.rain1hr == null) { wData.current.rain1hr = bgData.current.rain1hr; }  
+            if (wData.current.snow1hr == null) { wData.current.rain1hr = bgData.current.snow1hr; }  
 
             wData.minutely = bgData.minutely; 
             wData.alerts = bgData.alerts;
@@ -221,6 +227,8 @@ enum apiVersion { owmOneCall25 = 0, owmOneCall30 = 1 }
                 if (wData.hourly[h].clouds == null) { wData.hourly[h].clouds =  bgData.hourly[h].clouds; }
                 if (wData.hourly[h].dewPoint == null) { wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint; }
                 if (wData.hourly[h].pressure == null) { wData.hourly[h].pressure = bgData.hourly[h].pressure; }  
+                if (wData.hourly[h].rain1hr == null) { wData.hourly[h].rain1hr = bgData.hourly[h].rain1hr; }  
+                if (wData.hourly[h].snow1hr == null) { wData.hourly[h].snow1hr = bgData.hourly[h].snow1hr; }  
                 break;
               case wsOWMFirst:
                 wData.hourly[h].precipitationChanceOther = garminData.hourly[h].precipitationChance; 

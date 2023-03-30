@@ -43,7 +43,7 @@ class WhatWeatherView extends WatchUi.DataField {
   var mActivityPaused as Boolean = false;
   var mShowDetails as Boolean = false;
   var mTimerState as Number = 0;
-  
+
   function initialize() {
     DataField.initialize();
    
@@ -360,7 +360,7 @@ class WhatWeatherView extends WatchUi.DataField {
               // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, columnWidth, ds.columnHeight); }
               // pop is float? 
               // * 10.0 
-              drawColumnPrecipitationMillimeters(dc, Graphics.COLOR_BLUE, x, y, columnWidth, ds.columnHeight, pop);
+              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, ds.columnHeight, pop);
               x = x + columnWidth;
             }
             if (popTotal > 0.0) {    
@@ -390,7 +390,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
 
-      // @@ TODO donotrepeat current/hourly @@DRY
+      // @@ TODO donotrepeat current/hourly @@DRY or not because of memory issue
       var validSegment = 0;
       if ($._showCurrentForecast) {
         if (current != null) {
@@ -423,7 +423,10 @@ class WhatWeatherView extends WatchUi.DataField {
           if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, current.clouds); }
           // rain other
           drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, current.precipitationChanceOther);
-
+          // mm per hour
+          if (current.rain1hr > 0.0) {
+            drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, ds.columnY, ds.columnWidth, ds.columnHeight, current.rain1hr);
+          }
           if ($._showUVIndex) {
             var uvp = new UvPoint(x + ds.columnWidth / 2, current.uvi);
             uvp.calculateVisible(current.precipitationChance);
@@ -504,7 +507,10 @@ class WhatWeatherView extends WatchUi.DataField {
             if ($._showClouds && rHeight < 100 && cHeight <= rHeight) { drawLinePrecipitationChance(dc, colorClouds, colorClouds, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 3, forecast.clouds); }
             // rain other
             drawLinePrecipitationChance(dc, colorClouds, colorOther, x, ds.columnY, ds.columnWidth, ds.columnHeight, ds.columnWidth / 4, forecast.precipitationChanceOther);
-
+            // mm per hour
+            if (forecast.rain1hr > 0.0) {
+              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, ds.columnY, ds.columnWidth, ds.columnHeight, forecast.rain1hr);
+            }
             if (mShowDetails) { blueBarPercentage.add(forecast.precipitationChance); }
 
             if ($._showUVIndex) {
@@ -662,7 +668,9 @@ class WhatWeatherView extends WatchUi.DataField {
     var ymm = ds.getYpostion(perc);
     var height = bar_height - ymm;
     var barFilledY = y + bar_height - height;
-    dc.fillRectangle(x, barFilledY, bar_width, height);    
+    dc.fillRectangle(x, barFilledY, bar_width, height);   
+    dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    dc.drawLine(x, barFilledY - 1, x + bar_width, barFilledY - 1); 
   }
 
   function activityIsPaused(info as Activity.Info) as Boolean {
