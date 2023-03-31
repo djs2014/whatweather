@@ -59,11 +59,9 @@ class CustomErrors {
           if (error == CustomErrors.ERROR_BG_NO_PHONE) {return "No phone";}
           if (error == CustomErrors.ERROR_BG_GPS_LEVEL) {return "Gps quality";}
           if (error == CustomErrors.ERROR_BG_HTTPSTATUS) {
-            if (http != null) {
-              return "Http [" + (http as Number).format("%0d") + "]";
-            }
+            if (http != null) { return "Http [" + (http as Number).format("%0d") + "]"; }
             return "Http [???]";
-          }
+          }            
 
         return error.format("%d");
       }

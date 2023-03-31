@@ -78,6 +78,6 @@ module WhatAppBase {
     const COLOR_WHITE_BLACK_1 = 0xEAECEE;
     const COLOR_WHITE_BLACK_2 = 0xD5D8DC;
     const COLOR_WHITE_BLACK_3 = 0xABB2B9;
-    const COLOR_WHITE_BLACK_4 = 0x808B96;
+    const COLOR_WHITE_BLACK_4 = 0x808B96;    
   }
 }

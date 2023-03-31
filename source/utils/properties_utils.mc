@@ -17,15 +17,21 @@ module WhatAppBase {
       return dflt;
     }
 
-    function getDictionaryValue(data as Dictionary, key as String, defaultValue as Numeric?) as Numeric? {
+    function getDictionaryValue(data as Dictionary, key as String, defaultValue as Object?) as Object? {
       var value = data.get(key);
       if (value == null) { return defaultValue; }
       return value as Numeric;
     }
 
-    function setProperty(key as PropertyKeyType, value as PropertyValueType) as Void {
-      Application.Properties.setValue(key, value);
-    }
+    // function getDictionaryString(data as Dictionary, key as String, defaultValue as String?) as String? {
+    //   var value = data.get(key);
+    //   if (value == null) { return defaultValue; }
+    //   return value as String;
+    // }
+
+    // function setProperty(key as PropertyKeyType, value as PropertyValueType) as Void {
+    //   Application.Properties.setValue(key, value);
+    // }
 
     function getStorageValue(key as Application.PropertyKeyType, dflt as Application.PropertyValueType ) as Application.PropertyValueType {
       try {

@@ -21,6 +21,8 @@ class WeatherCurrent {
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
   var dewPoint as Lang.Float? = null; // celcius
+  var rain1hr as Lang.Float = 0.0f; // mm / hour
+  var snow1hr as Lang.Float = 0.0f; // mm / hour
 
   function getDewPoint() as Lang.Number? {
     if (dewPoint == null) { return null; }
@@ -34,13 +36,14 @@ class WeatherCurrent {
            Utils.getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
            "]clouds[" + clouds + "]condition[" + condition + "]uvi[" + uvi + "]windBearing[" + windBearing +
            "]windSpeed[" + windSpeed + "]temperature[" + temperature +
-           "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
+           "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "] rain[" + rain1hr + "] snow[" + snow1hr + "]";
   }
 }
 
 class WeatherMinutely {
   var forecastTime as Time.Moment? = null;
-  var pops as Array<Number> = [] as Array<Number>;
+  var max as Float = 0.0;
+  var pops as Array<Float> = [] as Array<Float>;
 }
 
 class WeatherHourly {
@@ -56,7 +59,9 @@ class WeatherHourly {
   var temperature as Lang.Number? = null;
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
-  var dewPoint as Lang.Float? = null; // celcius
+  var dewPoint as Lang.Float? = null; // celcius @@ float or decimal -> check memory
+  var rain1hr as Lang.Float = 0.0f; // mm / hour
+  var snow1hr as Lang.Float = 0.0f; // mm / hour
 
   function getDewPoint() as Lang.Number? {
     if (dewPoint == null) { return null; }
@@ -68,7 +73,21 @@ class WeatherHourly {
            precipitationChance + "]clouds[" + clouds + "]condition[" +
            condition + "]uvi[" + uvi + "]windBearing[" +
            windBearing + "]windSpeed[" + windSpeed + "]temperature[" +
-           temperature + "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "]";
+           temperature + "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "] rain[" + rain1hr + "] snow[" + snow1hr + "]";
+  }
+}
+
+class WeatherAlert {
+  var event as String = "";
+  var start as Time.Moment?; 
+  var end as Time.Moment?; 
+  var description as String = "";
+  var tags as Array<String> = [] as Array<String>;
+  var handled as Boolean = false;
+
+  function info() as Lang.String {
+    return "WeatherAlert:[" + event + "] start[" + Utils.getDateTimeString(start) + "]end[" +
+           Utils.getDateTimeString(end) + "] [" + description + "] handled[" + handled + "]";
   }
 }
 
@@ -76,13 +95,16 @@ class WeatherData {
   public var current as WeatherCurrent;
   public var minutely as WeatherMinutely;
   public var hourly as Lang.Array<WeatherHourly>;
+  public var alerts as Lang.Array<WeatherAlert>;
   public var lastUpdated as Time.Moment?;
   public var changed as Lang.Boolean = false;
 
-  function initialize(current as WeatherCurrent, minutely as WeatherMinutely, hourly as Lang.Array<WeatherHourly>, lastUpdated as Time.Moment?) {    
+  function initialize(current as WeatherCurrent, minutely as WeatherMinutely, hourly as Array<WeatherHourly>, alerts as Array<WeatherAlert>
+    , lastUpdated as Time.Moment?) {    
     self.current = current;
     self.minutely = minutely;
     self.hourly = hourly;
+    self.alerts = alerts;
     self.lastUpdated = lastUpdated;    
     self.changed = false;
   }
@@ -102,7 +124,8 @@ class WeatherData {
 }
 
 function emptyWeatherData() as WeatherData {
-  var wd = new WeatherData(new WeatherCurrent(), new WeatherMinutely(), [] as Array<WeatherHourly>, Time.now());
+  var wd = new WeatherData(new WeatherCurrent(), new WeatherMinutely(), [] as Array<WeatherHourly>, [] as Array<WeatherAlert>
+   , Time.now());
   wd.setChanged(true);
   return wd;
 }

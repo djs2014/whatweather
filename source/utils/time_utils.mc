@@ -9,19 +9,33 @@ module WhatAppBase {
   module Utils {
     typedef TimeValue as Number or Time.Moment;
 
-    function isDelayedFor(timevalue as TimeValue?, minutesDelayed as Number) as Boolean {
+    function isDelayedFor(timeValue as TimeValue?, minutesDelayed as Number) as Boolean {
       //! True if timevalue is later than now + minutesDelayed
-      if (timevalue == null || minutesDelayed <= 0) {
+      if (timeValue == null || minutesDelayed <= 0) {
         return false;
       }
 
-      if (timevalue instanceof Lang.Number) {
-        return (Time.now().value() - timevalue) > (minutesDelayed * 60);
-      } else if (timevalue instanceof Time.Moment) {
-        return Time.now().compare(timevalue) > (minutesDelayed * 60);
+      if (timeValue instanceof Lang.Number) {
+        return (Time.now().value() - timeValue) > (minutesDelayed * 60);
+      } else if (timeValue instanceof Time.Moment) {
+        return Time.now().compare(timeValue) > (minutesDelayed * 60);
       }
 
       return false;
+    }
+
+    function getMinutesDelayed(timeValue as TimeValue?) as Number {
+      var differenceInSeconds = 0;
+      if (timeValue == null) { return differenceInSeconds; }
+      
+      if (timeValue instanceof Lang.Number) {
+        differenceInSeconds = Time.now().value() - timeValue;
+      } else if (timeValue instanceof Time.Moment) {
+        differenceInSeconds = Time.now().value() - (timeValue as Time.Moment).value();        
+      }
+
+      if (differenceInSeconds <= 0) { return 0; }
+      return differenceInSeconds / 60;      
     }
 
     function ensureXSecondsPassed(previousMomentInSeconds as Number, seconds as Number) as Boolean {
@@ -35,9 +49,9 @@ module WhatAppBase {
   
     function getDateTimeString(moment as Time.Moment?) as String {
       if (moment != null && moment instanceof Time.Moment) {
-        var date = Gregorian.info(moment, Time.FORMAT_SHORT);
-        return date.year.format("%d") + " " + date.hour.format("%02d") + ":" +
-               date.min.format("%02d") + ":" + date.sec.format("%02d");
+        var start = Gregorian.info(moment, Time.FORMAT_SHORT);
+        return Lang.format("$1$-$2$-$3$ $4$:$5$:$6$", [start.year, start.month, start.day, 
+          start.hour.format("%02d"), start.min.format("%02d"), start.sec.format("%02d")]);
       }
       return "";
     }

@@ -11,7 +11,8 @@ First column shows precipitation chance for the current hour.
 A small field has a different layout than the `large` field.
 
 Default weather source is garmin. 
-With an Open Weather Map API key you can display OWM data (Open weather map)[https://openweathermap.org/]. This app uses the `One Call API 1.0` from OWM.
+With an Open Weather Map API key you can display OWM data (Open weather map)[https://openweathermap.org/]. This app uses the `One Call API 3.0` from OWM.
+
 
 # Settings
 	- Weather source:
@@ -22,11 +23,13 @@ With an Open Weather Map API key you can display OWM data (Open weather map)[htt
 	- Open weather map API key: Get an API key from (Open weather map)[https://openweathermap.org/].
 	- OWM Proxy: Proxy to compress the json normally returned from OWM.
     	- https://api.castlephoto.info/owm_one
+    	- (Github source:)[https://github.com/djs2014/garmin_nodeproxy]
 
 	- OWM Proxy API key:
     	- 0548b3c7-61bc-4afc-b6e5-616f19d3cf23
 	- Show current forecast: show precipitation chance of current hour in first column.
 	- Maximum hours of forecast data: precipitation chance will be displayed per hour in the next columns.
+	- Show minute forecast: in case of rain in first hour, show this in a graph.
 	- Show wind information: Beaufort, m/s or km/h, and direction.
 	- Show temperature (`large field`): show predicted temperature (green dots).
 	- Show relative humidity (`large field`): show predicted humidity (blue dots).
@@ -37,6 +40,7 @@ With an Open Weather Map API key you can display OWM data (Open weather map)[htt
 	- Show pressure: show pressure at sealevel per hour
 	- Show dewpoint: show dewpoint per hour
 	- Show UV index: show Uv index per hour
+	- Show OWM weather alerts: display alerts from OWM
 	- Show extra info (`small field`):
 		- Time of the day
 		- Temperature 
@@ -108,6 +112,9 @@ Http[<error code>] are http errors regarding the OWM API.
 For example: http[401] -> "Invalid API key. Please see https://openweathermap.org/faq#error401 for more info." The API key for accessing Open Weather Map is invalid.
 
 OWM call used:
-https://openweathermap.org/api/one-call-api
+https://openweathermap.org/api/one-call-3
 
+# Depricated, only valid with old api key and owm setting to 2.5
+
+https://openweathermap.org/api/one-call-api
 https://api.openweathermap.org/data/2.5/onecall?lat=33.44&lon=-94.04&exclude=hourly,daily&appid={API key}

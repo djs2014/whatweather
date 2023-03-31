@@ -52,10 +52,7 @@ class DisplaySettings {
     self.smallField = isSmallField(dc);
     self.wideField = isWideField(dc);
     self.largeField = isLargeField(dc);
-    self.oneField = isOneField(dc);
-
-    // self.smallField = self.height < 80;
-    // self.oneField = self.height >= 322 && self.width >= 246;
+    self.oneField = isOneField(dc);    
   }
 
 

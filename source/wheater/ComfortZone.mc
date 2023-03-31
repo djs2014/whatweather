@@ -11,8 +11,6 @@ class Comfort {
   var humidityMax as Number = 60;
   var temperatureMin as Number = 20;
   var temperatureMax as Number = 27;
-//   var precipitationChanceMin as Number = 0;
-//   var precipitationChanceMax as Number = 40;
 
   function initialize() {
   }

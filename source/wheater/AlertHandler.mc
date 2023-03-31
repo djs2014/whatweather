@@ -262,7 +262,7 @@ class AlertHandler {
                                         chance < alertPrecipitationChance);
   }
 
-  function processRainMMfirstHour(mm as Lang.Number?) as Void {
+  function processRainMMfirstHour(mm as Lang.Float?) as Void {
     if (alertRainMMfirstHour <= 0 || mm == null) {
       return;
     }
