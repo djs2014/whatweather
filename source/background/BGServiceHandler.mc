@@ -96,7 +96,8 @@ class BGServiceHandler {
             mError = CustomErrors.ERROR_BG_NO_PHONE;            
         } else if (mCurrentLocation != null) {
             var currentLocation = mCurrentLocation as Utils.CurrentLocation;
-            if (currentLocation.getAccuracy() < mMinimalGPSLevel) { 
+            // @@ first request, use last location
+            if (mRequestCounter > 0 && currentLocation.getAccuracy() < mMinimalGPSLevel) { 
                 mError = CustomErrors.ERROR_BG_GPS_LEVEL;                    
             } else if (!currentLocation.hasLocation()) {
                 mError = CustomErrors.ERROR_BG_NO_POSITION;

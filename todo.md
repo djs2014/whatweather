@@ -1,8 +1,13 @@
-
+- first call, ignore gps and use last location
+  - make it a on device setting
+- show if there is actual rain (per hour)
+  - striped bar in blue bar?
+  - test exceed mem proxy
 - minutely
 -> when rain first hour.
 -> shift the mm graphic per minute
-
+- auto adjust #bars with available hourly forecast
+- 
 
 - show owm weather alert
   - enable 
