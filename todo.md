@@ -1,3 +1,13 @@
+refactor
+- less memory
+- onCompute - 
+- onLayout - calc dimensions
+- onBackgroundData - new / merge data check weather alerts 
+- onPositionChanged - 
+
+- toast message ??
+
+- toast for alerts + beep
 - first call, ignore gps and use last location
   - make it a on device setting
 - show if there is actual rain (per hour)
