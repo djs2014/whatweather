@@ -114,7 +114,6 @@ class WeatherData {
   }
 
   function getObservationTime() as Time.Moment? {
-    if (self.current == null) { return null; }
     return (self.current as WeatherCurrent).observationTime;
   }
 

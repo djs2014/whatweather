@@ -87,7 +87,7 @@ function millisecondsToShortTimeString(totalMilliSeconds as Number, template as 
     var seconds = (totalMilliSeconds / 1000.0).toNumber() % 60;
     var mseconds = totalMilliSeconds.toNumber() % 1000;
 
-    if (template == null) {
+    if (template.length() == 0) {
       template = "{h}:{m}:{s}:{ms}";
     }
     var time = stringReplace(template, "{h}", hours.format("%01d"));
@@ -106,7 +106,7 @@ function secondsToShortTimeString(totalSeconds as Number, template as String) as
     var minutes = (totalSeconds / 60.0).toNumber() % 60;
     var seconds = totalSeconds.toNumber() % 60;
 
-    if (template == null) {
+    if (template.length() == 0) {
       template = "{h}:{m}:{s}";
     }
     var time = stringReplace(template, "{h}", hours.format("%01d"));
@@ -124,7 +124,7 @@ function secondsToCompactTimeString(totalSeconds as Number, template as String) 
     var minutes = (totalSeconds / 60.0).toNumber();
     var seconds = totalSeconds.toNumber() % 60;
 
-    if (template == null) {
+    if (template.length() == 0) {
       template = "{h}:{m}:{s}";
     }
     var time = stringReplace(template, "{m}", minutes.format("%01d"));

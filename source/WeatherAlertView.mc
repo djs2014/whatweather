@@ -27,7 +27,6 @@ class WeatherAlertView extends WatchUi.DataFieldAlert {
         //     WatchUi.popView(SLIDE_DOWN);
         //     return;
         // }
-        if (mAlert == null) { return; }
         var height = dc.getHeight() / 2.5;
         var y = dc.getHeight() - height;
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
@@ -41,18 +40,18 @@ class WeatherAlertView extends WatchUi.DataFieldAlert {
         y = y + lineHeight;
 
         if (alert.start != null) {
-            var start = Gregorian.info(alert.start as Time.Moment, Time.FORMAT_MEDIUM);
+            var start = Time.Gregorian.info(alert.start as Time.Moment, Time.FORMAT_MEDIUM);
             var startString = "From " + Lang.format("$1$-$2$-$3$ $4$:$5$", [start.day, start.month, start.year, start.hour.format("%02d"), start.min.format("%02d")]);
             dc.drawText(1, y, Graphics.FONT_SMALL, startString, Graphics.TEXT_JUSTIFY_LEFT);
             y = y + lineHeight;
         }
         if (alert.end != null) {
-            var end = Gregorian.info(alert.end  as Time.Moment, Time.FORMAT_MEDIUM);
+            var end = Time.Gregorian.info(alert.end  as Time.Moment, Time.FORMAT_MEDIUM);
             var endString = "Until " + Lang.format("$1$-$2$-$3$ $4$:$5$", [end.day, end.month, end.year, end.hour.format("%02d"), end.min.format("%02d")]);            
             dc.drawText(1, y, Graphics.FONT_SMALL, endString, Graphics.TEXT_JUSTIFY_LEFT);
             y = y + lineHeight;
         }
-        if (alert.description != null && alert.description.length() > 0) {            
+        if (alert.description.length() > 0) {            
             var desc = alert.description;
             if (mDescription.length() > 0) {
                 desc = mDescription;

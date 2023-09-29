@@ -3,7 +3,7 @@ import Toybox.Lang;
 
 function stringReplace(str as String, oldString as String, newString as String) as String {
   var result = str;
-  if (str == null || oldString == null || newString == null) {
+  if (str.length() == 0 || oldString.length() == 0) {
     return str;
   }
 
@@ -27,7 +27,7 @@ function stringReplacePos(
   occurrence as Number
 ) as String {
   var result = str;
-  if (str == null || oldString == null || newString == null) {
+  if (str.length() == 0 || oldString.length() == 0) {
     return str;
   }
 

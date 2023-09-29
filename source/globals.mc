@@ -63,7 +63,7 @@ function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
   }
   var key = (condition as Lang.Number).toString();
 
-  if ($._weatherDescriptions != null && $._weatherDescriptions.hasKey(key)) {
+  if ($._weatherDescriptions.hasKey(key)) {
     return $._weatherDescriptions[key] as Lang.String;
   }
   return null;

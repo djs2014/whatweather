@@ -100,7 +100,7 @@ function removeLeadingZero(value as String) as String {
 }
 
 function startsWith(value as String, part as String) as Boolean {
-  if (value == null || part == null) {
+  if (value.length() == 0 || part.length() == 0) {
     return false;
   }
   return value.substring(0, value.length() - 1) == part;
