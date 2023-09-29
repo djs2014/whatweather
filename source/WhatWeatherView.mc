@@ -779,14 +779,14 @@ class WhatWeatherView extends WatchUi.DataField {
               }
             }
 
-            if (mShowDetails) {
-              // @@ Test show time
-              var ft = $.getShortTimeString(forecast.forecastTime);
-              dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-              dc.drawText(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight - dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY)
-              , Graphics.FONT_SYSTEM_XTINY, ft, Graphics.TEXT_JUSTIFY_CENTER);
+            // if (mShowDetails) {
+            //   // @@ Test show time
+            //   var ft = $.getShortTimeString(forecast.forecastTime);
+            //   dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+            //   dc.drawText(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight - dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY)
+            //   , Graphics.FONT_SYSTEM_XTINY, ft, Graphics.TEXT_JUSTIFY_CENTER);
 
-            }
+            // }
             x = x + ds.columnWidth + ds.space;
           }
         }
