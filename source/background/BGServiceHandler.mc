@@ -6,13 +6,13 @@ import Toybox.Activity;
 import Toybox.Position;
 import Toybox.Time;
 import Toybox.Background;
-using WhatAppBase.Utils;
+
 // using CommunicationsHelpers as Helpers;
 import Toybox.Application.Storage;
 
 class BGServiceHandler {
   const HTTP_OK as Number = 200;
-  var mCurrentLocation as Utils.CurrentLocation?;
+  var mCurrentLocation as $.CurrentLocation?;
   var mError as Number = 0;
   var mHttpStatus as Number = HTTP_OK;
   var mPhoneConnected as Boolean = false;
@@ -37,7 +37,7 @@ class BGServiceHandler {
   }
 
   function initialize() {}
-  function setCurrentLocation(currentLocation as Utils.CurrentLocation) as Void {
+  function setCurrentLocation(currentLocation as $.CurrentLocation) as Void {
     mCurrentLocation = currentLocation;
   }
 
@@ -58,7 +58,7 @@ class BGServiceHandler {
     mObservationTimeDelayedMinutesThreshold = minutes;
   }
   function isDataDelayed() as Boolean {
-    return Utils.isDelayedFor(mLastObservationMoment, mObservationTimeDelayedMinutesThreshold);
+    return $.isDelayedFor(mLastObservationMoment, mObservationTimeDelayedMinutesThreshold);
   }
   function isEnabled() as Boolean {
     return !mBGDisabled;
@@ -123,7 +123,7 @@ class BGServiceHandler {
     if (!mPhoneConnected) {
       mError = CustomErrors.ERROR_BG_NO_PHONE;
     } else if (mCurrentLocation != null) {
-      var currentLocation = mCurrentLocation as Utils.CurrentLocation;
+      var currentLocation = mCurrentLocation as $.CurrentLocation;
       // @@ first request, use last location
       if (mRequestCounter > 0 && currentLocation.getAccuracy() < mMinimalGPSLevel) {
         mError = CustomErrors.ERROR_BG_GPS_LEVEL;
@@ -193,7 +193,7 @@ class BGServiceHandler {
     }
     var elapsedSeconds = Time.now().value() - lastTime.value();
     var secondsToNext = mUpdateFrequencyInMinutes * 60 - elapsedSeconds;
-    return Utils.secondsToShortTimeString(secondsToNext, "{m}:{s}");
+    return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
 
   function onBackgroundData(data as Application.PropertyValueType) as Void { //, obj as Object, cbProcessData as Symbol) as Void {

@@ -1,9 +1,12 @@
 refactor
-- less memory
+- less memory?
 - onCompute - 
 - onLayout - calc dimensions
 - onBackgroundData - new / merge data check weather alerts 
-- onPositionChanged - 
+- onPositionChanged - do relevant stuff related to position
+- on device settings
+- onMinutePassed 
+- show time in bars when paused
 
 - toast message ??
 

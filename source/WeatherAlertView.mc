@@ -5,7 +5,7 @@ import Toybox.Lang;
 import Toybox.Time;
 import Toybox.WatchUi;
 import Toybox.System;
-using WhatAppBase.Utils as Utils;
+
 
 var gWeatherAlertViewRef as WeakReference? = null;
 
@@ -60,7 +60,7 @@ class WeatherAlertView extends WatchUi.DataFieldAlert {
                 var textWidth = dc.getTextWidthInPixels(desc, Graphics.FONT_TINY);
                 // @@ TODO: split text and calculate witdh until fit screen width .. or is there a IQ function for this?
                 if (textWidth > dc.getWidth()) {
-                    desc = Utils.stringReplacePos(desc, desc.length() / 2,  " ", "\n", 1);
+                    desc = $.stringReplacePos(desc, desc.length() / 2,  " ", "\n", 1);
                 }
             }
             dc.drawText(1, y, Graphics.FONT_TINY, desc, Graphics.TEXT_JUSTIFY_LEFT);
@@ -96,8 +96,8 @@ class WeatherAlertHandler {
 
                 setDisplayed(key);
                 alert.handled = true;
-                var weatherAlertView = new $.WeatherAlertView(alert);
-                WatchUi.DataField.showAlert(weatherAlertView);
+                var weatherAlertView = new $.WeatherAlertView(alert) as DataFieldAlert;
+           //@@ huh, todo show alert differently     WatchUi.DataField.showAlert(weatherAlertView);
                 gWeatherAlertViewRef = weatherAlertView.weak();
                 return;
             }

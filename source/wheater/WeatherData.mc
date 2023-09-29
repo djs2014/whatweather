@@ -1,7 +1,7 @@
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.Time;
-using WhatAppBase.Utils as Utils;
+
 
 class WeatherCurrent {
   var lat as Lang.Double = 0.0d;
@@ -32,8 +32,8 @@ class WeatherCurrent {
   function info() as Lang.String {
     return "WeatherCurrent:lat[" + lat + "]lon[" + lon + "]obsname[" +
            observationLocationName + "]obstime[" +
-           Utils.getDateTimeString(observationTime) + "]time[" +
-           Utils.getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
+           $.getDateTimeString(observationTime) + "]time[" +
+           $.getDateTimeString(forecastTime) + "]pop[" + precipitationChance +
            "]clouds[" + clouds + "]condition[" + condition + "]uvi[" + uvi + "]windBearing[" + windBearing +
            "]windSpeed[" + windSpeed + "]temperature[" + temperature +
            "]humidity[" + relativeHumidity + "]pressure[" + pressure + "]dewPoint[" + dewPoint + "] rain[" + rain1hr + "] snow[" + snow1hr + "]";
@@ -69,7 +69,7 @@ class WeatherHourly {
   }
 
   function info() as Lang.String {
-    return "WeatherHourly:time[" + Utils.getDateTimeString(forecastTime) + "]pop[" +
+    return "WeatherHourly:time[" + $.getDateTimeString(forecastTime) + "]pop[" +
            precipitationChance + "]clouds[" + clouds + "]condition[" +
            condition + "]uvi[" + uvi + "]windBearing[" +
            windBearing + "]windSpeed[" + windSpeed + "]temperature[" +
@@ -86,8 +86,8 @@ class WeatherAlert {
   var handled as Boolean = false;
 
   function info() as Lang.String {
-    return "WeatherAlert:[" + event + "] start[" + Utils.getDateTimeString(start) + "]end[" +
-           Utils.getDateTimeString(end) + "] [" + description + "] handled[" + handled + "]";
+    return "WeatherAlert:[" + event + "] start[" + $.getDateTimeString(start) + "]end[" +
+           $.getDateTimeString(end) + "] [" + description + "] handled[" + handled + "]";
   }
 }
 

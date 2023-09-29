@@ -4,7 +4,7 @@ import Toybox.Lang;
 import Toybox.Time;
 import Toybox.Math;
 import Toybox.Time.Gregorian;
-using WhatAppBase.Utils as Utils;
+
 
 class RenderWeather {
   hidden var dc as Dc;
@@ -44,9 +44,9 @@ class RenderWeather {
     var comfort = getComfort();    
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
     self.yHumBottom = ds.getYpostion(comfort.humidityMin);
-    var perc = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+    var perc = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
     self.yTempTop = ds.getYpostion(perc);
-    perc = Utils.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+    perc = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
     self.yTempBottom = ds.getYpostion(perc);
   }
 
@@ -57,7 +57,7 @@ class RenderWeather {
         var uvp = uvPoints[i] as UvPoint;
         if (!uvp.isHidden) {
           var x = uvp.x;
-          var perc = Utils.percentageOf(uvp.uvi, maxUvIndex).toNumber();
+          var perc = $.percentageOf(uvp.uvi, maxUvIndex).toNumber();
           var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
         
@@ -91,7 +91,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
         if (!p.isHidden) {
           var x = p.x;
-          var perc = Utils.percentageOf(p.value, self.maxTemperature).toNumber();
+          var perc = $.percentageOf(p.value, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           
           if (showDetails && p.value > 10) { // @@ config 
@@ -104,7 +104,7 @@ class RenderWeather {
             }                 
             var temperature = p.value;
             if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
-              temperature = Utils.celciusToFarenheit(temperature);
+              temperature = $.celciusToFarenheit(temperature);
             }            
             dc.drawText(x, y - h/2, Graphics.FONT_TINY, temperature.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
@@ -131,7 +131,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
         if (!p.isHidden) {
           var x = p.x;
-          var perc = Utils.percentageOf(p.value, self.maxTemperature).toNumber();
+          var perc = $.percentageOf(p.value, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           var r = 3;
           var color = dewpointToColor(y.toFloat());
@@ -141,7 +141,7 @@ class RenderWeather {
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             var dewpoint = p.value;
             if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
-              dewpoint = Utils.celciusToFarenheit(dewpoint);
+              dewpoint = $.celciusToFarenheit(dewpoint);
             }   
             dc.drawText(x, y + h/2, Graphics.FONT_TINY, dewpoint.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
           }
@@ -168,7 +168,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
 
         var x = p.x as Number;
-        var perc = Utils.percentageOf(p.value - self.minPressure, self.maxPressure - self.minPressure).toNumber();
+        var perc = $.percentageOf(p.value - self.minPressure, self.maxPressure - self.minPressure).toNumber();
         var y = ds.getYpostion(perc).toNumber();
         
         if (showDetails) {
@@ -230,10 +230,10 @@ class RenderWeather {
     
     dc.setColor(color, color);
     if (ds.smallField) {      
-      var percTemperature = Utils.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
-      var yTop = ds.getYpostion(Utils.max(percTemperature, comfort.humidityMax) as Lang.Number);
-      percTemperature = Utils.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
-      var yBottom = ds.getYpostion(Utils.min(percTemperature, comfort.humidityMin) as Lang.Number);
+      var percTemperature = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+      var yTop = ds.getYpostion($.max(percTemperature, comfort.humidityMax) as Lang.Number);
+      percTemperature = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+      var yBottom = ds.getYpostion($.min(percTemperature, comfort.humidityMin) as Lang.Number);
       var height = yBottom - yTop;
       dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);
       return;
@@ -272,10 +272,10 @@ class RenderWeather {
   function drawObservationTime(observationTime as Time.Moment?) as Void {
     if (observationTime == null) { return; }
 
-    var observationTimeString = Utils.getShortTimeString(observationTime);
+    var observationTimeString = $.getShortTimeString(observationTime);
 
     var color = ds.COLOR_TEXT_ADDITIONAL;
-    if (Utils.isDelayedFor(observationTime, $._observationTimeDelayedMinutesThreshold)) { color = Graphics.COLOR_RED; }
+    if ($.isDelayedFor(observationTime, $._observationTimeDelayedMinutesThreshold)) { color = Graphics.COLOR_RED; }
     var textW = dc.getTextWidthInPixels(observationTimeString, ds.fontSmall);
     var textX = ds.width - textW - ds.margin;
 
@@ -805,16 +805,16 @@ class RenderWeather {
       wsFontAlert = Graphics.FONT_MEDIUM;
     }
     if (windSpeedMs != null) {
-      var beaufort = Utils.windSpeedToBeaufort(windSpeedMs);
+      var beaufort = $.windSpeedToBeaufort(windSpeedMs);
       hasAlert = ($._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed);
       if ($._showWind == SHOW_WIND_BEAUFORT) {
         text = beaufort.format("%d");
       } else {
         var value = windSpeedMs;
         if ($._showWind == SHOW_WIND_KILOMETERS) {
-          value = Utils.mpsToKmPerHour(windSpeedMs);
+          value = $.mpsToKmPerHour(windSpeedMs);
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-            value = Utils.kilometerToMile(value);
+            value = $.kilometerToMile(value);
           }
         }
         value = Math.round(value);
@@ -824,7 +824,7 @@ class RenderWeather {
           text = value.format("%d");
         }
       }
-      radius = Utils.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
+      radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
     }
 
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);

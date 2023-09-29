@@ -9,12 +9,17 @@ import Toybox.Time.Gregorian;
 import Toybox.Position;
 import Toybox.Application.Storage;
 import Toybox.Background;
-using WhatAppBase.Utils as Utils;
+
 
 class WhatWeatherView extends WatchUi.DataField {
   var mBGServiceHandler as BGServiceHandler;
+  var mCurrentLocation as CurrentLocation = new CurrentLocation();
+  var mLat as Double = 0d;
+  var mLon as Double = 0d;
+  hidden var previousTrack as Float = 0.0f;
+  hidden var track as Number = 0;
+
   var mAlertHandler as AlertHandler;
-  var mCurrentLocation as Utils.CurrentLocation = new Utils.CurrentLocation();
   var mWeatherAlertHandler as WeatherAlertHandler = new WeatherAlertHandler();
 
   var mHideTemperatureLowerThan as Lang.Number = 8;
@@ -48,18 +53,35 @@ class WhatWeatherView extends WatchUi.DataField {
   function initialize() {
     DataField.initialize();
 
+    mCurrentLocation.setOnLocationChanged(self, :onLocationChanged);
     mBGServiceHandler = getApp().getBGServiceHandler();
-    mBGServiceHandler.setCurrentLocation(mCurrentLocation);
     mBGServiceHandler.setOnBackgroundData(self, :onBackgroundData);
+    mBGServiceHandler.setCurrentLocation(mCurrentLocation);
+
     mAlertHandler = getApp().getAlertHandler();
     mFontSmallH = Graphics.getFontHeight(mFontSmall);
+    onLocationChanged();
+  }
+
+  function onLocationChanged() as Void {
+    var degrees = mCurrentLocation.getCurrentDegrees();
+    mLat = degrees[0];
+    mLon = degrees[1];    
+  }
+ 
+  function onBackgroundData(data as Dictionary) as Void {
+    // First entry hourly in OWM is current entry
+    mBgData = toWeatherData(data, true);
+    mBGServiceHandler.setLastObservationMoment(mBgData.getObservationTime());
   }
 
   function onLayout(dc as Dc) as Void {}
 
   function compute(info as Activity.Info) as Void {
     try {
-      mCurrentInfo.getPosition(info);
+      track = getBearing(info as Activity.Info?);
+      mCurrentInfo.onCompute(info);
+      
       mActivityPaused = activityIsPaused(info);
 
       if (info has :timerState && info.timerState != null) {
@@ -92,11 +114,7 @@ class WhatWeatherView extends WatchUi.DataField {
     // }
   }
 
-  function onBackgroundData(data as Dictionary) as Void {
-    // First entry hourly in OWM is current entry
-    mBgData = toWeatherData(data, true);
-    mBGServiceHandler.setLastObservationMoment(mBgData.getObservationTime());
-  }
+ 
 
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
@@ -192,7 +210,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var obsTime = "";
 
     if (!ds.smallField) {
-      obsTime = Utils.getShortTimeString(mBgData.getObservationTime());
+      obsTime = $.getShortTimeString(mBgData.getObservationTime());
     }
 
     if (mBGServiceHandler.isDataDelayed()) {
@@ -262,7 +280,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var temperature = temperatureCelcius;
           if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
             postfix = "°F";
-            temperature = Utils.celciusToFarenheit(temperatureCelcius);
+            temperature = $.celciusToFarenheit(temperatureCelcius);
           }
           if (ds.smallField) {
             info = temperature.format("%.0f");
@@ -305,7 +323,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var distance = distanceInKm;
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             postfix = "mi";
-            distance = Utils.kilometerToMile(distanceInKm);
+            distance = $.kilometerToMile(distanceInKm);
           }
           if (distance < 1) {
             info = distance.format("%.3f");
@@ -377,7 +395,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
           if (maxIdx > 0 && mm.max > 0.049) {
             xOffsetWindFirstColumn = 60;
-            var mmMinutesDelayed = Utils.getMinutesDelayed(mm.forecastTime);
+            var mmMinutesDelayed = $.getMinutesDelayed(mm.forecastTime);
             var xMMstart = x;
             var popTotal = 0.0 as Lang.Float;
             var columnWidth = 1;
@@ -761,6 +779,14 @@ class WhatWeatherView extends WatchUi.DataField {
               }
             }
 
+            if (mShowDetails) {
+              // @@ Test show time
+              var ft = $.getShortTimeString(forecast.forecastTime);
+              dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
+              dc.drawText(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight - dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY)
+              , Graphics.FONT_SYSTEM_XTINY, ft, Graphics.TEXT_JUSTIFY_CENTER);
+
+            }
             x = x + ds.columnWidth + ds.space;
           }
         }
@@ -792,18 +818,18 @@ class WhatWeatherView extends WatchUi.DataField {
         var distanceMetric = "km";
         var distanceInKm = 0;
         if (DEBUG_DETAILS) {
-          System.println(mCurrentInfo.infoLocation());
+          System.println(mCurrentLocation.infoLocation());
         }
-        if (mCurrentInfo.hasLocation()) {
-          distanceInKm = Utils.getDistanceFromLatLonInKm(mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);
+        if (mCurrentLocation.hasLocation()) {
+          distanceInKm = $.getDistanceFromLatLonInKm(mLat, mLon, current.lat, current.lon);
           distance = distanceInKm.format("%.2f");
           var deviceSettings = System.getDeviceSettings();
           if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
             distanceMetric = "mi";
-            distance = Utils.kilometerToMile(distanceInKm).format("%.2f");
+            distance = $.kilometerToMile(distanceInKm).format("%.2f");
           }
-          var bearing = Utils.getRhumbLineBearing(mCurrentInfo.lat, mCurrentInfo.lon, current.lat, current.lon);
-          var compassDirection = Utils.getCompassDirection(bearing);
+          var bearing = $.getRhumbLineBearing(mLat, mLon, current.lat, current.lon);
+          var compassDirection = $.getCompassDirection(bearing);
           render.drawObservationLocation(Lang.format("$1$ $2$ ($3$)", [distance, distanceMetric, compassDirection]));
         }
         var showLocationName = mShowObservationLocationName;
@@ -930,7 +956,7 @@ class WhatWeatherView extends WatchUi.DataField {
   ) as Void {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     var max_mmPerHour = 20;
-    var perc = Utils.percentageOf(mmhour, max_mmPerHour).toNumber();
+    var perc = $.percentageOf(mmhour, max_mmPerHour).toNumber();
     if (perc <= 0) {
       return;
     }
@@ -959,11 +985,24 @@ class WhatWeatherView extends WatchUi.DataField {
     if (!(WatchUi.DataField has :showAlert) || !mRecentData.valid()) {
       return;
     }
-    
+
     if (mRecentData.alerts.size() == 0) {
       return;
     }
 
     mWeatherAlertHandler.handle(mRecentData.alerts);
+  }
+
+  function getBearing(a_info as Activity.Info?) as Number {
+    var track = getActivityValue(a_info, :track, 0.0f) as Float;
+    if (track == 0.0f) {
+      track = getActivityValue(a_info, :currentHeading, 0.0f) as Float;
+    }
+    if (track == 0.0f) {
+      track = previousTrack;
+    } else {
+      previousTrack = track;
+    }
+    return $.rad2deg(track).toNumber();
   }
 }

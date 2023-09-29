@@ -4,7 +4,7 @@ import Toybox.Weather;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
-using WhatAppBase.Utils as Utils;
+
 
 // class GarminWeather {
   function getLatestGarminWeather() as WeatherData { 
@@ -14,16 +14,16 @@ using WhatAppBase.Utils as Utils;
       if (garCurrent == null) { return emptyWeatherData(); }
     
       var cc = new WeatherCurrent();
-      cc.precipitationChance = Utils.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
+      cc.precipitationChance = $.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
       cc.forecastTime = null;  //@@ needed?
 
       var position = garCurrent.observationLocationPosition;
       if (position != null) {
         var location = position.toDegrees();
-        cc.lat = Utils.getNumericValue(location[0], 0.0d) as Lang.Double;
-        cc.lon = Utils.getNumericValue(location[1], 0.0d) as Lang.Double;
+        cc.lat = $.getNumericValue(location[0], 0.0d) as Lang.Double;
+        cc.lon = $.getNumericValue(location[1], 0.0d) as Lang.Double;
       }
-      cc.observationLocationName = Utils.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
+      cc.observationLocationName = $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
       // Skip after first ,
       var comma = cc.observationLocationName.find(",");
       if (comma != null) {
@@ -36,7 +36,7 @@ using WhatAppBase.Utils as Utils;
       cc.observationTime = garCurrent.observationTime;
       cc.clouds = 0;    // Not available
       cc.uvi = null;    // Not available
-      cc.condition = Utils.getNumericValue(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
+      cc.condition = $.getNumericValue(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
       cc.windBearing = garCurrent.windBearing;
       cc.windSpeed = garCurrent.windSpeed;
       cc.temperature = garCurrent.temperature;
@@ -61,8 +61,8 @@ using WhatAppBase.Utils as Utils;
             hf.forecastTime = garForecast.forecastTime as Time.Moment;
             hf.clouds = 0;  // Not availablelastUpdateddity;
             hf.uvi = null;  // Not available
-            hf.precipitationChance = Utils.getNumericValue(garForecast.precipitationChance, 0) as Lang.Number;
-            hf.condition = Utils.getNumericValue(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;            
+            hf.precipitationChance = $.getNumericValue(garForecast.precipitationChance, 0) as Lang.Number;
+            hf.condition = $.getNumericValue(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;            
             hf.windBearing = garForecast.windBearing;
             hf.windSpeed = garForecast.windSpeed;
             hf.temperature = garForecast.temperature;

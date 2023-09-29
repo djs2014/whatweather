@@ -1,6 +1,6 @@
 import Toybox.Lang;
 import Toybox.System;
-using WhatAppBase.Utils as Utils;
+
 
 // enum ActiveAlert {
 //   aaUvi,
@@ -125,7 +125,7 @@ class AlertHandler {
       info = info + " C";
     }
     if (statusWindSpeed == HANDLED) {
-      var beaufort = Utils.windSpeedToBeaufort(maxWindSpeed);
+      var beaufort = $.windSpeedToBeaufort(maxWindSpeed);
       info = info + " Ws" + beaufort.format("%d");
     }
     if (statusDewpoint == HANDLED) {
@@ -232,7 +232,7 @@ class AlertHandler {
     if (alertUvi <= 0 || uvi == null) {
       return;
     }
-    maxUvi = Utils.max(maxUvi, uvi) as Float;    
+    maxUvi = $.max(maxUvi, uvi) as Float;    
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusUvi == NEUTRAL && uvi >= alertUvi) {
       statusUvi = TRIGGERED;
@@ -247,7 +247,7 @@ class AlertHandler {
       return;
     }
    
-    maxPrecipitationChance = Utils.max(maxPrecipitationChance, chance) as Number;
+    maxPrecipitationChance = $.max(maxPrecipitationChance, chance) as Number;
    
     if (alertPrecipitationChance <= 0) {
       return;
@@ -267,7 +267,7 @@ class AlertHandler {
       return;
     }
 
-    maxRainMMfirstHour = Utils.max(maxRainMMfirstHour, mm) as Number;    
+    maxRainMMfirstHour = $.max(maxRainMMfirstHour, mm) as Number;    
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusRainMMfirstHour == NEUTRAL && mm >= alertRainMMfirstHour) {
       statusRainMMfirstHour = TRIGGERED;
@@ -294,9 +294,9 @@ class AlertHandler {
     if (alertWindSpeed <= 0 || windSpeedMs == null) {
       return;
     }
-    maxWindSpeed = Utils.max(maxWindSpeed, windSpeedMs) as Float;
+    maxWindSpeed = $.max(maxWindSpeed, windSpeedMs) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    var beaufort = Utils.windSpeedToBeaufort(windSpeedMs);
+    var beaufort = $.windSpeedToBeaufort(windSpeedMs);
     if (statusWindSpeed == NEUTRAL && beaufort >= alertWindSpeed) {
       statusWindSpeed = TRIGGERED;
     }
@@ -310,7 +310,7 @@ class AlertHandler {
     if (alertDewpoint <= 0 || dewPoint == null) {
       return;
     }
-    maxDewpoint = Utils.max(maxDewpoint, dewPoint) as Float;
+    maxDewpoint = $.max(maxDewpoint, dewPoint) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusDewpoint == NEUTRAL && dewPoint >= alertDewpoint) {
       statusDewpoint = TRIGGERED;

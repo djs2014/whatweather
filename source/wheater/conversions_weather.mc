@@ -2,7 +2,7 @@ import Toybox.Weather;
 import Toybox.System;
 import Toybox.Graphics;
 import Toybox.Lang;
-using WhatAppBase.Utils as Utils;
+
 
 function dewpointToColor(dp as Lang.Float?) as Lang.Number {
   if (dp == null) {

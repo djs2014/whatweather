@@ -1,7 +1,7 @@
 import Toybox.Graphics;
 import Toybox.System;
 import Toybox.Lang;
-using WhatAppBase.Utils as Utils;
+
 using WhatAppBase.Types as Types;
 
 class DisplaySettings {
