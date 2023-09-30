@@ -75,11 +75,14 @@ class WhatWeatherView extends WatchUi.DataField {
     mBGServiceHandler.setLastObservationMoment(mBgData.getObservationTime());
   }
 
-  function onLayout(dc as Dc) as Void {}
+  function onLayout(dc as Dc) as Void {
+    // @@ init ds, calc column width etc.
+
+  }
 
   function compute(info as Activity.Info) as Void {
     try {
-      track = getBearing(info as Activity.Info?);
+      track = getBearing(info);
       mCurrentInfo.onCompute(info);
       
       mActivityPaused = activityIsPaused(info);
@@ -993,7 +996,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mWeatherAlertHandler.handle(mRecentData.alerts);
   }
 
-  function getBearing(a_info as Activity.Info?) as Number {
+  function getBearing(a_info as Activity.Info) as Number {
     var track = getActivityValue(a_info, :track, 0.0f) as Float;
     if (track == 0.0f) {
       track = getActivityValue(a_info, :currentHeading, 0.0f) as Float;

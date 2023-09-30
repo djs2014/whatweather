@@ -265,9 +265,6 @@ class BGServiceHandler {
   }
 
   function getErrorMessage() as Lang.String {
-    if (mErrorMessage == null) {
-      return "";
-    }
     if (mErrorMessage.length() > 30) {
       return mErrorMessage.substring(0, 30) as String;
     }
