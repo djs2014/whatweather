@@ -1,21 +1,8 @@
 <strings>
     <string id="AppName">What Weather</string>    
-    <string id="AppNameBeta">What Weather Beta</string>    
-    <string id="ShowCurrentForecast">Show current hour</string>
-    <string id="MaxHoursForecast">Hours of forecast</string> 
-    <string id="ShowClouds">Show cloud %</string>
-    <string id="ShowWind">Show wind</string>
-    <string id="ShowWindPrompt">Select wind information</string>
-    <string id="ShowWindNothing">Nothing</string>
-    <string id="ShowWindMeters">Show wind in meter/sec</string>    
-    <string id="ShowWindKilometers">Show wind in km/h or mi/h</string>
-    <string id="ShowWindBeaufort">Show wind in Beaufort</string>
-    <string id="ShowTemperature">Show temperature</string>
-    <string id="ShowRelativeHumidity">Show relative humidity</string>
-    <string id="ShowPressure">Show pressure (sealevel)</string>
-    <string id="ShowDewpoint">Show dew point</string>
-    <string id="ShowComfortZone">Show comfort zone</string>
-    <string id="ShowUVIndex">Show UV index</string>  
+    <string id="AppNameBeta">What Weather Beta</string>        
+    
+    
     <string id="MaxUVIndex">Max UV index</string>  
     <string id="AlertLevelprecipitationChance">Alert precipitation chance</string>
     <string id="AlertLevelRainMMfirstHour">Alert rain first hour (mm)</string>
@@ -23,9 +10,8 @@
     <string id="AlertLevelWindSpeed">Alert wind (Beaufort)</string>        
     <string id="AlertLevelDewpoint">Alert dewpoint (Celcius)</string>        
         
-    <string id="ShowCurrentWind">Show current wind (small field)</string>
     <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
-    <string id="ShowMinuteForecast">Show rain first hour (OWM 3.0)</string>
+    
     <string id="ShowForecastStartTime">Show time of first forecast data</string>    
     <string id="ShowInfoSmallField">Extra information (small field)</string>        
     <string id="ShowInfoLargeField">Extra information (large field)</string>        
@@ -42,17 +28,10 @@
     <string id="ComfortTempMin">Comfort min temperature(C)</string>
     <string id="ComfortTempMax">Comfort max temperature(C)</string>
 	
-    <string id="ShowWeatherCondition">Show weather condition</string>	
     <string id="MaxTemperature">Max temperature(C)</string>	
     <string id="MaxPressure">Max pressure(hPa)</string>	
     <string id="MinPressure">Min pressure(hPa)</string>	
-        
-    <string id="WeatherDataSource">Weather source</string>
-    <string id="WeatherDataSourcePrompt">Select weather source</string>
-    <string id="WeatherDataSourceGarminFirst">Garmin first</string>
-    <string id="WeatherDataSourceOWMFirst">OWM first</string>  
-    <string id="WeatherDataSourceGarmin">Garmin</string>
-    <string id="WeatherDataSourceOWM">OWM (Open weather map)</string>  
+            
     <string id="OpenWeatherAPIKey">OWM API key</string>
     <string id="OpenWeatherProxy">OWM Proxy (compress json)</string>
     <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   
@@ -60,14 +39,6 @@
     <string id="OpenWeatherAPIVersionPrompt">Select OWM API version</string>       
     <string id="OpenWeatherAPIVersion25">onecall 2.5</string>       
     <string id="OpenWeatherAPIVersion30">onecall 3.0</string>       
-
-    <string id="MinimalGPSquality">Minimal GPS quality to start</string>
-    <string id="MinimalGPSqualityPrompt">Select minimal GPS quality</string>    
-    <string id="GpsQualityNotAvailable">Not available</string>
-    <string id="GpsQualityLastKnown">Last known</string>
-    <string id="GpsQualityPoor">Poor</string>
-    <string id="GpsQualityUsable">Usable</string>
-    <string id="GpsQualityGood">Good</string>
 
     <string id="TestScenario">Test scenario: 1 alerts, 2 rain</string>
 </strings>

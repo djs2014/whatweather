@@ -1,13 +1,76 @@
 refactor
 - less memory?
+- on device settings
+  - Proxy
+    - x minimalGPSquality
+    - x checkIntervalMinutes
+    - openWeatherAPIVersion OWM api version
+    - openWeatherAPIKey OWM api key -> property
+    - openWeatherProxy Proxy url > property + default
+    - openWeatherProxyAPIKey Proxy api key > property  + default
+
+  - Show Weather
+    - x weatherDataSource Weather source      
+    - x showCurrentForecast current hour 
+    - x showMinuteForecast Rain first hour
+    - x maxHoursForecast hours of forecast
+    - x showClouds Clouds
+    - x showWind wind      
+    - x showCurrentWind Current wind -> on small field
+    - @@todo wind gust
+    - x showUVIndex uv index
+    - x showTemperature temperature
+    - x showRelativeHumidity relative humidity
+    - x showPressure Show pressure
+    - x showDewpoint Show dewpoint
+    - x showComfortZone comfort zone
+    - showWeatherCondition weather condition
+    - 
+    // - pressure sealevel
+    
+    - 
+    - @@todo showWeatherAlerts
+
+  - Extra information
+    - showInfoLargeField Large field (enum)
+    - showInfoSmallField Small field (enum)
+    - Tiny field (enum)
+      - - winddirection relative (big image)
+  - Alert levels
+    - alertLevelPrecipitationChance Precipitation chance
+      - add min/max to picker
+    - alertLevelUVi UV index
+    - alertLevelWindSpeed Wind beaufort
+    - alertLevelDewpoint dewpoint celcius
+  - Advanced
+    - maxTemperature max temp C
+    - maxUVIndex max uv index
+    - maxPressure max pressure hPa
+    - minPressure min pressure hPa
+  - Comfort region
+    - comfortHumidityMin min humidity %
+    - comfortHumidityMax max humidity %
+    - comfortTempMin min temperature C
+    - comfortTempMax max temperature C
+  - Demo
+    - Demo one time -> 
+    - testScenario Scenarios
+      - rainy
+      - alert
+      - rain first hour
+      - comfort -> high humidity / dew point
+
+
+-------------------------
 - onCompute - 
 - onLayout - calc dimensions
 - onBackgroundData - new / merge data check weather alerts 
 - onPositionChanged - do relevant stuff related to position
-- on device settings
 - onMinutePassed 
 - show time in bars when paused
 
+- comfort: kleur groen is warmer maar is toch kouder 
+  - 10 douw + 23 graden1025  en 19 graden 1025
 - toast message ??
 
 - toast for alerts + beep

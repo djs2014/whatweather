@@ -1,12 +1,4 @@
-<settings>
-	<setting propertyKey="@Properties.weatherDataSource" title="@Strings.WeatherDataSource" prompt="@Strings.WeatherDataSourcePrompt">
-        <settingConfig type="list">
-            <listEntry value="0">@Strings.WeatherDataSourceGarminFirst</listEntry>
-            <listEntry value="1">@Strings.WeatherDataSourceOWMFirst</listEntry>            
-            <listEntry value="2">@Strings.WeatherDataSourceGarmin</listEntry>
-            <listEntry value="3">@Strings.WeatherDataSourceOWM</listEntry>            
-        </settingConfig>
-    </setting>    
+<settings>   
 	<setting propertyKey="@Properties.openWeatherAPIVersion" title="@Strings.OpenWeatherAPIVersion" prompt="@Strings.OpenWeatherAPIVersionPrompt">
         <settingConfig type="list">
             <listEntry value="0">@Strings.OpenWeatherAPIVersion25</listEntry>
@@ -23,57 +15,9 @@
 		<settingConfig type="alphanumeric" />
 	</setting>
 
-	<setting propertyKey="@Properties.showCurrentForecast" title="@Strings.ShowCurrentForecast">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.maxHoursForecast" title="@Strings.MaxHoursForecast">
-		<settingConfig type="numeric" min="0" max="24" />
-	</setting>	
-	<setting propertyKey="@Properties.showMinuteForecast" title="@Strings.ShowMinuteForecast">
-		<settingConfig type="boolean" />
-	</setting>	
-	
-	<setting propertyKey="@Properties.showWind" title="@Strings.ShowWind" prompt="@Strings.ShowWindPrompt">
-		 <settingConfig type="list">
-            <listEntry value="0">@Strings.ShowWindNothing</listEntry>
-            <listEntry value="1">@Strings.ShowWindMeters</listEntry>            
-			<listEntry value="2">@Strings.ShowWindKilometers</listEntry>            
-            <listEntry value="3">@Strings.ShowWindBeaufort</listEntry>            
-        </settingConfig>
-	</setting>
-	<setting propertyKey="@Properties.showTemperature" title="@Strings.ShowTemperature">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showRelativeHumidity" title="@Strings.ShowRelativeHumidity">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showComfortZone" title="@Strings.ShowComfortZone">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showWeatherCondition" title="@Strings.ShowWeatherCondition">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showClouds" title="@Strings.ShowClouds">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showPressure" title="@Strings.ShowPressure">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showDewpoint" title="@Strings.ShowDewpoint">
-		<settingConfig type="boolean" />
-	</setting>
-	<setting propertyKey="@Properties.showUVIndex" title="@Strings.ShowUVIndex">
-		<settingConfig type="boolean" />
-	</setting>	
 	<setting propertyKey="@Properties.maxUVIndex" title="@Strings.MaxUVIndex">
 		<settingConfig type="numeric" min="0" max="50"/>
 	</setting>		
-	<setting propertyKey="@Properties.showCurrentWind" title="@Strings.ShowCurrentWind">
-		<settingConfig type="boolean" />
-	</setting>
-	<!-- <setting propertyKey="@Properties.showWeatherAlerts" title="@Strings.ShowWeatherAlerts">
-		<settingConfig type="boolean" />
-	</setting> -->
 	
     <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
@@ -135,17 +79,7 @@
 		<settingConfig type="numeric" min="0" max="100" />
 	</setting>		
 				
-	<setting propertyKey="@Properties.minimalGPSquality" title="@Strings.MinimalGPSquality" 
-	prompt="@Strings.MinimalGPSqualityPrompt">
-        <settingConfig type="list">
-            <listEntry value="0">@Strings.GpsQualityNotAvailable</listEntry>
-            <listEntry value="1">@Strings.GpsQualityLastKnown</listEntry>            
-            <listEntry value="2">@Strings.GpsQualityPoor</listEntry>            
-            <listEntry value="3">@Strings.GpsQualityUsable</listEntry>            
-            <listEntry value="4">@Strings.GpsQualityGood</listEntry>            	
-        </settingConfig>
-    </setting>    	
-
+    
 	<setting propertyKey="@Properties.testScenario" title="@Strings.TestScenario">
 		<settingConfig type="numeric" min="0" max="2" />		
 	</setting>

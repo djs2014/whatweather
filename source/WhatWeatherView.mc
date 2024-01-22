@@ -10,7 +10,6 @@ import Toybox.Position;
 import Toybox.Application.Storage;
 import Toybox.Background;
 
-
 class WhatWeatherView extends WatchUi.DataField {
   var mBGServiceHandler as BGServiceHandler;
   var mCurrentLocation as CurrentLocation = new CurrentLocation();
@@ -66,9 +65,9 @@ class WhatWeatherView extends WatchUi.DataField {
   function onLocationChanged() as Void {
     var degrees = mCurrentLocation.getCurrentDegrees();
     mLat = degrees[0];
-    mLon = degrees[1];    
+    mLon = degrees[1];
   }
- 
+
   function onBackgroundData(data as Dictionary) as Void {
     // First entry hourly in OWM is current entry
     mBgData = toWeatherData(data, true);
@@ -77,14 +76,13 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function onLayout(dc as Dc) as Void {
     // @@ init ds, calc column width etc.
-
   }
 
   function compute(info as Activity.Info) as Void {
     try {
       track = getBearing(info);
       mCurrentInfo.onCompute(info);
-      
+
       mActivityPaused = activityIsPaused(info);
 
       if (info has :timerState && info.timerState != null) {
@@ -117,12 +115,16 @@ class WhatWeatherView extends WatchUi.DataField {
     // }
   }
 
- 
-
   // Display the value you computed here. This will be called once a second when
   // the data field is visible.
   function onUpdate(dc as Dc) as Void {
     try {
+      if ($.gExitedMenu) {
+        // fix for leaving menu, draw complete screen, large field
+        dc.clearClip();
+        $.gExitedMenu = false;
+      }
+
       if (dc has :setAntiAlias) {
         dc.setAntiAlias(true);
       }
@@ -1007,5 +1009,28 @@ class WhatWeatherView extends WatchUi.DataField {
       previousTrack = track;
     }
     return $.rad2deg(track).toNumber();
+  }
+
+  // function to get a picture of a cloud in poligons
+  
+
+
+  // function to draw a line with an arrowhead
+  function drawArrow(dc as Dc, x1 as Number, y1 as Number, x2 as Number, y2 as Number, color as Graphics.ColorType) as Void {
+    var arrowLength = 10;
+    var arrowWidth = 5;
+    var arrowAngle = 0.5;
+    var dx = x2 - x1;
+    var dy = y2 - y1;
+    var angle = Math.atan2(dy, dx);
+    var len = Math.sqrt(dx * dx + dy * dy);
+    var x3 = x2 - arrowLength * Math.cos(angle - arrowAngle);
+    var y3 = y2 - arrowLength * Math.sin(angle - arrowAngle);
+    var x4 = x2 - arrowLength * Math.cos(angle + arrowAngle);
+    var y4 = y2 - arrowLength * Math.sin(angle + arrowAngle);
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+    dc.drawLine(x1, y1, x2, y2);
+    dc.drawLine(x2, y2, x3, y3);
+    dc.drawLine(x2, y2, x4, y4);
   }
 }

@@ -102,7 +102,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         }
     }
 
-    function requestOWMData(proxy as String, proxyApiKey as String, params as Lang.Dictionary) as Void {        		  
+    function requestOWMData(proxy as String, proxyApiKey as String, params as Lang.Dictionary<Lang.Object, Lang.Object>) as Void {        		  
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => {
