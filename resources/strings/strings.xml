@@ -4,11 +4,6 @@
     
     
     <string id="MaxUVIndex">Max UV index</string>  
-    <string id="AlertLevelprecipitationChance">Alert precipitation chance</string>
-    <string id="AlertLevelRainMMfirstHour">Alert rain first hour (mm)</string>
-    <string id="AlertLevelUVi">Alert UV index</string>   
-    <string id="AlertLevelWindSpeed">Alert wind (Beaufort)</string>        
-    <string id="AlertLevelDewpoint">Alert dewpoint (Celcius)</string>        
         
     <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
     

@@ -34,7 +34,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       // @@ proxy url - text picker
       // @@ proxy apikey - text picker
       // @@ owm apikey - text picker
-      mi = new WatchUi.MenuItem("Checkinterval minutes", null, "checkIntervalMinutes", null);
+      mi = new WatchUi.MenuItem("Checkinterval minutes |5", null, "checkIntervalMinutes", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
                   
@@ -113,9 +113,23 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     } else if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
-      // label
-      // subLabel (value) + |0-100 
       var mi = new WatchUi.MenuItem("Precipitation chance |0-100", null, "alertLevelPrecipitationChance", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      alertsMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("MM rain 1st h |0-100", null, "alertLevelRainMMfirstHour", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      alertsMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("UV index |0-20", null, "alertLevelUVi", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      alertsMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Wind beaufort |0-17", null, "alertLevelWindSpeed", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      alertsMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Dewpoint (C) |0", null, "alertLevelDewpoint", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 

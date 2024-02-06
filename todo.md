@@ -37,11 +37,13 @@ refactor
     - Tiny field (enum)
       - - winddirection relative (big image)
   - Alert levels
-    - alertLevelPrecipitationChance Precipitation chance
-      - add min/max to picker
-    - alertLevelUVi UV index
-    - alertLevelWindSpeed Wind beaufort
-    - alertLevelDewpoint dewpoint celcius
+    - x alertLevelPrecipitationChance Precipitation chance
+      - x add min/max to picker
+    - x alertLevelUVi UV index
+    - x alertLevelRainMMfirstHour
+    - x alertLevelWindSpeed Wind beaufort
+    - x alertLevelDewpoint dewpoint celcius
+    - reset alerts
   - Advanced
     - maxTemperature max temp C
     - maxUVIndex max uv index

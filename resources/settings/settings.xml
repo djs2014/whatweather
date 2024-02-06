@@ -39,22 +39,8 @@
 			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
         </settingConfig>
     </setting>      
-	
-	<setting propertyKey="@Properties.alertLevelPrecipitationChance" title="@Strings.AlertLevelprecipitationChance">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>	
-	<setting propertyKey="@Properties.alertLevelRainMMfirstHour" title="@Strings.AlertLevelRainMMfirstHour">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.alertLevelUVi" title="@Strings.AlertLevelUVi">
-		<settingConfig type="numeric" min="0" max="20" />
-	</setting>
-	<setting propertyKey="@Properties.alertLevelWindSpeed" title="@Strings.AlertLevelWindSpeed">
-		<settingConfig type="numeric" min="0" />
-	</setting>	
-	<setting propertyKey="@Properties.alertLevelDewpoint" title="@Strings.AlertLevelDewpoint">
-		<settingConfig type="numeric" min="0" />
-	</setting>	
+		
+
 	
 	<setting propertyKey="@Properties.maxTemperature" title="@Strings.MaxTemperature">
 		<settingConfig type="numeric" min="0" max="100"/>
