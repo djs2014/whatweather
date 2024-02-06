@@ -30,6 +30,9 @@ class NumericInputView extends WatchUi.View {
   hidden var _space as Number = 2;
   hidden var _redrawKeyPad as Boolean = true;
 
+  hidden var _minValue as Number = 0;
+  hidden var _maxValue as Number = 0;
+
   var _onAccept as Method?;
   var _onKeypressed as Method?;
 
@@ -81,6 +84,11 @@ class NumericInputView extends WatchUi.View {
     }
     _insert = insert;
     _negative = negative;
+  }
+
+  function setOptions(options as NumericOptions) as Void {
+    _minValue = options.minValue;
+    _maxValue = options.maxValue;
   }
 
   function setOnAccept(objInstance as Object, method as Symbol) as Void {
@@ -168,7 +176,9 @@ class NumericInputView extends WatchUi.View {
     // }
   }
 
-  hidden function buildCurrentValue(data as Array<Char>) as Numeric {
+   // @@ TODO check if value still ok _minValue, _maxValue
+
+  hidden function buildCurrentValue(data as Array<Char>) as Numeric {    
     try {
       var stringValue = StringUtil.charArrayToString(data);
 
@@ -179,6 +189,7 @@ class NumericInputView extends WatchUi.View {
           break;
         case instanceof Number:
           value = stringValue.toNumber();
+          
           break;
         case instanceof Float:
           value = stringValue.toFloat();
@@ -188,9 +199,11 @@ class NumericInputView extends WatchUi.View {
           break;
       }
 
-      if (value != null) {
+      if (value != null) {        
         return value as Numeric;
       }
+
+
       return _currentValue;
     } catch (ex) {
       ex.printStackTrace();
@@ -319,6 +332,21 @@ class NumericInputView extends WatchUi.View {
             break;
         }
       }
+
+      var checkMinMax = _minValue != 0 or _maxValue != 0;
+      if (checkMinMax) {
+        switch (_currentValue) {
+          case instanceof Long:
+          case instanceof Number:
+            if (_currentValue < _minValue) {
+              _currentValue = _minValue;
+            } else if (_currentValue > _maxValue) {
+              _currentValue = _maxValue;
+            } 
+            break;
+        }
+      } 
+
       onAccept(_currentValue);
       WatchUi.popView(WatchUi.SLIDE_RIGHT);
       return;
@@ -338,7 +366,7 @@ class NumericInputView extends WatchUi.View {
     }
 
     _currentValue = buildCurrentValue(_editData);
-
+ 
     //if (_debug) {
     refreshUi();
     //}
@@ -491,5 +519,38 @@ class NumericInputView extends WatchUi.View {
       );
       _controlCoord.add([x, x + width, y, y + width] as Lang.Array<Number>);
     }
+  }
+}
+
+
+// label contains |min-max
+function parseLabelToOptions(label as String?) as NumericOptions {
+  var options = new NumericOptions();
+  if (label == null) { return options; }
+  var pos = label.find("|");
+  if (pos == null) { return options; }
+  var minmax = label.substring(pos + 1, null);
+  if (minmax == null) { return options; }
+  pos = minmax.find("-");
+  if (pos == null) { 
+    options.minValue = minmax.toNumber() as Number;
+  } else {
+    var min = minmax.substring(null, pos);
+    var max = minmax.substring(pos + 1, null);
+    if (min == null || max == null) { return options; }
+    options.minValue = min.toNumber() as Number;
+    options.maxValue = max.toNumber() as Number;
+  }
+
+
+  return options;
+}
+// Implement min/max + display range (min-max) + check
+class NumericOptions {  
+  public var minValue as Number = 0;
+  public var maxValue as Number = 0;
+
+  public function initialize() {
+
   }
 }

@@ -24,7 +24,7 @@ refactor
     - x showPressure Show pressure
     - x showDewpoint Show dewpoint
     - x showComfortZone comfort zone
-    - showWeatherCondition weather condition
+    - x showWeatherCondition weather condition
     - 
     // - pressure sealevel
     

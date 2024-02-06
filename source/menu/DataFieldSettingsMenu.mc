@@ -113,6 +113,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     } else if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
+      // label
+      // subLabel (value) + |0-100 
       var mi = new WatchUi.MenuItem("Precipitation chance |0-100", null, "alertLevelPrecipitationChance", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
@@ -130,6 +132,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   hidden var _item as MenuItem?;
   hidden var _currentPrompt as String = "";
   hidden var _debug as Boolean = false;
+  hidden var _numericOptions as NumericOptions = new NumericOptions();
 
   function initialize(delegate as DataFieldSettingsMenuDelegate, menu as WatchUi.Menu2) {
     Menu2InputDelegate.initialize();
@@ -185,8 +188,13 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
-
-    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_RIGHT);
+    
+    // @@TODO parse label / sublabel to get min max
+    _numericOptions = parseLabelToOptions(_currentPrompt);
+    // _numericOptions.minValue = 0;
+    // _numericOptions.maxValue = 100;
+    view.setOptions(_numericOptions);
+    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view) , WatchUi.SLIDE_RIGHT);
   }
 
   // function onSelectedAfterXUnits(value as Object, storageKey as String) as Void {
@@ -221,6 +229,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
     view.setEditData(editData, cursorPos, insert, negative);
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
+    view.setOptions(_numericOptions);
 
     Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_IMMEDIATE);
   }
