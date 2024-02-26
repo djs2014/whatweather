@@ -3,7 +3,6 @@
     <string id="AppNameBeta">What Weather Beta</string>        
     
     
-    <string id="MaxUVIndex">Max UV index</string>  
         
     <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
     
@@ -18,14 +17,6 @@
     <string id="ShowInfoSealevelPressure">Show mean sealevel pressure</string>
     <string id="ShowInfoDistance">Show elapsed distance</string>
         
-    <string id="ComfortHumidityMin">Comfort min humidity(%)</string>
-    <string id="ComfortHumidityMax">Comfort max humidity(%)</string>
-    <string id="ComfortTempMin">Comfort min temperature(C)</string>
-    <string id="ComfortTempMax">Comfort max temperature(C)</string>
-	
-    <string id="MaxTemperature">Max temperature(C)</string>	
-    <string id="MaxPressure">Max pressure(hPa)</string>	
-    <string id="MinPressure">Min pressure(hPa)</string>	
             
     <string id="OpenWeatherAPIKey">OWM API key</string>
     <string id="OpenWeatherProxy">OWM Proxy (compress json)</string>

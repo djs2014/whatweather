@@ -37,7 +37,16 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi = new WatchUi.MenuItem("Checkinterval minutes |5", null, "checkIntervalMinutes", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
-                  
+
+      // Set initial position   
+      // @@ reset to false when used.
+      // var boolean = Storage.getValue("useInitialPosition") ? true : false;
+      // mi.addItem(new WatchUi.ToggleMenuItem("Use initial position", null, "useInitialPosition", boolean, null));      
+
+      // mi = new WatchUi.MenuItem("Initial position", null, "initialposition", null);
+      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      // proxyMenu.addItem(mi);
+
       WatchUi.pushView(proxyMenu, new $.GeneralMenuDelegate(self, proxyMenu), WatchUi.SLIDE_UP);
     } else if (id instanceof String && id.equals("showweather")) {
       var showMenu = new WatchUi.Menu2({ :title => "Show Weather" });
@@ -133,7 +142,56 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
-      WatchUi.pushView(alertsMenu, new $.GeneralMenuDelegate(self, alertsMenu), WatchUi.SLIDE_UP);                  
+      WatchUi.pushView(alertsMenu, new $.GeneralMenuDelegate(self, alertsMenu), WatchUi.SLIDE_UP);    
+    } else if (id instanceof String && id.equals("advanced")) {
+      var advancedMenu = new WatchUi.Menu2({ :title => "Advanced" });
+
+      var mi = new WatchUi.MenuItem("Max temperature (C) |0-100", null, "maxTemperature", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Max UV index |0-50", null, "maxUVIndex", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Min pressure (hPa) |0-1200", null, "minPressure", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Max pressure (hPa) |0-1200", null, "maxPressure", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
+      WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(self, advancedMenu), WatchUi.SLIDE_UP);    
+    } else if (id instanceof String && id.equals("comfort")) {
+      var comfortMenu = new WatchUi.Menu2({ :title => "Comfort" });
+
+      var mi = new WatchUi.MenuItem("Min humidity (%) |0-100", null, "comfortHumidityMin", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      comfortMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Max humidity (%) |0-100", null, "comfortHumidityMax", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      comfortMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Min temp (C) |0-100", null, "comfortTempMin", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      comfortMenu.addItem(mi);
+      mi = new WatchUi.MenuItem("Max temp (C) |0-100", null, "comfortTempMax", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      comfortMenu.addItem(mi);
+
+      WatchUi.pushView(comfortMenu, new $.GeneralMenuDelegate(self, comfortMenu), WatchUi.SLIDE_UP);   
+    } else if (id instanceof String && id.equals("demo")) {
+      var demoMenu = new WatchUi.Menu2({ :title => "Demo" });             
+      // some scenarios
+
+      
+      // var mi = new WatchUi.MenuItem("Start after", null, "alert_startAfterUnits", null);
+      // var value = getStorageValue(mi.getId() as String, $._alert_startAfterUnits) as Number;
+      // mi.setSubLabel($.getStartAfterUnitsText(value));
+
+      // option demo stops in x minutes 
     } else if (id instanceof String && menuItem instanceof ToggleMenuItem) {
       Storage.setValue(id as String, menuItem.isEnabled());
       menuItem.setSubLabel($.subMenuToggleMenuItem(id as String));

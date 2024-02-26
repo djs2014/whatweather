@@ -14,10 +14,6 @@
 	<setting propertyKey="@Properties.openWeatherProxyAPIKey" title="@Strings.OpenWeatherProxyAPIKey">
 		<settingConfig type="alphanumeric" />
 	</setting>
-
-	<setting propertyKey="@Properties.maxUVIndex" title="@Strings.MaxUVIndex">
-		<settingConfig type="numeric" min="0" max="50"/>
-	</setting>		
 	
     <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
         <settingConfig type="list">
@@ -38,33 +34,7 @@
 			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
 			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
         </settingConfig>
-    </setting>      
-		
-
-	
-	<setting propertyKey="@Properties.maxTemperature" title="@Strings.MaxTemperature">
-		<settingConfig type="numeric" min="0" max="100"/>
-	</setting>	
-	<setting propertyKey="@Properties.maxPressure" title="@Strings.MaxPressure">
-		<settingConfig type="numeric" min="0" max="1200"/>
-	</setting>	
-	<setting propertyKey="@Properties.minPressure" title="@Strings.MinPressure">
-		<settingConfig type="numeric" min="0" max="1200"/>
-	</setting>	
-
-	<setting propertyKey="@Properties.comfortHumidityMin" title="@Strings.ComfortHumidityMin">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.comfortHumidityMax" title="@Strings.ComfortHumidityMax">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.comfortTempMin" title="@Strings.ComfortTempMin">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>
-	<setting propertyKey="@Properties.comfortTempMax" title="@Strings.ComfortTempMax">
-		<settingConfig type="numeric" min="0" max="100" />
-	</setting>		
-				
+    </setting>      					
     
 	<setting propertyKey="@Properties.testScenario" title="@Strings.TestScenario">
 		<settingConfig type="numeric" min="0" max="2" />		

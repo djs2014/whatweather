@@ -1,22 +1,12 @@
 <properties>
 	
-	<property id="maxUVIndex" type="number">20</property>
-
+	
 
 	
 	<property id="showInfoSmallField" type="number">1</property>
 	<property id="showInfoLargeField" type="number">0</property>
 	
-	
-	<property id="comfortHumidityMin" type="number">40</property>	
-	<property id="comfortHumidityMax" type="number">60</property>	
-	<property id="comfortTempMin" type="number">19</property>	
-	<property id="comfortTempMax" type="number">27</property>	
-	
-	<property id="maxTemperature" type="number">50</property>	
-	<property id="maxPressure" type="number">1080</property>	
-	<property id="minPressure" type="number">870</property>	
-
+		
 	<!-- <property id="showWeatherAlerts" type="boolean">true</property>	 -->
 		
 	<property id="openWeatherAPIVersion" type="number">1</property>

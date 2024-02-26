@@ -1,5 +1,6 @@
 refactor
 - less memory?
+- show mem on screen?
 - on device settings
   - Proxy
     - x minimalGPSquality
@@ -42,18 +43,18 @@ refactor
     - x alertLevelUVi UV index
     - x alertLevelRainMMfirstHour
     - x alertLevelWindSpeed Wind beaufort
-    - x alertLevelDewpoint dewpoint celcius
-    - reset alerts
-  - Advanced
-    - maxTemperature max temp C
-    - maxUVIndex max uv index
-    - maxPressure max pressure hPa
-    - minPressure min pressure hPa
+    - x alertLevelDewpoint dewpoint celcius    
+    Advanced
+    - minTemperature min temp C
+    - x maxTemperature max temp C
+    - x maxUVIndex max uv index
+    - x maxPressure max pressure hPa
+    - x minPressure min pressure hPa
   - Comfort region
-    - comfortHumidityMin min humidity %
-    - comfortHumidityMax max humidity %
-    - comfortTempMin min temperature C
-    - comfortTempMax max temperature C
+    - x comfortHumidityMin min humidity %
+    - x comfortHumidityMax max humidity %
+    - x comfortTempMin min temperature C
+    - x comfortTempMax max temperature C
   - Demo
     - Demo one time -> 
     - testScenario Scenarios

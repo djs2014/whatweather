@@ -340,7 +340,7 @@ class NumericInputView extends WatchUi.View {
           case instanceof Number:
             if (_currentValue < _minValue) {
               _currentValue = _minValue;
-            } else if (_currentValue > _maxValue) {
+            } else if (_maxValue > _minValue and _currentValue > _maxValue) {
               _currentValue = _maxValue;
             } 
             break;
