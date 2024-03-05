@@ -6,7 +6,6 @@ import Toybox.Sensor;
 import Toybox.Application.Storage;
 using Toybox.System;
 
-
 class CurrentInfo {
   hidden var _actiInfo as Activity.Info?;
   function initialize() {}
@@ -15,7 +14,7 @@ class CurrentInfo {
   function onCompute(info as Activity.Info) as Void {
     _actiInfo = info;
   }
-  
+
   function ambientPressure() as Lang.Float? {
     if (_actiInfo != null) {
       var info = _actiInfo as Activity.Info;
@@ -52,5 +51,14 @@ class CurrentInfo {
 
   function temperature() as Lang.Float? {
     return $.getStorageValue("Temperature", null) as Lang.Float?;
+  }
+
+  function activityIsPaused() as Boolean {
+    if (_actiInfo != null) {
+      if (_actiInfo has :timerState) {
+        return _actiInfo.timerState == Activity.TIMER_STATE_PAUSED || _actiInfo.timerState == Activity.TIMER_STATE_OFF;
+      }
+    }
+    return true;
   }
 }

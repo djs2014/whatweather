@@ -11,7 +11,7 @@ var _BGServiceHandler as BGServiceHandler?;
 var _alertHandler as AlertHandler?;
 
 var gDebug as Boolean = false;
-var gMinimalGPSquality as Number = 3;
+var gMinimalGPSquality as Number = 1; // last known location
 
 (:background)
 var _weatherDescriptions as Lang.Dictionary = {};

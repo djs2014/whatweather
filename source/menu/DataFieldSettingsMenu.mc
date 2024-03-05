@@ -183,8 +183,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
       WatchUi.pushView(comfortMenu, new $.GeneralMenuDelegate(self, comfortMenu), WatchUi.SLIDE_UP);   
     } else if (id instanceof String && id.equals("demo")) {
-      var demoMenu = new WatchUi.Menu2({ :title => "Demo" });             
-      // some scenarios
+      // var demoMenu = new WatchUi.Menu2({ :title => "Demo" });             
+      // some scenarios, set duration, no OWM api key needed
 
       
       // var mi = new WatchUi.MenuItem("Start after", null, "alert_startAfterUnits", null);

@@ -40,32 +40,39 @@ class DisplaySettings {
   var wideField as Lang.Boolean = false;
   var largeField as Lang.Boolean = false;
   var oneField as Lang.Boolean = false;
+
+  var dashesUnderColumnHeight as Lang.Number = 2;
   hidden var backgroundColor as Graphics.ColorType = 0;
 
   function initialize() {}
 
-  function calculateLayout(dc as Dc) as Void {
+  function setDc(dc as Dc) as Void {
     self.dc = dc;
+  }
+
+  function calculateLayout() as Void {
+    var dc = self.dc as Dc;
     self.width = dc.getWidth();
     self.height = dc.getHeight();
     // @@ QnD
-    self.smallField = isSmallField(dc);
-    self.wideField = isWideField(dc);
-    self.largeField = isLargeField(dc);
-    self.oneField = isOneField(dc);    
+    self.smallField = isSmallField();
+    self.wideField = isWideField();
+    self.largeField = isLargeField();
+    self.oneField = isOneField();    
   }
 
 
-    function isHiddenField(dc as Dc) as Boolean { return getFieldType(dc) == Types.HiddenField; }
-    function isSmallField(dc as Dc) as Boolean { return getFieldType(dc) == Types.SmallField; }
-    function isWideField(dc as Dc) as Boolean { return getFieldType(dc) == Types.WideField; }
-    function isLargeField(dc as Dc) as Boolean { return getFieldType(dc) == Types.LargeField; }
-    function isOneField(dc as Dc) as Boolean { return getFieldType(dc) == Types.OneField; }
+    function isHiddenField() as Boolean { return getFieldType() == Types.HiddenField; }
+    function isSmallField() as Boolean { return getFieldType() == Types.SmallField; }
+    function isWideField() as Boolean { return getFieldType() == Types.WideField; }
+    function isLargeField() as Boolean { return getFieldType() == Types.LargeField; }
+    function isOneField() as Boolean { return getFieldType() == Types.OneField; }
 
     // 1 large field: w[246] h[322]
     // 2 fields: w[246] h[160]
     // 3 fields: w[246] h[106]
-    function getFieldType(dc as Dc) as Types.FieldType {
+    function getFieldType() as Types.FieldType {
+      var dc = self.dc as Dc;
       var width = dc.getWidth();
       var height = dc.getHeight();
       var fieldType = Types.SmallField;
@@ -84,15 +91,10 @@ class DisplaySettings {
     }
 
 
-  function setDc(dc as Dc, backgroundColor as Graphics.ColorType) as Void {
-    calculateLayout(dc);
-    
+  
+  function setColors(backgroundColor as Graphics.ColorType) as Void {
     self.backgroundColor = backgroundColor;
     nightMode = (backgroundColor == Graphics.COLOR_BLACK);
-    setColors();
-  }
-
-  hidden function setColors() as Void {
     if (nightMode) {
       COLOR_TEXT = Graphics.COLOR_WHITE;
       COLOR_TEXT_ADDITIONAL = Graphics.COLOR_WHITE;
@@ -111,8 +113,9 @@ class DisplaySettings {
   }
 
   function clearScreen() as Void {
-    (dc as Dc).setColor(backgroundColor, backgroundColor);
-    (dc as Dc).clear();
+    var dc = self.dc as Dc;
+    dc.setColor(backgroundColor, backgroundColor);
+    dc.clear();
   }
 
   function calculate(nrOfColumns as Lang.Number, heightWind as Lang.Number, heightWc as Lang.Number, heightWt as Lang.Number)  as Void{
@@ -121,6 +124,10 @@ class DisplaySettings {
     self.heightWc = heightWc;
     self.heightWt = heightWt;
     calculateColumnWidth(0);
+
+    if (self.heightWind > 0 || self.heightWc > 0) {
+      self.dashesUnderColumnHeight = 0;
+    }
   }
 
   function calculateColumnWidth(offset as Lang.Number) as Void {
