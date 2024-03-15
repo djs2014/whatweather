@@ -876,6 +876,7 @@ class RenderWeather {
     return new Point(x.toNumber(), y.toNumber());
   }
 
+  // @@TODO onlayouyt -> get array of points
   hidden function drawWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Void {
     var x = x1;
     while (x <= x2) {    
@@ -883,6 +884,18 @@ class RenderWeather {
       dc.drawPoint(x, y1);
       x = x + increment;
     }
+  }
+  // @@TODO onlayouyt -> get array of points
+  // @@TODO drawPolygone as Points / line 
+  hidden function getWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Polygone {
+    var pts = [];
+    var x = x1;
+    while (x <= x2) {    
+      var y1 = y + Math.sin(x);
+      pts.add([ x, y1.toNumber() ]);
+      x = x + increment;
+    }
+    return pts as Polygone;
   }
 
   hidden function getCloudPoints(center as Point, radius as Number) as Polygone { 

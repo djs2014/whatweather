@@ -56,10 +56,11 @@ class WeatherAlertView extends WatchUi.DataFieldAlert {
             if (mDescription.length() > 0) {
                 desc = mDescription;
             } else {
-                var textWidth = dc.getTextWidthInPixels(desc, Graphics.FONT_TINY);
+                var textWidth = dc.getTextWidthInPixels(desc, Graphics.FONT_SMALL);
+                
                 // @@ TODO: split text and calculate witdh until fit screen width .. or is there a IQ function for this?
                 if (textWidth > dc.getWidth()) {
-                    desc = $.stringReplacePos(desc, desc.length() / 2,  " ", "\n", 1);
+                    desc = $.stringReplacePos(desc, desc.length() / 3,  " ", "\n", 1);
                 }
             }
             dc.drawText(1, y, Graphics.FONT_TINY, desc, Graphics.TEXT_JUSTIFY_LEFT);

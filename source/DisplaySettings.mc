@@ -2,8 +2,6 @@ import Toybox.Graphics;
 import Toybox.System;
 import Toybox.Lang;
 
-using WhatAppBase.Types as Types;
-
 class DisplaySettings {
   hidden var dc as Graphics.Dc?;
   var font as Graphics.FontType = Graphics.FONT_LARGE;
@@ -15,7 +13,7 @@ class DisplaySettings {
   var COLOR_TEXT_I as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL2 as Lang.Number = Graphics.COLOR_LT_GRAY;
-  
+
   var nightMode as Lang.Boolean = false;
   var width as Lang.Number = 0;
   var height as Lang.Number = 0;
@@ -42,7 +40,6 @@ class DisplaySettings {
   var oneField as Lang.Boolean = false;
 
   var dashesUnderColumnHeight as Lang.Number = 2;
-  hidden var backgroundColor as Graphics.ColorType = 0;
 
   function initialize() {}
 
@@ -50,52 +47,37 @@ class DisplaySettings {
     self.dc = dc;
   }
 
-  function calculateLayout() as Void {
+  function detectFieldType() as Void {
     var dc = self.dc as Dc;
     self.width = dc.getWidth();
     self.height = dc.getHeight();
-    // @@ QnD
-    self.smallField = isSmallField();
-    self.wideField = isWideField();
-    self.largeField = isLargeField();
-    self.oneField = isOneField();    
-  }
 
-
-    function isHiddenField() as Boolean { return getFieldType() == Types.HiddenField; }
-    function isSmallField() as Boolean { return getFieldType() == Types.SmallField; }
-    function isWideField() as Boolean { return getFieldType() == Types.WideField; }
-    function isLargeField() as Boolean { return getFieldType() == Types.LargeField; }
-    function isOneField() as Boolean { return getFieldType() == Types.OneField; }
-
+    self.smallField = true;
+    self.wideField = false;
+    self.largeField = false;
+    self.oneField = false;
     // 1 large field: w[246] h[322]
     // 2 fields: w[246] h[160]
     // 3 fields: w[246] h[106]
-    function getFieldType() as Types.FieldType {
-      var dc = self.dc as Dc;
-      var width = dc.getWidth();
-      var height = dc.getHeight();
-      var fieldType = Types.SmallField;
 
-      if (width == 0) {
-        fieldType = Types.HiddenField;        
-      } else if (width >= 246) {
-        fieldType = Types.WideField;
-        if (height >= 322) {
-          fieldType = Types.OneField;
-        } else if (height >= 100) {
-          fieldType = Types.LargeField;
-        }
+    if (width >= 246) {
+      self.smallField = false;
+      self.wideField = true;
+
+      if (height >= 322) {
+        self.wideField = false;
+        self.oneField = true;
+      } else if (height >= 100) {
+        self.wideField = false;
+        self.oneField = false;
+        self.largeField = true;
       }
-      return fieldType;
     }
+  }
 
-
-  
-  function setColors(backgroundColor as Graphics.ColorType) as Void {
-    self.backgroundColor = backgroundColor;
-    nightMode = (backgroundColor == Graphics.COLOR_BLACK);
-    if (nightMode) {
+  function setColorMode(nightMode as Boolean) as Void {
+    self.nightMode = nightMode;
+    if (self.nightMode) {
       COLOR_TEXT = Graphics.COLOR_WHITE;
       COLOR_TEXT_ADDITIONAL = Graphics.COLOR_WHITE;
       COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_WHITE;
@@ -112,13 +94,12 @@ class DisplaySettings {
     }
   }
 
-  function clearScreen() as Void {
-    var dc = self.dc as Dc;
-    dc.setColor(backgroundColor, backgroundColor);
-    dc.clear();
-  }
-
-  function calculate(nrOfColumns as Lang.Number, heightWind as Lang.Number, heightWc as Lang.Number, heightWt as Lang.Number)  as Void{
+  function calculate(
+    nrOfColumns as Lang.Number,
+    heightWind as Lang.Number,
+    heightWc as Lang.Number,
+    heightWt as Lang.Number
+  ) as Void {
     self.nrOfColumns = nrOfColumns;
     self.heightWind = heightWind;
     self.heightWc = heightWc;
@@ -134,27 +115,35 @@ class DisplaySettings {
     offsetX = offset;
     columnWidth = 0;
     if (nrOfColumns > 0) {
-      columnWidth = ((width - offsetX - (2 * margin) - (nrOfColumns - 1) * space) / nrOfColumns).toNumber();
+      columnWidth = ((width - offsetX - 2 * margin - (nrOfColumns - 1) * space) / nrOfColumns).toNumber();
     }
     columnY = margin;
-    var correction = ((width - offsetX - (2 * margin) - (nrOfColumns * columnWidth) - (nrOfColumns - 1) * space) / 2).toNumber();
+    var correction = (
+      (width - offsetX - 2 * margin - nrOfColumns * columnWidth - (nrOfColumns - 1) * space) /
+      2
+    ).toNumber();
     columnX = (margin + correction).toNumber();
 
     // Height of the weather column, 2 lines for weather condition text
-    columnHeight = (height - 2 * margin - heightWind - heightWc - (heightWt * 2)).toNumber();
+    columnHeight = (height - 2 * margin - heightWind - heightWc - heightWt * 2).toNumber();
 
     // Position of dashes under columns
     dashesPosY = (columnY + columnHeight).toNumber();
   }
 
   function info() as Lang.String {
-    return Lang.format(
-        "w[$1$] h[$2$] #c[$3$] offset[$4$] cw[$5$] ch[$6$]",
-        [ width, height, nrOfColumns, offsetX, columnWidth, columnHeight ]);
+    return Lang.format("w[$1$] h[$2$] #c[$3$] offset[$4$] cw[$5$] ch[$6$]", [
+      width,
+      height,
+      nrOfColumns,
+      offsetX,
+      columnWidth,
+      columnHeight,
+    ]);
   }
 
   //! Get correct y position based on a percentage
-  function getYpostion(percentage as Lang.Number)  as Lang.Number {
-    return (margin + columnHeight - (columnHeight * (percentage / 100.0))).toNumber();
+  function getYpostion(percentage as Lang.Number) as Lang.Number {
+    return (margin + columnHeight - columnHeight * (percentage / 100.0)).toNumber();
   }
 }

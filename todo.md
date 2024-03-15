@@ -1,21 +1,10 @@
-alert handler
-
-ex: uv max == 4
-1,2,5,6,4
--> 
-default Neutral
--> check data -> Triggered -> play alert
-  -> Set Handled
-Next check
-  -> if still alert needed -> if handled do nothing, else Triggered
-  -> if no alert needed -> set Neutral
-==> need all uv data
-
-
-
 refactor
 - less memory?
-- show mem on screen? if debug
+- less computation
+- 
+- profile 
+- 
+- show mem on screen? if debug -> crash
 - on device settings
   - Proxy
     - x minimalGPSquality
@@ -60,7 +49,7 @@ refactor
     - x alertLevelWindSpeed Wind beaufort
     - x alertLevelDewpoint dewpoint celcius    
     Advanced
-    - minTemperature min temp C
+    - -- minTemperature min temp C
     - x maxTemperature max temp C
     - x maxUVIndex max uv index
     - x maxPressure max pressure hPa

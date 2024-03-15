@@ -51,7 +51,8 @@ class WhatWeatherView extends WatchUi.DataField {
   var mTimerState as Number = 0;
 
   var mFlashScreen as Boolean = false;
-  var mWeatherChanged as Boolean = true;
+  var mTriggerCheckWeatherAlerts as Boolean = true;
+
 
   function initialize() {
     DataField.initialize();
@@ -76,15 +77,19 @@ class WhatWeatherView extends WatchUi.DataField {
     // First entry hourly in OWM is current entry
     mBgData = toWeatherData(data, true);
     mBGServiceHandler.setLastObservationMoment(mBgData.getObservationTime());
-    mWeatherChanged = true;
+    mTriggerCheckWeatherAlerts = true;
   }
 
-  function onLayout(dc as Dc) as Void {
-    // calculateLayout(dc);
+  function onLayout(dc as Dc) as Void {    
+    calculateLayout(dc); 
   }
 
   function compute(info as Activity.Info) as Void {
     try {
+      if ($.gSettingsChanged) {
+        mTriggerCheckWeatherAlerts = true;
+        $.gSettingsChanged = false;
+      }
       track = getBearing(info);
       mCurrentInfo.onCompute(info);
       mActivityPaused = mCurrentInfo.activityIsPaused();
@@ -99,26 +104,32 @@ class WhatWeatherView extends WatchUi.DataField {
       var garminWeather = purgePastWeatherdata(getLatestGarminWeather());
       // Ignore this, there is no event onNewGarminData
       garminWeather.setChanged(false);
-      var garminWeatherChanged = mGarminCheck.changed(garminWeather.getLat(), garminWeather.getLon(), garminWeather.getObservationTime());
+      var garminWeatherChanged = mGarminCheck.changed(
+        garminWeather.getLat(),
+        garminWeather.getLon(),
+        garminWeather.getObservationTime()
+      );
       if (garminWeatherChanged) {
         mGarminCheck.lat = garminWeather.getLat();
         mGarminCheck.lon = garminWeather.getLon();
         mGarminCheck.observationTime = garminWeather.getObservationTime();
-      }            
+      }
       mBgData = purgePastWeatherdata(mBgData);
       mRecentData = mergeWeatherData(garminWeather, mBgData, $._weatherDataSource);
 
       // Only when needed, ex when weather data is changed (new hour, new location, new bg data)
-      if (mWeatherChanged || mRecentData.changed || garminWeatherChanged) {
-        //if (DEBUG_DETAILS) {
+      if (mTriggerCheckWeatherAlerts || mRecentData.changed || garminWeatherChanged) {
+        if (DEBUG_DETAILS) {
           System.println(
-            Lang.format(
-              "WeatherChanged[$1$] mRecentData.changed[$2$] mBgData.changed[$3$] garminWeatherChanged[$4$]",
-              [mWeatherChanged, mRecentData.changed, mBgData.changed, garminWeatherChanged]
-            )
+            Lang.format("WeatherChanged[$1$] mRecentData.changed[$2$] mBgData.changed[$3$] garminWeatherChanged[$4$]", [
+              mTriggerCheckWeatherAlerts,
+              mRecentData.changed,
+              mBgData.changed,
+              garminWeatherChanged,
+            ])
           );
-        //}
-        mWeatherChanged = false;        
+        }
+        mTriggerCheckWeatherAlerts = false;
         mBgData.setChanged(false);
         mRecentData.setChanged(false);
 
@@ -141,8 +152,7 @@ class WhatWeatherView extends WatchUi.DataField {
   // the data field is visible.
   // Draw the weather
   function onUpdate(dc as Dc) as Void {
-    try {
-      calculateLayout(dc);
+    try {      
       if ($.gExitedMenu) {
         // fix for leaving menu, draw complete screen, large field
         dc.clearClip();
@@ -161,8 +171,10 @@ class WhatWeatherView extends WatchUi.DataField {
         backgroundColor = Graphics.COLOR_YELLOW;
       }
 
-      ds.setColors(backgroundColor);
-      ds.clearScreen();
+      ds.setColorMode(backgroundColor == Graphics.COLOR_BLACK);
+
+      dc.setColor(backgroundColor, backgroundColor);
+      dc.clear();
 
       onUpdateWeather(dc, ds, ds.dashesUnderColumnHeight);
 
@@ -171,6 +183,9 @@ class WhatWeatherView extends WatchUi.DataField {
       showInfo(dc, ds);
 
       showBgInfo(dc, ds);
+      // if ($.gDebug) {
+      //   showDebugInfo(dc, ds);
+      // }
     } catch (ex) {
       ex.printStackTrace();
     }
@@ -178,6 +193,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden function calculateLayout(dc as Dc) as Void {
     ds.setDc(dc);
+    ds.detectFieldType();
 
     var nrOfColumns = $._maxHoursForecast;
     if (ds.smallField || ds.wideField) {
@@ -208,7 +224,31 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWc = !mShowWeatherCondition || ds.smallField || ds.wideField ? 0 : 15;
     var heightWt = ds.oneField ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
     ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
-    ds.calculateLayout();
+    
+  }
+
+  hidden function showDebugInfo(dc as Dc, ds as DisplaySettings) as Void {
+    if (!ds.oneField) {
+      return;
+    }
+
+    var stats = System.getSystemStats();
+
+    // (stats.totalMemory / 1024.0).format("%.1f"),
+    var text = format("mem:u$1$/f$2$", [
+      (stats.usedMemory / 1024.0).format("%.2f"),
+      (stats.freeMemory / 1024.0).format("%.2f"),
+    ]);
+
+    var textWH = dc.getTextDimensions(text, Graphics.FONT_XTINY);
+    dc.drawText(
+      1,
+      //dc.getWidth() - textWH[0],
+      dc.getHeight() - textWH[1],
+      Graphics.FONT_XTINY,
+      text,
+      Graphics.TEXT_JUSTIFY_LEFT
+    );
   }
 
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
@@ -490,7 +530,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
                 dc.fillRectangle(xMMstart, ds.columnY + ds.columnHeight, maxIdx * columnWidth, dashesUnderColumnHeight);
               }
-              x = xMMstart + offset;              
+              x = xMMstart + offset;
             }
           }
         }
@@ -505,7 +545,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if (DEBUG_DETAILS) {
             System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [x, current.info(), color]));
           }
-    
+
           validSegment = validSegment + 1;
 
           // if ($._showColumnBorder) { drawColumnBorder(dc, x, ds.columnY, ds.columnWidth, ds.columnHeight); }
@@ -1006,34 +1046,6 @@ class WhatWeatherView extends WatchUi.DataField {
     return $.rad2deg(track).toNumber();
   }
 
-  // function to get a picture of a cloud in poligons
-
-  // function to draw a line with an arrowhead
-  function drawArrow(
-    dc as Dc,
-    x1 as Number,
-    y1 as Number,
-    x2 as Number,
-    y2 as Number,
-    color as Graphics.ColorType
-  ) as Void {
-    var arrowLength = 10;
-    // var arrowWidth = 5;
-    var arrowAngle = 0.5;
-    var dx = x2 - x1;
-    var dy = y2 - y1;
-    var angle = Math.atan2(dy, dx);
-    // var len = Math.sqrt(dx * dx + dy * dy);
-    var x3 = x2 - arrowLength * Math.cos(angle - arrowAngle);
-    var y3 = y2 - arrowLength * Math.sin(angle - arrowAngle);
-    var x4 = x2 - arrowLength * Math.cos(angle + arrowAngle);
-    var y4 = y2 - arrowLength * Math.sin(angle + arrowAngle);
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawLine(x1, y1, x2, y2);
-    dc.drawLine(x2, y2, x3, y3);
-    dc.drawLine(x2, y2, x4, y4);
-  }
-
   function checkForWeatherAlerts() as Void {
     var mm = null;
     var current = null;
@@ -1064,10 +1076,12 @@ class WhatWeatherView extends WatchUi.DataField {
 
       var validSegment = 0;
       if ($._showCurrentForecast) {
+        var color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
+        var colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
         mAlertHandler.processPrecipitationChance(current.precipitationChance);
         mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
-        mAlertHandler.processWeather(current.condition);
-        mAlertHandler.processWeather(current.conditionOther);
+        mAlertHandler.processWeather(color);
+        mAlertHandler.processWeather(colorOther);
         mAlertHandler.processUvi(current.uvi);
         mAlertHandler.processWindSpeed(current.windSpeed);
         mAlertHandler.processDewpoint(current.dewPoint);

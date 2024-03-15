@@ -12,25 +12,20 @@ var _alertHandler as AlertHandler?;
 
 var gDebug as Boolean = false;
 var gMinimalGPSquality as Number = 1; // last known location
+var gSettingsChanged as Boolean = false;
 
 (:background)
 var _weatherDescriptions as Lang.Dictionary = {};
 
 (:background)
 class WhatWeatherApp extends Application.AppBase {
-  var mInBackground as Boolean = false;
   function initialize() {
     AppBase.initialize();
   }
 
   function onStart(state as Dictionary?) as Void {}
 
-  function onStop(state as Dictionary?) as Void {
-    // @@ when activity is stopping?
-    // if (!mInBackground) {
-    //   System.println("deleteTemporalEvent");
-    //   Background.deleteTemporalEvent();
-    // }
+  function onStop(state as Dictionary?) as Void {    
   }
 
   (:typecheck(disableBackgroundCheck))
@@ -229,6 +224,7 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherMinutely", $._showMinuteForecast as Boolean);
       // Storage.setValue("openWeatherAlerts", $._showWeatherAlerts);
 
+      $.gSettingsChanged = true;
       System.println("User settings loaded");
     } catch (ex) {
       System.println(ex.getErrorMessage());
@@ -275,12 +271,10 @@ class WhatWeatherApp extends Application.AppBase {
 
 /* SDK 7
   public function getServiceDelegate() as [System.ServiceDelegate] {
-    mInBackground = true;
     return [new BackgroundServiceDelegate()] as [System.ServiceDelegate];
   }
   */
   public function getServiceDelegate() as Lang.Array<System.ServiceDelegate> {
-    mInBackground = true;
     return [new BackgroundServiceDelegate()] as Lang.Array<System.ServiceDelegate>;
   }
 

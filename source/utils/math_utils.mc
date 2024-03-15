@@ -58,5 +58,5 @@ function slopeOfLine(x1 as Numeric, y1 as Numeric, x2 as Numeric, y2 as Numeric)
 
 function angleInDegreesBetweenXaxisAndLine(x1 as Numeric, y1 as Numeric, x2 as Numeric, y2 as Numeric) as Numeric {
   var angleRadians = Math.atan2(y2 - y1, x2 - x1);
-  return rad2deg(angleRadians);
+  return $.rad2deg(angleRadians);
 }

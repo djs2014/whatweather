@@ -63,7 +63,7 @@ function getRhumbLineBearing(latFrom as Numeric, lonFrom as Numeric, latTo as Nu
   // return the angle, normalized
   // not allowed to `modulo` double values, truncate the value to integer
   // value
-  return (rad2deg(Math.atan2(dLon, dPhi)) + 360).toNumber() % 360;
+  return ($.rad2deg(Math.atan2(dLon, dPhi)) + 360).toNumber() % 360;
 }
 
 // bearing in degrees
