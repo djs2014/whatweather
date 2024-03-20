@@ -289,12 +289,13 @@ class RenderWeather {
     if (max == 0) { return; }
     var wp = windPoints[0] as WindPoint;    
     var radius = 10;
-    var center = new Point(wp.x + (ds.columnWidth / 2) - xOffset, ds.columnY + ds.columnHeight/2);
+    var x = wp.x + (ds.columnWidth / 2) - xOffset;
+    var y = ds.columnY + ds.columnHeight/2;
 
     if (track != null) {
-      drawWind(center, radius, wp.bearing - track as Number, wp.speed);
+      drawWind(x, y, radius, wp.bearing - track as Number, wp.speed);
     } else {      
-      drawWind(center, radius, wp.bearing, wp.speed);
+      drawWind(x, y, radius, wp.bearing, wp.speed);
     }
   }
 
@@ -310,8 +311,9 @@ class RenderWeather {
   function drawWindInfoInColumn(x as Lang.Number, windBearingInDegrees as Lang.Number, windSpeed as Lang.Float) as Void {
     // if (ds.smallField) { return; }
     var radius = 8;
-    var center = new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2);
-    drawWind(center, radius, windBearingInDegrees, windSpeed);
+    var xW = x + ds.columnWidth / 2;
+    var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
+    drawWind(xW, yW, radius, windBearingInDegrees, windSpeed);
   }
 
   function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void{  
@@ -739,7 +741,7 @@ class RenderWeather {
   hidden function drawSnowFlake(center as Point, radius as Number) as Void {
     var angle = 0;
     while (angle < 360) {
-      var p1 = pointOnCircle(radius, angle, center);
+      var p1 = pointOnCircle(center.x, center.y, radius, angle);
       dc.drawLine(center.x, center.y, p1.x, p1.y);
       angle = angle + 45;
     }
@@ -750,7 +752,7 @@ class RenderWeather {
 
     var angle = 0;
     while (angle < 360) {
-      var p1 = pointOnCircle(radius, angle, center);
+      var p1 = pointOnCircle(center.x, center.y, radius, angle);
       pts.add([ p1.x, p1.y ]);
       angle = angle + 60;
     }
@@ -792,15 +794,15 @@ class RenderWeather {
     if (increment <= 0) { return; }
     var angle = 0;
     while (angle < 360) {
-      var p1 = pointOnCircle(radius, angle, center);
-      var p2 = pointOnCircle(radiusOuter, angle, center);
+      var p1 = pointOnCircle(center.x, center.y, radius, angle);
+      var p2 = pointOnCircle(center.x, center.y, radiusOuter, angle);
       dc.drawLine(p1.x, p1.y, p2.x, p2.y);
       angle = angle + increment;
     }
   }
 
   // --
-  hidden function drawWind(center as Point, radius as Number, windBearingInDegrees as Number, windSpeedMs as Float) as Void {
+  hidden function drawWind(x as Number, y as Number, radius as Number, windBearingInDegrees as Number, windSpeedMs as Float) as Void {
     var hasAlert = false;
     var text = "";
     var wsFont = Graphics.FONT_XTINY;
@@ -840,9 +842,9 @@ class RenderWeather {
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pA = pointOnCircle(radius + (radius * 0.5), windBearingInDegrees - 35 - 180, center);
-      var pB = pointOnCircle(radius + (radius * 0.9), windBearingInDegrees, center);
-      var pC = pointOnCircle(radius + (radius * 0.5), windBearingInDegrees + 35 - 180, center);
+      var pA = pointOnCircle(x, y, radius + (radius * 0.5), windBearingInDegrees - 35 - 180);
+      var pB = pointOnCircle(x, y, radius + (radius * 0.9), windBearingInDegrees);
+      var pC = pointOnCircle(x, y, radius + (radius * 0.5), windBearingInDegrees + 35 - 180);
       
       var pts = [ pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate() ] as Polygone;
       
@@ -854,13 +856,13 @@ class RenderWeather {
       dc.fillPolygon(pts);
     }
     // The circle
-    dc.drawCircle(center.x, center.y, radius);
+    dc.drawCircle(x, y, radius);
     if (hasAlert) {
       dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
     } else {
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
     }
-    dc.fillCircle(center.x, center.y, radius - 1);
+    dc.fillCircle(x, y, radius - 1);
 
     // Windspeed
    
@@ -870,15 +872,15 @@ class RenderWeather {
     } else {
       dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     }
-    dc.drawText(center.x, center.y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
-  hidden function pointOnCircle(radius as Lang.Numeric, angleInDegrees as Lang.Numeric, center as Point) as Point {
+  hidden function pointOnCircle(x as Number, y as Number, radius as Lang.Numeric, angleInDegrees as Lang.Numeric) as Point {
     // Convert from degrees to radians
-    var x = (radius * Math.cos(angleInDegrees * Math.PI / 180)) + center.x;
-    var y = (radius * Math.sin(angleInDegrees * Math.PI / 180)) + center.y;
+    var xP = (radius * Math.cos(angleInDegrees * Math.PI / 180)) + x;
+    var yP = (radius * Math.sin(angleInDegrees * Math.PI / 180)) + y;
 
-    return new Point(x.toNumber(), y.toNumber());
+    return new Point(xP.toNumber(), yP.toNumber());
   }
 
   // @@TODO onlayouyt -> get array of points
@@ -909,14 +911,14 @@ class RenderWeather {
     var cLeft = center.move((-radius * 0.9).toNumber(), 0);
     var d = -180;
     while (d <= -90) {
-      p = pointOnCircle(radius * 0.3, d, cLeft);
+      p = pointOnCircle(cLeft.x, cLeft.y, radius * 0.3, d);
       pts.add([ p.x, p.y ]);
       d = d + 10;
     }
 
     d = -180;
     while (d <= 0) {
-      p = pointOnCircle(radius, d, center);
+      p = pointOnCircle(center.x, center.y, radius, d);
       pts.add([ p.x, p.y ]);
       d = d + 10;
     }
@@ -924,7 +926,7 @@ class RenderWeather {
     var cRight = center.move((radius * 0.9).toNumber(), 0);
     d = -90;
     while (d <= 0) {
-      p = pointOnCircle(radius * 0.6, d, cRight);
+      p = pointOnCircle(cRight.x, cRight.y, radius * 0.6, d);
       pts.add([ p.x, p.y ]);
       d = d + 10;
     }
