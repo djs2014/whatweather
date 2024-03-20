@@ -14,7 +14,7 @@ class DisplaySettings {
   var COLOR_TEXT_I_ADDITIONAL as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL2 as Lang.Number = Graphics.COLOR_LT_GRAY;
 
-  var nightMode as Lang.Boolean = false;
+  // var nightMode as Lang.Boolean = false;
   var width as Lang.Number = 0;
   var height as Lang.Number = 0;
   var nrOfColumns as Lang.Number = 0;
@@ -41,7 +41,14 @@ class DisplaySettings {
 
   var dashesUnderColumnHeight as Lang.Number = 2;
 
-  function initialize() {}
+  function initialize() {
+    COLOR_TEXT = Graphics.COLOR_BLACK;
+    COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
+    COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+    COLOR_TEXT_I = Graphics.COLOR_WHITE;
+    COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
+    COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
+  }
 
   function setDc(dc as Dc) as Void {
     self.dc = dc;
@@ -75,24 +82,24 @@ class DisplaySettings {
     }
   }
 
-  function setColorMode(nightMode as Boolean) as Void {
-    self.nightMode = nightMode;
-    if (self.nightMode) {
-      COLOR_TEXT = Graphics.COLOR_WHITE;
-      COLOR_TEXT_ADDITIONAL = Graphics.COLOR_WHITE;
-      COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_WHITE;
-      COLOR_TEXT_I = Graphics.COLOR_BLACK;
-      COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_BLACK;
-      COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
-    } else {
-      COLOR_TEXT = Graphics.COLOR_BLACK;
-      COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
-      COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
-      COLOR_TEXT_I = Graphics.COLOR_WHITE;
-      COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
-      COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
-    }
-  }
+  // function setColorMode(nightMode as Boolean) as Void {
+  //   self.nightMode = nightMode;
+  //   if (self.nightMode) {
+  //     COLOR_TEXT = Graphics.COLOR_WHITE;
+  //     COLOR_TEXT_ADDITIONAL = Graphics.COLOR_WHITE;
+  //     COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_WHITE;
+  //     COLOR_TEXT_I = Graphics.COLOR_BLACK;
+  //     COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_BLACK;
+  //     COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+  //   } else {
+  //     COLOR_TEXT = Graphics.COLOR_BLACK;
+  //     COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
+  //     COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+  //     COLOR_TEXT_I = Graphics.COLOR_WHITE;
+  //     COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
+  //     COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
+  //   }
+  // }
 
   function calculate(
     nrOfColumns as Lang.Number,

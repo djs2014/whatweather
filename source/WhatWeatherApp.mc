@@ -140,6 +140,7 @@ class WhatWeatherApp extends Application.AppBase {
       // if ($._maxHoursForecast > 24 ){ $._maxHoursForecast = 24; } 
       $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
       $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
+      $._showRelativeWind = $.getStorageValue("showRelativeWind", $._showRelativeWind) as Boolean;
       $._showWind = $.getStorageValue("showWind", $._showWind) as Number;
       $._showUVIndex = $.getStorageValue("showUVIndex", $._showUVIndex) as Boolean;
       $._showTemperature = $.getStorageValue("showTemperature", $._showTemperature) as Boolean;

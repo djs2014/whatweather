@@ -1,7 +1,8 @@
 refactor
 - less memory?
 - less computation
-- 
+- relative wind direction on small field
+- point object -> kan weg?
 - profile 
 - 
 - show mem on screen? if debug -> crash

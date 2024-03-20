@@ -28,6 +28,7 @@ var _maxHoursForecast as Lang.Number = 8;
 var _showMinuteForecast as Lang.Boolean = true;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _showCurrentWind as Lang.Boolean = true;
+var _showRelativeWind as Lang.Boolean = true;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 var _showClouds as Lang.Boolean = true;
 

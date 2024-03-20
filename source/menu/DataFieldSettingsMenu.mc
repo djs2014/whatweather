@@ -75,6 +75,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       showMenu.addItem(mi);
       boolean = Storage.getValue("showCurrentWind") ? true : false;
       showMenu.addItem(new WatchUi.ToggleMenuItem("Current wind", null, "showCurrentWind", boolean, null));    
+
+      boolean = Storage.getValue("showRelativeWind") ? true : false;
+      showMenu.addItem(new WatchUi.ToggleMenuItem("Wind relative", null, "showRelativeWind", boolean, null));    
+
       boolean = Storage.getValue("showUVIndex") ? true : false;
       showMenu.addItem(new WatchUi.ToggleMenuItem("UV", null, "showUVIndex", boolean, null));
       boolean = Storage.getValue("showTemperature") ? true : false;

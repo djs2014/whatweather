@@ -52,7 +52,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
   var mFlashScreen as Boolean = false;
   var mTriggerCheckWeatherAlerts as Boolean = true;
-
+  // @@ TODO  var mHasMinuteRains as Boolean = false;
 
   function initialize() {
     DataField.initialize();
@@ -80,8 +80,9 @@ class WhatWeatherView extends WatchUi.DataField {
     mTriggerCheckWeatherAlerts = true;
   }
 
-  function onLayout(dc as Dc) as Void {    
-    calculateLayout(dc); 
+  function onLayout(dc as Dc) as Void {
+    calculateLayout(dc);
+    // @@ TODO when minute rains is shown / or is hidden -> trugger calculatelayout
   }
 
   function compute(info as Activity.Info) as Void {
@@ -152,11 +153,12 @@ class WhatWeatherView extends WatchUi.DataField {
   // the data field is visible.
   // Draw the weather
   function onUpdate(dc as Dc) as Void {
-    try {      
+    try {
       if ($.gExitedMenu) {
         // fix for leaving menu, draw complete screen, large field
         dc.clearClip();
         $.gExitedMenu = false;
+        calculateLayout(dc);
       }
 
       if (dc has :setAntiAlias) {
@@ -170,8 +172,6 @@ class WhatWeatherView extends WatchUi.DataField {
         mFlashScreen = false;
         backgroundColor = Graphics.COLOR_YELLOW;
       }
-
-      ds.setColorMode(backgroundColor == Graphics.COLOR_BLACK);
 
       dc.setColor(backgroundColor, backgroundColor);
       dc.clear();
@@ -224,7 +224,6 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWc = !mShowWeatherCondition || ds.smallField || ds.wideField ? 0 : 15;
     var heightWt = ds.oneField ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
     ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
-    
   }
 
   hidden function showDebugInfo(dc as Dc, ds as DisplaySettings) as Void {
@@ -813,6 +812,19 @@ class WhatWeatherView extends WatchUi.DataField {
               }
             }
 
+            if (mShowDetails && ds.oneField && forecast.precipitationChance > 50) {
+              var fcTime = Gregorian.info(forecast.forecastTime, Time.FORMAT_SHORT);
+              var fcTimeStr = Lang.format("$1$", [fcTime.hour]);
+              dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+              dc.drawText(
+                x + ds.columnWidth / 2,
+                ds.columnY + ds.columnHeight - 30,
+                Graphics.FONT_XTINY,
+                fcTimeStr,
+                Graphics.TEXT_JUSTIFY_CENTER
+              );
+            }
+
             if (mShowWeatherCondition) {
               render.drawWeatherCondition(x, forecast.condition, nightTime);
               if (nightTime && !sunsetPassed) {
@@ -825,15 +837,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 previousCondition = forecast.condition;
               }
             }
-
-            // if (mShowDetails) {
-            //   // @@ Test show time
-            //   var ft = $.getShortTimeString(forecast.forecastTime);
-            //   dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-            //   dc.drawText(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight - dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY)
-            //   , Graphics.FONT_SYSTEM_XTINY, ft, Graphics.TEXT_JUSTIFY_CENTER);
-
-            // }
+           
             x = x + ds.columnWidth + ds.space;
           }
         }
@@ -890,7 +894,11 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       if (mShowWindFirst) {
-        render.drawWindInfoFirstColumn(windPoints, xOffsetWindFirstColumn);
+        if ($._showRelativeWind && !mActivityPaused) {
+          render.drawWindInfoFirstColumn(windPoints, xOffsetWindFirstColumn, track);
+        } else {
+          render.drawWindInfoFirstColumn(windPoints, xOffsetWindFirstColumn, null);
+        }
       } else if (mShowWind != SHOW_WIND_NOTHING) {
         render.drawWindInfo(windPoints);
       }
