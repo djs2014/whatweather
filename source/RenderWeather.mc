@@ -5,7 +5,6 @@ import Toybox.Time;
 import Toybox.Math;
 import Toybox.Time.Gregorian;
 
-
 class RenderWeather {
   hidden var dc as Dc;
   hidden var ds as DisplaySettings;
@@ -21,8 +20,8 @@ class RenderWeather {
 
   hidden const NO_BEARING_SPEED = 0.3;
   hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
-    
-  // humidity is already percentage  
+
+  // humidity is already percentage
   hidden var maxTemperature as Lang.Number = 50; // celcius
   hidden var maxPressure as Lang.Number = 1080;
   hidden var minPressure as Lang.Number = 870;
@@ -41,7 +40,7 @@ class RenderWeather {
   }
 
   hidden function initComfortZones() as Void {
-    var comfort = getComfort();    
+    var comfort = getComfort();
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
     self.yHumBottom = ds.getYpostion(comfort.humidityMin);
     var perc = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
@@ -50,7 +49,12 @@ class RenderWeather {
     self.yTempBottom = ds.getYpostion(perc);
   }
 
-  function drawUvIndexGraph(uvPoints as Lang.Array, maxUvIndex as Lang.Number, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawUvIndexGraph(
+    uvPoints as Lang.Array,
+    maxUvIndex as Lang.Number,
+    showDetails as Lang.Boolean,
+    blueBarPercentage as Array
+  ) as Void {
     try {
       var max = uvPoints.size();
       for (var i = 0; i < max; i += 1) {
@@ -60,8 +64,8 @@ class RenderWeather {
           var perc = $.percentageOf(uvp.uvi, maxUvIndex).toNumber();
           var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
-        
-          drawUvPoint(x,y,r,uvp.uvi as Float, showDetails);          
+
+          drawUvPoint(x, y, r, uvp.uvi as Float, showDetails);
         }
       }
     } catch (ex) {
@@ -70,20 +74,32 @@ class RenderWeather {
     }
   }
 
-  function drawUvPoint(x as Lang.Number, y as Lang.Number, r as Lang.Number, uvi as Lang.Float, showDetails as Lang.Boolean) as Void {    
+  function drawUvPoint(
+    x as Lang.Number,
+    y as Lang.Number,
+    r as Lang.Number,
+    uvi as Lang.Float,
+    showDetails as Lang.Boolean
+  ) as Void {
     var color = uviToColor(uvi);
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
 
     if (showDetails) {
-      var h = dc.getFontHeight(Graphics.FONT_TINY);        
-      dc.drawText(x, y + h/2, Graphics.FONT_TINY, uvi.format("%.1f"),  Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+      var h = dc.getFontHeight(Graphics.FONT_TINY);
+      dc.drawText(
+        x,
+        y + h / 2,
+        Graphics.FONT_TINY,
+        uvi.format("%.1f"),
+        Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
+      );
     }
     dc.fillCircle(x, y, r);
-    var rh = (r + 2)/2;
-    dc.drawLine(x-r-rh, y-r-rh, x+r+rh, y+r+rh);
-    dc.drawLine(x+r+rh, y-r-rh, x-r-rh, y+r+rh);
+    var rh = (r + 2) / 2;
+    dc.drawLine(x - r - rh, y - r - rh, x + r + rh, y + r + rh);
+    dc.drawLine(x + r + rh, y - r - rh, x - r - rh, y + r + rh);
   }
-  
+
   function drawTemperatureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
@@ -93,29 +109,36 @@ class RenderWeather {
           var x = p.x;
           var perc = $.percentageOf(p.value, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
-          
-          if (showDetails && p.value > 10) { // @@ config 
+
+          if (showDetails && p.value > 10) {
+            // @@ config
             var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             if (yBlueBar < y) {
-              dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);   
+              dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
             } else {
-              dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);   
-            }                 
+              dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
+            }
             var temperature = p.value;
             if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
               temperature = $.celciusToFarenheit(temperature);
-            }            
-            dc.drawText(x, y - h/2, Graphics.FONT_TINY, temperature.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+            }
+            dc.drawText(
+              x,
+              y - h / 2,
+              Graphics.FONT_TINY,
+              temperature.format("%d"),
+              Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
+            );
           }
 
           dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
           dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
 
-          dc.drawRectangle(x-1, y-6, 3, 8);
+          dc.drawRectangle(x - 1, y - 6, 3, 8);
           dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-          dc.drawLine(x, y, x, y-4);
-          dc.fillCircle(x, y+2, 2);
+          dc.drawLine(x, y, x, y - 4);
+          dc.fillCircle(x, y + 2, 2);
         }
       }
     } catch (ex) {
@@ -136,31 +159,38 @@ class RenderWeather {
           var r = 3;
           var color = dewpointToColor(y.toFloat());
 
-          if (showDetails && p.value > 7) { // @@ config             
+          if (showDetails && p.value > 7) {
+            // @@ config
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             var dewpoint = p.value;
             if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
               dewpoint = $.celciusToFarenheit(dewpoint);
-            }   
-            dc.drawText(x, y + h/2, Graphics.FONT_TINY, dewpoint.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+            }
+            dc.drawText(
+              x,
+              y + h / 2,
+              Graphics.FONT_TINY,
+              dewpoint.format("%d"),
+              Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
+            );
           }
 
           dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-          dc.fillCircle(x, y+r-1, 2);
+          dc.fillCircle(x, y + r - 1, 2);
 
           dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-          dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);        
-          dc.drawLine(x-r, y, x, y-5);
-          dc.drawLine(x, y-5, x+r, y);
-          dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);     
+          dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+          dc.drawLine(x - r, y, x, y - 5);
+          dc.drawLine(x, y - 5, x + r, y);
+          dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
         }
       }
     } catch (ex) {
       ex.printStackTrace();
     }
   }
-  
+
   function drawPressureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
@@ -170,22 +200,32 @@ class RenderWeather {
         var x = p.x as Number;
         var perc = $.percentageOf(p.value - self.minPressure, self.maxPressure - self.minPressure).toNumber();
         var y = ds.getYpostion(perc).toNumber();
-        
+
         if (showDetails) {
           var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
-          var h = dc.getFontHeight(Graphics.FONT_TINY);       
-          if (yBlueBar < (y - h)) {
-            dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);   
+          var h = dc.getFontHeight(Graphics.FONT_TINY);
+          if (yBlueBar < y - h) {
+            dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
           } else {
-            dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);   
-          }          
-          dc.drawText(x, y - h/2, Graphics.FONT_XTINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+            dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
+          }
+          dc.drawText(
+            x,
+            y - h / 2,
+            Graphics.FONT_XTINY,
+            p.value.format("%d"),
+            Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
+          );
         }
 
         dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
-        var pts = [ [x-3, y], [x, y+5], [x+3, y]];
-        dc.fillPolygon(pts as Polygone);        
+        var pts = [
+          [x - 3, y],
+          [x, y + 5],
+          [x + 3, y],
+        ];
+        dc.fillPolygon(pts as Polygone);
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -202,20 +242,30 @@ class RenderWeather {
         var r = 3;
 
         if (showDetails) {
-          var h = dc.getFontHeight(Graphics.FONT_TINY);       
-          dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);   
-          dc.drawText(x, y - h/2, Graphics.FONT_TINY, p.value.format("%d"), Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER);
+          var h = dc.getFontHeight(Graphics.FONT_TINY);
+          dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+          dc.drawText(
+            x,
+            y - h / 2,
+            Graphics.FONT_TINY,
+            p.value.format("%d"),
+            Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
+          );
         }
 
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
 
         dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-        var pts = [ [x-r, y], [x, y-5], [x+r, y]];        
-        dc.fillPolygon(pts as Polygone);   
-        dc.setPenWidth(r);  
+        var pts = [
+          [x - r, y],
+          [x, y - 5],
+          [x + r, y],
+        ];
+        dc.fillPolygon(pts as Polygone);
+        dc.setPenWidth(r);
         dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
-        dc.setPenWidth(1.0);          
+        dc.setPenWidth(1.0);
       }
     } catch (ex) {
       ex.printStackTrace();
@@ -225,11 +275,11 @@ class RenderWeather {
   // top is max (temp/humid), low is min(temp/humid)
   function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
     var comfort = getComfort();
-    
-    var color = dewpointToColor(dewpoint);    
-    
+
+    var color = dewpointToColor(dewpoint);
+
     dc.setColor(color, color);
-    if (ds.smallField) {      
+    if (ds.smallField) {
       var percTemperature = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
       var yTop = ds.getYpostion($.max(percTemperature, comfort.humidityMax) as Lang.Number);
       percTemperature = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
@@ -239,10 +289,8 @@ class RenderWeather {
       return;
     }
 
-    dc.fillRectangle(x - ds.space / 2, self.yHumTop, ds.columnWidth + ds.space,
-                     self.yHumBottom - self.yHumTop);
-    dc.fillRectangle(x - ds.space / 2, self.yTempTop, ds.columnWidth + ds.space,
-                     self.yTempBottom - self.yTempTop);
+    dc.fillRectangle(x - ds.space / 2, self.yHumTop, ds.columnWidth + ds.space, self.yHumBottom - self.yHumTop);
+    dc.fillRectangle(x - ds.space / 2, self.yTempTop, ds.columnWidth + ds.space, self.yTempBottom - self.yTempTop);
   }
 
   function drawComfortBorders() as Void {
@@ -256,45 +304,53 @@ class RenderWeather {
   }
 
   function drawObservationLocation(name as Lang.String?) as Void {
-    if (name == null || (name as String).length() == 0) { return; }
+    if (name == null || (name as String).length() == 0) {
+      return;
+    }
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     dc.drawText(ds.margin, TOP_ADDITIONAL_INFO, ds.fontSmall, name, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
   function drawObservationLocationLine2(name as Lang.String?) as Void {
     // Hide on small screen || ds.smallField
-    if (name == null || (name as String).length() == 0) { return; }
+    if (name == null || (name as String).length() == 0) {
+      return;
+    }
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(ds.margin, topAdditionalInfo2, ds.fontSmall, name,
-                Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(ds.margin, topAdditionalInfo2, ds.fontSmall, name, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
   function drawObservationTime(observationTime as Time.Moment?) as Void {
-    if (observationTime == null) { return; }
+    if (observationTime == null) {
+      return;
+    }
 
     var observationTimeString = $.getShortTimeString(observationTime);
 
     var color = ds.COLOR_TEXT_ADDITIONAL;
-    if ($.isDelayedFor(observationTime, $._observationTimeDelayedMinutesThreshold)) { color = Graphics.COLOR_RED; }
+    if ($.isDelayedFor(observationTime, $._observationTimeDelayedMinutesThreshold)) {
+      color = Graphics.COLOR_RED;
+    }
     var textW = dc.getTextWidthInPixels(observationTimeString, ds.fontSmall);
     var textX = ds.width - textW - ds.margin;
 
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString,
-                Graphics.TEXT_JUSTIFY_LEFT);
+    dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
   function drawWindInfoFirstColumn(windPoints as Array, xOffset as Number, track as Number?) as Void {
     var max = windPoints.size();
-    if (max == 0) { return; }
-    var wp = windPoints[0] as WindPoint;    
+    if (max == 0) {
+      return;
+    }
+    var wp = windPoints[0] as WindPoint;
     var radius = 10;
-    var x = wp.x + (ds.columnWidth / 2) - xOffset;
-    var y = ds.columnY + ds.columnHeight/2;
+    var x = wp.x + ds.columnWidth / 2 - xOffset;
+    var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(x, y, radius, wp.bearing - track as Number, wp.speed);
-    } else {      
+      drawWind(x, y, radius, wp.bearing - (track as Number), wp.speed);
+    } else {
       drawWind(x, y, radius, wp.bearing, wp.speed);
     }
   }
@@ -308,7 +364,11 @@ class RenderWeather {
     }
   }
 
-  function drawWindInfoInColumn(x as Lang.Number, windBearingInDegrees as Lang.Number, windSpeed as Lang.Float) as Void {
+  function drawWindInfoInColumn(
+    x as Lang.Number,
+    windBearingInDegrees as Lang.Number,
+    windSpeed as Lang.Float
+  ) as Void {
     // if (ds.smallField) { return; }
     var radius = 8;
     var xW = x + ds.columnWidth / 2;
@@ -316,22 +376,28 @@ class RenderWeather {
     drawWind(xW, yW, radius, windBearingInDegrees, windSpeed);
   }
 
-  function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void{  
-    if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) { return; }
+  function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
+    if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
+      return;
+    }
 
     dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
     var y = TOP_ADDITIONAL_INFO;
-    if (onSecondLine) { y = topAdditionalInfo2; }
+    if (onSecondLine) {
+      y = topAdditionalInfo2;
+    }
     dc.drawText(ds.width / 2, y, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
   }
 
   function drawAlertMessagesVert(activeAlerts as Array<String>) as Void {
     var max = activeAlerts.size();
-    if (max == 0) { return; }
+    if (max == 0) {
+      return;
+    }
 
     var h = dc.getFontHeight(ds.fontSmall) - 4;
     var y = TOP_ADDITIONAL_INFO;
-    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);    
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
     for (var idx = 0; idx < max; idx += 1) {
       var aa = activeAlerts[idx] as String;
       y = y + h;
@@ -343,32 +409,43 @@ class RenderWeather {
     }
   }
 
-  
-
   function drawWeatherConditionText(x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
     if (ds.oneField) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
-        var yOffset = (yLine == null) ? 0 : yLine * ds.heightWt;
+        var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(x, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, Graphics.FONT_SYSTEM_XTINY, text as String, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(
+          x,
+          ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset,
+          Graphics.FONT_SYSTEM_XTINY,
+          text as String,
+          Graphics.TEXT_JUSTIFY_LEFT
+        );
       }
     }
   }
 
-  function drawSunsetIndication(x as Lang.Number) as Void{
-    if (!ds.oneField) { return; }
+  function drawSunsetIndication(x as Lang.Number) as Void {
+    if (!ds.oneField) {
+      return;
+    }
     var yOffset = ds.heightWt;
     drawMoon(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
   }
 
-  function drawWeatherCondition(x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void{
-    _drawWeatherCondition( new Point( x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2), condition, nightTime);
+  function drawWeatherCondition(x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
+    _drawWeatherCondition(
+      new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2),
+      condition,
+      nightTime
+    );
   }
 
   function _drawWeatherCondition(center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
-    if (condition == null) { return; }
-    
+    if (condition == null) {
+      return;
+    }
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {
@@ -394,7 +471,7 @@ class RenderWeather {
     }
     // clouds
     if (condition == Weather.CONDITION_PARTLY_CLOUDY) {
-      drawConditionClear(center.move(3, -3), 2, 4, 60, nightTime);    
+      drawConditionClear(center.move(3, -3), 2, 4, 60, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center, 4));
       return;
@@ -415,8 +492,7 @@ class RenderWeather {
       return;
     }
     // rain
-    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN ||
-        condition == Weather.CONDITION_CHANCE_OF_SHOWERS) {
+    if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN || condition == Weather.CONDITION_CHANCE_OF_SHOWERS) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawRainDrops(center, 5, 3);
       dc.fillPolygon(getCloudPoints(center, 6));
@@ -427,25 +503,25 @@ class RenderWeather {
       drawRainDrops(center, 5, 3);
     }
 
-    if (condition == Weather.CONDITION_LIGHT_RAIN ||
-        condition == Weather.CONDITION_LIGHT_SHOWERS ||
-        condition == Weather.CONDITION_SCATTERED_SHOWERS) {
+    if (
+      condition == Weather.CONDITION_LIGHT_RAIN ||
+      condition == Weather.CONDITION_LIGHT_SHOWERS ||
+      condition == Weather.CONDITION_SCATTERED_SHOWERS
+    ) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       drawRainDrops(center, 8, 2);
       dc.fillPolygon(getCloudPoints(center, 6));
       return;
     }
 
-    if (condition == Weather.CONDITION_RAIN ||
-        condition == Weather.CONDITION_SHOWERS) {
+    if (condition == Weather.CONDITION_RAIN || condition == Weather.CONDITION_SHOWERS) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       drawRainDrops(center, 8, 2);
       dc.fillPolygon(getCloudPoints(center, 8));
       return;
     }
 
-    if (condition == Weather.CONDITION_HEAVY_SHOWERS ||
-        condition == Weather.CONDITION_HEAVY_RAIN) {
+    if (condition == Weather.CONDITION_HEAVY_SHOWERS || condition == Weather.CONDITION_HEAVY_RAIN) {
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
       drawRainDrops(center, 8, 2);
       dc.fillPolygon(getCloudPoints(center, 8));
@@ -469,8 +545,7 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_WINTRY_MIX ||
-        condition == Weather.CONDITION_RAIN_SNOW) {
+    if (condition == Weather.CONDITION_WINTRY_MIX || condition == Weather.CONDITION_RAIN_SNOW) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center.move(-4, 0), 6);
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
@@ -478,9 +553,11 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_CHANCE_OF_RAIN_SNOW ||
-        condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW ||
-        condition == Weather.CONDITION_LIGHT_RAIN_SNOW) {
+    if (
+      condition == Weather.CONDITION_CHANCE_OF_RAIN_SNOW ||
+      condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW ||
+      condition == Weather.CONDITION_LIGHT_RAIN_SNOW
+    ) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center.move(-4, 0), 6);
       drawRainDrops(center.move(4, 0), 8, 3);
@@ -502,8 +579,7 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_FLURRIES ||
-        condition == Weather.CONDITION_LIGHT_SNOW) {
+    if (condition == Weather.CONDITION_FLURRIES || condition == Weather.CONDITION_LIGHT_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center, 6);
       return;
@@ -515,9 +591,11 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_SLEET ||
-        condition == Weather.CONDITION_ICE_SNOW ||
-        condition == Weather.CONDITION_ICE) {
+    if (
+      condition == Weather.CONDITION_SLEET ||
+      condition == Weather.CONDITION_ICE_SNOW ||
+      condition == Weather.CONDITION_ICE
+    ) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getHailPoints(center, 4));
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
@@ -525,8 +603,7 @@ class RenderWeather {
       return;
     }
 
-    if (condition == Weather.CONDITION_HEAVY_SNOW ||
-        condition == Weather.CONDITION_HEAVY_RAIN_SNOW) {
+    if (condition == Weather.CONDITION_HEAVY_SNOW || condition == Weather.CONDITION_HEAVY_RAIN_SNOW) {
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
       drawSnowFlake(center.move(-4, 2), 8);
       drawSnowFlake(center.move(4, -3), 8);
@@ -567,26 +644,24 @@ class RenderWeather {
     // windy
     if (condition == Weather.CONDITION_WINDY) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center, 6);
+      drawWindIcon(center.x, center.y, 6);
       return;
     }
     // sudden windspeed
     if (condition == Weather.CONDITION_SQUALL) {
       dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center, 6);
+      drawWindIcon(center.x, center.y, 6);
       return;
     }
 
     // dust
-    if (condition == Weather.CONDITION_DUST ||
-        condition == Weather.CONDITION_SAND) {
+    if (condition == Weather.CONDITION_DUST || condition == Weather.CONDITION_SAND) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawDustIcon(center, 8, 1, 6);
       return;
     }
     // dust, difficult to see
-    if (condition == Weather.CONDITION_HAZY ||
-        condition == Weather.CONDITION_HAZE) {
+    if (condition == Weather.CONDITION_HAZY || condition == Weather.CONDITION_HAZE) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawMistIcon(center, 10);
       drawDustIcon(center, 8, 1, 8);
@@ -596,7 +671,7 @@ class RenderWeather {
     // sandstorm
     if (condition == Weather.CONDITION_SANDSTORM) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center, 6);
+      drawWindIcon(center.x, center.y, 6);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       drawDustIcon(center, 8, 1, 8);
       dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
@@ -614,8 +689,7 @@ class RenderWeather {
     }
 
     // hurricane
-    if (condition == Weather.CONDITION_HURRICANE ||
-        condition == Weather.CONDITION_TORNADO) {
+    if (condition == Weather.CONDITION_HURRICANE || condition == Weather.CONDITION_TORNADO) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center, 9));
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
@@ -633,18 +707,22 @@ class RenderWeather {
     }
 
     // fog
-    if (condition == Weather.CONDITION_FOG ||
-        condition == Weather.CONDITION_MIST) {
+    if (condition == Weather.CONDITION_FOG || condition == Weather.CONDITION_MIST) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
       drawMistIcon(center, 10);
       return;
     }
 
     // unknown
-    if (condition == Weather.CONDITION_UNKNOWN_PRECIPITATION ||
-        condition == Weather.CONDITION_UNKNOWN) {
+    if (condition == Weather.CONDITION_UNKNOWN_PRECIPITATION || condition == Weather.CONDITION_UNKNOWN) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      dc.drawText(center.x, center.y, Graphics.FONT_XTINY, "?", Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+      dc.drawText(
+        center.x,
+        center.y,
+        Graphics.FONT_XTINY,
+        "?",
+        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+      );
       return;
     }
 
@@ -661,16 +739,16 @@ class RenderWeather {
   hidden function getVulcanoPts(center as Point, range as Number) as Polygone {
     var pts = [];
 
-    pts.add([ center.x - 2, center.y - range * 0.5 ]);
-    pts.add([ center.x, center.y - range * 0.5 + 1 ]);
-    pts.add([ center.x + 2, center.y - range * 0.5 ]);
+    pts.add([center.x - 2, center.y - range * 0.5]);
+    pts.add([center.x, center.y - range * 0.5 + 1]);
+    pts.add([center.x + 2, center.y - range * 0.5]);
 
-    pts.add([ center.x + range * 0.2, center.y ]);
+    pts.add([center.x + range * 0.2, center.y]);
 
-    pts.add([ center.x + range * 0.7, center.y + range ]);
-    pts.add([ center.x - range * 0.7, center.y + range ]);
+    pts.add([center.x + range * 0.7, center.y + range]);
+    pts.add([center.x - range * 0.7, center.y + range]);
 
-    pts.add([ center.x - range * 0.2, center.y ]);
+    pts.add([center.x - range * 0.2, center.y]);
 
     return pts as Polygone;
   }
@@ -679,35 +757,43 @@ class RenderWeather {
     var x, y;
     for (var i = 0; i < particles; i++) {
       if (i % 2 == 0) {
-        x = center.x + Math.rand() % range;
-        y = center.y + Math.rand() % range;
+        x = center.x + (Math.rand() % range);
+        y = center.y + (Math.rand() % range);
       } else {
-        x = center.x - Math.rand() % range;
-        y = center.y - Math.rand() % range;
+        x = center.x - (Math.rand() % range);
+        y = center.y - (Math.rand() % range);
       }
       dc.fillCircle(x, y, size);
     }
   }
 
-  hidden function drawWindIcon(center as Point, range as Number) as Void {
-    drawWindLineUp(center.move(0, -2), (range * 0.8).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
-    drawWindLineUp(center, range, 4, Graphics.ARC_COUNTER_CLOCKWISE);
-    drawWindLineDown(center.move(1, 2), (range * 0.7).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
+  hidden function drawWindIcon(x as Number, y as Number, range as Number) as Void {
+    drawWindLineUp(x, y - 2, (range * 0.8).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
+    drawWindLineUp(x, y, range, 4, Graphics.ARC_COUNTER_CLOCKWISE);
+    drawWindLineDown(x + 1, y + 2, (range * 0.7).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
   }
 
-  hidden function drawWindLineUp(center as Point, range as Number, radius as Numeric, direction as Graphics.ArcDirection) as Void {
-    var p1 = center.move(-range, 0);
-    var p2 = center.move(range, 0);
-    dc.drawLine(p1.x, p1.y, p2.x, p2.y);
-    dc.drawArc(p2.x, p2.y - radius, radius, direction, -90, 160);
+  hidden function drawWindLineUp(
+    x as Number,
+    y as Number,
+    range as Number,
+    radius as Numeric,
+    direction as Graphics.ArcDirection
+  ) as Void {
+    dc.drawLine(x - range, y, x + range, y);
+    dc.drawArc(x + range, y - radius, radius, direction, -90, 160);
   }
 
-  hidden function drawWindLineDown(center as Point, range as Number, radius as Numeric, direction as Graphics.ArcDirection) as Void {
-    var p1 = center.move(-range, 0);
-    var p2 = center.move(range, 0);
-    dc.drawLine(p1.x, p1.y, p2.x, p2.y);
-    dc.drawArc(p2.x, p2.y + radius, radius, Graphics.ARC_COUNTER_CLOCKWISE,
-               -160, 90);
+  hidden function drawWindLineDown(
+    x as Number,
+    y as Number,
+    range as Number,
+    radius as Numeric,
+    direction as Graphics.ArcDirection
+  ) as Void {
+    dc.drawLine(x - range, y, x + range, y);
+    dc.drawLine(x - range, y, x + range, y);
+    dc.drawArc(x + range, y + radius, radius, Graphics.ARC_COUNTER_CLOCKWISE, -160, 90);
   }
 
   hidden function drawMistIcon(center as Point, range as Number) as Void {
@@ -722,18 +808,18 @@ class RenderWeather {
   hidden function getLightningPts(center as Point, range as Number) as Polygone {
     var pts = [];
 
-    pts.add([ center.x, center.y - range ]);
-    pts.add([ (center.x + range * 0.5).toNumber(), center.y - range ]);
+    pts.add([center.x, center.y - range]);
+    pts.add([(center.x + range * 0.5).toNumber(), center.y - range]);
 
-    pts.add([ center.x + 2, (center.y - range * 0.5).toNumber() ]);
-    pts.add([ center.x + 5, (center.y - range * 0.5).toNumber() ]);
+    pts.add([center.x + 2, (center.y - range * 0.5).toNumber()]);
+    pts.add([center.x + 5, (center.y - range * 0.5).toNumber()]);
 
-    pts.add([ center.x - 4, center.y + range ]);
+    pts.add([center.x - 4, center.y + range]);
 
-    pts.add([ center.x, (center.y - range * 0.2).toNumber() ]);
-    pts.add([ center.x - 3, (center.y - range * 0.2).toNumber() ]);
+    pts.add([center.x, (center.y - range * 0.2).toNumber()]);
+    pts.add([center.x - 3, (center.y - range * 0.2).toNumber()]);
 
-    pts.add([ center.x - 2, center.y - range ]);
+    pts.add([center.x - 2, center.y - range]);
 
     return pts as Polygone;
   }
@@ -753,7 +839,7 @@ class RenderWeather {
     var angle = 0;
     while (angle < 360) {
       var p1 = pointOnCircle(center.x, center.y, radius, angle);
-      pts.add([ p1.x, p1.y ]);
+      pts.add([p1.x, p1.y]);
       angle = angle + 60;
     }
 
@@ -777,21 +863,29 @@ class RenderWeather {
     }
   }
 
-  hidden function drawMoon(x as Number, y as Number, radius as Number)  as Void{
+  hidden function drawMoon(x as Number, y as Number, radius as Number) as Void {
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
-    dc.setPenWidth(radius * 1.5);  
+    dc.setPenWidth(radius * 1.5);
     dc.drawArc(x, y, radius, Graphics.ARC_COUNTER_CLOCKWISE, 95, 275);
-    dc.setPenWidth(1.0);     
+    dc.setPenWidth(1.0);
   }
 
-  hidden function drawConditionClear(center as Point, radius as Number, radiusOuter as Number, increment as Number, nightTime as Boolean) as Void{
+  hidden function drawConditionClear(
+    center as Point,
+    radius as Number,
+    radiusOuter as Number,
+    increment as Number,
+    nightTime as Boolean
+  ) as Void {
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     if (nightTime) {
-      drawMoon(center.x, center.y, radius);      
+      drawMoon(center.x, center.y, radius);
       return;
     }
     dc.drawCircle(center.x, center.y, radius);
-    if (increment <= 0) { return; }
+    if (increment <= 0) {
+      return;
+    }
     var angle = 0;
     while (angle < 360) {
       var p1 = pointOnCircle(center.x, center.y, radius, angle);
@@ -802,7 +896,13 @@ class RenderWeather {
   }
 
   // --
-  hidden function drawWind(x as Number, y as Number, radius as Number, windBearingInDegrees as Number, windSpeedMs as Float) as Void {
+  hidden function drawWind(
+    x as Number,
+    y as Number,
+    radius as Number,
+    windBearingInDegrees as Number,
+    windSpeedMs as Float
+  ) as Void {
     var hasAlert = false;
     var text = "";
     var wsFont = Graphics.FONT_XTINY;
@@ -813,7 +913,7 @@ class RenderWeather {
     }
     if (windSpeedMs != null) {
       var beaufort = $.windSpeedToBeaufort(windSpeedMs);
-      hasAlert = ($._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed);
+      hasAlert = $._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed;
       if ($._showWind == SHOW_WIND_BEAUFORT) {
         text = beaufort.format("%d");
       } else {
@@ -836,18 +936,17 @@ class RenderWeather {
 
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
     // Bearing arrow
-    if (windBearingInDegrees != null &&
-        (windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED)) {
+    if (windBearingInDegrees != null && windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pA = pointOnCircle(x, y, radius + (radius * 0.5), windBearingInDegrees - 35 - 180);
-      var pB = pointOnCircle(x, y, radius + (radius * 0.9), windBearingInDegrees);
-      var pC = pointOnCircle(x, y, radius + (radius * 0.5), windBearingInDegrees + 35 - 180);
-      
-      var pts = [ pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate() ] as Polygone;
-      
+      var pA = pointOnCircle(x, y, radius + radius * 0.5, windBearingInDegrees - 35 - 180);
+      var pB = pointOnCircle(x, y, radius + radius * 0.9, windBearingInDegrees);
+      var pC = pointOnCircle(x, y, radius + radius * 0.5, windBearingInDegrees + 35 - 180);
+
+      var pts = [pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate()] as Polygone;
+
       if (hasAlert) {
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
       } else {
@@ -865,7 +964,7 @@ class RenderWeather {
     dc.fillCircle(x, y, radius - 1);
 
     // Windspeed
-   
+
     if (hasAlert) {
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
       wsFont = wsFontAlert;
@@ -875,10 +974,15 @@ class RenderWeather {
     dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
-  hidden function pointOnCircle(x as Number, y as Number, radius as Lang.Numeric, angleInDegrees as Lang.Numeric) as Point {
+  hidden function pointOnCircle(
+    x as Number,
+    y as Number,
+    radius as Lang.Numeric,
+    angleInDegrees as Lang.Numeric
+  ) as Point {
     // Convert from degrees to radians
-    var xP = (radius * Math.cos(angleInDegrees * Math.PI / 180)) + x;
-    var yP = (radius * Math.sin(angleInDegrees * Math.PI / 180)) + y;
+    var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
+    var yP = radius * Math.sin((angleInDegrees * Math.PI) / 180) + y;
 
     return new Point(xP.toNumber(), yP.toNumber());
   }
@@ -886,40 +990,40 @@ class RenderWeather {
   // @@TODO onlayouyt -> get array of points
   hidden function drawWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Void {
     var x = x1;
-    while (x <= x2) {    
+    while (x <= x2) {
       var y1 = y + Math.sin(x);
       dc.drawPoint(x, y1);
       x = x + increment;
     }
   }
   // @@TODO onlayouyt -> get array of points
-  // @@TODO drawPolygone as Points / line 
+  // @@TODO drawPolygone as Points / line
   hidden function getWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Polygone {
     var pts = [];
     var x = x1;
-    while (x <= x2) {    
+    while (x <= x2) {
       var y1 = y + Math.sin(x);
-      pts.add([ x, y1.toNumber() ]);
+      pts.add([x, y1.toNumber()]);
       x = x + increment;
     }
     return pts as Polygone;
   }
 
-  hidden function getCloudPoints(center as Point, radius as Number) as Polygone { 
+  hidden function getCloudPoints(center as Point, radius as Number) as Polygone {
     var pts = [];
     var p;
     var cLeft = center.move((-radius * 0.9).toNumber(), 0);
     var d = -180;
     while (d <= -90) {
       p = pointOnCircle(cLeft.x, cLeft.y, radius * 0.3, d);
-      pts.add([ p.x, p.y ]);
+      pts.add([p.x, p.y]);
       d = d + 10;
     }
 
     d = -180;
     while (d <= 0) {
       p = pointOnCircle(center.x, center.y, radius, d);
-      pts.add([ p.x, p.y ]);
+      pts.add([p.x, p.y]);
       d = d + 10;
     }
 
@@ -927,11 +1031,10 @@ class RenderWeather {
     d = -90;
     while (d <= 0) {
       p = pointOnCircle(cRight.x, cRight.y, radius * 0.6, d);
-      pts.add([ p.x, p.y ]);
+      pts.add([p.x, p.y]);
       d = d + 10;
     }
 
     return pts as Polygone;
   }
 }
-
