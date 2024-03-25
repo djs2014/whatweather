@@ -13,28 +13,7 @@
 	</setting>
 	<setting propertyKey="@Properties.openWeatherProxyAPIKey" title="@Strings.OpenWeatherProxyAPIKey">
 		<settingConfig type="alphanumeric" />
-	</setting>
-	
-    <setting propertyKey="@Properties.showInfoSmallField" title="@Strings.ShowInfoSmallField" prompt="@Strings.ShowInfoPrompt">
-        <settingConfig type="list">
-            <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
-            <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
-            <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
-			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
-			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
-			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
-        </settingConfig>
-    </setting>      
-	 <setting propertyKey="@Properties.showInfoLargeField" title="@Strings.ShowInfoLargeField" prompt="@Strings.ShowInfoPrompt">
-        <settingConfig type="list">
-            <listEntry value="0">@Strings.ShowInfoNothing</listEntry>
-            <listEntry value="1">@Strings.ShowInfoTimeOfDay</listEntry>            
-            <listEntry value="2">@Strings.ShowInfoTemperature</listEntry>
-			<listEntry value="3">@Strings.ShowInfoAmbientPressure</listEntry>
-			<listEntry value="4">@Strings.ShowInfoSealevelPressure</listEntry>
-			<listEntry value="5">@Strings.ShowInfoDistance</listEntry>
-        </settingConfig>
-    </setting>      					
+	</setting>       					
     
 	<setting propertyKey="@Properties.testScenario" title="@Strings.TestScenario">
 		<settingConfig type="numeric" min="0" max="2" />		

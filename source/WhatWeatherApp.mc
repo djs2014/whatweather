@@ -35,8 +35,6 @@ class WhatWeatherApp extends Application.AppBase {
     return [new WhatWeatherView()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>;
   }
 
-  //! Return the settings view and delegate for the app
-  //! @return Array Pair [View, Delegate]
   (:typecheck(disableBackgroundCheck))
   function getSettingsView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
     return (

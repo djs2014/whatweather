@@ -97,26 +97,18 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
       WatchUi.pushView(showMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
     } else if (id instanceof String && id.equals("extrainfo")) {
-      // var sfMenu = new WatchUi.Menu2({ :title => "Extra info" });
-      // var boolean = Storage.getValue("sf_showWptDirection") ? true : false;
-      // sfMenu.addItem(new WatchUi.ToggleMenuItem("Waypoint direction", null, "sf_showWptDirection", boolean, null));
-      // boolean = Storage.getValue("sf_showWptDistance") ? true : false;
-      // sfMenu.addItem(new WatchUi.ToggleMenuItem("Waypoint distance", null, "sf_showWptDistance", boolean, null));
-      // boolean = Storage.getValue("sf_ShowCircleDistance") ? true : false;
-      // sfMenu.addItem(new WatchUi.ToggleMenuItem("Range distance lable", null, "sf_ShowCircleDistance", boolean, null));
-      // var mi = new WatchUi.MenuItem("Extra range meters", null, "sf_extraRangeMeters", null);
-      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      // sfMenu.addItem(mi);
-      // mi = new WatchUi.MenuItem("Fixed range meters", null, "sf_fixedRangeMeters", null);
-      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      // sfMenu.addItem(mi);
-      // mi = new WatchUi.MenuItem("Zoom # waypoints", null, "sf_zoomMinWaypoints", null);
-      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      // sfMenu.addItem(mi);
-      // mi = new WatchUi.MenuItem("Zoom on 1 meters", null, "sf_zoomOneMeters", null);
-      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      // sfMenu.addItem(mi);
-      // WatchUi.pushView(sfMenu, new $.GeneralMenuDelegate(self, sfMenu), WatchUi.SLIDE_UP);
+      var extraMenu = new WatchUi.Menu2({ :title => "Extra" });
+      var mi = new WatchUi.MenuItem("Info large field", null, "showInfoLargeField", null);
+      var value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
+      mi.setSubLabel($.getShowInfoText(value));
+      extraMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Info small field", null, "showInfoSmallField", null);
+      value = getStorageValue(mi.getId() as String, $._showInfoSmallField) as Number;
+      mi.setSubLabel($.getShowInfoText(value));
+      extraMenu.addItem(mi);
+
+      WatchUi.pushView(extraMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);      
     } else if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
@@ -228,6 +220,22 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
+    } else if (id instanceof String && id.equals("showInfoLargeField")) {
+      var sp = new selectionMenuPicker("Large field", id as String);
+      for (var i = 0; i <= 5; i++) {
+        sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
+    } else if (id instanceof String && id.equals("showInfoSmallField")) {
+      var sp = new selectionMenuPicker("Small field", id as String);
+      for (var i = 0; i <= 5; i++) {
+        sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
     } else if (id instanceof String && item instanceof ToggleMenuItem) {
       Storage.setValue(id as String, item.isEnabled());
       return;
@@ -312,7 +320,6 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   }
 
   function onSelectedSelection(value as Object, storageKey as String) as Void {
-    var quality = value as Number;
-    Storage.setValue(storageKey, quality);
+    Storage.setValue(storageKey, value as Number);
   }
 }

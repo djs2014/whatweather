@@ -1,5 +1,8 @@
 refactor
-- relative wind
+
+check circular reference
+
+  - relative wind
   - big array only
 - less memory?
 - less computation

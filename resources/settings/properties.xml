@@ -1,12 +1,4 @@
-<properties>
-	
-	
-
-	
-	<property id="showInfoSmallField" type="number">1</property>
-	<property id="showInfoLargeField" type="number">0</property>
-	
-		
+<properties>		
 	<!-- <property id="showWeatherAlerts" type="boolean">true</property>	 -->
 		
 	<property id="openWeatherAPIVersion" type="number">1</property>

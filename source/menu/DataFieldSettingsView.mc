@@ -138,3 +138,23 @@ function getShowWindText(value as Number) as String {
       return "--";
   }
 }
+
+function getShowInfoText(value as Number) as String {
+  switch (value) {
+    case SHOW_INFO_NOTHING:
+      return "Nothing";
+    case SHOW_INFO_TIME_Of_DAY:
+      return "Time";
+    case SHOW_INFO_TEMPERATURE:
+      return "Temperature";
+    case SHOW_INFO_AMBIENT_PRESSURE:
+      return "Pressure";
+    case SHOW_INFO_SEALEVEL_PRESSURE:
+      return "Pressure at sea";
+    case SHOW_INFO_DISTANCE:
+      return "Distance";
+    
+    default:
+      return "--";
+  }
+}

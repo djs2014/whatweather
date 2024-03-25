@@ -3,7 +3,6 @@ import Toybox.System;
 import Toybox.Lang;
 
 class DisplaySettings {
-  hidden var dc as Graphics.Dc?;
   var font as Graphics.FontType = Graphics.FONT_LARGE;
   var fontSmall as Graphics.FontType = Graphics.FONT_XTINY;
 
@@ -50,12 +49,7 @@ class DisplaySettings {
     COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
   }
 
-  function setDc(dc as Dc) as Void {
-    self.dc = dc;
-  }
-
-  function detectFieldType() as Void {
-    var dc = self.dc as Dc;
+  function detectFieldType(dc as Dc) as Void {
     self.width = dc.getWidth();
     self.height = dc.getHeight();
 
