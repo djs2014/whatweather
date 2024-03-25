@@ -68,6 +68,8 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
 // For OWM first entry contains current data
 (:typecheck(disableBackgroundCheck))
 function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as WeatherData {
+
+ // as Application.PropertyValueType
   try {
     if (data == null) {
       return emptyWeatherData();

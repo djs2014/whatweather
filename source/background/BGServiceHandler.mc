@@ -23,17 +23,16 @@ class BGServiceHandler {
   var mUpdateFrequencyInMinutes as Number = 5;
   var mRequestCounter as Number = 0;
   var mObservationTimeDelayedMinutesThreshold as Number = 10;
-  var mMinimalGPSLevel as Number = 3;
+  var mMinimalGPSLevel as Number = 1;
 
   var mLastRequestMoment as Time.Moment?;
   var mLastObservationMoment as Time.Moment?;
-  // var mData as Object?;
 
   // var methodOnBeforeWebrequest = null;
 
   var methodBackgroundData as Method?;
   function setOnBackgroundData(objInstance as Object?, callback as Symbol) as Void {
-    methodBackgroundData = new Lang.Method(objInstance, callback);
+    methodBackgroundData = new Lang.Method(objInstance, callback) as Method;
   }
 
   function initialize() {}
@@ -196,7 +195,8 @@ class BGServiceHandler {
     return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
 
-  function onBackgroundData(data as Application.PropertyValueType) as Void { //, obj as Object, cbProcessData as Symbol) as Void {
+  function onBackgroundData(data as Dictionary or Number or Null) as Void {
+    //, obj as Object, cbProcessData as Symbol) as Void {
     mLastRequestMoment = Time.now();
     mErrorMessage = "";
     if (data instanceof Lang.Number) {
@@ -222,16 +222,11 @@ class BGServiceHandler {
     }
 
     mHttpStatus = HTTP_OK;
-    // mData = data;
     mError = CustomErrors.ERROR_BG_NONE;
     mRequestCounter = mRequestCounter + 1;
-    // if (obj != null) {
-    //   var processData = new Lang.Method(obj, cbProcessData);
-    //   processData.invoke(self, data);
-    // }
 
-    if (methodBackgroundData != null) {
-      (methodBackgroundData as Method).invoke(data);
+    if (methodBackgroundData != null && data != null) {
+      (methodBackgroundData as Method).invoke(data as Dictionary);
     }
   }
   function setLastObservationMoment(moment as Time.Moment?) as Void {

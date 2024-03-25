@@ -63,14 +63,14 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
     var boolean = false;
 
-    boolean = Storage.getValue("debug") ? true : false;
-    menu.addItem(new WatchUi.ToggleMenuItem("Debug", null, "debug", boolean, null));
+    // boolean = Storage.getValue("debug") ? true : false;
+    // menu.addItem(new WatchUi.ToggleMenuItem("Debug", null, "debug", boolean, null));
     boolean = Storage.getValue("resetDefaults") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Reset to defaults", null, "resetDefaults", boolean, null));
   
 
-    var view = new $.DataFieldSettingsView();
-    WatchUi.pushView(menu, new $.DataFieldSettingsMenuDelegate(view), WatchUi.SLIDE_IMMEDIATE);
+    // var view = new $.DataFieldSettingsView();
+    WatchUi.pushView(menu, new $.DataFieldSettingsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
     return true;
   }
 
@@ -83,6 +83,10 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
 function getStorageNumberAsString(key as String) as String {
   return (getStorageValue(key, 0) as Number).format("%.0d");
+}
+
+function getStorageFloatAsString(key as String) as String {
+  return (getStorageValue(key, 0.0f) as Float).format("%.1f");
 }
 
 function getMinimalGPSqualityText(value as Number) as String {
@@ -131,35 +135,6 @@ function getShowWindText(value as Number) as String {
       return "Beaufort";
     
     default:
-      return "Nothing";
+      return "--";
   }
-}
-
-// function getStartAfterUnitsText(value as AfterXUnits) as String {
-//   switch (value) {
-//     case AfterXKilometer:
-//       return "Kilometer";
-//     case AfterXMinutes:
-//       return "Minutes";
-//     default:
-//       return "Kilometer";
-//   }
-// }
-
-function subMenuToggleMenuItem(key as String) as String {
-  // if (key.equals("show_timer")) {
-  //   if (Storage.getValue(key) ? true : false) {
-  //     return "timer time";
-  //   } else {
-  //     return "elapsed time";
-  //   }
-  // }
-  // else if (key.equals("wf_toggle_heading")) {
-  //   if (Storage.getValue(key) ? true : false) {
-  //     return "distance (next)";
-  //   } else {
-  //     return "heading";
-  //   }
-  // }
-  return "";
 }

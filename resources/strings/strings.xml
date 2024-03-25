@@ -6,7 +6,7 @@
         
     <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
     
-    <string id="ShowForecastStartTime">Show time of first forecast data</string>    
+    <!-- <string id="ShowForecastStartTime">Show time of first forecast data</string>     -->
     <string id="ShowInfoSmallField">Extra information (small field)</string>        
     <string id="ShowInfoLargeField">Extra information (large field)</string>        
     <string id="ShowInfoPrompt">Select extra information</string>

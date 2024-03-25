@@ -1,4 +1,6 @@
 refactor
+- relative wind
+  - big array only
 - less memory?
 - less computation
 - relative wind direction on small field

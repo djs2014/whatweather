@@ -10,11 +10,12 @@ using Toybox.Position;
 var _BGServiceHandler as BGServiceHandler?;
 var _alertHandler as AlertHandler?;
 
-var gDebug as Boolean = false;
-var gMinimalGPSquality as Number = 1; // last known location
+// TODO var gDebug as Boolean = false;
+
+(:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
 
-(:background)
+(:typecheck(disableBackgroundCheck))
 var _weatherDescriptions as Lang.Dictionary = {};
 
 (:background)
@@ -25,25 +26,26 @@ class WhatWeatherApp extends Application.AppBase {
 
   function onStart(state as Dictionary?) as Void {}
 
-  function onStop(state as Dictionary?) as Void {    
-  }
+  function onStop(state as Dictionary?) as Void {}
 
   (:typecheck(disableBackgroundCheck))
-  function getInitialView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates> or Null {
+  function getInitialView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
     loadUserSettings();
-    return [new WhatWeatherView()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>;   
+    return [new WhatWeatherView()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>;
   }
 
-    //! Return the settings view and delegate for the app
+  //! Return the settings view and delegate for the app
   //! @return Array Pair [View, Delegate]
   (:typecheck(disableBackgroundCheck))
-  function getSettingsView()  as Lang.Array<WatchUi.Views or WatchUi.InputDelegates> or Null {
-    return [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>; 
+  function getSettingsView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
+    return (
+      [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()] as
+      Lang.Array<WatchUi.Views or WatchUi.InputDelegates>
+    );
   }
 
-
-/* SDK 7 
+  /* SDK 7 
   (:typecheck(disableBackgroundCheck))
   function getInitialView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] {
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
@@ -96,8 +98,8 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("maxHoursForecast", 8);
         Storage.setValue("showClouds", true);
         Storage.setValue("showCurrentWind", true);
-        Storage.setValue("showCurrentWind", true);
-        Storage.setValue("showWind", true);
+        Storage.setValue("showRelativeWind", true);
+        Storage.setValue("showWind", SHOW_WIND_BEAUFORT);
         Storage.setValue("showUVIndex", true);
         Storage.setValue("showTemperature", true);
         Storage.setValue("showRelativeHumidity", true);
@@ -108,10 +110,10 @@ class WhatWeatherApp extends Application.AppBase {
 
         Storage.setValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
         Storage.setValue("showInfoLargeField", SHOW_INFO_NOTHING);
-        
+
         Storage.setValue("alertLevelPrecipitationChance", 70);
         Storage.setValue("alertLevelUVi", 6);
-        Storage.setValue("alertLevelRainMMfirstHour", 2);
+        Storage.setValue("alertLevelRainMMfirstHour", 0.3f);
         Storage.setValue("alertLevelWindSpeed", 5);
         Storage.setValue("alertLevelDewpoint", 19);
 
@@ -124,43 +126,38 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("comfortHumidityMax", 60);
         Storage.setValue("comfortTempMin", 19);
         Storage.setValue("comfortTempMax", 27);
-
       }
 
-      // @@ Move from property to on device
+      // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
 
-      $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
-
-      // showweather      
+      // showweather
       $._weatherDataSource = $.getStorageValue("weatherDataSource", $._weatherDataSource) as WeatherSource;
 
       $._showCurrentForecast = $.getStorageValue("showCurrentForecast", $._showCurrentForecast) as Boolean;
-      $._showMinuteForecast = $.getStorageValue("showMinuteForecast",  $._showMinuteForecast) as Boolean;
+      $._showMinuteForecast = $.getStorageValue("showMinuteForecast", $._showMinuteForecast) as Boolean;
       $._maxHoursForecast = $.getStorageValue("maxHoursForecast", $._maxHoursForecast) as Number;
-      // if ($._maxHoursForecast > 24 ){ $._maxHoursForecast = 24; } 
+      // if ($._maxHoursForecast > 24 ){ $._maxHoursForecast = 24; }
       $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
       $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
       $._showRelativeWind = $.getStorageValue("showRelativeWind", $._showRelativeWind) as Boolean;
       $._showWind = $.getStorageValue("showWind", $._showWind) as Number;
       $._showUVIndex = $.getStorageValue("showUVIndex", $._showUVIndex) as Boolean;
       $._showTemperature = $.getStorageValue("showTemperature", $._showTemperature) as Boolean;
-      $._showRelativeHumidity = $.getStorageValue("showRelativeHumidity", $._showRelativeHumidity ) as Boolean;
+      $._showRelativeHumidity = $.getStorageValue("showRelativeHumidity", $._showRelativeHumidity) as Boolean;
       $._showPressure = $.getStorageValue("showPressure", $._showPressure) as Boolean;
       $._showDewpoint = $.getStorageValue("showDewpoint", $._showDewpoint) as Boolean;
       $._showComfortZone = $.getStorageValue("showComfortZone", $._showComfortZone) as Boolean;
       $._showWeatherCondition = $.getStorageValue("showWeatherCondition", $._showWeatherCondition) as Boolean;
       // $._showWeatherAlerts = $.getStorageValue("showWeatherAlerts", true) as Boolean;
 
-
       $._showInfoSmallField = $.getStorageValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY) as Number;
       $._showInfoLargeField = $.getStorageValue("showInfoLargeField", SHOW_INFO_NOTHING) as Number;
 
       $._alertLevelPrecipitationChance = $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
       $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
-      $._alertLevelRainMMfirstHour = $.getStorageValue("alertLevelRainMMfirstHour", 2) as Number;
+      $._alertLevelRainMMfirstHour = $.getStorageValue("alertLevelRainMMfirstHour", 0.3f) as Float;
       $._alertLevelWindSpeed = $.getStorageValue("alertLevelWindSpeed", 5) as Number;
       $._alertLevelDewpoint = $.getStorageValue("alertLevelDewpoint", 19) as Number;
-
 
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
@@ -172,9 +169,9 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       var bgHandler = getBGServiceHandler();
-      bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);   
-      $.gMinimalGPSquality = $.getStorageValue("minimalGPSquality", $.gMinimalGPSquality) as Number;   
-      bgHandler.setMinimalGPSLevel($.gMinimalGPSquality);
+      bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
+      var minimalGPSquality = $.getStorageValue("minimalGPSquality", 1) as Number; // 1 is last known location
+      bgHandler.setMinimalGPSLevel(minimalGPSquality);
       var interval = $.getStorageValue("checkIntervalMinutes", 5) as Number;
       if (interval < 5) {
         interval = 5;
@@ -213,9 +210,9 @@ class WhatWeatherApp extends Application.AppBase {
       // Fix proxy url
       var proxuUrl = $.getApplicationProperty("openWeatherProxy", "") as String;
       if (proxuUrl.equals("https://api.castlephoto.info/owm_one")) {
-        Application.Properties.setValue("openWeatherProxy", "https://owm.castlephoto.info/owm_one");  
+        Application.Properties.setValue("openWeatherProxy", "https://owm.castlephoto.info/owm_one");
       }
-      
+
       setStorageValueIfChanged("openWeatherProxy", "https://owm.castlephoto.info/owm_one");
       setStorageValueIfChanged("openWeatherProxyAPIKey", "0548b3c7-61bc-4afc-b6e5-616f19d3cf23");
       Storage.setValue("openWeatherAPIVersion", $.getStorageValue("openWeatherAPIVersion", 1) as Number);
@@ -240,7 +237,7 @@ class WhatWeatherApp extends Application.AppBase {
       if (propertyValue.length() == 0) {
         propertyValue = def;
         // update properties
-        Application.Properties.setValue(key, def);        
+        Application.Properties.setValue(key, def);
       }
       if (propertyValue.length() > 0) {
         var storageValue = Storage.getValue(key);
@@ -270,7 +267,7 @@ class WhatWeatherApp extends Application.AppBase {
     comfort.temperatureMax = $.max(tempMin, tempMax).toNumber();
   }
 
-/* SDK 7
+  /* SDK 7
   public function getServiceDelegate() as [System.ServiceDelegate] {
     return [new BackgroundServiceDelegate()] as [System.ServiceDelegate];
   }
@@ -280,7 +277,7 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   (:typecheck(disableBackgroundCheck))
-  function onBackgroundData(data) {
+  function onBackgroundData(data as Application.PersistableType) {
     System.println("Background data recieved");
     //System.println(data);
 
@@ -291,7 +288,7 @@ class WhatWeatherApp extends Application.AppBase {
     }
 
     var bgHandler = getBGServiceHandler();
-    bgHandler.onBackgroundData(data); //, self, :updateBgData);
+    bgHandler.onBackgroundData(data as Dictionary or Number or Null);
 
     WatchUi.requestUpdate();
   }

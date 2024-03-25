@@ -183,9 +183,6 @@ class WhatWeatherView extends WatchUi.DataField {
       showInfo(dc, ds);
 
       showBgInfo(dc, ds);
-      // if ($.gDebug) {
-      //   showDebugInfo(dc, ds);
-      // }
     } catch (ex) {
       ex.printStackTrace();
     }
@@ -224,30 +221,6 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWc = !mShowWeatherCondition || ds.smallField || ds.wideField ? 0 : 15;
     var heightWt = ds.oneField ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
     ds.calculate(nrOfColumns, heightWind, heightWc, heightWt);
-  }
-
-  hidden function showDebugInfo(dc as Dc, ds as DisplaySettings) as Void {
-    if (!ds.oneField) {
-      return;
-    }
-
-    var stats = System.getSystemStats();
-
-    // (stats.totalMemory / 1024.0).format("%.1f"),
-    var text = format("mem:u$1$/f$2$", [
-      (stats.usedMemory / 1024.0).format("%.2f"),
-      (stats.freeMemory / 1024.0).format("%.2f"),
-    ]);
-
-    var textWH = dc.getTextDimensions(text, Graphics.FONT_XTINY);
-    dc.drawText(
-      1,
-      //dc.getWidth() - textWH[0],
-      dc.getHeight() - textWH[1],
-      Graphics.FONT_XTINY,
-      text,
-      Graphics.TEXT_JUSTIFY_LEFT
-    );
   }
 
   hidden function showBgInfo(dc as Dc, ds as DisplaySettings) as Void {
@@ -837,7 +810,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 previousCondition = forecast.condition;
               }
             }
-           
+
             x = x + ds.columnWidth + ds.space;
           }
         }

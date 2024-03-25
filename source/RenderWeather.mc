@@ -349,9 +349,9 @@ class RenderWeather {
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(x, y, radius, wp.bearing - (track as Number), wp.speed);
+      drawWind(x, y, radius, wp.bearing - (track as Number), wp.speed, true);
     } else {
-      drawWind(x, y, radius, wp.bearing, wp.speed);
+      drawWind(x, y, radius, wp.bearing, wp.speed, false);
     }
   }
 
@@ -373,7 +373,7 @@ class RenderWeather {
     var radius = 8;
     var xW = x + ds.columnWidth / 2;
     var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-    drawWind(xW, yW, radius, windBearingInDegrees, windSpeed);
+    drawWind(xW, yW, radius, windBearingInDegrees, windSpeed, false);
   }
 
   function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
@@ -739,16 +739,20 @@ class RenderWeather {
   hidden function getVulcanoPts(center as Point, range as Number) as Polygone {
     var pts = [];
 
-    pts.add([center.x - 2, center.y - range * 0.5]);
-    pts.add([center.x, center.y - range * 0.5 + 1]);
-    pts.add([center.x + 2, center.y - range * 0.5]);
+    var halfRange = (range * 0.5).toNumber();
+    var p2Range = (range * 0.2).toNumber();
+    var p7Range = (range * 0.7).toNumber();
 
-    pts.add([center.x + range * 0.2, center.y]);
+    pts.add([center.x - 2, center.y - halfRange]);
+    pts.add([center.x, center.y - halfRange + 1]);
+    pts.add([center.x + 2, center.y - halfRange]);
 
-    pts.add([center.x + range * 0.7, center.y + range]);
-    pts.add([center.x - range * 0.7, center.y + range]);
+    pts.add([center.x + p2Range, center.y]);
 
-    pts.add([center.x - range * 0.2, center.y]);
+    pts.add([center.x + p7Range, center.y + range]);
+    pts.add([center.x - p7Range, center.y + range]);
+
+    pts.add([center.x - p2Range, center.y]);
 
     return pts as Polygone;
   }
@@ -901,7 +905,8 @@ class RenderWeather {
     y as Number,
     radius as Number,
     windBearingInDegrees as Number,
-    windSpeedMs as Float
+    windSpeedMs as Float,
+    bigArrow as Boolean
   ) as Void {
     var hasAlert = false;
     var text = "";
@@ -941,19 +946,26 @@ class RenderWeather {
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
       windBearingInDegrees = windBearingInDegrees + 90;
 
-      var pA = pointOnCircle(x, y, radius + radius * 0.5, windBearingInDegrees - 35 - 180);
-      var pB = pointOnCircle(x, y, radius + radius * 0.9, windBearingInDegrees);
-      var pC = pointOnCircle(x, y, radius + radius * 0.5, windBearingInDegrees + 35 - 180);
-
-      var pts = [pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate()] as Polygone;
-
       if (hasAlert) {
         dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
       } else {
         dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
       }
-      dc.fillPolygon(pts);
+      var pA, pB, pC, pD;
+      if (bigArrow) {
+        pA = pointOnCircle(x, y, radius * 2.4, windBearingInDegrees - 35 - 180);
+        pB = pointOnCircle(x, y, radius * 3.0, windBearingInDegrees);
+        pC = pointOnCircle(x, y, radius * 2.4, windBearingInDegrees + 35 - 180);
+        pD = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees - 180);
+      } else {
+        pA = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees - 35 - 180);
+        pB = pointOnCircle(x, y, radius * 1.9, windBearingInDegrees);
+        pC = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees + 35 - 180);
+        pD = pointOnCircle(x, y, radius * 1.0, windBearingInDegrees - 180);        
+      }
+      dc.fillPolygon([pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate(), pD.toCoordinate()] as Polygone);    
     }
+
     // The circle
     dc.drawCircle(x, y, radius);
     if (hasAlert) {

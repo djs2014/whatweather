@@ -91,7 +91,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                 "minutely" => minutely as Boolean,
                 "testScenario" => testScenario as Number,
                 "appid" => apiKey as String
-            };		       
+            } as Lang.Dictionary<Lang.Object, Lang.Object>;		       
             requestOWMData(proxyUrl as String, proxyApiKey as String, params);	
             return 0;
         } catch(ex) {

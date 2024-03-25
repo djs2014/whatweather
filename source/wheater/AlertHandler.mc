@@ -4,7 +4,7 @@ import Toybox.System;
 class AlertHandler {
   hidden var alertUvi as Lang.Number = 0;
   hidden var alertPrecipitationChance as Lang.Number = 0;
-  hidden var alertRainMMfirstHour as Lang.Number = 0;
+  hidden var alertRainMMfirstHour as Lang.Float = 0.0f;
   hidden var alertWindSpeed as Lang.Number = 0;
   hidden var alertDewpoint as Lang.Number = 0;
 
@@ -40,7 +40,7 @@ class AlertHandler {
   function setAlertUVi(value as Lang.Number) as Void {
     alertUvi = value;
   }
-  function setAlertRainMMfirstHour(value as Lang.Number) as Void {
+  function setAlertRainMMfirstHour(value as Lang.Float) as Void {
     alertRainMMfirstHour = value;
   }
   //! is in beaufort

@@ -54,10 +54,11 @@ var _minPressure as Lang.Number = 870;
 
 
 var _alertLevelUVi as Lang.Number = 6;
-var _alertLevelRainMMfirstHour as Lang.Number = 2;
+var _alertLevelRainMMfirstHour as Lang.Float = 0.4f;
 var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsGarminFirst;
 
+ (:typecheck(disableBackgroundCheck))
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
   if (condition == null) {
     return null;
