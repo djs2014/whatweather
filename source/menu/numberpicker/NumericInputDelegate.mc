@@ -1,6 +1,6 @@
-using Toybox.System;
-using Toybox.WatchUi;
-using Toybox.Lang;
+import Toybox.System;
+import Toybox.WatchUi;
+import Toybox.Lang;
 
 // Note that on wearable products, input events are not supported for data fields. 
 // class NumericInputDelegate extends WatchUi.InputDelegate {

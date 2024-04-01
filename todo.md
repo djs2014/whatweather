@@ -1,6 +1,12 @@
-refactor
+show time perc > x + rain > 0
 
-check circular reference
+refactor
+ow only -> not load garmin data
+show alert
+if not large field -> bar with alert (beep) for x seconds
+large field -> show alert for x seconds
+swipe -> not large field is handled true
+
 
   - relative wind
   - big array only
@@ -45,6 +51,10 @@ check circular reference
   - Extra information
     - showInfoLargeField Large field (enum)
     - showInfoSmallField Small field (enum)
+    - showInfoWideField Small field (enum)
+      - show wind
+      - show wind relative
+    - 
     - Tiny field (enum)
       - - winddirection relative (big image)
   - Alert levels
@@ -122,8 +132,6 @@ TL;DR;
  - don't use Toybox.Communications in import for foreground app (even if it is not used)
 
 optimize	
-    - use profiler to check duration -> cache some code results (wobbly line)
-    - remove unused code -> comfort ..
     - radar -> offset to left x px
 
 https://api.castlephoto.info/owm_one
@@ -147,3 +155,20 @@ https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
   – git config --local core.autocrlf false              # per-project solution
 
 
+
+// Removed:
+  // function checkFeatures() as Void {
+  //   mCreateColors = Graphics has :createColor;
+  //   try {
+  //     mUseSetFillStroke = Graphics.Dc has :setStroke;
+  //     if (mUseSetFillStroke) {
+  //       mUseSetFillStroke = Graphics.Dc has :setFill;
+  //     }
+  //   } catch (ex) {
+  //     ex.printStackTrace();
+  //   }
+  // }
+  background
+  // !! Do not convert responseData to string (println etc..) --> gives out of memory
+                //System.println(responseData);   --> gives out of memory
+                // var data = responseData as String;  --> gives out of memory

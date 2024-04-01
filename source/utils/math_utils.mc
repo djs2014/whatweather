@@ -1,6 +1,6 @@
 import Toybox.System;
 import Toybox.Lang;
-using Toybox.Math;
+import Toybox.Math;
 
 function min(a as Numeric, b as Numeric) as Numeric {
   if (a <= b) {

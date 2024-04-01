@@ -141,28 +141,22 @@ class AlertHandler {
 
   function currentlyTriggeredHandled() as Void {
     if (statusUvi == TRIGGERED) {
-      statusUvi = HANDLED;
-      //allClearUvi = true;
+      statusUvi = HANDLED;      
     }
     if (statusPrecipitationChance == TRIGGERED) {
-      statusPrecipitationChance = HANDLED;
-      //allClearPrecipitationChance = true;
+      statusPrecipitationChance = HANDLED;      
     }
     if (statusRainMMfirstHour == TRIGGERED) {
-      statusRainMMfirstHour = HANDLED;
-      //allClearRainMMfirstHour = true;
+      statusRainMMfirstHour = HANDLED;      
     }
     if (statusCondition == TRIGGERED) {
-      statusCondition = HANDLED;
-      //allClearCondition = true;
+      statusCondition = HANDLED;      
     }
     if (statusWindSpeed == TRIGGERED) {
-      statusWindSpeed = HANDLED;
-      //allClearWindSpeed = true;
+      statusWindSpeed = HANDLED;      
     }
     if (statusDewpoint == TRIGGERED) {
-      statusDewpoint = HANDLED;
-      //allClearDewpoint = true;
+      statusDewpoint = HANDLED;      
     }
   }
 
@@ -191,7 +185,6 @@ class AlertHandler {
   }
 
   function checkStatus() as Void {
-    //maxPrecipitationChance = 0; ??
     // all clear again HANDLED -> NEUTRAL
     if (allClearUvi) {
       statusUvi = NEUTRAL;

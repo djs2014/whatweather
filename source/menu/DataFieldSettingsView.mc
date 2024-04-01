@@ -21,8 +21,7 @@ class DataFieldSettingsView extends WatchUi.View {
     dc.clear();
     dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
-    var mySettings = System.getDeviceSettings();
-    var version = mySettings.monkeyVersion;
+    var version = System.getDeviceSettings().monkeyVersion;
     var versionString = Lang.format("$1$.$2$.$3$", version);
 
     dc.drawText(
@@ -153,7 +152,7 @@ function getShowInfoText(value as Number) as String {
       return "Pressure at sea";
     case SHOW_INFO_DISTANCE:
       return "Distance";
-    
+
     default:
       return "--";
   }

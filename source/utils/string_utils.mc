@@ -19,33 +19,33 @@ function stringReplace(str as String, oldString as String, newString as String) 
   return result;
 }
 
-function stringReplacePos(
-  str as String,
-  start as Number,
-  oldString as String,
-  newString as String,
-  occurrence as Number
-) as String {
+function stringReplaceAtInterval(str as String, nrOfChars as Number, newPart as String) as String {
+  // split string in pieces of nrOfChars width
   var result = str;
-  if (str.length() == 0 || oldString.length() == 0) {
-    return str;
+  var cursor = 0;
+  if (cursor + nrOfChars > str.length() || nrOfChars <= 0) {
+    return result;
   }
+  try {
+    var part = str.substring(cursor, cursor + nrOfChars) as String;
+    result = part;
 
-  if (start > str.length()) {
-    return str;
+    var remainingLength = str.length() - nrOfChars;
+    while (remainingLength > 0) {
+      cursor = cursor + nrOfChars;
+      if (cursor > str.length()) {
+        part = str.substring(cursor, null) as String;
+      } else {
+        part = str.substring(cursor, cursor + nrOfChars) as String;
+      }
+      result = result + newPart + part;
+      // System.println(result);
+      remainingLength = remainingLength - nrOfChars;
+      // System.println(remainingLength);
+    }
+  } catch (ex) {
+    System.println(ex.getErrorMessage());
+    ex.printStackTrace();
   }
-
-  var pre = str.substring(0, start) as String;
-  result = str.substring(start, str.length()) as String;
-
-  var index = result.find(oldString);
-  var count = 0;
-  while (index != null && count < occurrence) {
-    var indexEnd = index + oldString.length();
-    result = result.substring(0, index) + newString + result.substring(indexEnd, result.length());
-    index = result.find(oldString);
-    count = count + 1;
-  }
-
-  return pre + result;
+  return result;
 }

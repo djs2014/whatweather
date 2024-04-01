@@ -182,15 +182,12 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 }
 
 class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
-  // hidden var _delegate as DataFieldSettingsMenuDelegate;
   hidden var _item as MenuItem?;
   hidden var _currentPrompt as String = "";
   hidden var _debug as Boolean = false;
-  hidden var _numericOptions as NumericOptions = new NumericOptions();
-
-  function initialize(){ //delegate as DataFieldSettingsMenuDelegate, menu as WatchUi.Menu2) {
-    Menu2InputDelegate.initialize();
-    // _delegate = delegate;
+  
+  function initialize(){
+    Menu2InputDelegate.initialize();    
   }
 
   function onSelect(item as MenuItem) as Void {
@@ -243,15 +240,15 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     // @@ TODO cleanup and refactor
     _currentPrompt = item.getLabel();
-    _numericOptions = parseLabelToOptions(_currentPrompt);
+    var numericOptions = parseLabelToOptions(_currentPrompt);
 
     var currentValue = $.getStorageValue(id as String, 0) as Numeric;
-    if (_numericOptions.isFloat) {
+    if (numericOptions.isFloat) {
       currentValue = currentValue.toFloat();
     }
 
     var view = new $.NumericInputView(_debug, _currentPrompt, currentValue);
-    view.processOptions(_numericOptions);
+    view.processOptions(numericOptions);
 
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);

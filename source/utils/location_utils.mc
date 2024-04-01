@@ -35,6 +35,7 @@ class CurrentLocation {
   function setOnLocationChanged(objInstance as Object?, callback as Symbol) as Void {
     methodLocationChanged = new Lang.Method(objInstance, callback) as Method;
   }
+  
   function initialize() {}
 
   function hasLocation() as Boolean {
@@ -143,7 +144,7 @@ class CurrentLocation {
     if (methodLocationChanged == null) {
       return;
     }
-    (methodLocationChanged as Method).invoke();
+    (methodLocationChanged as Method).invoke(getCurrentDegrees() as Array<Double>);
   }
   hidden function locationChanged(location as Location?) as Boolean {
     if (location == null) {
@@ -160,8 +161,7 @@ class CurrentLocation {
     // if (mLocation == null && location == null ){ return false; }
     // if ( (mLocation != null && location == null) || (mLocation == null && location != null) ){ return true; }
 
-    var currentLocation = mLocation as Location;
-    var currentDegrees = currentLocation.toDegrees();
+    var currentDegrees = (mLocation as Location).toDegrees();
 
     var newLocation = location as Location;
     if (!validLocation(newLocation)) {
@@ -224,8 +224,7 @@ class CurrentLocation {
     var distanceMetric = "km";
     var distance = $.getDistanceFromLatLonInKm(latCurrent, lonCurrent, latObservation, lonObservation);
 
-    var deviceSettings = System.getDeviceSettings();
-    if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
+    if (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE) {
       distance = $.kilometerToMile(distance);
       distanceMetric = "m";
     }

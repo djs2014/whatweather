@@ -5,10 +5,7 @@ import Toybox.Time;
 import Toybox.System;
 import Toybox.Background;
 import Toybox.Application.Storage;
-using Toybox.Position;
-
-var _BGServiceHandler as BGServiceHandler?;
-var _alertHandler as AlertHandler?;
+import Toybox.Position;
 
 // TODO var gDebug as Boolean = false;
 
@@ -16,7 +13,7 @@ var _alertHandler as AlertHandler?;
 var gSettingsChanged as Boolean = false;
 
 (:typecheck(disableBackgroundCheck))
-var _weatherDescriptions as Lang.Dictionary = {};
+var _weatherDescriptions as Lang.Array = []; // Lang.Dictionary = {};
 
 (:background)
 class WhatWeatherApp extends Application.AppBase {
@@ -30,7 +27,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function getInitialView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
-    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
+    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
     loadUserSettings();
     return [new WhatWeatherView()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>;
   }
@@ -67,21 +64,13 @@ class WhatWeatherApp extends Application.AppBase {
     loadUserSettings();
   }
 
-  (:typecheck(disableBackgroundCheck))
-  function getBGServiceHandler() as BGServiceHandler {
-    if ($._BGServiceHandler == null) {
-      $._BGServiceHandler = new BGServiceHandler();
-    }
-    return $._BGServiceHandler as BGServiceHandler;
-  }
-
-  (:typecheck(disableBackgroundCheck))
-  function getAlertHandler() as AlertHandler {
-    if ($._alertHandler == null) {
-      $._alertHandler = new AlertHandler();
-    }
-    return $._alertHandler as AlertHandler;
-  }
+  // (:typecheck(disableBackgroundCheck))
+  // function getBGServiceHandler() as BGServiceHandler {
+  //   if ($._BGServiceHandler == null) {
+  //     $._BGServiceHandler = new BGServiceHandler();
+  //   }
+  //   return $._BGServiceHandler as BGServiceHandler;
+  // }
 
   (:typecheck(disableBackgroundCheck))
   function loadUserSettings() as Void {
@@ -134,7 +123,6 @@ class WhatWeatherApp extends Application.AppBase {
       $._showCurrentForecast = $.getStorageValue("showCurrentForecast", $._showCurrentForecast) as Boolean;
       $._showMinuteForecast = $.getStorageValue("showMinuteForecast", $._showMinuteForecast) as Boolean;
       $._maxHoursForecast = $.getStorageValue("maxHoursForecast", $._maxHoursForecast) as Number;
-      // if ($._maxHoursForecast > 24 ){ $._maxHoursForecast = 24; }
       $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
       $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
       $._showRelativeWind = $.getStorageValue("showRelativeWind", $._showRelativeWind) as Boolean;
@@ -146,7 +134,6 @@ class WhatWeatherApp extends Application.AppBase {
       $._showDewpoint = $.getStorageValue("showDewpoint", $._showDewpoint) as Boolean;
       $._showComfortZone = $.getStorageValue("showComfortZone", $._showComfortZone) as Boolean;
       $._showWeatherCondition = $.getStorageValue("showWeatherCondition", $._showWeatherCondition) as Boolean;
-      // $._showWeatherAlerts = $.getStorageValue("showWeatherAlerts", true) as Boolean;
 
       $._showInfoSmallField = $.getStorageValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY) as Number;
       $._showInfoLargeField = $.getStorageValue("showInfoLargeField", SHOW_INFO_NOTHING) as Number;
@@ -166,7 +153,7 @@ class WhatWeatherApp extends Application.AppBase {
         $._maxPressure = 1080;
       }
 
-      var bgHandler = getBGServiceHandler();
+      var bgHandler = $.getBGServiceHandler();
       bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
       var minimalGPSquality = $.getStorageValue("minimalGPSquality", 1) as Number; // 1 is last known location
       bgHandler.setMinimalGPSLevel(minimalGPSquality);
@@ -191,7 +178,7 @@ class WhatWeatherApp extends Application.AppBase {
         bgHandler.Disable();
       }
 
-      var alertHandler = getAlertHandler();
+      var alertHandler = $.getAlertHandler();
       alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
       alertHandler.setAlertUVi($._alertLevelUVi);
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
@@ -218,7 +205,6 @@ class WhatWeatherApp extends Application.AppBase {
 
       Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);
       Storage.setValue("openWeatherMinutely", $._showMinuteForecast as Boolean);
-      // Storage.setValue("openWeatherAlerts", $._showWeatherAlerts);
 
       $.gSettingsChanged = true;
       System.println("User settings loaded");
@@ -234,7 +220,6 @@ class WhatWeatherApp extends Application.AppBase {
       var propertyValue = $.getApplicationProperty(key, "") as String;
       if (propertyValue.length() == 0) {
         propertyValue = def;
-        // update properties
         Application.Properties.setValue(key, def);
       }
       if (propertyValue.length() > 0) {
@@ -285,21 +270,41 @@ class WhatWeatherApp extends Application.AppBase {
       return;
     }
 
-    var bgHandler = getBGServiceHandler();
+    var bgHandler = $.getBGServiceHandler();
     bgHandler.onBackgroundData(data as Dictionary or Number or Null);
 
     WatchUi.requestUpdate();
   }
-
-  // (:typecheck(disableBackgroundCheck))
-  // function updateBgData(bgHandler as BGServiceHandler, data as Dictionary) as Void {
-  //   // First entry hourly in OWM is current entry
-  //   var bgData = toWeatherData(data, true);
-  //   // $._bgData = bgData;
-  //   bgHandler.setLastObservationMoment(bgData.getObservationTime());
-  // }
 }
 
 function getApp() as WhatWeatherApp {
   return Application.getApp() as WhatWeatherApp;
+}
+
+var _alertHandler as AlertHandler?;
+var _BGServiceHandler as BGServiceHandler?;
+var _CurrentLocation as CurrentLocation?;
+
+(:typecheck(disableBackgroundCheck))
+function getAlertHandler() as AlertHandler {
+  if ($._alertHandler == null) {
+    $._alertHandler = new AlertHandler();
+  }
+  return $._alertHandler as AlertHandler;
+}
+
+(:typecheck(disableBackgroundCheck))
+function getBGServiceHandler() as BGServiceHandler {
+  if ($._BGServiceHandler == null) {
+    $._BGServiceHandler = new BGServiceHandler();
+  }
+  return $._BGServiceHandler as BGServiceHandler;
+}
+
+(:typecheck(disableBackgroundCheck))
+function getCurrentLocation() as CurrentLocation {
+  if ($._CurrentLocation == null) {
+    $._CurrentLocation = new CurrentLocation();
+  }
+  return $._CurrentLocation as CurrentLocation;
 }

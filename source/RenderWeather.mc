@@ -6,9 +6,8 @@ import Toybox.Math;
 import Toybox.Time.Gregorian;
 
 class RenderWeather {
-  hidden var dc as Dc;
-  hidden var ds as DisplaySettings;
-  hidden var devSettings as DeviceSettings;
+  hidden var ds as DisplaySettings = new DisplaySettings();
+  
 
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2 as Lang.Number = 0;
@@ -26,19 +25,19 @@ class RenderWeather {
   hidden var maxPressure as Lang.Number = 1080;
   hidden var minPressure as Lang.Number = 870;
 
-  function initialize(dc as Dc, ds as DisplaySettings) {
-    self.dc = dc;
-    self.ds = ds;
-    topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
-    self.devSettings = System.getDeviceSettings();
+  function initialize() {}
 
+  function initValues(dc as Dc, ds as DisplaySettings) as Void {
+    self.ds = ds; 
+    topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
+    
     self.maxTemperature = $._maxTemperature;
     self.maxPressure = $._maxPressure;
     self.minPressure = $._minPressure;
     initComfortZones();
     Math.srand(System.getTimer());
   }
-
+  
   hidden function initComfortZones() as Void {
     var comfort = getComfort();
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
@@ -50,6 +49,7 @@ class RenderWeather {
   }
 
   function drawUvIndexGraph(
+    dc as Dc, 
     uvPoints as Lang.Array,
     maxUvIndex as Lang.Number,
     showDetails as Lang.Boolean,
@@ -65,7 +65,7 @@ class RenderWeather {
           var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
 
-          drawUvPoint(x, y, r, uvp.uvi as Float, showDetails);
+          drawUvPoint(dc, x, y, r, uvp.uvi as Float, showDetails);
         }
       }
     } catch (ex) {
@@ -75,6 +75,7 @@ class RenderWeather {
   }
 
   function drawUvPoint(
+    dc as Dc,
     x as Lang.Number,
     y as Lang.Number,
     r as Lang.Number,
@@ -100,8 +101,9 @@ class RenderWeather {
     dc.drawLine(x + r + rh, y - r - rh, x - r - rh, y + r + rh);
   }
 
-  function drawTemperatureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawTemperatureGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
+      var devSettings = System.getDeviceSettings();
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i] as WeatherPoint;
@@ -111,7 +113,6 @@ class RenderWeather {
           var y = ds.getYpostion(perc);
 
           if (showDetails && p.value > 10) {
-            // @@ config
             var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             if (yBlueBar < y) {
@@ -147,8 +148,9 @@ class RenderWeather {
     }
   }
 
-  function drawDewpointGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawDewpointGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
+      var devSettings = System.getDeviceSettings();
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
         var p = points[i] as WeatherPoint;
@@ -160,7 +162,6 @@ class RenderWeather {
           var color = dewpointToColor(y.toFloat());
 
           if (showDetails && p.value > 7) {
-            // @@ config
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             var dewpoint = p.value;
@@ -191,7 +192,7 @@ class RenderWeather {
     }
   }
 
-  function drawPressureGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawPressureGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -232,7 +233,7 @@ class RenderWeather {
     }
   }
 
-  function drawHumidityGraph(points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawHumidityGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -273,7 +274,7 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
+  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
     var comfort = getComfort();
 
     var color = dewpointToColor(dewpoint);
@@ -293,17 +294,17 @@ class RenderWeather {
     dc.fillRectangle(x - ds.space / 2, self.yTempTop, ds.columnWidth + ds.space, self.yTempBottom - self.yTempTop);
   }
 
-  function drawComfortBorders() as Void {
+  function drawComfortBorders(dc as Dc) as Void {
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(0, ds.width, self.yHumTop, 3);
-    drawWobblyLine(0, ds.width, self.yHumBottom, 3);
+    drawWobblyLine(dc, 0, ds.width, self.yHumTop, 3);
+    drawWobblyLine(dc, 0, ds.width, self.yHumBottom, 3);
 
     dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
-    drawWobblyLine(0, ds.width, self.yTempTop, 3);
-    drawWobblyLine(0, ds.width, self.yTempBottom, 3);
+    drawWobblyLine(dc, 0, ds.width, self.yTempTop, 3);
+    drawWobblyLine(dc, 0, ds.width, self.yTempBottom, 3);
   }
 
-  function drawObservationLocation(name as Lang.String?) as Void {
+  function drawObservationLocation(dc as Dc, name as Lang.String?) as Void {
     if (name == null || (name as String).length() == 0) {
       return;
     }
@@ -311,8 +312,7 @@ class RenderWeather {
     dc.drawText(ds.margin, TOP_ADDITIONAL_INFO, ds.fontSmall, name, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawObservationLocationLine2(name as Lang.String?) as Void {
-    // Hide on small screen || ds.smallField
+  function drawObservationLocationLine2(dc as Dc, name as Lang.String?) as Void {
     if (name == null || (name as String).length() == 0) {
       return;
     }
@@ -320,7 +320,7 @@ class RenderWeather {
     dc.drawText(ds.margin, topAdditionalInfo2, ds.fontSmall, name, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawObservationTime(observationTime as Time.Moment?) as Void {
+  function drawObservationTime(dc as Dc, observationTime as Time.Moment?) as Void {
     if (observationTime == null) {
       return;
     }
@@ -338,7 +338,7 @@ class RenderWeather {
     dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawWindInfoFirstColumn(windPoints as Array, xOffset as Number, track as Number?) as Void {
+  function drawWindInfoFirstColumn(dc as Dc, windPoints as Array, xOffset as Number, track as Number?) as Void {
     var max = windPoints.size();
     if (max == 0) {
       return;
@@ -349,22 +349,23 @@ class RenderWeather {
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(x, y, radius, wp.bearing - (track as Number), wp.speed, true);
+      drawWind(dc, x, y, radius, wp.bearing - (track as Number), wp.speed, true);
     } else {
-      drawWind(x, y, radius, wp.bearing, wp.speed, false);
+      drawWind(dc, x, y, radius, wp.bearing, wp.speed, false);
     }
   }
 
-  function drawWindInfo(windPoints as Array) as Void {
+  function drawWindInfo(dc as Dc, windPoints as Array) as Void {
     // if (ds.smallField) { return; }
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
       var wp = windPoints[idx] as WindPoint;
-      drawWindInfoInColumn(wp.x, wp.bearing, wp.speed);
+      drawWindInfoInColumn(dc, wp.x, wp.bearing, wp.speed);
     }
   }
 
   function drawWindInfoInColumn(
+    dc as Dc, 
     x as Lang.Number,
     windBearingInDegrees as Lang.Number,
     windSpeed as Lang.Float
@@ -373,10 +374,10 @@ class RenderWeather {
     var radius = 8;
     var xW = x + ds.columnWidth / 2;
     var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-    drawWind(xW, yW, radius, windBearingInDegrees, windSpeed, false);
+    drawWind(dc, xW, yW, radius, windBearingInDegrees, windSpeed, false);
   }
 
-  function drawAlertMessages(activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
+  function drawAlertMessages(dc as Dc, activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
       return;
     }
@@ -389,7 +390,7 @@ class RenderWeather {
     dc.drawText(ds.width / 2, y, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
   }
 
-  function drawAlertMessagesVert(activeAlerts as Array<String>) as Void {
+  function drawAlertMessagesVert(dc as Dc, activeAlerts as Array<String>) as Void {
     var max = activeAlerts.size();
     if (max == 0) {
       return;
@@ -409,7 +410,7 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherConditionText(x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
+  function drawWeatherConditionText(dc as Dc, x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
     if (ds.oneField) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
@@ -426,52 +427,52 @@ class RenderWeather {
     }
   }
 
-  function drawSunsetIndication(x as Lang.Number) as Void {
+  function drawSunsetIndication(dc as Dc, x as Lang.Number) as Void {
     if (!ds.oneField) {
       return;
     }
     var yOffset = ds.heightWt;
-    drawMoon(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
+    drawMoon(dc, x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
   }
 
-  function drawWeatherCondition(x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
-    _drawWeatherCondition(
+  function drawWeatherCondition(dc as Dc, x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
+    _drawWeatherCondition(dc, 
       new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2),
       condition,
       nightTime
     );
   }
 
-  function _drawWeatherCondition(center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
+  function _drawWeatherCondition(dc as Dc, center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
     if (condition == null) {
       return;
     }
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {
-      drawConditionClear(center, 3, 6, 120, nightTime);
+      drawConditionClear(dc, center, 3, 6, 120, nightTime);
       return;
     }
     if (condition == Weather.CONDITION_PARTLY_CLEAR) {
-      drawConditionClear(center.move(3, -2), 2, 4, 60, nightTime);
+      drawConditionClear(dc, center.move(3, -2), 2, 4, 60, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y + 3, 4));
       return;
     }
 
     if (condition == Weather.CONDITION_MOSTLY_CLEAR) {
-      drawConditionClear(center.move(3, -2), 2, 4, 30, nightTime);
+      drawConditionClear(dc, center.move(3, -2), 2, 4, 30, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y + 3, 4));
       return;
     }
     if (condition == Weather.CONDITION_CLEAR) {
-      drawConditionClear(center, 3, 6, 30, nightTime);
+      drawConditionClear(dc, center, 3, 6, 30, nightTime);
       return;
     }
     // clouds
     if (condition == Weather.CONDITION_PARTLY_CLOUDY) {
-      drawConditionClear(center.move(3, -3), 2, 4, 60, nightTime);
+      drawConditionClear(dc, center.move(3, -3), 2, 4, 60, nightTime);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 4));
       return;
@@ -494,13 +495,13 @@ class RenderWeather {
     // rain
     if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN || condition == Weather.CONDITION_CHANCE_OF_SHOWERS) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 5, 3);
+      drawRainDrops(dc, center, 5, 3);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 6));
     }
 
     if (condition == Weather.CONDITION_DRIZZLE) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 5, 3);
+      drawRainDrops(dc, center, 5, 3);
     }
 
     if (
@@ -509,28 +510,28 @@ class RenderWeather {
       condition == Weather.CONDITION_SCATTERED_SHOWERS
     ) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 2);
+      drawRainDrops(dc, center, 8, 2);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 6));
       return;
     }
 
     if (condition == Weather.CONDITION_RAIN || condition == Weather.CONDITION_SHOWERS) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 2);
+      drawRainDrops(dc, center, 8, 2);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 8));
       return;
     }
 
     if (condition == Weather.CONDITION_HEAVY_SHOWERS || condition == Weather.CONDITION_HEAVY_RAIN) {
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 2);
+      drawRainDrops(dc, center, 8, 2);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 8));
       return;
     }
 
     if (condition == Weather.CONDITION_FREEZING_RAIN) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 2);
+      drawRainDrops(dc, center, 8, 2);
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 8));
       return;
@@ -541,15 +542,15 @@ class RenderWeather {
       // dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       // dc.fillPolygon(getHailPoints(center, 8));
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center, 8, 3);
+      drawRainDrops(dc, center, 8, 3);
       return;
     }
 
     if (condition == Weather.CONDITION_WINTRY_MIX || condition == Weather.CONDITION_RAIN_SNOW) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center.move(-4, 0), 6);
+      drawSnowFlake(dc, center.move(-4, 0), 6);
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawRainDrops(center.move(4, 0), 8, 3);
+      drawRainDrops(dc, center.move(4, 0), 8, 3);
       return;
     }
 
@@ -559,21 +560,21 @@ class RenderWeather {
       condition == Weather.CONDITION_LIGHT_RAIN_SNOW
     ) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center.move(-4, 0), 6);
-      drawRainDrops(center.move(4, 0), 8, 3);
+      drawSnowFlake(dc, center.move(-4, 0), 6);
+      drawRainDrops(dc, center.move(4, 0), 8, 3);
       return;
     }
 
     // snow
     if (condition == Weather.CONDITION_CHANCE_OF_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center, 6);
+      drawSnowFlake(dc, center, 6);
       return;
     }
 
     if (condition == Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center.move(0, 2), 6);
+      drawSnowFlake(dc, center.move(0, 2), 6);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 7));
       return;
@@ -581,13 +582,13 @@ class RenderWeather {
 
     if (condition == Weather.CONDITION_FLURRIES || condition == Weather.CONDITION_LIGHT_SNOW) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center, 6);
+      drawSnowFlake(dc, center, 6);
       return;
     }
 
     if (condition == Weather.CONDITION_SNOW) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center, 8);
+      drawSnowFlake(dc, center, 8);
       return;
     }
 
@@ -599,14 +600,14 @@ class RenderWeather {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getHailPoints(center, 4));
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center, 8);
+      drawSnowFlake(dc, center, 8);
       return;
     }
 
     if (condition == Weather.CONDITION_HEAVY_SNOW || condition == Weather.CONDITION_HEAVY_RAIN_SNOW) {
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
-      drawSnowFlake(center.move(-4, 2), 8);
-      drawSnowFlake(center.move(4, -3), 8);
+      drawSnowFlake(dc, center.move(-4, 2), 8);
+      drawSnowFlake(dc, center.move(4, -3), 8);
       return;
     }
 
@@ -644,36 +645,36 @@ class RenderWeather {
     // windy
     if (condition == Weather.CONDITION_WINDY) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center.x, center.y, 6);
+      drawWindIcon(dc, center.x, center.y, 6);
       return;
     }
     // sudden windspeed
     if (condition == Weather.CONDITION_SQUALL) {
       dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center.x, center.y, 6);
+      drawWindIcon(dc, center.x, center.y, 6);
       return;
     }
 
     // dust
     if (condition == Weather.CONDITION_DUST || condition == Weather.CONDITION_SAND) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawDustIcon(center, 8, 1, 6);
+      drawDustIcon(dc, center, 8, 1, 6);
       return;
     }
     // dust, difficult to see
     if (condition == Weather.CONDITION_HAZY || condition == Weather.CONDITION_HAZE) {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawMistIcon(center, 10);
-      drawDustIcon(center, 8, 1, 8);
+      drawMistIcon(dc, center, 10);
+      drawDustIcon(dc, center, 8, 1, 8);
       return;
     }
 
     // sandstorm
     if (condition == Weather.CONDITION_SANDSTORM) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawWindIcon(center.x, center.y, 6);
+      drawWindIcon(dc, center.x, center.y, 6);
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawDustIcon(center, 8, 1, 8);
+      drawDustIcon(dc, center, 8, 1, 8);
       dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getLightningPts(center, 6));
       return;
@@ -684,7 +685,7 @@ class RenderWeather {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getVulcanoPts(center, 9));
       dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
-      drawDustIcon(center, 8, 1, 10);
+      drawDustIcon(dc, center, 8, 1, 10);
       return;
     }
 
@@ -693,7 +694,7 @@ class RenderWeather {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 9));
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawTornado(center);
+      drawTornado(dc, center);
       return;
     }
 
@@ -702,14 +703,14 @@ class RenderWeather {
       dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getCloudPoints(center.x, center.y, 9));
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawDustIcon(center, 4, 2, 3);
+      drawDustIcon(dc, center, 4, 2, 3);
       return;
     }
 
     // fog
     if (condition == Weather.CONDITION_FOG || condition == Weather.CONDITION_MIST) {
       dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-      drawMistIcon(center, 10);
+      drawMistIcon(dc, center, 10);
       return;
     }
 
@@ -729,7 +730,7 @@ class RenderWeather {
     return;
   }
 
-  hidden function drawTornado(center as Point) as Void {
+  hidden function drawTornado(dc as Dc, center as Point) as Void {
     dc.drawRectangle(center.x - 3, center.y, 6, 2);
     dc.drawRectangle(center.x, center.y + 2, 4, 2);
     dc.drawRectangle(center.x + 1, center.y + 4, 3, 2);
@@ -757,7 +758,7 @@ class RenderWeather {
     return pts as Polygone;
   }
 
-  hidden function drawDustIcon(center as Point, range as Number, size as Number, particles as Number) as Void {
+  hidden function drawDustIcon(dc as Dc, center as Point, range as Number, size as Number, particles as Number) as Void {
     var x, y;
     for (var i = 0; i < particles; i++) {
       if (i % 2 == 0) {
@@ -771,13 +772,14 @@ class RenderWeather {
     }
   }
 
-  hidden function drawWindIcon(x as Number, y as Number, range as Number) as Void {
-    drawWindLineUp(x, y - 2, (range * 0.8).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
-    drawWindLineUp(x, y, range, 4, Graphics.ARC_COUNTER_CLOCKWISE);
-    drawWindLineDown(x + 1, y + 2, (range * 0.7).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
+  hidden function drawWindIcon(dc as Dc, x as Number, y as Number, range as Number) as Void {
+    drawWindLineUp(dc, x, y - 2, (range * 0.8).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
+    drawWindLineUp(dc, x, y, range, 4, Graphics.ARC_COUNTER_CLOCKWISE);
+    drawWindLineDown(dc, x + 1, y + 2, (range * 0.7).toNumber(), 2, Graphics.ARC_COUNTER_CLOCKWISE);
   }
 
   hidden function drawWindLineUp(
+    dc as Dc, 
     x as Number,
     y as Number,
     range as Number,
@@ -789,6 +791,7 @@ class RenderWeather {
   }
 
   hidden function drawWindLineDown(
+    dc as Dc, 
     x as Number,
     y as Number,
     range as Number,
@@ -800,16 +803,17 @@ class RenderWeather {
     dc.drawArc(x + range, y + radius, radius, Graphics.ARC_COUNTER_CLOCKWISE, -160, 90);
   }
 
-  hidden function drawMistIcon(center as Point, range as Number) as Void {
+  hidden function drawMistIcon(dc as Dc, center as Point, range as Number) as Void {
     var x1 = center.x - range / 2;
     var x2 = center.x + range / 2;
     var max = center.y + range / 2;
     for (var y = center.y - range / 2; y < max; y = y + 3) {
-      drawWobblyLine(x1, x2, y, 2);
+      drawWobblyLine(dc, x1, x2, y, 2);
     }
   }
 
   hidden function getLightningPts(center as Point, range as Number) as Polygone {
+    
     var pts = [];
 
     pts.add([center.x, center.y - range]);
@@ -828,7 +832,7 @@ class RenderWeather {
     return pts as Polygone;
   }
 
-  hidden function drawSnowFlake(center as Point, radius as Number) as Void {
+  hidden function drawSnowFlake(dc as Dc, center as Point, radius as Number) as Void {
     var angle = 0;
     while (angle < 360) {
       var p1 = pointOnCircle(center.x, center.y, radius, angle);
@@ -850,7 +854,7 @@ class RenderWeather {
     return pts as Polygone;
   }
 
-  hidden function drawRainDrops(center as Point, range as Number, density as Number) as Void {
+  hidden function drawRainDrops(dc as Dc, center as Point, range as Number, density as Number) as Void {
     var x1, x2, y1, y2;
     range = range / 2;
     var s = center.x - range;
@@ -867,7 +871,7 @@ class RenderWeather {
     }
   }
 
-  hidden function drawMoon(x as Number, y as Number, radius as Number) as Void {
+  hidden function drawMoon(dc as Dc, x as Number, y as Number, radius as Number) as Void {
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     dc.setPenWidth(radius * 1.5);
     dc.drawArc(x, y, radius, Graphics.ARC_COUNTER_CLOCKWISE, 95, 275);
@@ -875,6 +879,7 @@ class RenderWeather {
   }
 
   hidden function drawConditionClear(
+    dc as Dc, 
     center as Point,
     radius as Number,
     radiusOuter as Number,
@@ -883,7 +888,7 @@ class RenderWeather {
   ) as Void {
     dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
     if (nightTime) {
-      drawMoon(center.x, center.y, radius);
+      drawMoon(dc, center.x, center.y, radius);
       return;
     }
     dc.drawCircle(center.x, center.y, radius);
@@ -901,6 +906,7 @@ class RenderWeather {
 
   // --
   hidden function drawWind(
+    dc as Dc, 
     x as Number,
     y as Number,
     radius as Number,
@@ -925,6 +931,7 @@ class RenderWeather {
         var value = windSpeedMs;
         if ($._showWind == SHOW_WIND_KILOMETERS) {
           value = $.mpsToKmPerHour(windSpeedMs);
+          var devSettings = System.getDeviceSettings();
           if (devSettings.distanceUnits == System.UNIT_STATUTE) {
             value = $.kilometerToMile(value);
           }
@@ -999,26 +1006,15 @@ class RenderWeather {
     return new Point(xP.toNumber(), yP.toNumber());
   }
 
-  // @@TODO onlayouyt -> get array of points
-  hidden function drawWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Void {
+  // @@TODO onlayout -> get array of points
+  hidden function drawWobblyLine(dc as Dc, x1 as Number, x2 as Number, y as Number, increment as Number) as Void {
     var x = x1;
     while (x <= x2) {
-      var y1 = y + Math.sin(x);
+      //var y1 = y + Math.sin(x);
+      var y1 = y + (Math.rand() % 2);
       dc.drawPoint(x, y1);
       x = x + increment;
     }
-  }
-  // @@TODO onlayouyt -> get array of points
-  // @@TODO drawPolygone as Points / line
-  hidden function getWobblyLine(x1 as Number, x2 as Number, y as Number, increment as Number) as Polygone {
-    var pts = [];
-    var x = x1;
-    while (x <= x2) {
-      var y1 = y + Math.sin(x);
-      pts.add([x, y1.toNumber()]);
-      x = x + increment;
-    }
-    return pts as Polygone;
   }
 
   hidden function getCloudPoints(x as Number, y as Number, radius as Number) as Polygone {

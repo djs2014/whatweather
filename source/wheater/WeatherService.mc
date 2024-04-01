@@ -174,6 +174,8 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
         wal.start = new Time.Moment(($.getNumericValue(warr[1] as Number, 0.0) as Number).toNumber());
         wal.end = new Time.Moment(($.getNumericValue(warr[2] as Number, 0.0) as Number).toNumber());
         wal.description = $.getStringValue(warr[3] as String, "") as String;
+        wal.description = $.stringReplace(wal.description, "\n"," ");
+        wal.description = $.stringReplace(wal.description, "\r"," ");
         System.println("bgData Alert: " + wal.info());
         al.add(wal);
       }

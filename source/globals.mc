@@ -1,5 +1,4 @@
 import Toybox.Lang;
-// import Toybox.Graphics;
 import Toybox.System;
 
 const DEBUG_DETAILS = false;
@@ -46,7 +45,6 @@ var _showWeatherCondition as Lang.Boolean = true;
 var _showComfortZone as Lang.Boolean = true;
 var _showPressure as Lang.Boolean = true;
 var _showDewpoint as Lang.Boolean = true;
-// var _showWeatherAlerts as Lang.Boolean = true;
 
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;
@@ -54,7 +52,7 @@ var _minPressure as Lang.Number = 870;
 
 
 var _alertLevelUVi as Lang.Number = 6;
-var _alertLevelRainMMfirstHour as Lang.Float = 0.4f;
+var _alertLevelRainMMfirstHour as Lang.Float = 0.3f;
 var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsGarminFirst;
 
@@ -63,9 +61,9 @@ function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
   if (condition == null) {
     return null;
   }
-  var key = (condition as Lang.Number).toString();
+  var key = (condition as Lang.Number);
 
-  if ($._weatherDescriptions.hasKey(key)) {
+  if (key < $._weatherDescriptions.size()) {
     return $._weatherDescriptions[key] as Lang.String;
   }
   return null;
