@@ -194,7 +194,7 @@ app.get("/owm_one", async function (req, res) {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             let m = JSON.stringify(owm.convertOWMError(fetchResp.status, resBody));
             console.log('OWM response error: ' + m);
-            res.end(m);
+            res.end(m);            
             // res.writeHead(fetchResp.status, resBody);
             // res.end(resBody);
             return;

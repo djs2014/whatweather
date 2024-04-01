@@ -135,7 +135,25 @@ let getOWMWeatherCurrent = function (parsed, compact) {
     return c;
 }
 
-// return 1 alert per request
+let compactAlerts = function (alerts) {
+    if (!alerts || alerts.length == 0) { return alerts; }
+
+    for (let idx in alerts) {
+        // title
+        if (alerts[idx].length > 0) {
+            alerts[idx][0] = alerts[idx][0].substring(0, 100);
+        }
+        // start
+        // end
+        // description
+        if (alerts[idx].length > 3) {
+            var desc = alerts[idx][3];
+            desc = desc.replace(/disClaimer.*/i,'');
+            alerts[idx][3] = desc.substring(0, 200);
+        }
+    }
+    return alerts;
+}
 let getOWMAlerts = function (key, owmAlerts, def) {
     if (!owmAlerts || owmAlerts.length == 0) { return def; }
 
@@ -156,9 +174,9 @@ let getOWMAlerts = function (key, owmAlerts, def) {
         alert.dte = getPropValue(item, "end", 0);
         // more than 100 chars doesnt fit on screen
         if (owmAlerts.length > 6) {
-            alert.desc = getPropValue(item, "description", "").substring(0, 200); 
+            alert.desc = getPropValue(item, "description", "").substring(0, 200);
         } else if (owmAlerts.length > 2) {
-            alert.desc = getPropValue(item, "description", "").substring(0, 300); 
+            alert.desc = getPropValue(item, "description", "").substring(0, 300);
         } else {
             alert.desc = getPropValue(item, "description", "");
         }
@@ -226,6 +244,11 @@ let parseOWMdata = function (appid, lat, lon, data, maxHours, showMinutelyForeca
         }
         let size = getBinarySize(JSON.stringify(mod));
         console.log(size);
+        if (size > 32000 && getAlerts) {
+            mod.alerts = compactAlerts(mod.alerts);
+            size = getBinarySize(JSON.stringify(mod));
+            console.log("compacted: " + size);
+        }
     } catch (ex) {
         console.log(ex);
     }
