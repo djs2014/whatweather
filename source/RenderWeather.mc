@@ -976,7 +976,7 @@ class RenderWeather {
         pC = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees + 35 - 180);
         pD = pointOnCircle(x, y, radius * 1.0, windBearingInDegrees - 180);        
       }
-      dc.fillPolygon([pA.toCoordinate(), pB.toCoordinate(), pC.toCoordinate(), pD.toCoordinate()] as Polygone);    
+      dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D(), pD.toPoint2D()] as Polygone);    
     }
 
     // The circle

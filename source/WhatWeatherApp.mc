@@ -26,17 +26,15 @@ class WhatWeatherApp extends Application.AppBase {
   function onStop(state as Dictionary?) as Void {}
 
   (:typecheck(disableBackgroundCheck))
-  function getInitialView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] {
+  function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
     loadUserSettings();
-    return [new WhatWeatherView()]; 
+    return [new WhatWeatherView()];
   }
 
   (:typecheck(disableBackgroundCheck))
-  function getSettingsView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] or Null {
-    return (
-      [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()]    
-    );
+  function getSettingsView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] or Null {
+    return [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()];
   }
 
   (:typecheck(disableBackgroundCheck))
@@ -142,6 +140,11 @@ class WhatWeatherApp extends Application.AppBase {
 
       var ws = $.getStorageValue("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;
+
+      var apiKey = $.getStorageValue("openWeatherAPIKey", "") as String;
+      if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
+        $._weatherDataSource = wsGarminFirst;
+      }
       if (
         $._weatherDataSource == wsOWMFirst ||
         $._weatherDataSource == wsOWMOnly ||
@@ -224,8 +227,8 @@ class WhatWeatherApp extends Application.AppBase {
     comfort.temperatureMax = $.max(tempMin, tempMax).toNumber();
   }
 
-  public function getServiceDelegate() as [ System.ServiceDelegate ] {
-    return [new BackgroundServiceDelegate()]; 
+  public function getServiceDelegate() as [System.ServiceDelegate] {
+    return [new BackgroundServiceDelegate()];
   }
 
   (:typecheck(disableBackgroundCheck))

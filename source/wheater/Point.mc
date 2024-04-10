@@ -1,7 +1,7 @@
 import Toybox.Lang;
+import Toybox.Graphics;
 
-typedef Coordinate as [Lang.Numeric, Lang.Numeric];
-typedef Polygone as Lang.Array<Coordinate>;
+typedef Polygone as Lang.Array<Point2D>;
 
 class Point {
   var x as Lang.Number = 0;
@@ -10,6 +10,6 @@ class Point {
     self.x = x;
     if (y != null) { self.y = y; }
   }
-  function toCoordinate() as Coordinate { return [ x, y ] as Coordinate; }
+  function toPoint2D() as Point2D { return [ x, y ] as Point2D; }
   function move(x as Lang.Number, y as Lang.Number) as Point { return new Point(self.x + x, self.y + y); }
 }
