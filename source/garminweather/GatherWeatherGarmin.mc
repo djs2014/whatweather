@@ -105,7 +105,7 @@ function getLatestGarminWeather() as WeatherData {
   }
 }
 
-function calculateDewpoint(temperatureCelcius as Number?, relativeHumidity as Number?) as Float {
+function calculateDewpoint(temperatureCelcius as Numeric?, relativeHumidity as Number?) as Float {
   if (temperatureCelcius == null || relativeHumidity == null) {
     return 0.0;
   }

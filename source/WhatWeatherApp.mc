@@ -26,51 +26,23 @@ class WhatWeatherApp extends Application.AppBase {
   function onStop(state as Dictionary?) as Void {}
 
   (:typecheck(disableBackgroundCheck))
-  function getInitialView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
+  function getInitialView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] {
     $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
     loadUserSettings();
-    return [new WhatWeatherView()] as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>;
+    return [new WhatWeatherView()]; 
   }
 
-  (:typecheck(disableBackgroundCheck))
-  function getSettingsView() as Lang.Array<WatchUi.Views or WatchUi.InputDelegates>? {
-    return (
-      [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()] as
-      Lang.Array<WatchUi.Views or WatchUi.InputDelegates>
-    );
-  }
-
-  /* SDK 7 
-  (:typecheck(disableBackgroundCheck))
-  function getInitialView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] {
-    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Dictionary;
-    loadUserSettings();
-    eturn [new WhatWeatherView()] as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ];
-    return [new WhatWeatherView()]; // as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ];
-  }
-
-    //! Return the settings view and delegate for the app
-  //! @return Array Pair [View, Delegate]
   (:typecheck(disableBackgroundCheck))
   function getSettingsView() as [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] or Null {
-    return [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()]; // as  [ WatchUi.Views ] or [ WatchUi.Views, WatchUi.InputDelegates ] or Null;
+    return (
+      [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()]    
+    );
   }
-
-
-*/
 
   (:typecheck(disableBackgroundCheck))
   function onSettingsChanged() as Void {
     loadUserSettings();
   }
-
-  // (:typecheck(disableBackgroundCheck))
-  // function getBGServiceHandler() as BGServiceHandler {
-  //   if ($._BGServiceHandler == null) {
-  //     $._BGServiceHandler = new BGServiceHandler();
-  //   }
-  //   return $._BGServiceHandler as BGServiceHandler;
-  // }
 
   (:typecheck(disableBackgroundCheck))
   function loadUserSettings() as Void {
@@ -95,8 +67,10 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("showComfortZone", true);
         Storage.setValue("showWeatherCondition", true);
 
-        Storage.setValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY);
+        Storage.setValue("showInfoOneField", SHOW_INFO_NOTHING);
         Storage.setValue("showInfoLargeField", SHOW_INFO_NOTHING);
+        Storage.setValue("showInfoWideField", SHOW_INFO_RELATIVE_WIND);
+        Storage.setValue("showInfoSmallField", SHOW_INFO_RELATIVE_WIND);
 
         Storage.setValue("alertLevelPrecipitationChance", 70);
         Storage.setValue("alertLevelUVi", 6);
@@ -125,7 +99,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._maxHoursForecast = $.getStorageValue("maxHoursForecast", $._maxHoursForecast) as Number;
       $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
       $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
-      $._showRelativeWind = $.getStorageValue("showRelativeWind", $._showRelativeWind) as Boolean;
+      $._showRelativeWindFirst = $.getStorageValue("showRelativeWind", $._showRelativeWindFirst) as Boolean;
       $._showWind = $.getStorageValue("showWind", $._showWind) as Number;
       $._showUVIndex = $.getStorageValue("showUVIndex", $._showUVIndex) as Boolean;
       $._showTemperature = $.getStorageValue("showTemperature", $._showTemperature) as Boolean;
@@ -135,8 +109,10 @@ class WhatWeatherApp extends Application.AppBase {
       $._showComfortZone = $.getStorageValue("showComfortZone", $._showComfortZone) as Boolean;
       $._showWeatherCondition = $.getStorageValue("showWeatherCondition", $._showWeatherCondition) as Boolean;
 
-      $._showInfoSmallField = $.getStorageValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY) as Number;
+      $._showInfoOneField = $.getStorageValue("showInfoOneField", SHOW_INFO_NOTHING) as Number;
       $._showInfoLargeField = $.getStorageValue("showInfoLargeField", SHOW_INFO_NOTHING) as Number;
+      $._showInfoWideField = $.getStorageValue("showInfoWideField", SHOW_INFO_NOTHING) as Number;
+      $._showInfoSmallField = $.getStorageValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY) as Number;
 
       $._alertLevelPrecipitationChance = $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
       $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
@@ -167,8 +143,6 @@ class WhatWeatherApp extends Application.AppBase {
       var ws = $.getStorageValue("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;
       if (
-        $._showInfoSmallField == SHOW_INFO_TEMPERATURE ||
-        $._showInfoLargeField == SHOW_INFO_TEMPERATURE ||
         $._weatherDataSource == wsOWMFirst ||
         $._weatherDataSource == wsOWMOnly ||
         $._weatherDataSource == wsGarminFirst
@@ -250,17 +224,12 @@ class WhatWeatherApp extends Application.AppBase {
     comfort.temperatureMax = $.max(tempMin, tempMax).toNumber();
   }
 
-  /* SDK 7
-  public function getServiceDelegate() as [System.ServiceDelegate] {
-    return [new BackgroundServiceDelegate()] as [System.ServiceDelegate];
-  }
-  */
-  public function getServiceDelegate() as Lang.Array<System.ServiceDelegate> {
-    return [new BackgroundServiceDelegate()] as Lang.Array<System.ServiceDelegate>;
+  public function getServiceDelegate() as [ System.ServiceDelegate ] {
+    return [new BackgroundServiceDelegate()]; 
   }
 
   (:typecheck(disableBackgroundCheck))
-  function onBackgroundData(data as Application.PersistableType) {
+  function onBackgroundData(data as Application.PersistableType) as Void {
     System.println("Background data recieved");
     //System.println(data);
 

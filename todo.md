@@ -1,5 +1,9 @@
+remove - temperature settings -- too slow
+- check more code to remove/cleanup
+test: start bg after x seconds or on first display
 show time perc > x + rain > 0
-
+show wind icon size related to wind speed: ex radius + speed / factor
+ - radius -> param font -> calc size based on font
 refactor
 ow only -> not load garmin data
 show alert
@@ -10,6 +14,7 @@ swipe -> not large field is handled true
 
   - relative wind
   - big array only
+  - rel wind+ -> effective wind speed?
 - less memory?
 - less computation
 - relative wind direction on small field
@@ -134,7 +139,7 @@ TL;DR;
 optimize	
     - radar -> offset to left x px
 
-https://api.castlephoto.info/owm_one
+https://owm.castlephoto.info/owm_one
 http://localhost:4000/owm_one
 ams 52.188950, 4.549666
 lasvegas 36.16373271614203, -115.1262537886411

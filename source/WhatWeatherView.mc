@@ -11,6 +11,7 @@ import Toybox.Application.Storage;
 import Toybox.Background;
 
 class CurrentInfo {
+  var nr as Number = 0;
   var info as String = "";
   var postfix as String = "";
 }
@@ -27,8 +28,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden var mLat as Double = 0d;
   hidden var mLon as Double = 0d;
-  hidden var previousTrack as Float = 0.0f;
-  hidden var track as Number = 0;
+  hidden var mPreviousTrack as Float = 0.0f;
+  hidden var mBearing as Number = 0;
 
   hidden var mHideTemperatureLowerThan as Lang.Number = 8;
   hidden var mBgWeatherData as WeatherData = emptyWeatherData();
@@ -119,7 +120,7 @@ class WhatWeatherView extends WatchUi.DataField {
         $.gSettingsChanged = false;
       }
 
-      track = getBearing(info);
+      mBearing = getBearing(info);
       mCurrentInfo = GetCurrentInfo(info);
       mActivityPaused = activityIsPaused(info);
 
@@ -318,6 +319,10 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     var ci = mCurrentInfo as CurrentInfo;
+    if (ci.nr == SHOW_INFO_RELATIVE_WIND) {
+      return;
+    }
+
     var info = ci.info;
     var postfix = ci.postfix;
 
@@ -816,12 +821,24 @@ class WhatWeatherView extends WatchUi.DataField {
         render.drawObservationTime(dc, current.observationTime);
       }
 
-      if (mShowWindFirst) {
-        if ($._showRelativeWind && !mActivityPaused) {
-          render.drawWindInfoFirstColumn(dc, windPoints, xOffsetWindFirstColumn, track);
-        } else {
-          render.drawWindInfoFirstColumn(dc, windPoints, xOffsetWindFirstColumn, null);
+      // Wind icons or wind relative or wind first column
+      var wpBearing = mBearing;
+      if (mActivityPaused) {
+        wpBearing = null;
+      }
+      var showInfoRelativeWind = false;
+      if (mCurrentInfo != null) {
+        var ci = mCurrentInfo as CurrentInfo;
+        showInfoRelativeWind = ci.nr == SHOW_INFO_RELATIVE_WIND;
+      }
+
+      if (showInfoRelativeWind) {
+        render.drawWindInfoFirstColumn(dc, windPoints, mDs.width / 2, false, wpBearing);
+        if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
+          render.drawWindInfo(dc, windPoints);
         }
+      } else if (mShowWindFirst && $._showRelativeWindFirst) {
+        render.drawWindInfoFirstColumn(dc, windPoints, xOffsetWindFirstColumn, true, wpBearing);
       } else if (mShowWind != SHOW_WIND_NOTHING) {
         render.drawWindInfo(dc, windPoints);
       }
@@ -953,9 +970,9 @@ class WhatWeatherView extends WatchUi.DataField {
       track = getActivityValue(a_info, :currentHeading, 0.0f) as Float;
     }
     if (track == 0.0f) {
-      track = previousTrack;
+      track = mPreviousTrack;
     } else {
-      previousTrack = track;
+      mPreviousTrack = track;
     }
     return $.rad2deg(track).toNumber();
   }
@@ -968,14 +985,18 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function GetCurrentInfo(a_info as Activity.Info) as CurrentInfo? {
-    var showInfo = $._showInfoLargeField;
-    if (mDs.smallField) {
-      showInfo = $._showInfoSmallField;
+    var infoNr = $._showInfoOneField;
+    if (mDs.largeField) {
+      infoNr = $._showInfoLargeField;
+    } else if (mDs.wideField) {
+      infoNr = $._showInfoWideField;
+    } else if (mDs.smallField) {
+      infoNr = $._showInfoSmallField;
     }
 
     var info = "";
     var postfix = "";
-    switch (showInfo) {
+    switch (infoNr) {
       case SHOW_INFO_NOTHING:
         return null;
       case SHOW_INFO_TIME_Of_DAY:
@@ -993,24 +1014,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
         info = nowHour.format("%02d") + ":" + nowMin.format("%02d");
         break;
-
-      case SHOW_INFO_TEMPERATURE:
-        var temperatureCelcius = $.getStorageValue("Temperature", null) as Lang.Float?;
-        if (temperatureCelcius != null) {
-          postfix = "°C";
-          var temperature = temperatureCelcius;
-          if (System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE) {
-            postfix = "°F";
-            temperature = $.celciusToFarenheit(temperatureCelcius);
-          }
-          if (mDs.smallField) {
-            info = temperature.format("%.0f");
-          } else {
-            info = temperature.format("%.2f");
-          }
-        }
-        break;
-
+    
       case SHOW_INFO_AMBIENT_PRESSURE:
         var ap = getActivityValue(a_info, :ambientPressure, 0.0f) as Float;
         if (ap > 0) {
@@ -1069,6 +1073,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
     System.println("Info: " + info + " " + postfix);
     var ci = new CurrentInfo();
+    ci.nr = infoNr;
     ci.info = info;
     ci.postfix = postfix;
     return ci;
@@ -1146,7 +1151,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     if (mWeatherData.alerts.size() == 0) {
-      mAlertIndex = -1;    
+      mAlertIndex = -1;
       return;
     }
 
@@ -1155,7 +1160,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     mGetNextAlert = false;
-    for (var i = 0; i < mWeatherData.alerts.size(); i++) {      
+    for (var i = 0; i < mWeatherData.alerts.size(); i++) {
       var alert = mWeatherData.alerts[i];
       if (!alert.handled) {
         mAlertIndex = i;
@@ -1164,14 +1169,14 @@ class WhatWeatherView extends WatchUi.DataField {
       }
     }
 
-    mAlertIndex = -1;    
+    mAlertIndex = -1;
   }
 
   function handleWeatherAlerts(dc as Dc) as Void {
     if (!mWeatherData.valid()) {
       return;
     }
-    
+
     if (mWeatherData.alerts.size() == 0 || mAlertIndex <= -1 || mAlertIndex >= mWeatherData.alerts.size()) {
       mAlertDisplayedOnOtherField = 0;
       mAlertDisplayedOnOtherField = 0;
@@ -1269,7 +1274,8 @@ class WhatWeatherView extends WatchUi.DataField {
       y = y + lineHeight;
       var counterText = mAlertCounter.format("%d");
       if (mWeatherData.alerts.size() > 1) {
-         counterText = counterText + " " + (mAlertIndex + 1).format("%d") + "/" + mWeatherData.alerts.size().format("%d");
+        counterText =
+          counterText + " " + (mAlertIndex + 1).format("%d") + "/" + mWeatherData.alerts.size().format("%d");
       }
       dc.drawText(
         dc.getWidth() / 2,

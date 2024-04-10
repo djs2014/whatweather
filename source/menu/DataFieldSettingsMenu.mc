@@ -14,7 +14,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
   hidden var _currentMenuItem as MenuItem?;
   // hidden var _view as DataFieldSettingsView;
 
-  function initialize() { // view as DataFieldSettingsView
+  function initialize() {
+    // view as DataFieldSettingsView
     Menu2InputDelegate.initialize();
     //_view = view;
   }
@@ -97,18 +98,28 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
       WatchUi.pushView(showMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
     } else if (id instanceof String && id.equals("extrainfo")) {
-      var extraMenu = new WatchUi.Menu2({ :title => "Extra" });
-      var mi = new WatchUi.MenuItem("Info large field", null, "showInfoLargeField", null);
+      var extraMenu = new WatchUi.Menu2({ :title => "Extra info" });
+      var mi = new WatchUi.MenuItem("One page field", null, "showInfoOneField", null);
       var value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
       mi.setSubLabel($.getShowInfoText(value));
       extraMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Info small field", null, "showInfoSmallField", null);
+      mi = new WatchUi.MenuItem("Large field", null, "showInfoLargeField", null);
+      value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
+      mi.setSubLabel($.getShowInfoText(value));
+      extraMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Wide field", null, "showInfoWideField", null);
       value = getStorageValue(mi.getId() as String, $._showInfoSmallField) as Number;
       mi.setSubLabel($.getShowInfoText(value));
       extraMenu.addItem(mi);
 
-      WatchUi.pushView(extraMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);      
+      mi = new WatchUi.MenuItem("Small field", null, "showInfoSmallField", null);
+      value = getStorageValue(mi.getId() as String, $._showInfoSmallField) as Number;
+      mi.setSubLabel($.getShowInfoText(value));
+      extraMenu.addItem(mi);
+
+      WatchUi.pushView(extraMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
     } else if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
@@ -185,9 +196,9 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   hidden var _item as MenuItem?;
   hidden var _currentPrompt as String = "";
   hidden var _debug as Boolean = false;
-  
-  function initialize(){
-    Menu2InputDelegate.initialize();    
+
+  function initialize() {
+    Menu2InputDelegate.initialize();
   }
 
   function onSelect(item as MenuItem) as Void {
@@ -201,7 +212,8 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
-    } else if (id instanceof String && id.equals("weatherDataSource")) {
+    }
+    if (id instanceof String && id.equals("weatherDataSource")) {
       var sp = new selectionMenuPicker("Weather source", id as String);
       for (var i = 0; i < 4; i++) {
         sp.add($.getWeatherDataSourceText(i as WeatherSource), null, i);
@@ -209,7 +221,8 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
-    } else if (id instanceof String && id.equals("showWind")) {
+    }
+    if (id instanceof String && id.equals("showWind")) {
       var sp = new selectionMenuPicker("Wind display", id as String);
       for (var i = 0; i < 4; i++) {
         sp.add($.getShowWindText(i), null, i);
@@ -217,7 +230,17 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
-    } else if (id instanceof String && id.equals("showInfoLargeField")) {
+    }
+    if (id instanceof String && id.equals("showInfoOneField")) {
+      var sp = new selectionMenuPicker("One page field", id as String);
+      for (var i = 0; i <= 5; i++) {
+        sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
+    }
+    if (id instanceof String && id.equals("showInfoLargeField")) {
       var sp = new selectionMenuPicker("Large field", id as String);
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
@@ -225,7 +248,17 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
-    } else if (id instanceof String && id.equals("showInfoSmallField")) {
+    }
+    if (id instanceof String && id.equals("showInfoWideField")) {
+      var sp = new selectionMenuPicker("Wide field", id as String);
+      for (var i = 0; i <= 5; i++) {
+        sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
+    }
+    if (id instanceof String && id.equals("showInfoSmallField")) {
       var sp = new selectionMenuPicker("Small field", id as String);
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
@@ -233,14 +266,15 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();
       return;
-    } else if (id instanceof String && item instanceof ToggleMenuItem) {
+    }
+    if (id instanceof String && item instanceof ToggleMenuItem) {
       Storage.setValue(id as String, item.isEnabled());
       return;
     }
 
     // @@ TODO cleanup and refactor
     _currentPrompt = item.getLabel();
-    var numericOptions = parseLabelToOptions(_currentPrompt);
+    var numericOptions = $.parseLabelToOptions(_currentPrompt);
 
     var currentValue = $.getStorageValue(id as String, 0) as Numeric;
     if (numericOptions.isFloat) {

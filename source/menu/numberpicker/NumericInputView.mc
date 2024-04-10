@@ -43,7 +43,7 @@ class NumericInputView extends WatchUi.View {
     _prompt = prompt;
     _currentValue = value;
 
-    _options = parseLabelToOptions(_prompt);
+    _options = $.parseLabelToOptions(_prompt);
     processOptions(_options);
 
     _editData = buildEditedValue(_currentValue, _valueFormat);
@@ -106,43 +106,6 @@ class NumericInputView extends WatchUi.View {
       }
     }
     return _currentValue;
-  }
-
-  // |1~100 or |1.0~99.3 or |-1~30
-  function parseLabelToOptions(label as String?) as NumericOptions {
-    var options = new NumericOptions();
-    if (label == null) {
-      return options;
-    }
-    var pos = label.find("|");
-    if (pos == null) {
-      return options;
-    }
-    var minmax = label.substring(pos + 1, null);
-    if (minmax == null) {
-      return options;
-    }
-    options.useMinus = minmax.find("-") != null;
-    pos = minmax.find("~");
-    if (pos == null) {
-      options.minValue = minmax.toNumber() as Number;
-    } else {
-      var min = minmax.substring(null, pos);
-      var max = minmax.substring(pos + 1, null);
-      if (min == null || max == null) {
-        return options;
-      }
-      if (min.find(".") != null || max.find(",") != null) {
-        options.isFloat = true;
-        options.minValue = min.toFloat() as Float;
-        options.maxValue = max.toFloat() as Float;
-      } else {
-        options.minValue = min.toNumber() as Number;
-        options.maxValue = max.toNumber() as Number;
-      }
-    }
-
-    return options;
   }
 
   function setOnAccept(objInstance as Object, method as Symbol) as Void {
@@ -563,7 +526,19 @@ class NumericInputView extends WatchUi.View {
   }
 }
 
-// label contains |min-max  or float |1.0-45.0
+// Implement min/max + display range (min-max) + check
+class NumericOptions {
+  public var minValue as Number or Float = 0;
+  public var maxValue as Number or Float = 0;
+  public var isFloat as Boolean = false;
+  public var useMinus as Boolean = false;
+  // flags @@TODO
+  // public var negative as Boolean = false;
+
+  public function initialize() {}
+}
+
+// |1~100 or |1.0~99.3 or |-1~30
 function parseLabelToOptions(label as String?) as NumericOptions {
   var options = new NumericOptions();
   if (label == null) {
@@ -577,7 +552,8 @@ function parseLabelToOptions(label as String?) as NumericOptions {
   if (minmax == null) {
     return options;
   }
-  pos = minmax.find("-");
+  options.useMinus = minmax.find("-") != null;
+  pos = minmax.find("~");
   if (pos == null) {
     options.minValue = minmax.toNumber() as Number;
   } else {
@@ -597,15 +573,4 @@ function parseLabelToOptions(label as String?) as NumericOptions {
   }
 
   return options;
-}
-// Implement min/max + display range (min-max) + check
-class NumericOptions {
-  public var minValue as Number or Float = 0;
-  public var maxValue as Number or Float = 0;
-  public var isFloat as Boolean = false;
-  public var useMinus as Boolean = false;
-  // flags @@TODO
-  // public var negative as Boolean = false;
-
-  public function initialize() {}
 }

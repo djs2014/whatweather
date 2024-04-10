@@ -274,7 +274,7 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Number?, dewpoint as Lang.Float?) as Void {
+  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Numeric?, dewpoint as Lang.Float?) as Void {
     var comfort = getComfort();
 
     var color = dewpointToColor(dewpoint);
@@ -338,14 +338,17 @@ class RenderWeather {
     dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawWindInfoFirstColumn(dc as Dc, windPoints as Array, xOffset as Number, track as Number?) as Void {
+  function drawWindInfoFirstColumn(dc as Dc, windPoints as Array, xOffset as Number, showLeft as Boolean,  track as Number?) as Void {
     var max = windPoints.size();
     if (max == 0) {
       return;
     }
     var wp = windPoints[0] as WindPoint;
     var radius = 10;
-    var x = wp.x + ds.columnWidth / 2 - xOffset;
+    var x = xOffset;
+    if (showLeft) {
+      x = wp.x + ds.columnWidth / 2 - xOffset;
+    }
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
@@ -944,6 +947,7 @@ class RenderWeather {
         }
       }
       radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
+      //radius = $.max(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
     }
 
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
@@ -960,10 +964,12 @@ class RenderWeather {
       }
       var pA, pB, pC, pD;
       if (bigArrow) {
-        pA = pointOnCircle(x, y, radius * 2.4, windBearingInDegrees - 35 - 180);
-        pB = pointOnCircle(x, y, radius * 3.0, windBearingInDegrees);
-        pC = pointOnCircle(x, y, radius * 2.4, windBearingInDegrees + 35 - 180);
-        pD = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees - 180);
+        var factor = (windSpeedMs / 8.0) * 2.0; // 4 BF @@ only when showing in center of field
+        // @@ max height / width based on screen
+        pA = pointOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees - 35 - 180);
+        pB = pointOnCircle(x, y, factor + radius * 3.0, windBearingInDegrees);
+        pC = pointOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
+        pD = pointOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
       } else {
         pA = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees - 35 - 180);
         pB = pointOnCircle(x, y, radius * 1.9, windBearingInDegrees);

@@ -143,15 +143,15 @@ function getShowInfoText(value as Number) as String {
     case SHOW_INFO_NOTHING:
       return "Nothing";
     case SHOW_INFO_TIME_Of_DAY:
-      return "Time";
-    case SHOW_INFO_TEMPERATURE:
-      return "Temperature";
+      return "Time";    
     case SHOW_INFO_AMBIENT_PRESSURE:
       return "Pressure";
     case SHOW_INFO_SEALEVEL_PRESSURE:
       return "Pressure at sea";
     case SHOW_INFO_DISTANCE:
       return "Distance";
+    case SHOW_INFO_RELATIVE_WIND:
+      return "Relative wind";
 
     default:
       return "--";

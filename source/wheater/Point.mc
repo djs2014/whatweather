@@ -1,6 +1,6 @@
 import Toybox.Lang;
 
-typedef Coordinate as Lang.Array<Lang.Number>;
+typedef Coordinate as [Lang.Numeric, Lang.Numeric];
 typedef Polygone as Lang.Array<Coordinate>;
 
 class Point {

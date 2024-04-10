@@ -36,7 +36,7 @@ class WeatherCurrent {
   var windBearing as Lang.Number? = null; // degrees
   var windSpeed as Lang.Float? = null; // m/sec
   var relativeHumidity as Lang.Number? = null; // %
-  var temperature as Lang.Number? = null; // celcius
+  var temperature as Lang.Numeric? = null; // celcius
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
   var dewPoint as Lang.Float? = null; // celcius
@@ -107,7 +107,7 @@ class WeatherHourly {
   var windBearing as Lang.Number? = null;
   var windSpeed as Lang.Float? = null;
   var relativeHumidity as Lang.Number? = null;
-  var temperature as Lang.Number? = null;
+  var temperature as Lang.Numeric? = null;
   var uvi as Lang.Float? = null;
   var pressure as Lang.Number? = null; // hPa
   var dewPoint as Lang.Float? = null; // celcius @@ float or decimal -> check memory

@@ -3,7 +3,6 @@ import Toybox.Lang;
 import Toybox.Time;
 import Toybox.System;
 import Toybox.Background;
-import Toybox.Sensor;
 import Toybox.Application.Storage;
 import Toybox.Communications;
 
@@ -17,11 +16,6 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
     public function onTemporalEvent() as Void {
         System.println("BackgroundServiceDelegate onTemporalEvent");
-
-        var sensorInfo = Sensor.getInfo();
-        if (sensorInfo has :temperature && sensorInfo.temperature != null) {
-            Storage.setValue("Temperature", sensorInfo.temperature);            
-        }
        
         System.println("BackgroundServiceDelegate handleOWM");
         var error = handleOWM();

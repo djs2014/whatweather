@@ -9,10 +9,10 @@ const SHOW_WIND_BEAUFORT = 3;
 
 const SHOW_INFO_NOTHING = 0;
 const SHOW_INFO_TIME_Of_DAY = 1;
-const SHOW_INFO_TEMPERATURE = 2;
-const SHOW_INFO_AMBIENT_PRESSURE = 3;
-const SHOW_INFO_SEALEVEL_PRESSURE = 4;
-const SHOW_INFO_DISTANCE = 5;
+const SHOW_INFO_AMBIENT_PRESSURE = 2;
+const SHOW_INFO_SEALEVEL_PRESSURE = 3;
+const SHOW_INFO_DISTANCE = 4;
+const SHOW_INFO_RELATIVE_WIND = 5;
 
 const COLOR_CLOUDS = 0xCCD1D1; 
 const COLOR_CLOUDS_NIGHT = 0xBFC9CA; 
@@ -27,15 +27,17 @@ var _maxHoursForecast as Lang.Number = 8;
 var _showMinuteForecast as Lang.Boolean = true;
 var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _showCurrentWind as Lang.Boolean = true;
-var _showRelativeWind as Lang.Boolean = true;
+var _showRelativeWindFirst as Lang.Boolean = true;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 var _showClouds as Lang.Boolean = true;
 
 var _showUVIndex as Lang.Boolean = true;
 var _maxUVIndex as Lang.Number = 20;
 
-var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
+var _showInfoOneField as Lang.Number = SHOW_INFO_NOTHING;
 var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
+var _showInfoWideField as Lang.Number = SHOW_INFO_NOTHING;
+var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 
 var _alertLevelWindSpeed as Lang.Number = 5;
 var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;
