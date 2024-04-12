@@ -1,26 +1,16 @@
-remove - temperature settings -- too slow
-- check more code to remove/cleanup
-test: start bg after x seconds or on first display
-show time perc > x + rain > 0
-show wind icon size related to wind speed: ex radius + speed / factor
- - radius -> param font -> calc size based on font
-refactor
-ow only -> not load garmin data
-show alert
-if not large field -> bar with alert (beep) for x seconds
-large field -> show alert for x seconds
-swipe -> not large field is handled true
+reset OWM alert cache -> to display again
 
-
-  - relative wind
-  - big array only
+update documentation: 
+- menu
+- owm alerts
+    large field -> show alert for x seconds
+    swipe -> not large field is handled true
+- relative wind
   - rel wind+ -> effective wind speed?
-- less memory?
-- less computation
-- relative wind direction on small field
+
 - point object -> kan weg?
 - profile 
-- 
+ 
 - show mem on screen? if debug -> crash
 - on device settings
   - Proxy
@@ -48,20 +38,12 @@ swipe -> not large field is handled true
     - x showComfortZone comfort zone
     - x showWeatherCondition weather condition
     - 
-    // - pressure sealevel
-    
-    - 
-    - @@todo showWeatherAlerts
 
   - Extra information
-    - showInfoLargeField Large field (enum)
-    - showInfoSmallField Small field (enum)
-    - showInfoWideField Small field (enum)
-      - show wind
+    - x showInfoLargeField Large field (enum)
+    - x showInfoSmallField Small field (enum)
+    - x showInfoWideField Small field (enum)
       - show wind relative
-    - 
-    - Tiny field (enum)
-      - - winddirection relative (big image)
   - Alert levels
     - x alertLevelPrecipitationChance Precipitation chance
       - x add min/max to picker
@@ -89,38 +71,9 @@ swipe -> not large field is handled true
       - comfort -> high humidity / dew point
 
 
--------------------------
-- onCompute - 
-- onLayout - calc dimensions
-- onBackgroundData - new / merge data check weather alerts 
-- onPositionChanged - do relevant stuff related to position
-- onMinutePassed 
-- show time in bars when paused
-
 - comfort: kleur groen is warmer maar is toch kouder 
-  - 10 douw + 23 graden1025  en 19 graden 1025
+  - 10 douw + 23 graden 1025  en 19 graden 1025
 - toast message ??
-
-- toast for alerts + beep
-- first call, ignore gps and use last location
-  - make it a on device setting
-- show if there is actual rain (per hour)
-  - striped bar in blue bar?
-  - test exceed mem proxy
-- minutely
--> when rain first hour.
--> shift the mm graphic per minute
-- auto adjust #bars with available hourly forecast
-- 
-
-- show owm weather alert
-  - enable 
-    - activity profiles - select profile - alerts - add connect iq - what weather
-    - NB. what weather datafield should be in this profile
-
-????
-alerts:
-minutely text color night mode
 
 - current hour == is for whole day ? default off..
   
@@ -145,35 +98,8 @@ ams 52.188950, 4.549666
 lasvegas 36.16373271614203, -115.1262537886411
 
 
-# Todo
-	- Refactor the code, etc.	
 	- BUG - one column + weather alarm -> continue beep
-	- At initial start -> position is 0 (calc distance is then 5840km)? 			
 	
 
-vs code end of line --> LF
-git -> CRLF settings
-https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf
-
-  – git config --system core.autocrlf false            # per-system solution
-  – git config --global core.autocrlf false            # per-user solution
-  – git config --local core.autocrlf false              # per-project solution
 
 
-
-// Removed:
-  // function checkFeatures() as Void {
-  //   mCreateColors = Graphics has :createColor;
-  //   try {
-  //     mUseSetFillStroke = Graphics.Dc has :setStroke;
-  //     if (mUseSetFillStroke) {
-  //       mUseSetFillStroke = Graphics.Dc has :setFill;
-  //     }
-  //   } catch (ex) {
-  //     ex.printStackTrace();
-  //   }
-  // }
-  background
-  // !! Do not convert responseData to string (println etc..) --> gives out of memory
-                //System.println(responseData);   --> gives out of memory
-                // var data = responseData as String;  --> gives out of memory

@@ -131,6 +131,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageFloatAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
+      mi = new WatchUi.MenuItem("MM rain / h |0.0~100.0", null, "alertLevelRainMMHour", null);
+      mi.setSubLabel($.getStorageFloatAsString(mi.getId() as String));
+      alertsMenu.addItem(mi);
+
       mi = new WatchUi.MenuItem("UV index|0~20", null, "alertLevelUVi", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);

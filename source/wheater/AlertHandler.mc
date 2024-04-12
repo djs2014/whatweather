@@ -5,12 +5,14 @@ class AlertHandler {
   hidden var alertUvi as Lang.Number = 0;
   hidden var alertPrecipitationChance as Lang.Number = 0;
   hidden var alertRainMMfirstHour as Lang.Float = 0.0f;
+  hidden var alertRainMMHour as Lang.Float = 0.0f;
   hidden var alertWindSpeed as Lang.Number = 0;
   hidden var alertDewpoint as Lang.Number = 0;
 
   var maxUvi as Lang.Float = 0.0;
   var maxPrecipitationChance as Lang.Number = 0;
   var maxRainMMfirstHour as Lang.Number = 0;
+  var maxRainMMHour as Lang.Number = 0;
   var maxWindSpeed as Lang.Float = 0.0;
   var maxDewpoint as Lang.Float = 0.0;
 
@@ -23,6 +25,7 @@ class AlertHandler {
   hidden var statusUvi as Lang.Number = NEUTRAL;
   hidden var statusPrecipitationChance as Lang.Number = NEUTRAL;
   hidden var statusRainMMfirstHour as Lang.Number = NEUTRAL;
+  hidden var statusRainMMHour as Lang.Number = NEUTRAL;
   hidden var statusCondition as Lang.Number = NEUTRAL;
   hidden var statusWindSpeed as Lang.Number = NEUTRAL;
   hidden var statusDewpoint as Lang.Number = NEUTRAL;
@@ -30,6 +33,7 @@ class AlertHandler {
   hidden var allClearUvi as Lang.Boolean = true;
   hidden var allClearPrecipitationChance as Lang.Boolean = true;
   hidden var allClearRainMMfirstHour as Lang.Boolean = true;
+  hidden var allClearRainMMHour as Lang.Boolean = true;
   hidden var allClearCondition as Lang.Boolean = true;
   hidden var allClearWindSpeed as Lang.Boolean = true;
   hidden var allClearDewpoint as Lang.Boolean = true;
@@ -42,6 +46,9 @@ class AlertHandler {
   }
   function setAlertRainMMfirstHour(value as Lang.Float) as Void {
     alertRainMMfirstHour = value;
+  }
+  function setAlertRainMMHour(value as Lang.Float) as Void {
+    alertRainMMHour = value;
   }
   //! is in beaufort
   function setAlertWindSpeed(value as Lang.Number) as Void {
@@ -75,6 +82,7 @@ class AlertHandler {
       statusUvi == TRIGGERED ||
       statusPrecipitationChance == TRIGGERED ||
       statusRainMMfirstHour == TRIGGERED ||
+      statusRainMMHour == TRIGGERED ||
       statusCondition == TRIGGERED ||
       statusWindSpeed == TRIGGERED ||
       statusDewpoint == TRIGGERED
@@ -86,6 +94,7 @@ class AlertHandler {
       statusUvi == HANDLED ||
       statusPrecipitationChance == HANDLED ||
       statusRainMMfirstHour == HANDLED ||
+      statusRainMMHour == HANDLED ||
       statusCondition == HANDLED ||
       statusWindSpeed == HANDLED ||
       statusDewpoint == HANDLED
@@ -101,6 +110,9 @@ class AlertHandler {
       info.add("R%");
     }
     if (statusRainMMfirstHour == HANDLED) {
+      info.add("Rf");
+    }
+    if (statusRainMMHour == HANDLED) {
       info.add("R");
     }
     if (statusCondition == HANDLED) {
@@ -124,6 +136,9 @@ class AlertHandler {
       info = info + " R%" + maxPrecipitationChance.format("%d");
     }
     if (statusRainMMfirstHour == HANDLED) {
+      info = info + " Rf" + maxRainMMfirstHour.format("%d");
+    }
+    if (statusRainMMHour == HANDLED) {
       info = info + " R" + maxRainMMfirstHour.format("%d");
     }
     if (statusCondition == HANDLED) {
@@ -149,6 +164,9 @@ class AlertHandler {
     if (statusRainMMfirstHour == TRIGGERED) {
       statusRainMMfirstHour = HANDLED;      
     }
+    if (statusRainMMHour == TRIGGERED) {
+      statusRainMMHour = HANDLED;      
+    }
     if (statusCondition == TRIGGERED) {
       statusCondition = HANDLED;      
     }
@@ -164,13 +182,15 @@ class AlertHandler {
     statusPrecipitationChance = NEUTRAL;
     statusUvi = NEUTRAL;
     statusRainMMfirstHour = NEUTRAL;
+    statusRainMMHour = NEUTRAL;
+    statusRainMMHour = NEUTRAL;
     statusCondition = NEUTRAL;
     statusWindSpeed = NEUTRAL;
     statusDewpoint = NEUTRAL;
 
     maxUvi = 0.0;
     maxPrecipitationChance = 0;
-    maxRainMMfirstHour = 0;
+    maxRainMMHour = 0;
     maxWindSpeed = 0.0;
     maxDewpoint = 0.0;
   }
@@ -179,6 +199,7 @@ class AlertHandler {
     allClearUvi = true;
     allClearPrecipitationChance = true;
     allClearRainMMfirstHour = true;
+    allClearRainMMHour = true;
     allClearCondition = true;
     allClearWindSpeed = true;
     allClearDewpoint = true;
@@ -194,6 +215,9 @@ class AlertHandler {
     }
     if (allClearRainMMfirstHour) {
       statusRainMMfirstHour = NEUTRAL;
+    }
+    if (allClearRainMMHour) {
+      statusRainMMHour = NEUTRAL;
     }
     if (allClearCondition) {
       statusCondition = NEUTRAL;
@@ -251,6 +275,21 @@ class AlertHandler {
     }
     if (mm >= alertRainMMfirstHour) {
       allClearRainMMfirstHour = false;
+    }
+  }
+
+  function processRainMMHour(mm as Lang.Float?) as Void {
+    if (alertRainMMHour <= 0 || mm == null) {
+      return;
+    }
+
+    maxRainMMHour = $.max(maxRainMMHour, mm) as Number;
+    // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
+    if (statusRainMMHour == NEUTRAL && mm >= alertRainMMHour) {
+      statusRainMMfirstHour = TRIGGERED;
+    }
+    if (mm >= alertRainMMHour) {
+      allClearRainMMHour = false;
     }
   }
 

@@ -72,7 +72,8 @@ class WhatWeatherApp extends Application.AppBase {
 
         Storage.setValue("alertLevelPrecipitationChance", 70);
         Storage.setValue("alertLevelUVi", 6);
-        Storage.setValue("alertLevelRainMMfirstHour", 0.3f);
+        Storage.setValue("alertLevelRainMMfirstHour", 0.2f);
+        Storage.setValue("alertLevelRainMMHour", 0.2f);
         Storage.setValue("alertLevelWindSpeed", 5);
         Storage.setValue("alertLevelDewpoint", 19);
 
@@ -114,7 +115,8 @@ class WhatWeatherApp extends Application.AppBase {
 
       $._alertLevelPrecipitationChance = $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
       $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
-      $._alertLevelRainMMfirstHour = $.getStorageValue("alertLevelRainMMfirstHour", 0.3f) as Float;
+      $._alertLevelRainMMfirstHour = $.getStorageValue("alertLevelRainMMfirstHour", 0.2f) as Float;
+      $._alertLevelRainMMHour = $.getStorageValue("alertLevelRainMMHour", 0.2f) as Float;
       $._alertLevelWindSpeed = $.getStorageValue("alertLevelWindSpeed", 5) as Number;
       $._alertLevelDewpoint = $.getStorageValue("alertLevelDewpoint", 19) as Number;
 
@@ -159,6 +161,7 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
       alertHandler.setAlertUVi($._alertLevelUVi);
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
+      alertHandler.setAlertRainMMHour($._alertLevelRainMMHour);
       alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
       alertHandler.setAlertDewpoint($._alertLevelDewpoint);
       alertHandler.resetStatus();

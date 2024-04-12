@@ -1118,6 +1118,7 @@ class WhatWeatherView extends WatchUi.DataField {
         mAlertHandler.processUvi(current.uvi);
         mAlertHandler.processWindSpeed(current.windSpeed);
         mAlertHandler.processDewpoint(current.dewPoint);
+        mAlertHandler.processRainMMfirstHour(current.rain1hr);
       } // showCurrentForecast
 
       var maxSegment = hourlyForecast.size();
@@ -1137,6 +1138,7 @@ class WhatWeatherView extends WatchUi.DataField {
           mAlertHandler.processUvi(forecast.uvi);
           mAlertHandler.processWindSpeed(forecast.windSpeed);
           mAlertHandler.processDewpoint(forecast.dewPoint);
+          mAlertHandler.processRainMMHour(forecast.rain1hr);
         }
       }
     } catch (ex) {

@@ -54,7 +54,8 @@ var _minPressure as Lang.Number = 870;
 
 
 var _alertLevelUVi as Lang.Number = 6;
-var _alertLevelRainMMfirstHour as Lang.Float = 0.3f;
+var _alertLevelRainMMfirstHour as Lang.Float = 0.2f;
+var _alertLevelRainMMHour as Lang.Float = 0.2f;
 var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsOWMFirst;
 
