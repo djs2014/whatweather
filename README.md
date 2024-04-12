@@ -145,6 +145,7 @@ https://en.wikipedia.org/wiki/Dew_point
 ## OWM alerts
 
 When using the openweathermap API you also get the alerts from OWM.
+
 ![OWM alert message](/other/images/alerts.png "Display OWM alert")
 
 When using the datafield as a one page data field, it will display the whole alert. This will stay for 30 seconds.
