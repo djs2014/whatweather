@@ -15,6 +15,7 @@ A small field has a different layout than the `large` field.
 Default weather source is garmin. 
 With an Open Weather Map API key you can display OWM data (Open weather map)[https://openweathermap.org/]. This app uses the `One Call API 3.0` from OWM.
 
+*When the datafield shows a boring image, the weather will be fine.*
 
 # Settings
 
