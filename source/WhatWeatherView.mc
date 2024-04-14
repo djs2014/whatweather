@@ -108,7 +108,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function onLayout(dc as Dc) as Void {
     calculateLayout(dc);
-    calculateWeatherAlerts(dc);
+    calculateOWMAlerts(dc);
   }
 
   function compute(info as Activity.Info) as Void {
@@ -118,6 +118,12 @@ class WhatWeatherView extends WatchUi.DataField {
       if ($.gSettingsChanged) {
         mTriggerCheckWeatherAlerts = true;
         $.gSettingsChanged = false;
+
+        var resetAlerts = Storage.getValue("resetAlerts") ? true : false;
+        if (resetAlerts) {
+          Storage.setValue("resetAlerts", false);
+          resetOWMAlerts();
+        }
       }
 
       mBearing = getBearing(info);
@@ -211,8 +217,8 @@ class WhatWeatherView extends WatchUi.DataField {
       showBgInfo(dc);
 
       // TESt
-      calculateWeatherAlerts(dc);
-      handleWeatherAlerts(dc);
+      calculateOWMAlerts(dc);
+      handleOWMAlerts(dc);
     } catch (ex) {
       ex.printStackTrace();
     }
@@ -561,7 +567,7 @@ class WhatWeatherView extends WatchUi.DataField {
             dewPoints.add(new WeatherPoint(x + mDs.columnWidth / 2, current.getDewPoint(), mHideTemperatureLowerThan));
           }
           if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
-            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed));
+            windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
 
           if (dashesUnderColumnHeight > 0) {
@@ -715,7 +721,7 @@ class WhatWeatherView extends WatchUi.DataField {
               );
             }
             if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
-              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed));
+              windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
             }
 
             if (dashesUnderColumnHeight > 0) {
@@ -832,6 +838,7 @@ class WhatWeatherView extends WatchUi.DataField {
         showInfoRelativeWind = ci.nr == SHOW_INFO_RELATIVE_WIND;
       }
 
+      // @@ draw windgust test
       if (showInfoRelativeWind) {
         render.drawWindInfoFirstColumn(dc, windPoints, mDs.width / 2, false, wpBearing);
         if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
@@ -1014,7 +1021,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
         info = nowHour.format("%02d") + ":" + nowMin.format("%02d");
         break;
-    
+
       case SHOW_INFO_AMBIENT_PRESSURE:
         var ap = getActivityValue(a_info, :ambientPressure, 0.0f) as Float;
         if (ap > 0) {
@@ -1117,6 +1124,7 @@ class WhatWeatherView extends WatchUi.DataField {
         mAlertHandler.processWeather(colorOther);
         mAlertHandler.processUvi(current.uvi);
         mAlertHandler.processWindSpeed(current.windSpeed);
+        mAlertHandler.processWindGust(current.windSpeed, current.windGust);
         mAlertHandler.processDewpoint(current.dewPoint);
         mAlertHandler.processRainMMfirstHour(current.rain1hr);
       } // showCurrentForecast
@@ -1137,17 +1145,35 @@ class WhatWeatherView extends WatchUi.DataField {
           mAlertHandler.processWeather(colorOther.toNumber());
           mAlertHandler.processUvi(forecast.uvi);
           mAlertHandler.processWindSpeed(forecast.windSpeed);
+          mAlertHandler.processWindGust(forecast.windSpeed, forecast.windGust);
           mAlertHandler.processDewpoint(forecast.dewPoint);
           mAlertHandler.processRainMMHour(forecast.rain1hr);
         }
       }
+
+      var hasOWMAlert = mWeatherData.alerts.size() > 0; 
+      mAlertHandler.processOWMAlert(hasOWMAlert);
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
-  // rename owm alerts
-  function calculateWeatherAlerts(dc as Dc) as Void {
+  function resetOWMAlerts() as Void {
+    mAlertDisplayedOnOtherField = 0;
+    mAlertDisplayedOnOtherField = 0;
+    mAlertCounter = 30;
+    mAlertIndex = -1;
+    mAlertDisplayed = [];
+    if (mWeatherData.alerts.size() == 0) {
+      return;
+    }
+    for (var i = 0; i < mWeatherData.alerts.size(); i++) {
+      var alert = mWeatherData.alerts[i];
+      alert.handled = false;
+    }
+  }
+  
+  function calculateOWMAlerts(dc as Dc) as Void {
     if (!mWeatherData.valid()) {
       return;
     }
@@ -1174,7 +1200,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mAlertIndex = -1;
   }
 
-  function handleWeatherAlerts(dc as Dc) as Void {
+  function handleOWMAlerts(dc as Dc) as Void {
     if (!mWeatherData.valid()) {
       return;
     }

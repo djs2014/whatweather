@@ -143,6 +143,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
+      mi = new WatchUi.MenuItem("Wind gust", null, "alertLevelWindGust", null);
+      var value = getStorageValue(mi.getId() as String, 2) as Number;
+      mi.setSubLabel($.getGustLevelText(value));
+      alertsMenu.addItem(mi);
+
       mi = new WatchUi.MenuItem("Dewpoint (C) |0~50", null, "alertLevelDewpoint", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
@@ -266,6 +271,15 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       var sp = new selectionMenuPicker("Small field", id as String);
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
+    }
+    if (id instanceof String && id.equals("alertLevelWindGust")) {
+      var sp = new selectionMenuPicker("Wind gust level", id as String);
+      for (var i = 0; i <= 3; i++) {
+        sp.add($.getGustLevelText(i), null, i);
       }
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();

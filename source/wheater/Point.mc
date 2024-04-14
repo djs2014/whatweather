@@ -1,7 +1,7 @@
 import Toybox.Lang;
 import Toybox.Graphics;
 
-typedef Polygone as Lang.Array<Point2D>;
+typedef Polygon as Lang.Array<Point2D>;
 
 class Point {
   var x as Lang.Number = 0;

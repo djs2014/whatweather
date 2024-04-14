@@ -35,6 +35,7 @@ class WeatherCurrent {
   var conditionOther as Lang.Number = 0;
   var windBearing as Lang.Number? = null; // degrees
   var windSpeed as Lang.Float? = null; // m/sec
+  var windGust as Lang.Float? = null; // m/sec
   var relativeHumidity as Lang.Number? = null; // %
   var temperature as Lang.Numeric? = null; // celcius
   var uvi as Lang.Float? = null;
@@ -74,6 +75,8 @@ class WeatherCurrent {
       windBearing +
       "]windSpeed[" +
       windSpeed +
+      "]windGust[" +
+      windGust +
       "]temperature[" +
       temperature +
       "]humidity[" +
@@ -106,6 +109,7 @@ class WeatherHourly {
   var conditionOther as Lang.Number = 0;
   var windBearing as Lang.Number? = null;
   var windSpeed as Lang.Float? = null;
+  var windGust as Lang.Float? = null;
   var relativeHumidity as Lang.Number? = null;
   var temperature as Lang.Numeric? = null;
   var uvi as Lang.Float? = null;
@@ -137,6 +141,8 @@ class WeatherHourly {
       windBearing +
       "]windSpeed[" +
       windSpeed +
+      "]windGust[" +
+      windGust +
       "]temperature[" +
       temperature +
       "]humidity[" +

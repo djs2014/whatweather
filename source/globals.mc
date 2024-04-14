@@ -39,7 +39,8 @@ var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
 var _showInfoWideField as Lang.Number = SHOW_INFO_NOTHING;
 var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 
-var _alertLevelWindSpeed as Lang.Number = 5;
+var _alertLevelWindSpeed as Lang.Number = 5;    
+var _alertLevelWindGust as Lang.Number = 2;
 var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;
 var _showTemperature as Lang.Boolean = true;
 var _showRelativeHumidity as Lang.Boolean = true;

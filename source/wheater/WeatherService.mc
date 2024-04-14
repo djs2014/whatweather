@@ -57,6 +57,7 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
     current.condition = forecast.condition;
     current.windBearing = forecast.windBearing;
     current.windSpeed = forecast.windSpeed;
+    current.windGust = forecast.windGust;
     current.relativeHumidity = forecast.relativeHumidity;
     current.temperature = forecast.temperature;
     current.uvi = forecast.uvi;
@@ -116,6 +117,7 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       cc.dewPoint = ($.getNumericValue(carr[10], 0.0) as Float).toFloat();
       cc.rain1hr = ($.getNumericValue(carr[11], 0.0) as Float).toFloat();
       cc.snow1hr = ($.getNumericValue(carr[12], 0.0) as Float).toFloat();
+      cc.windGust = ($.getNumericValue(carr[13], 0) as Float).toFloat();
 
       System.println("bgData Current: " + cc.info());
     }
@@ -145,6 +147,7 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
         hf.dewPoint = ($.getNumericValue(arr[10], 0.0) as Float).toFloat();
         hf.rain1hr = ($.getNumericValue(arr[11], 0.0) as Float).toFloat();
         hf.snow1hr = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
+        hf.windGust = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
 
         System.println("bgData Hourly: " + hf.info());
         hh.add(hf);
@@ -236,6 +239,9 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
         if (wData.current.snow1hr == null) {
           wData.current.rain1hr = bgData.current.snow1hr;
         }
+        if (wData.current.windGust == null) {
+          wData.current.windGust = bgData.current.windGust;
+        }
 
         wData.minutely = bgData.minutely;
         wData.alerts = bgData.alerts;
@@ -275,6 +281,9 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
             }
             if (wData.hourly[h].snow1hr == null) {
               wData.hourly[h].snow1hr = bgData.hourly[h].snow1hr;
+            }
+            if (wData.hourly[h].windGust == null) {
+              wData.hourly[h].windGust = bgData.hourly[h].windGust;
             }
             break;
           case wsOWMFirst:

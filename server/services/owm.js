@@ -77,11 +77,11 @@ let getOWMweatherHourly = function (hourly, maxHours, compact, def) {
         h.dt = getPropValue(item, "dt", 0);
         h.clouds = getPropValue(item, "clouds", 0);
         h.pop = getPropValue(item, "pop", 0);
-        h.cond = garmin.OWMtoGarminWeather(getOWMweather(item, 0), getOWMweatherId(item, ""));
+        h.cond = garmin.OWMtoGarminWeather(getOWMweather(item, ""), getOWMweatherId(item, 0));
         h.uvi = fixedFloat(getPropValue(item, "uvi", 0));
         h.w_s = fixedFloat(getPropValue(item, "wind_speed", 0));
         h.w_deg = getPropValue(item, "wind_deg", 0);
-        // h.w_gust = fixedFloat(getPropValue(item, "wind_gust", 0));
+        
         h.temp = fixedFloat(getPropValue(item, "temp", 0));
         h.press = getPropValue(item, "pressure", 0);
         h.humid = getPropValue(item, "humidity", 0);
@@ -90,7 +90,8 @@ let getOWMweatherHourly = function (hourly, maxHours, compact, def) {
         if (compact) {
             h.rain_1h = fixedFloat(getPathValue(item, ["rain", "1h"], 0));
             h.snow_1h = fixedFloat(getPathValue(item, ["snow", "1h"], 0));
-            hours.push([h.dt, h.clouds, h.pop, h.cond, h.uvi, h.w_s, h.w_deg, h.temp, h.press, h.humid, h.dew_p, h.rain_1h, h.snow_1h]);
+            h.w_gust = fixedFloat(getPropValue(item, "wind_gust", 0));
+            hours.push([h.dt, h.clouds, h.pop, h.cond, h.uvi, h.w_s, h.w_deg, h.temp, h.press, h.humid, h.dew_p, h.rain_1h, h.snow_1h, h.w_gust]);
         } else {
             hours.push(h);
         }
@@ -109,11 +110,11 @@ let getOWMWeatherCurrent = function (parsed, compact) {
         "dt": getPropValue(parsed.current, "dt", 0),
         "clouds": getPropValue(parsed.current, "clouds", 0),
         "pop": 0, // @@TODO from daily
-        "cond": garmin.OWMtoGarminWeather(getOWMweather(parsed.current, 0), getOWMweatherId(parsed.current, "")),
+        "cond": garmin.OWMtoGarminWeather(getOWMweather(parsed.current, ""), getOWMweatherId(parsed.current, 0)),
         "uvi": fixedFloat(getPropValue(parsed.current, "uvi", 0)),
         "w_s": fixedFloat(getPropValue(parsed.current, "wind_speed", 0)),
         "w_deg": getPropValue(parsed.current, "wind_deg", 0),
-        // "w_gust" : fixedFloat(getPropValue(parsed.current, "wind_gust", 0)),
+        // 
         "temp": fixedFloat(getPropValue(parsed.current, "temp", 0)),
         "press": getPropValue(parsed.current, "pressure", 0),
         "humid": getPropValue(parsed.current, "humidity", 0),
@@ -123,13 +124,13 @@ let getOWMWeatherCurrent = function (parsed, compact) {
 
         let rain_1h = fixedFloat(getPathValue(parsed.current, ["rain", "1h"], 0));
         let snow_1h = fixedFloat(getPathValue(parsed.current, ["snow", "1h"], 0));
-
+        let w_gust = fixedFloat(getPropValue(parsed.current, "wind_gust", 0));
         return {
             "lat": c.lat,
             "lon": c.lon,
             "dt": c.dt,
             "tz_offset": c.tz_offset,
-            "data": [c.dt, c.clouds, c.pop, c.cond, c.uvi, c.w_s, c.w_deg, c.temp, c.press, c.humid, c.dew_p, rain_1h, snow_1h]
+            "data": [c.dt, c.clouds, c.pop, c.cond, c.uvi, c.w_s, c.w_deg, c.temp, c.press, c.humid, c.dew_p, rain_1h, snow_1h, w_gust]
         }
     }
     return c;

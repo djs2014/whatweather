@@ -7,7 +7,6 @@ import Toybox.Time.Gregorian;
 
 class RenderWeather {
   hidden var ds as DisplaySettings = new DisplaySettings();
-  
 
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2 as Lang.Number = 0;
@@ -28,16 +27,16 @@ class RenderWeather {
   function initialize() {}
 
   function initValues(dc as Dc, ds as DisplaySettings) as Void {
-    self.ds = ds; 
+    self.ds = ds;
     topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
-    
+
     self.maxTemperature = $._maxTemperature;
     self.maxPressure = $._maxPressure;
     self.minPressure = $._minPressure;
     initComfortZones();
     Math.srand(System.getTimer());
   }
-  
+
   hidden function initComfortZones() as Void {
     var comfort = getComfort();
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
@@ -49,7 +48,7 @@ class RenderWeather {
   }
 
   function drawUvIndexGraph(
-    dc as Dc, 
+    dc as Dc,
     uvPoints as Lang.Array,
     maxUvIndex as Lang.Number,
     showDetails as Lang.Boolean,
@@ -101,7 +100,12 @@ class RenderWeather {
     dc.drawLine(x + r + rh, y - r - rh, x - r - rh, y + r + rh);
   }
 
-  function drawTemperatureGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawTemperatureGraph(
+    dc as Dc,
+    points as Lang.Array,
+    showDetails as Lang.Boolean,
+    blueBarPercentage as Array
+  ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
       var max = points.size();
@@ -148,7 +152,12 @@ class RenderWeather {
     }
   }
 
-  function drawDewpointGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawDewpointGraph(
+    dc as Dc,
+    points as Lang.Array,
+    showDetails as Lang.Boolean,
+    blueBarPercentage as Array
+  ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
       var max = points.size();
@@ -192,7 +201,12 @@ class RenderWeather {
     }
   }
 
-  function drawPressureGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawPressureGraph(
+    dc as Dc,
+    points as Lang.Array,
+    showDetails as Lang.Boolean,
+    blueBarPercentage as Array
+  ) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -226,14 +240,19 @@ class RenderWeather {
           [x, y + 5],
           [x + 3, y],
         ];
-        dc.fillPolygon(pts as Polygone);
+        dc.fillPolygon(pts as Polygon);
       }
     } catch (ex) {
       ex.printStackTrace();
     }
   }
 
-  function drawHumidityGraph(dc as Dc, points as Lang.Array, showDetails as Lang.Boolean, blueBarPercentage as Array) as Void {
+  function drawHumidityGraph(
+    dc as Dc,
+    points as Lang.Array,
+    showDetails as Lang.Boolean,
+    blueBarPercentage as Array
+  ) as Void {
     try {
       var max = points.size();
       for (var i = 0; i < max; i += 1) {
@@ -263,7 +282,7 @@ class RenderWeather {
           [x, y - 5],
           [x + r, y],
         ];
-        dc.fillPolygon(pts as Polygone);
+        dc.fillPolygon(pts as Polygon);
         dc.setPenWidth(r);
         dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
         dc.setPenWidth(1.0);
@@ -274,7 +293,12 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Numeric?, dewpoint as Lang.Float?) as Void {
+  function drawComfortColumn(
+    dc as Dc,
+    x as Lang.Number,
+    temperature as Lang.Numeric?,
+    dewpoint as Lang.Float?
+  ) as Void {
     var comfort = getComfort();
 
     var color = dewpointToColor(dewpoint);
@@ -338,7 +362,13 @@ class RenderWeather {
     dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawWindInfoFirstColumn(dc as Dc, windPoints as Array, xOffset as Number, showLeft as Boolean,  track as Number?) as Void {
+  function drawWindInfoFirstColumn(
+    dc as Dc,
+    windPoints as Array,
+    xOffset as Number,
+    showLeft as Boolean,
+    track as Number?
+  ) as Void {
     var max = windPoints.size();
     if (max == 0) {
       return;
@@ -352,9 +382,9 @@ class RenderWeather {
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(dc, x, y, radius, wp.bearing - (track as Number), wp.speed, true);
+      drawWind(dc, x, y, radius, wp.bearing - (track as Number), wp.speed, wp.gust, true);
     } else {
-      drawWind(dc, x, y, radius, wp.bearing, wp.speed, false);
+      drawWind(dc, x, y, radius, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
@@ -363,22 +393,29 @@ class RenderWeather {
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
       var wp = windPoints[idx] as WindPoint;
-      drawWindInfoInColumn(dc, wp.x, wp.bearing, wp.speed);
+      // drawWindInfoInColumn(dc, wp.x, wp.bearing, wp.speed, wp.gust);
+      // stack overflow in pointoncircle
+
+      var radius = 8;
+      var xW = wp.x + ds.columnWidth / 2;
+      var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
+      drawWind(dc, xW, yW, radius, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
-  function drawWindInfoInColumn(
-    dc as Dc, 
-    x as Lang.Number,
-    windBearingInDegrees as Lang.Number,
-    windSpeed as Lang.Float
-  ) as Void {
-    // if (ds.smallField) { return; }
-    var radius = 8;
-    var xW = x + ds.columnWidth / 2;
-    var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-    drawWind(dc, xW, yW, radius, windBearingInDegrees, windSpeed, false);
-  }
+  // function drawWindInfoInColumn(
+  //   dc as Dc,
+  //   x as Lang.Number,
+  //   windBearingInDegrees as Lang.Number,
+  //   windSpeed as Lang.Float,
+  //   windGust as Lang.Float
+  // ) as Void {
+  //   // if (ds.smallField) { return; }
+  //   var radius = 8;
+  //   var xW = x + ds.columnWidth / 2;
+  //   var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
+  //   drawWind(dc, xW, yW, radius, windBearingInDegrees, windSpeed, windGust, false);
+  // }
 
   function drawAlertMessages(dc as Dc, activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
@@ -413,7 +450,12 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherConditionText(dc as Dc, x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
+  function drawWeatherConditionText(
+    dc as Dc,
+    x as Lang.Number,
+    condition as Lang.Number,
+    yLine as Lang.Number
+  ) as Void {
     if (ds.oneField) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
@@ -438,15 +480,26 @@ class RenderWeather {
     drawMoon(dc, x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
   }
 
-  function drawWeatherCondition(dc as Dc, x as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
-    _drawWeatherCondition(dc, 
+  function drawWeatherCondition(
+    dc as Dc,
+    x as Lang.Number,
+    condition as Lang.Number,
+    nightTime as Lang.Boolean
+  ) as Void {
+    _drawWeatherCondition(
+      dc,
       new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2),
       condition,
       nightTime
     );
   }
 
-  function _drawWeatherCondition(dc as Dc, center as Point, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
+  function _drawWeatherCondition(
+    dc as Dc,
+    center as Point,
+    condition as Lang.Number,
+    nightTime as Lang.Boolean
+  ) as Void {
     if (condition == null) {
       return;
     }
@@ -740,7 +793,7 @@ class RenderWeather {
     dc.drawRectangle(center.x + 1, center.y + 6, 1, 3);
   }
 
-  hidden function getVulcanoPts(center as Point, range as Number) as Polygone {
+  hidden function getVulcanoPts(center as Point, range as Number) as Polygon {
     var pts = [];
 
     var halfRange = (range * 0.5).toNumber();
@@ -758,10 +811,16 @@ class RenderWeather {
 
     pts.add([center.x - p2Range, center.y]);
 
-    return pts as Polygone;
+    return pts as Polygon;
   }
 
-  hidden function drawDustIcon(dc as Dc, center as Point, range as Number, size as Number, particles as Number) as Void {
+  hidden function drawDustIcon(
+    dc as Dc,
+    center as Point,
+    range as Number,
+    size as Number,
+    particles as Number
+  ) as Void {
     var x, y;
     for (var i = 0; i < particles; i++) {
       if (i % 2 == 0) {
@@ -782,7 +841,7 @@ class RenderWeather {
   }
 
   hidden function drawWindLineUp(
-    dc as Dc, 
+    dc as Dc,
     x as Number,
     y as Number,
     range as Number,
@@ -794,7 +853,7 @@ class RenderWeather {
   }
 
   hidden function drawWindLineDown(
-    dc as Dc, 
+    dc as Dc,
     x as Number,
     y as Number,
     range as Number,
@@ -815,8 +874,7 @@ class RenderWeather {
     }
   }
 
-  hidden function getLightningPts(center as Point, range as Number) as Polygone {
-    
+  hidden function getLightningPts(center as Point, range as Number) as Polygon {
     var pts = [];
 
     pts.add([center.x, center.y - range]);
@@ -832,7 +890,7 @@ class RenderWeather {
 
     pts.add([center.x - 2, center.y - range]);
 
-    return pts as Polygone;
+    return pts as Polygon;
   }
 
   hidden function drawSnowFlake(dc as Dc, center as Point, radius as Number) as Void {
@@ -844,7 +902,7 @@ class RenderWeather {
     }
   }
 
-  hidden function getHailPoints(center as Point, radius as Number) as Polygone {
+  hidden function getHailPoints(center as Point, radius as Number) as Polygon {
     var pts = [];
 
     var angle = 0;
@@ -854,7 +912,7 @@ class RenderWeather {
       angle = angle + 60;
     }
 
-    return pts as Polygone;
+    return pts as Polygon;
   }
 
   hidden function drawRainDrops(dc as Dc, center as Point, range as Number, density as Number) as Void {
@@ -882,7 +940,7 @@ class RenderWeather {
   }
 
   hidden function drawConditionClear(
-    dc as Dc, 
+    dc as Dc,
     center as Point,
     radius as Number,
     radiusOuter as Number,
@@ -909,18 +967,21 @@ class RenderWeather {
 
   // --
   hidden function drawWind(
-    dc as Dc, 
+    dc as Dc,
     x as Number,
     y as Number,
     radius as Number,
     windBearingInDegrees as Number,
     windSpeedMs as Float,
+    windGustMs as Float,
     bigArrow as Boolean
   ) as Void {
     var hasAlert = false;
     var text = "";
     var wsFont = Graphics.FONT_XTINY;
     var wsFontAlert = Graphics.FONT_TINY;
+    var windGustLevel = 0;
+    var hasGustAlert = false;
     if (radius >= 10) {
       wsFont = Graphics.FONT_SMALL;
       wsFontAlert = Graphics.FONT_MEDIUM;
@@ -948,6 +1009,10 @@ class RenderWeather {
       }
       radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
       //radius = $.max(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
+      if (windGustMs > 0) {
+        windGustLevel = $.getWindGustLevel(windSpeedMs, windGustMs);
+        hasGustAlert = $._alertLevelWindGust > 0 && windGustLevel >= $._alertLevelWindGust;
+      }
     }
 
     dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
@@ -963,20 +1028,57 @@ class RenderWeather {
         dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
       }
       var pA, pB, pC, pD;
+      var gustOuter = 0;
+      var gustInner = 0;
+      var factor = 0;
       if (bigArrow) {
-        var factor = (windSpeedMs / 8.0) * 2.0; // 4 BF @@ only when showing in center of field
+        factor = (windSpeedMs / 8.0) * 2.0; // 4 BF @@ only when showing in center of field
         // @@ max height / width based on screen
         pA = pointOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees - 35 - 180);
-        pB = pointOnCircle(x, y, factor + radius * 3.0, windBearingInDegrees);
+        pB = pointOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
         pC = pointOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
-        pD = pointOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
+        pD = pointOnCircle(x, y, factor + radius * 3.0, windBearingInDegrees);
+
+        gustOuter = 2.4;
+        gustInner = 1.8;
       } else {
         pA = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees - 35 - 180);
-        pB = pointOnCircle(x, y, radius * 1.9, windBearingInDegrees);
+        pB = pointOnCircle(x, y, radius * 1.0, windBearingInDegrees - 180);
         pC = pointOnCircle(x, y, radius * 1.5, windBearingInDegrees + 35 - 180);
-        pD = pointOnCircle(x, y, radius * 1.0, windBearingInDegrees - 180);        
+        pD = pointOnCircle(x, y, radius * 1.9, windBearingInDegrees);
+
+        gustOuter = 1.5;
+        gustInner = 1.2;
       }
-      dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D(), pD.toPoint2D()] as Polygone);    
+      dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D(), pD.toPoint2D()] as Polygon);
+
+      if (windGustLevel >= 1) {
+        if (hasGustAlert) {
+          dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+        } else {
+          dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+        }
+
+        factor = factor + 2;
+        pA = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
+        pB = pointOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
+        pC = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+        dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D()] as Polygon);
+        if (windGustLevel >= 2) {
+          factor = factor + 3;
+          pA = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
+          pB = pointOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
+          pC = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+          dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D()] as Polygon);
+        }
+        if (windGustLevel >= 3) {
+          factor = factor + 3;
+          pA = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
+          pB = pointOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
+          pC = pointOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+          dc.fillPolygon([pA.toPoint2D(), pB.toPoint2D(), pC.toPoint2D()] as Polygon);
+        }
+      }
     }
 
     // The circle
@@ -998,6 +1100,14 @@ class RenderWeather {
     }
     dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
+
+  // hidden function drawPolygon(dc, data as Array<Point2D>) {
+  //   for (var i = 0; i < data.size(); i++) {
+  //     var pA = data[i] as Point2D;
+  //     var pB = data[(i + 1) % data.size()] as Point2D;
+  //     dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
+  //   }
+  // }
 
   hidden function pointOnCircle(
     x as Number,
@@ -1023,7 +1133,7 @@ class RenderWeather {
     }
   }
 
-  hidden function getCloudPoints(x as Number, y as Number, radius as Number) as Polygone {
+  hidden function getCloudPoints(x as Number, y as Number, radius as Number) as Polygon {
     var pts = [];
     var p;
     var xLeft = x - (radius * 0.9).toNumber();
@@ -1049,6 +1159,6 @@ class RenderWeather {
       d = d + 10;
     }
 
-    return pts as Polygone;
+    return pts as Polygon;
   }
 }

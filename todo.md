@@ -1,4 +1,19 @@
-reset OWM alert cache -> to display again
+x reset OWM alert cache -> to display again
+- no reset all alerts when not displayed on one field
+- beep for alert A
+- deploy owm.js // @@ 
+wind gust -> border around arrow
+  https://en.wikipedia.org/wiki/Wind_gust
+ When the maximum speed exceeds the average speed by 10 to 15 knots (5.1 - 7.7 m/s), the term gusts is used while strong gusts is used for departure of 15 to 25 knots (-12 m/s), and violent gusts when it exceeds 25 knots.[4]
+ex:
+  "wind_speed": 5.87,
+  "wind_gust": 13.71,
+    diff == 9 m/s ==> `normal` gust 
+alert of wind_gust diff with wind_speed
+    1 gusts/2 strong gusts/3 violent gusts
+
+
+compress ,0.0, -> ,, 
 
 update documentation: 
 - menu

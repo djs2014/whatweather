@@ -44,6 +44,9 @@ function getLatestGarminWeather() as WeatherData {
     cc.relativeHumidity = garCurrent.relativeHumidity;
     cc.dewPoint = calculateDewpoint(cc.temperature, cc.relativeHumidity);
 
+    // TEST
+    // cc.windGust = 15.0;
+
     if (DEBUG_DETAILS) {
       System.println("Gar Current: " + cc.info());
     }

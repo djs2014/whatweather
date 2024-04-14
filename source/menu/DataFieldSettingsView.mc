@@ -62,11 +62,14 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
     var boolean = false;
 
+    boolean = Storage.getValue("resetAlerts") ? true : false;
+    menu.addItem(new WatchUi.ToggleMenuItem("Show alerts again", null, "resetAlerts", boolean, null));
     // boolean = Storage.getValue("debug") ? true : false;
     // menu.addItem(new WatchUi.ToggleMenuItem("Debug", null, "debug", boolean, null));
     boolean = Storage.getValue("resetDefaults") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Reset to defaults", null, "resetDefaults", boolean, null));
   
+
 
     // var view = new $.DataFieldSettingsView();
     WatchUi.pushView(menu, new $.DataFieldSettingsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
@@ -153,6 +156,21 @@ function getShowInfoText(value as Number) as String {
     case SHOW_INFO_RELATIVE_WIND:
       return "Relative wind";
 
+    default:
+      return "--";
+  }
+}
+function getGustLevelText(value as Number) as String {
+  switch (value) {
+    case 0:
+      return "None";
+    case 1:
+      return "Gusts";
+    case 2:
+      return "Strong gusts";    
+    case 3:
+      return "Violent gusts";
+    
     default:
       return "--";
   }
