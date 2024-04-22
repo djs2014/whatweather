@@ -48,8 +48,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       // proxyMenu.addItem(mi);
 
-      WatchUi.pushView(proxyMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP); // self, proxyMenu
-    } else if (id instanceof String && id.equals("showweather")) {
+      WatchUi.pushView(proxyMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
+      return;
+    }
+    if (id instanceof String && id.equals("showweather")) {
       var showMenu = new WatchUi.Menu2({ :title => "Show Weather" });
 
       // @@ Weather source
@@ -97,7 +99,9 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       showMenu.addItem(new WatchUi.ToggleMenuItem("Weather condition", null, "showWeatherCondition", boolean, null));
 
       WatchUi.pushView(showMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
-    } else if (id instanceof String && id.equals("extrainfo")) {
+      return;
+    }
+    if (id instanceof String && id.equals("extrainfo")) {
       var extraMenu = new WatchUi.Menu2({ :title => "Extra info" });
       var mi = new WatchUi.MenuItem("One page field", null, "showInfoOneField", null);
       var value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
@@ -120,7 +124,9 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       extraMenu.addItem(mi);
 
       WatchUi.pushView(extraMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
-    } else if (id instanceof String && id.equals("alerts")) {
+      return;
+    }
+    if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
       var mi = new WatchUi.MenuItem("Precipitation chance|0~100", null, "alertLevelPrecipitationChance", null);
@@ -153,7 +159,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       alertsMenu.addItem(mi);
 
       WatchUi.pushView(alertsMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
-    } else if (id instanceof String && id.equals("advanced")) {
+    }
+    if (id instanceof String && id.equals("advanced")) {
       var advancedMenu = new WatchUi.Menu2({ :title => "Advanced" });
 
       var mi = new WatchUi.MenuItem("Max temperature (C)|0~100", null, "maxTemperature", null);
@@ -173,7 +180,9 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       advancedMenu.addItem(mi);
 
       WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
-    } else if (id instanceof String && id.equals("comfort")) {
+      return;
+    }
+    if (id instanceof String && id.equals("comfort")) {
       var comfortMenu = new WatchUi.Menu2({ :title => "Comfort" });
 
       var mi = new WatchUi.MenuItem("Min humidity (%)|0~100", null, "comfortHumidityMin", null);
@@ -191,12 +200,28 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
-      WatchUi.pushView(comfortMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP); // self, comfortMenu
-    } else if (id instanceof String && id.equals("demo")) {
+      WatchUi.pushView(comfortMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
+      return;
+    }
+    if (id instanceof String && id.equals("sound")) {
+      var soundMenu = new WatchUi.Menu2({ :title => "Sound" });
+      // mode: silent,beep,canary      
+      var mi = new WatchUi.MenuItem("Mode", null, "sound_mode", null);
+      var value = getStorageValue(mi.getId() as String, 1) as Number;
+      mi.setSubLabel($.getSoundModeText(value));
+      soundMenu.addItem(mi);
+      
+      WatchUi.pushView(soundMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
+      return;
+    }
+    if (id instanceof String && id.equals("demo")) {
       // var demoMenu = new WatchUi.Menu2({ :title => "Demo" });
       // some scenarios, set duration, no OWM api key needed
-    } else if (id instanceof String && menuItem instanceof ToggleMenuItem) {
+      return;
+    }
+    if (id instanceof String && menuItem instanceof ToggleMenuItem) {
       Storage.setValue(id as String, menuItem.isEnabled());
+      return;
     }
   }
 }
@@ -280,6 +305,15 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       var sp = new selectionMenuPicker("Wind gust level", id as String);
       for (var i = 0; i <= 3; i++) {
         sp.add($.getGustLevelText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.show();
+      return;
+    }
+    if (id instanceof String && id.equals("sound_mode")) {
+      var sp = new selectionMenuPicker("Sound level", id as String);
+      for (var i = 0; i <= 3; i++) {
+        sp.add($.getSoundModeText(i), null, i);
       }
       sp.setOnSelected(self, :onSelectedSelection, item);
       sp.show();

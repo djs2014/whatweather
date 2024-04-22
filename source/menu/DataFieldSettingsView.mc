@@ -57,6 +57,8 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
     menu.addItem(mi);
     mi = new WatchUi.MenuItem("Advanced", null, "advanced", null);
     menu.addItem(mi);
+    mi = new WatchUi.MenuItem("Sound", null, "sound", null);
+    menu.addItem(mi);
     mi = new WatchUi.MenuItem("Demo", null, "demo", null);
     menu.addItem(mi);
 
@@ -171,6 +173,22 @@ function getGustLevelText(value as Number) as String {
     case 3:
       return "Violent gusts";
     
+    default:
+      return "--";
+  }
+}
+
+function getSoundModeText(value as Number) as String {
+  switch (value) {
+    case 0:
+      return "Quiet";
+    case 1:
+      return "Beep";
+    case 2:
+      return "Canary";    
+    case 3:
+      return "Beep Beep";    
+
     default:
       return "--";
   }

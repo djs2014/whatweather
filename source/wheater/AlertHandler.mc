@@ -366,7 +366,7 @@ class AlertHandler {
     if (alertWindGust <= 0 || windSpeedMs == null || windGustMs == null) {
       return;
     }
-    var level = $.getWindGustLevel(windSpeedMs, windGustMs);    
+    var level = $.getWindGustLevel(windSpeedMs, windGustMs);
     maxWindGust = $.max(maxWindGust, level) as Number;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusWindGust == NEUTRAL && level >= alertWindGust) {
@@ -390,14 +390,14 @@ class AlertHandler {
     }
   }
 
-   function processOWMAlert(hasOWMAlert as Boolean) as Void {
+  function processOWMAlert(hasOWMAlert as Boolean) as Void {
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusOWMAlert == NEUTRAL && hasOWMAlert) {
       statusOWMAlert = TRIGGERED;
     }
     if (hasOWMAlert) {
-      allClearCondition = false;
-    }
+      allClearOWMAlert = false;
+    }   
   }
 }
 

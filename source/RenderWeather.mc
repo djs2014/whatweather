@@ -403,30 +403,16 @@ class RenderWeather {
     }
   }
 
-  // function drawWindInfoInColumn(
-  //   dc as Dc,
-  //   x as Lang.Number,
-  //   windBearingInDegrees as Lang.Number,
-  //   windSpeed as Lang.Float,
-  //   windGust as Lang.Float
-  // ) as Void {
-  //   // if (ds.smallField) { return; }
-  //   var radius = 8;
-  //   var xW = x + ds.columnWidth / 2;
-  //   var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-  //   drawWind(dc, xW, yW, radius, windBearingInDegrees, windSpeed, windGust, false);
-  // }
-
   function drawAlertMessages(dc as Dc, activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
       return;
     }
 
-    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
+    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_WHITE);
     var y = TOP_ADDITIONAL_INFO;
     if (onSecondLine) {
       y = topAdditionalInfo2;
-    }
+    }    
     dc.drawText(ds.width / 2, y, ds.fontSmall, activeAlerts, Graphics.TEXT_JUSTIFY_CENTER);
   }
 

@@ -1,6 +1,22 @@
-x reset OWM alert cache -> to display again
-- no reset all alerts when not displayed on one field
-- beep for alert A
+// o (one), l (large), w (wide), s (small)
+// o (one), l (large), w (wide), s (small)
+function getDisplaySize(width as Integer, height as Integer) as String {
+  var display = "s";
+
+  if (width >= 246) {
+    display = "w";
+    if (height >= 322) {
+      display = "o";
+    } else if (height >= 100) {
+      display = "l";
+    }
+  }
+
+  return display;
+}
+
+
+
 - deploy owm.js // @@ 
 wind gust -> border around arrow
   https://en.wikipedia.org/wiki/Wind_gust
@@ -12,6 +28,8 @@ ex:
 alert of wind_gust diff with wind_speed
     1 gusts/2 strong gusts/3 violent gusts
 
+var mySettings = System.getDeviceSettings();
+settings.tonesOn
 
 compress ,0.0, -> ,, 
 

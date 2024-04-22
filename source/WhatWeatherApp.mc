@@ -121,6 +121,8 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertLevelWindGust = $.getStorageValue("alertLevelWindGust", 2) as Number;
       $._alertLevelDewpoint = $.getStorageValue("alertLevelDewpoint", 19) as Number;
 
+      $._soundMode = $.getStorageValue("sound_mode", 1) as Number;
+
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
       $._maxPressure = $.getStorageValue("maxPressure", 1080) as Number;

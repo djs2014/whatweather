@@ -59,6 +59,7 @@ var _alertLevelRainMMfirstHour as Lang.Float = 0.2f;
 var _alertLevelRainMMHour as Lang.Float = 0.2f;
 var _alertLevelDewpoint as Lang.Number = 19;
 var _weatherDataSource as WeatherSource = wsOWMFirst;
+var _soundMode as Number = 1;
 
  (:typecheck(disableBackgroundCheck))
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {

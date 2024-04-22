@@ -119,7 +119,7 @@ class WhatWeatherView extends WatchUi.DataField {
         mTriggerCheckWeatherAlerts = true;
         $.gSettingsChanged = false;
 
-        var resetAlerts = Storage.getValue("resetAlerts") ? true : false;
+        var resetAlerts = $.getStorageValue("resetAlerts", false) as Boolean;
         if (resetAlerts) {
           Storage.setValue("resetAlerts", false);
           resetOWMAlerts();
@@ -966,8 +966,25 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function playAlert() as Void {
-    if (Attention has :playTone) {
+    if ($._soundMode == 0 || !(Attention has :playTone) || !System.getDeviceSettings().tonesOn) {
+      return;
+    }
+    if ($._soundMode == 1) {
+      Attention.playTone(Attention.TONE_KEY);
+      return;
+    }
+    if ($._soundMode == 2) {
       Attention.playTone(Attention.TONE_CANARY);
+      return;
+    }
+    if ($._soundMode == 3) {
+      var toneProfile =
+        [
+          new Attention.ToneProfile(800, 40),
+          new Attention.ToneProfile(1200, 150),
+          new Attention.ToneProfile(3000, 0),
+        ] as Lang.Array<Attention.ToneProfile>;
+      Attention.playTone({ :toneProfile => toneProfile, :repeatCount => 1 });
     }
   }
 
@@ -1151,7 +1168,8 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
 
-      var hasOWMAlert = mWeatherData.alerts.size() > 0; 
+      // ->
+      var hasOWMAlert = mWeatherData.alerts.size() > 0;
       mAlertHandler.processOWMAlert(hasOWMAlert);
     } catch (ex) {
       ex.printStackTrace();
@@ -1159,20 +1177,19 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function resetOWMAlerts() as Void {
-    mAlertDisplayedOnOtherField = 0;
+    mAlertDisplayedOnOneField = 0;
     mAlertDisplayedOnOtherField = 0;
     mAlertCounter = 30;
     mAlertIndex = -1;
     mAlertDisplayed = [];
-    if (mWeatherData.alerts.size() == 0) {
-      return;
-    }
+    mGetNextAlert = true;
+
     for (var i = 0; i < mWeatherData.alerts.size(); i++) {
       var alert = mWeatherData.alerts[i];
       alert.handled = false;
     }
   }
-  
+
   function calculateOWMAlerts(dc as Dc) as Void {
     if (!mWeatherData.valid()) {
       return;
@@ -1206,7 +1223,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     if (mWeatherData.alerts.size() == 0 || mAlertIndex <= -1 || mAlertIndex >= mWeatherData.alerts.size()) {
-      mAlertDisplayedOnOtherField = 0;
+      mAlertDisplayedOnOneField = 0;
       mAlertDisplayedOnOtherField = 0;
       mAlertCounter = 30;
       mAlertIndex = -1;
@@ -1217,7 +1234,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
     if (alert.handled || alert.start == null || alert.end == null) {
       alert.handled = true;
-      mAlertDisplayedOnOtherField = 0;
+      mAlertDisplayedOnOneField = 0;
       mAlertDisplayedOnOtherField = 0;
       mAlertCounter = 30;
       mGetNextAlert = true;
@@ -1234,7 +1251,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if (mAlertCounter < 0) {
       mAlertDisplayed.add(key);
       alert.handled = true;
-      mAlertDisplayedOnOtherField = 0;
+      mAlertDisplayedOnOneField = 0;
       mAlertDisplayedOnOtherField = 0;
       mAlertCounter = 30;
       mGetNextAlert = true;
