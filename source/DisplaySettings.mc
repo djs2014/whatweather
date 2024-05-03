@@ -12,7 +12,7 @@ class DisplaySettings {
   var COLOR_TEXT_I as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_I_ADDITIONAL2 as Lang.Number = Graphics.COLOR_LT_GRAY;
-  
+
   var width as Lang.Number = 0;
   var height as Lang.Number = 0;
   var nrOfColumns as Lang.Number = 0;
@@ -32,7 +32,8 @@ class DisplaySettings {
   var columnY as Lang.Number = 0;
   var columnX as Lang.Number = 0;
 
-  var smallField as Lang.Boolean = false;
+  var fieldSize as String = "s";
+  var smallField as Lang.Boolean = true;
   var wideField as Lang.Boolean = false;
   var largeField as Lang.Boolean = false;
   var oneField as Lang.Boolean = false;
@@ -52,27 +53,12 @@ class DisplaySettings {
     self.width = dc.getWidth();
     self.height = dc.getHeight();
 
-    self.smallField = true;
-    self.wideField = false;
-    self.largeField = false;
-    self.oneField = false;
-    // 1 large field: w[246] h[322]
-    // 2 fields: w[246] h[160]
-    // 3 fields: w[246] h[106]
-
-    if (width >= 246) {
-      self.smallField = false;
-      self.wideField = true;
-
-      if (height >= 322) {
-        self.wideField = false;
-        self.oneField = true;
-      } else if (height >= 100) {
-        self.wideField = false;
-        self.oneField = false;
-        self.largeField = true;
-      }
-    }
+    fieldSize = $.getDisplaySize(width, height);
+    System.println(fieldSize);
+    smallField = fieldSize.equals("s");
+    wideField = fieldSize.equals("w");
+    largeField = fieldSize.equals("l");
+    oneField = fieldSize.equals("o");
   }
 
   function calculate(
