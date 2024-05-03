@@ -1,9 +1,8 @@
-optimize calculations - remove points
+optimize calculations 
 cache weather... 
--- show hour when rain chance > x%
-x show mm when mm rain > x mm
-x check scal mm first hour and mm per hour in the hour bars
+https://www.htmlcsscolor.com/hex/8E7CC3
 
+Implement:
 // o (one), l (large), w (wide), s (small)
 // o (one), l (large), w (wide), s (small)
 function getDisplaySize(width as Integer, height as Integer) as String {

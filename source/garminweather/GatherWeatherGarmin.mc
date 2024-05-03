@@ -73,6 +73,10 @@ function getLatestGarminWeather() as WeatherData {
           hf.temperature = garForecast.temperature;
           hf.relativeHumidity = garForecast.relativeHumidity;
           hf.dewPoint = calculateDewpoint(hf.temperature, hf.relativeHumidity);
+
+          // TEST
+          // hf.windGust = 5.0;
+
           if (DEBUG_DETAILS) {
             System.println("Gar Hourly: " + hf.info());
           }

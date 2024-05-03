@@ -1,6 +1,7 @@
 import Toybox.System;
 import Toybox.Math;
 import Toybox.Lang;
+import Toybox.Graphics;
 
 function getDistanceFromLatLonInKm(
   latFrom as Numeric,
@@ -125,16 +126,16 @@ function getCompassDirection(bearing as Numeric) as String {
 // https://www.mathsisfun.com/algebra/trigonometry.html
 // trigononmetry degrees  0 is right, 90 is top, 180 is left, 270 is bottom
 // bearing degrees 0 is North, 90 is East, 180 is South, 270 is West
-function getPointOnCircle(x as Number, y as Number, angleInDegrees as Number, radius as Numeric) as Point {
+function getPointOnCircle(x as Number, y as Number, angleInDegrees as Number, radius as Numeric) as Point2D {
   // Convert from degrees to radians
   angleInDegrees = angleInDegrees % 360;
   var px = x + radius * Math.cos((angleInDegrees * Math.PI) / 180);
   var py = y - radius * Math.sin((angleInDegrees * Math.PI) / 180);
 
-  return new Point(px.toNumber(), py.toNumber());
+  return [px.toNumber(), py.toNumber()] as Point2D;
 }
 
-function getBearingPointOnCircle(x as Number, y as Number, bearingInDegrees as Number, radius as Numeric) as Point {
+function getBearingPointOnCircle(x as Number, y as Number, bearingInDegrees as Number, radius as Numeric) as Point2D {
   // convert to trigonometry
   bearingInDegrees = bearingInDegrees + 90;
   // Convert from degrees to radians
@@ -143,7 +144,7 @@ function getBearingPointOnCircle(x as Number, y as Number, bearingInDegrees as N
   var px = x - radius * Math.cos((bearingInDegrees * Math.PI) / 180);
   var py = y - radius * Math.sin((bearingInDegrees * Math.PI) / 180);
 
-  return new Point(px.toNumber(), py.toNumber());
+  return [px.toNumber(), py.toNumber()] as Point2D;
 }
 function convertGeoToPixel(
   latitude as Double,
@@ -155,12 +156,12 @@ function convertGeoToPixel(
   // depicted on the left-most part of the map image)
   mapLngRight as Double, // in degrees. the longitude of the right side of the map
   mapLatBottom as Double // in degrees.  the latitude of the bottom of the map
-) as Point {
+) as Point2D {
   var mapLatBottomRad = (mapLatBottom * Math.PI) / 180;
   var latitudeRad = (latitude * Math.PI) / 180;
   var mapLngDelta = mapLngRight - mapLngLeft;
   if (mapLngDelta == 0l) {
-    return new Point(0,0);
+    return [0, 0] as Point2D;
   }
   var worldMapWidth = ((mapWidth / mapLngDelta) * 360) / (2 * Math.PI);
   var mapOffsetY =
@@ -171,5 +172,5 @@ function convertGeoToPixel(
     mapHeight -
     ((worldMapWidth / 2) * Math.log((1 + Math.sin(latitudeRad)) / (1 - Math.sin(latitudeRad)), Math.E) - mapOffsetY);
 
-  return new Point(x.toNumber(), y.toNumber()); // the pixel x,y value of this point on the map image
+  return [x.toNumber(), y.toNumber()] as Point2D; // the pixel x,y value of this point on the map image
 }
