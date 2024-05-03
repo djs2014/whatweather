@@ -179,6 +179,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
+      mi = new WatchUi.MenuItem("Max rain per hour (mm))|1~20", null, "maxMMRainPerHour", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
       WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }

@@ -472,24 +472,12 @@ class RenderWeather {
     condition as Lang.Number,
     nightTime as Lang.Boolean
   ) as Void {
-    _drawWeatherCondition(
-      dc,
-      new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2),
-      condition,
-      nightTime
-    );
-  }
-
-  function _drawWeatherCondition(
-    dc as Dc,
-    center as Point,
-    condition as Lang.Number,
-    nightTime as Lang.Boolean
-  ) as Void {
+    // @@ to be refactored
     if (condition == null) {
       return;
     }
 
+    var center = new Point(x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2);    
     // clear
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(dc, center, 3, 6, 120, nightTime);

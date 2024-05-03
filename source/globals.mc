@@ -52,6 +52,7 @@ var _showDewpoint as Lang.Boolean = true;
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;
 var _minPressure as Lang.Number = 870;
+var _maxMMRainPerHour as Lang.Number = 10;
 
 
 var _alertLevelUVi as Lang.Number = 6;

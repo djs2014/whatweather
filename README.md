@@ -91,11 +91,12 @@ With an Open Weather Map API key you can display OWM data (Open weather map)[htt
 	- Comfort zone temperature, min and max (in Celcius).
   
 ### Advanced
-	For display the graphics
-	- Max temperature
-	- Max UV index
-	- Min pressure
-	- Max pressure
+	For display the height graphics. Min value is bottom of the screen, max value is top of the screen.
+	- Max UV index  - 20
+	- Max temperature (C) - 50
+	- Min pressure (hPa) - 870
+	- Max pressure (hPa) - 1080
+	- Max rain per hour (mm) - default 10 mm, so blue bar of 1/10th of screen is 1 mm.
   	
  ## Colors
 

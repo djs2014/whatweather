@@ -158,11 +158,13 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       var bg_mm = minutely as Dictionary;
       mm.forecastTime = new Time.Moment($.getDictionaryValue(bg_mm, "dt_start", 0.0) as Number);
       mm.max = $.getDictionaryValue(bg_mm, "max", 0.0) as Float;
+      // System.println("bgData minutely max: " + mm.max.format("%.1f"));
       var pops = bg_mm["pops"];
       if (pops != null) {
         var bg_pops = pops as Array<Float>;
         for (var i = 0; i < bg_pops.size(); i++) {
           mm.pops.add(bg_pops[i] as Float);
+          // System.println("bgData minutely " + i.format("%d") + ": " +  (bg_pops[i] as Float).format("%.1f"));
         }
         System.println("Size of minutely: " + mm.pops.size());
       }

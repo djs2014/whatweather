@@ -81,6 +81,7 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("maxTemperature", 50);
         Storage.setValue("minPressure", 870);
         Storage.setValue("maxPressure", 1080);
+        Storage.setValue("maxMMRainPerHour", 10);
 
         Storage.setValue("comfortHumidityMin", 40);
         Storage.setValue("comfortHumidityMax", 60);
@@ -131,6 +132,7 @@ class WhatWeatherApp extends Application.AppBase {
         $._minPressure = 870;
         $._maxPressure = 1080;
       }
+      $._maxMMRainPerHour = $.getStorageValue("maxMMRainPerHour", 10) as Number;
 
       var bgHandler = $.getBGServiceHandler();
       bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
