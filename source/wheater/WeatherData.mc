@@ -21,6 +21,7 @@ class WeatherCheck {
     } catch (ex) {
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
+      return true;
     }
   }
 }
