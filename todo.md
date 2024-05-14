@@ -2,6 +2,7 @@ optimize calculations
 cache weather... 
 https://www.htmlcsscolor.com/hex/8E7CC3
 
+"o" -> 'o' ??
 Implement:
 // o (one), l (large), w (wide), s (small)
 // o (one), l (large), w (wide), s (small)

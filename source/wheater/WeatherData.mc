@@ -8,17 +8,20 @@ class WeatherCheck {
   public var lon as Lang.Double = 0.0d;
 
   public function changed(lat as Lang.Double, lon as Lang.Double, observationTime as Time.Moment?) as Boolean {
-    if (self.lat != lat || self.lon != lon) {
-      return true;
+    try {
+      if (self.lat != lat || self.lon != lon) {
+        return true;
+      }
+      if (self.observationTime == null || observationTime == null) {
+        return true;
+      }
+
+      // :-/
+      return (self.observationTime as Time.Moment).compare(observationTime as Time.Moment) != 0;
+    } catch (ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
     }
-    if (self.observationTime == null && observationTime != null) {
-      return true;
-    }
-    if (self.observationTime != null && observationTime == null) {
-      return true;
-    }
-    // :-/  
-    return (self.observationTime as Time.Moment).compare(observationTime as Time.Moment)  != 0;
   }
 }
 
