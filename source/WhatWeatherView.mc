@@ -107,6 +107,7 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function onLayout(dc as Dc) as Void {
+    dc.clearClip();
     calculateLayout(dc);
     calculateOWMAlerts(dc);
   }

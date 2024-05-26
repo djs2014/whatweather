@@ -1,3 +1,4 @@
+// 2024-05-26 setLocation lat/lon toDouble
 import Toybox.Activity;
 import Toybox.Graphics;
 import Toybox.Lang;
@@ -17,9 +18,15 @@ class CurrentLocation {
     }
     mLocation = location;
     var degrees = (mLocation as Location).toDegrees();
-    var lat = degrees[0];
-    var lon = degrees[1];
-    if (lat.toNumber() != 0 && lon.toNumber() != 0 && mLat != lat && mLon != lon) {
+    if (degrees.size() < 2) {
+      return;
+    }
+    var lat = degrees[0].toDouble();
+    var lon = degrees[1].toDouble();    
+    if (lat == null || lon == null) {
+      return;
+    }
+    if (lat != 0 && lon != 0 && mLat != lat && mLon != lon) {
       Storage.setValue("latest_latlng", degrees); // [lat,lng]
       System.println("Update cached location lat/lon: " + degrees);
     }
@@ -35,7 +42,6 @@ class CurrentLocation {
   function setOnLocationChanged(objInstance as Object?, callback as Symbol) as Void {
     methodLocationChanged = new Lang.Method(objInstance, callback) as Method;
   }
-  
   function initialize() {}
 
   function hasLocation() as Boolean {
@@ -82,7 +88,7 @@ class CurrentLocation {
     if (mAccuracy == null) {
       return "Not available";
     }
-
+    
     switch (mAccuracy as Quality) {
       case 0:
         return "Not available";
@@ -144,7 +150,7 @@ class CurrentLocation {
     if (methodLocationChanged == null) {
       return;
     }
-    (methodLocationChanged as Method).invoke(getCurrentDegrees() as Array<Double>);
+    (methodLocationChanged as Method).invoke(getCurrentDegrees() as Array<Double>);    
   }
   hidden function locationChanged(location as Location?) as Boolean {
     if (location == null) {
@@ -161,7 +167,8 @@ class CurrentLocation {
     // if (mLocation == null && location == null ){ return false; }
     // if ( (mLocation != null && location == null) || (mLocation == null && location != null) ){ return true; }
 
-    var currentDegrees = (mLocation as Location).toDegrees();
+    var currentLocation = mLocation as Location;
+    var currentDegrees = currentLocation.toDegrees();
 
     var newLocation = location as Location;
     if (!validLocation(newLocation)) {
@@ -224,7 +231,8 @@ class CurrentLocation {
     var distanceMetric = "km";
     var distance = $.getDistanceFromLatLonInKm(latCurrent, lonCurrent, latObservation, lonObservation);
 
-    if (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE) {
+    var deviceSettings = System.getDeviceSettings();
+    if (deviceSettings.distanceUnits == System.UNIT_STATUTE) {
       distance = $.kilometerToMile(distance);
       distanceMetric = "m";
     }
