@@ -86,7 +86,7 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 }
 
 function getStorageNumberAsString(key as String) as String {
-  return (getStorageValue(key, 0) as Number).format("%.0d");
+  return (getStorageValue(key, 0) as Number).format("%0d");
 }
 
 function getStorageFloatAsString(key as String) as String {
