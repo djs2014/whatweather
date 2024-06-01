@@ -1,0 +1,191 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json
+Date: Sun, 29 May 2022 06:11:14 GMT
+Connection: close
+Transfer-Encoding: chunked
+
+{
+  "current": {
+    "lat": 52.1515,
+    "lon": 4.7743,
+    "dt": 1653804670,
+    "tz_offset": 7200,
+    "clouds": 40,
+    "uvi": 0.39,
+    "weather": 20
+  },
+  "minutely": {
+    "dt_start": 1653804720,
+    "pops": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "hourly": [
+    {
+      "dt": 1653804000,
+      "clouds": 40,
+      "pop": 0.8,
+      "weather": 14,
+      "uvi": 0.39
+    },
+    {
+      "dt": 1653807600,
+      "clouds": 52,
+      "pop": 0.73,
+      "weather": 20,
+      "uvi": 0.98
+    },
+    {
+      "dt": 1653811200,
+      "clouds": 64,
+      "pop": 0.8,
+      "weather": 20,
+      "uvi": 1.72
+    },
+    {
+      "dt": 1653814800,
+      "clouds": 74,
+      "pop": 1,
+      "weather": 14,
+      "uvi": 2.55
+    },
+    {
+      "dt": 1653818400,
+      "clouds": 86,
+      "pop": 1,
+      "weather": 14,
+      "uvi": 2.93
+    },
+    {
+      "dt": 1653822000,
+      "clouds": 98,
+      "pop": 1,
+      "weather": 14,
+      "uvi": 3.36
+    },
+    {
+      "dt": 1653825600,
+      "clouds": 99,
+      "pop": 0.95,
+      "weather": 14,
+      "uvi": 3.44
+    },
+    {
+      "dt": 1653829200,
+      "clouds": 100,
+      "pop": 0.4,
+      "weather": 20,
+      "uvi": 3.92
+    },
+    {
+      "dt": 1653832800,
+      "clouds": 100,
+      "pop": 0.36,
+      "weather": 20,
+      "uvi": 3.18
+    },
+    {
+      "dt": 1653836400,
+      "clouds": 100,
+      "pop": 0.28,
+      "weather": 20,
+      "uvi": 2.26
+    },
+    {
+      "dt": 1653840000,
+      "clouds": 100,
+      "pop": 0.24,
+      "weather": 20,
+      "uvi": 1.56
+    },
+    {
+      "dt": 1653843600,
+      "clouds": 100,
+      "pop": 0.24,
+      "weather": 20,
+      "uvi": 0.8
+    },
+    {
+      "dt": 1653847200,
+      "clouds": 100,
+      "pop": 0.2,
+      "weather": 20,
+      "uvi": 0.32
+    },
+    {
+      "dt": 1653850800,
+      "clouds": 100,
+      "pop": 0.02,
+      "weather": 20,
+      "uvi": 0.09
+    },
+    {
+      "dt": 1653854400,
+      "clouds": 100,
+      "pop": 0.03,
+      "weather": 20,
+      "uvi": 0
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 bin
 other/logs
-export
-export_beta
+export/
+export_beta/
 private
 export_beta/whatweather.iq

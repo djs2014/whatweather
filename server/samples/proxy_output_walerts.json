@@ -1,0 +1,150 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json
+Date: Sat, 11 Mar 2023 06:41:55 GMT
+Connection: close
+Transfer-Encoding: chunked
+
+{
+  "current": {
+    "lat": 52.1515,
+    "lon": 4.7743,
+    "dt": 1678516915,
+    "tz_offset": 3600,
+    "clouds": 20,
+    "uvi": 0.17,
+    "cond": 20,
+    "w_s": 0.51,
+    "w_deg": 140,
+    "temp": -2.04,
+    "press": 1009,
+    "humid": 86,
+    "dew_p": -3.83
+  },
+  "hourly": [
+    {
+      "dt": 1678514400,
+      "clouds": 32,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 0,
+      "w_s": 0.58,
+      "w_deg": 228,
+      "temp": -2.2,
+      "press": 1009,
+      "humid": 87,
+      "dew_p": -3.85
+    },
+    {
+      "dt": 1678518000,
+      "clouds": 20,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 0.17,
+      "w_s": 0.59,
+      "w_deg": 189,
+      "temp": -2.04,
+      "press": 1009,
+      "humid": 86,
+      "dew_p": -3.83
+    },
+    {
+      "dt": 1678521600,
+      "clouds": 28,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 0.49,
+      "w_s": 1.14,
+      "w_deg": 206,
+      "temp": -1.44,
+      "press": 1009,
+      "humid": 84,
+      "dew_p": -3.52
+    },
+    {
+      "dt": 1678525200,
+      "clouds": 41,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 0.99,
+      "w_s": 1.56,
+      "w_deg": 202,
+      "temp": -0.35,
+      "press": 1010,
+      "humid": 82,
+      "dew_p": -2.73
+    },
+    {
+      "dt": 1678528800,
+      "clouds": 55,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 1.43,
+      "w_s": 1.96,
+      "w_deg": 208,
+      "temp": 1.07,
+      "press": 1010,
+      "humid": 77,
+      "dew_p": -2.21
+    },
+    {
+      "dt": 1678532400,
+      "clouds": 70,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 1.78,
+      "w_s": 2.33,
+      "w_deg": 219,
+      "temp": 2.74,
+      "press": 1011,
+      "humid": 70,
+      "dew_p": -1.92
+    },
+    {
+      "dt": 1678536000,
+      "clouds": 86,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 1.84,
+      "w_s": 2.19,
+      "w_deg": 228,
+      "temp": 4.51,
+      "press": 1011,
+      "humid": 64,
+      "dew_p": -1.86
+    },
+    {
+      "dt": 1678539600,
+      "clouds": 100,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 1.62,
+      "w_s": 2.31,
+      "w_deg": 238,
+      "temp": 4.81,
+      "press": 1011,
+      "humid": 61,
+      "dew_p": -2.09
+    },
+    {
+      "dt": 1678543200,
+      "clouds": 98,
+      "pop": 0,
+      "cond": 20,
+      "uvi": 1.16,
+      "w_s": 2.38,
+      "w_deg": 249,
+      "temp": 5.24,
+      "press": 1011,
+      "humid": 59,
+      "dew_p": -2.17
+    }
+  ],
+  "alerts": [
+    {
+      "evt": "Moderate snow-ice warning",
+      "dts": 1678474800,
+      "dte": 1678528800
+    }
+  ]
+}

@@ -3,10 +3,8 @@ import Toybox.Lang;
 import Toybox.Time;
 import Toybox.System;
 import Toybox.Background;
-import Toybox.Sensor;
 import Toybox.Application.Storage;
 import Toybox.Communications;
-// using CommunicationsHelpers as Helpers;
 
 (:background)
 class BackgroundServiceDelegate extends System.ServiceDelegate {
@@ -18,11 +16,6 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
     public function onTemporalEvent() as Void {
         System.println("BackgroundServiceDelegate onTemporalEvent");
-
-        var sensorInfo = Sensor.getInfo();
-        if (sensorInfo has :temperature && sensorInfo.temperature != null) {
-            Storage.setValue("Temperature", sensorInfo.temperature);            
-        }
        
         System.println("BackgroundServiceDelegate handleOWM");
         var error = handleOWM();
@@ -36,7 +29,6 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         try {        
             var ws = Storage.getValue("weatherDataSource");
             if (ws != null && ws instanceof(Number)) {
-                // wsGarminOnly = 2
                 if (ws == wsGarminOnly) {
                     System.println("OWM disabled - wsGarminOnly");
                     Background.exit(0);
@@ -57,7 +49,6 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var proxyApiKey = Storage.getValue("openWeatherProxyAPIKey");
             var maxhours = Storage.getValue("openWeatherMaxHours");
             var minutely = Storage.getValue("openWeatherMinutely");
-            // var openWeatherAlerts = Storage.getValue("openWeatherAlerts");
             var testScenario = Storage.getValue("testScenario");
  
         	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$] apiVersion[$4$] maxhours[$5$] openWeatherMinutely[$6$] testScenario[$7$] openWeatherAlerts[$8$]",
@@ -71,8 +62,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if ((apiKey as String).length() == 0) { return CustomErrors.ERROR_BG_NO_API_KEY; }
             if ((proxyUrl as String).length() == 0) { return CustomErrors.ERROR_BG_NO_PROXY; }
             if (maxhours == null) { maxhours = 8; }
-            if (minutely == null) { minutely = true; }
-            // if (openWeatherAlerts == null) { openWeatherAlerts = true; }
+            if (minutely == null) { minutely = true; }            
             if (testScenario == null) { testScenario = 0; }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
@@ -91,7 +81,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                 "minutely" => minutely as Boolean,
                 "testScenario" => testScenario as Number,
                 "appid" => apiKey as String
-            };		       
+            } as Lang.Dictionary<Lang.Object, Lang.Object>;		       
             requestOWMData(proxyUrl as String, proxyApiKey as String, params);	
             return 0;
         } catch(ex) {
@@ -102,7 +92,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         }
     }
 
-    function requestOWMData(proxy as String, proxyApiKey as String, params as Lang.Dictionary) as Void {        		  
+    function requestOWMData(proxy as String, proxyApiKey as String, params as Lang.Dictionary<Lang.Object, Lang.Object>) as Void {        		  
         var options = {
             :method => Communications.HTTP_REQUEST_METHOD_GET,
             :headers => {
@@ -126,10 +116,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             System.println("onReceiveOpenWeatherResponse time " + curTime.hour.format("%02d") + ":" + curTime.min.format("%02d") + ":" + curTime.sec.format("%02d"));
             System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
             if (responseCode == 200 && responseData != null) {
-                System.println("onReceiveOpenWeatherResponse responseData not null");
-                // !! Do not convert responseData to string (println etc..) --> gives out of memory
-                //System.println(responseData);   --> gives out of memory
-                // var data = responseData as String;  --> gives out of memory
+                System.println("onReceiveOpenWeatherResponse responseData not null");                
                 Background.exit(responseData as PropertyValueType);                                         
             } else {
                 System.println("Not 200");

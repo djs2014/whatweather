@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: application/json
+Date: Sat, 11 Mar 2023 06:52:19 GMT
+Connection: close
+Transfer-Encoding: chunked
+
+[
+  {
+    "evt": "Moderate snow-ice warning",
+    "dts": 1678474800,
+    "dte": 1678528800,
+    "desc": "Risk of slippery roads due to (earlier) sleet/snowfall .",
+    "tags": [
+      "Snow/Ice"
+    ]
+  }
+]
