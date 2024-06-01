@@ -1,3 +1,6 @@
+check mm/h in minutely => sum of it
+0.1 ==> correct or
+
 optimize calculations 
 cache weather... 
 https://www.htmlcsscolor.com/hex/8E7CC3
