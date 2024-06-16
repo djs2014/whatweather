@@ -132,9 +132,9 @@ function getShowWindText(value as Number) as String {
     case SHOW_WIND_NOTHING:
       return "Nothing";
     case SHOW_WIND_METERS:
-      return "Meters";
+      return "Meters/sec";
     case SHOW_WIND_KILOMETERS:
-      return "Kilometers";
+      return "Kilometers/sec";
     case SHOW_WIND_BEAUFORT:
       return "Beaufort";
     

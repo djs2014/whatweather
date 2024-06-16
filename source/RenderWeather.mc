@@ -956,7 +956,7 @@ class RenderWeather {
     }
     if (windSpeedMs != null) {
       var beaufort = $.windSpeedToBeaufort(windSpeedMs);
-      hasAlert = $._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed;
+      hasAlert = $._alertLevelWindSpeed > 0.0f && beaufort >= $._alertLevelWindSpeed;
       if (hasAlert) {
         iconColor = Graphics.COLOR_RED;
         wsFont = wsFontAlert;
@@ -995,7 +995,7 @@ class RenderWeather {
           text = value.format("%d");
         }
       }
-      radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
+      radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 2;
     }
 
     // dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);

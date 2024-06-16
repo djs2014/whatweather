@@ -52,7 +52,8 @@ function mpsToKmPerHour(metersPerSecond as Numeric?) as Float {
   if (metersPerSecond == null) {
     return 0.0f;
   }
-  return ((metersPerSecond * 60 * 60) / 1000.0) as Float;
+  // return ((metersPerSecond * 60 * 60) / 1000.0) as Float;
+  return (metersPerSecond * 3.6f) as Float;
 }
 
 function celciusToFarenheit(celcius as Numeric?) as Float {

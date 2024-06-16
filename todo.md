@@ -1,3 +1,8 @@
+wind alert
+in beauf, mps, kmh, mph
+circle width wind icon
+after update showwindin -> update other item -> sublabeltext update units
+
 check mm/h in minutely => sum of it
 0.1 ==> correct or
 
