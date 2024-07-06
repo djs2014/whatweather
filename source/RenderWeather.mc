@@ -955,8 +955,18 @@ class RenderWeather {
       wsFontAlert = Graphics.FONT_MEDIUM;
     }
     if (windSpeedMs != null) {
-      var beaufort = $.windSpeedToBeaufort(windSpeedMs);
-      hasAlert = $._alertLevelWindSpeed > 0.0f && beaufort >= $._alertLevelWindSpeed;
+      var convertedWind = 0.0f;
+      if ($._alertWindIn == SHOW_WIND_KILOMETERS) {
+        convertedWind = $.mpsToKmPerHour(windSpeedMs);
+      } else if ($._alertWindIn  == SHOW_WIND_METERS) {
+        convertedWind = windSpeedMs;
+      } else {
+        convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
+      }      
+      
+      // System.println("Alert windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._alertWindIn " + $._alertWindIn);
+
+      hasAlert = $._alertLevelWindSpeed > 0.0f && convertedWind >= $._alertLevelWindSpeed;
       if (hasAlert) {
         iconColor = Graphics.COLOR_RED;
         wsFont = wsFontAlert;
@@ -977,23 +987,33 @@ class RenderWeather {
         }
       }
 
-      if ($._showWind == SHOW_WIND_BEAUFORT) {
-        text = beaufort.format("%d");
+      var windSpeed = windSpeedMs;
+      if ($._showWind == SHOW_WIND_KILOMETERS) {
+        windSpeed = $.mpsToKmPerHour(windSpeedMs);
+       } else if ($._showWind  == SHOW_WIND_METERS) {
+        windSpeed = windSpeedMs;  
       } else {
-        var value = windSpeedMs;
-        if ($._showWind == SHOW_WIND_KILOMETERS) {
-          value = $.mpsToKmPerHour(windSpeedMs);
-          var devSettings = System.getDeviceSettings();
-          if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-            value = $.kilometerToMile(value);
-          }
-        }
-        value = Math.round(value);
+        windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
+        text = windSpeed.format("%d");
+      }      
+
+      if ($._showWind != SHOW_WIND_BEAUFORT) {
+        // var value = convertedWind;
+        // if ($._showWind == SHOW_WIND_KILOMETERS) {
+        //   value = $.mpsToKmPerHour(windSpeedMs);
+        //   // @@ TODO check and refactor km or miles
+        //   var devSettings = System.getDeviceSettings();
+        //   if (devSettings.distanceUnits == System.UNIT_STATUTE) {
+        //     value = $.kilometerToMile(value);
+        //   }
+        // }
+        var value = Math.round(convertedWind);
         if (value < 10) {
           text = value.format("%.1f");
         } else {
           text = value.format("%d");
         }
+         // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
       }
       radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 2;
     }

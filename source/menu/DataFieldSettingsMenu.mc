@@ -160,7 +160,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       alertsMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Wind gust", null, "alertLevelWindGust", null);
-      var value = getStorageValue(mi.getId() as String, 2) as Number;
+      value = getStorageValue(mi.getId() as String, 2) as Number;
       mi.setSubLabel($.getGustLevelText(value));
       alertsMenu.addItem(mi);
 
