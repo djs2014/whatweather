@@ -1,4 +1,10 @@
-toast
+wide field -> regen per uur -> underline oid indicatie
+toaste
+or display
+or both
+clear alert mem after x minutes
+option disable alerts -> not in json
+-- hidden function drawWind( radius parameter refact
 
 mm 1st hour
 ---|..

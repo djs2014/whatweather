@@ -376,7 +376,6 @@ class RenderWeather {
       return;
     }
     var wp = windPoints[0] as WindPoint;
-    var radius = 10;
     var x = xOffset;
     if (showLeft) {
       x = wp.x + ds.columnWidth / 2 - xOffset;
@@ -384,20 +383,19 @@ class RenderWeather {
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(dc, x, y, radius, wp.bearing - (track as Number), wp.speed, wp.gust, true);
+      drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, true);
     } else {
-      drawWind(dc, x, y, radius, wp.bearing, wp.speed, wp.gust, false);
+      drawWind(dc, x, y, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
   function drawWindInfo(dc as Dc, windPoints as Array) as Void {
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
-      var wp = windPoints[idx] as WindPoint;
-      var radius = 8;
+      var wp = windPoints[idx] as WindPoint;    
       var xW = wp.x + ds.columnWidth / 2;
       var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-      drawWind(dc, xW, yW, radius, wp.bearing, wp.speed, wp.gust, false);
+      drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
@@ -937,7 +935,6 @@ class RenderWeather {
     dc as Dc,
     x as Number,
     y as Number,
-    radius as Number,
     windBearingInDegrees as Number,
     windSpeedMs as Float,
     windGustMs as Float,
@@ -949,8 +946,10 @@ class RenderWeather {
     var wsFontAlert = Graphics.FONT_TINY;
     var windGustLevel = 0;
     var iconColor = ds.COLOR_TEXT_ADDITIONAL;
+    var radius = 5;
+    var textWidthPadding = 1;
 
-    if (radius >= 10 || bigArrow) {
+    if (bigArrow) {
       wsFont = Graphics.FONT_SMALL;
       wsFontAlert = Graphics.FONT_MEDIUM;
     }
@@ -995,27 +994,19 @@ class RenderWeather {
       } else {
         windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
         text = windSpeed.format("%d");
+        textWidthPadding = 3;
       }      
 
-      if ($._showWind != SHOW_WIND_BEAUFORT) {
-        // var value = convertedWind;
-        // if ($._showWind == SHOW_WIND_KILOMETERS) {
-        //   value = $.mpsToKmPerHour(windSpeedMs);
-        //   // @@ TODO check and refactor km or miles
-        //   var devSettings = System.getDeviceSettings();
-        //   if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-        //     value = $.kilometerToMile(value);
-        //   }
-        // }
-        var value = Math.round(convertedWind);
-        if (value < 10) {
-          text = value.format("%.1f");
-        } else {
-          text = value.format("%d");
+      if ($._showWind != SHOW_WIND_BEAUFORT) {      
+        if (windSpeed < 10) {
+          text = windSpeed.format("%.1f");          
+          } else {
+          windSpeed = Math.round(windSpeed);
+          text = windSpeed.format("%d");
         }
          // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
       }
-      radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 2;
+      radius = (dc.getTextWidthInPixels(text, wsFont) / 2) + 3 + textWidthPadding; 
     }
 
     // dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);

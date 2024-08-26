@@ -579,22 +579,26 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
             windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
-
-          if (dashesUnderColumnHeight > 0) {
+          
+          if (dashesUnderColumnHeight > 0 || (current.rain1hr > 0.0 && !mDs.oneField)) {
+            var dhc = dashesUnderColumnHeight;
             colorDashes = Graphics.COLOR_DK_GRAY;
-            if (current.precipitationChance == 0) {
+             if (current.rain1hr > 0.0) {
+                colorDashes = COLOR_MM_RAIN;
+                if (dhc == 0) { dhc = 1;}
+              } else if (current.precipitationChance == 0) {
               colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
             }
             dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
-            dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dashesUnderColumnHeight);
+            dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dhc);
             if (color != colorOther && current.precipitationChanceOther == 0) {
               colorDashes = getConditionColor(current.conditionOther, Graphics.COLOR_DK_GRAY);
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(
                 x + (mDs.columnWidth / 3) * 2,
-                mDs.columnY + mDs.columnHeight,
+                mDs.columnY + mDs.columnHeight + 1,
                 mDs.columnWidth / 3,
-                dashesUnderColumnHeight
+                dhc
               );
             }
           }
@@ -734,21 +738,25 @@ class WhatWeatherView extends WatchUi.DataField {
               windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
             }
 
-            if (dashesUnderColumnHeight > 0) {
+            if (dashesUnderColumnHeight > 0 || (forecast.rain1hr > 0.0 && !mDs.oneField)) {
+              var dh = dashesUnderColumnHeight;
               colorDashes = Graphics.COLOR_DK_GRAY;
-              if (forecast.precipitationChance == 0) {
+              if (forecast.rain1hr > 0.0) {
+                colorDashes = COLOR_MM_RAIN;
+                if (dh == 0) { dh = 1;}
+              } else if (forecast.precipitationChance == 0) {
                 colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
-              }
+              } 
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
-              dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dashesUnderColumnHeight);
+              dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dh);
               if (color != colorOther && forecast.precipitationChanceOther == 0) {
                 colorDashes = getConditionColor(forecast.conditionOther, Graphics.COLOR_DK_GRAY);
                 dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
                 dc.fillRectangle(
                   x + (mDs.columnWidth / 3) * 2,
-                  mDs.columnY + mDs.columnHeight,
+                  mDs.columnY + mDs.columnHeight + 1,
                   mDs.columnWidth / 3,
-                  dashesUnderColumnHeight
+                  dh
                 );
               }
             }
