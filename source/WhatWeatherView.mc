@@ -579,14 +579,15 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
             windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
-          
           if (dashesUnderColumnHeight > 0 || (current.rain1hr > 0.0 && !mDs.oneField)) {
             var dhc = dashesUnderColumnHeight;
             colorDashes = Graphics.COLOR_DK_GRAY;
-             if (current.rain1hr > 0.0) {
-                colorDashes = COLOR_MM_RAIN;
-                if (dhc == 0) { dhc = 1;}
-              } else if (current.precipitationChance == 0) {
+            if (current.rain1hr > 0.0) {
+              colorDashes = COLOR_MM_RAIN;
+              if (dhc == 0) {
+                dhc = 1;
+              }
+            } else if (current.precipitationChance == 0) {
               colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
             }
             dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
@@ -743,7 +744,9 @@ class WhatWeatherView extends WatchUi.DataField {
               colorDashes = Graphics.COLOR_DK_GRAY;
               if (forecast.rain1hr > 0.0) {
                 colorDashes = COLOR_MM_RAIN;
-                if (dh == 0) { dh = 1;}
+                if (dh == 0) {
+                  dh = 1;
+                }
               } else if (forecast.precipitationChance == 0) {
                 colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
               } 
@@ -1008,6 +1011,15 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   function playAlert() as Void {
+    if ($._alertBacklight && Attention has :backlight) {
+      try {
+        Attention.backlight(true);
+      } catch (ex) {
+        System.println("Attention.backlight(true) failed");
+        ex.printStackTrace();
+      }
+    }
+
     if ($._soundMode == 0 || !(Attention has :playTone) || !System.getDeviceSettings().tonesOn) {
       return;
     }
