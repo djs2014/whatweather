@@ -579,7 +579,6 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
             windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
-
           if (dashesUnderColumnHeight > 0 || (current.rain1hr > 0.0 && !mDs.oneField)) {
             var dhc = dashesUnderColumnHeight;
             colorDashes = Graphics.COLOR_DK_GRAY;
@@ -750,7 +749,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 }
               } else if (forecast.precipitationChance == 0) {
                 colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
-              }
+              } 
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dh);
               if (color != colorOther && forecast.precipitationChanceOther == 0) {
