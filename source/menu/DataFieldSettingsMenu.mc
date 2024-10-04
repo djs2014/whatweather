@@ -218,12 +218,15 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       return;
     }
     if (id instanceof String && id.equals("sound")) {
-      var soundMenu = new WatchUi.Menu2({ :title => "Sound" });
+      var soundMenu = new WatchUi.Menu2({ :title => "Alert sound/light" });
       // mode: silent,beep,canary
-      var mi = new WatchUi.MenuItem("Mode", null, "sound_mode", null);
+      var mi = new WatchUi.MenuItem("Sound", null, "sound_mode", null);
       var value = getStorageValue(mi.getId() as String, 1) as Number;
       mi.setSubLabel($.getSoundModeText(value));
       soundMenu.addItem(mi);
+
+      var boolean = Storage.getValue("alert_backlight") ? true : false;
+      soundMenu.addItem(new WatchUi.ToggleMenuItem("Backlight", null, "alert_backlight", boolean, null));
 
       WatchUi.pushView(soundMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
