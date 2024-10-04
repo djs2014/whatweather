@@ -376,7 +376,6 @@ class RenderWeather {
       return;
     }
     var wp = windPoints[0] as WindPoint;
-    var radius = 10;
     var x = xOffset;
     if (showLeft) {
       x = wp.x + ds.columnWidth / 2 - xOffset;
@@ -384,20 +383,19 @@ class RenderWeather {
     var y = ds.columnY + ds.columnHeight / 2;
 
     if (track != null) {
-      drawWind(dc, x, y, radius, wp.bearing - (track as Number), wp.speed, wp.gust, true);
+      drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, true);
     } else {
-      drawWind(dc, x, y, radius, wp.bearing, wp.speed, wp.gust, false);
+      drawWind(dc, x, y, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
   function drawWindInfo(dc as Dc, windPoints as Array) as Void {
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
-      var wp = windPoints[idx] as WindPoint;
-      var radius = 8;
+      var wp = windPoints[idx] as WindPoint;    
       var xW = wp.x + ds.columnWidth / 2;
       var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-      drawWind(dc, xW, yW, radius, wp.bearing, wp.speed, wp.gust, false);
+      drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false);
     }
   }
 
@@ -937,7 +935,6 @@ class RenderWeather {
     dc as Dc,
     x as Number,
     y as Number,
-    radius as Number,
     windBearingInDegrees as Number,
     windSpeedMs as Float,
     windGustMs as Float,
@@ -949,14 +946,26 @@ class RenderWeather {
     var wsFontAlert = Graphics.FONT_TINY;
     var windGustLevel = 0;
     var iconColor = ds.COLOR_TEXT_ADDITIONAL;
+    var radius = 5;
+    var textWidthPadding = 1;
 
-    if (radius >= 10 || bigArrow) {
+    if (bigArrow) {
       wsFont = Graphics.FONT_SMALL;
       wsFontAlert = Graphics.FONT_MEDIUM;
     }
     if (windSpeedMs != null) {
-      var beaufort = $.windSpeedToBeaufort(windSpeedMs);
-      hasAlert = $._alertLevelWindSpeed > 0 && beaufort >= $._alertLevelWindSpeed;
+      var convertedWind = 0.0f;
+      if ($._alertWindIn == SHOW_WIND_KILOMETERS) {
+        convertedWind = $.mpsToKmPerHour(windSpeedMs);
+      } else if ($._alertWindIn  == SHOW_WIND_METERS) {
+        convertedWind = windSpeedMs;
+      } else {
+        convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
+      }      
+      
+      // System.println("Alert windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._alertWindIn " + $._alertWindIn);
+
+      hasAlert = $._alertLevelWindSpeed > 0.0f && convertedWind >= $._alertLevelWindSpeed;
       if (hasAlert) {
         iconColor = Graphics.COLOR_RED;
         wsFont = wsFontAlert;
@@ -977,25 +986,27 @@ class RenderWeather {
         }
       }
 
-      if ($._showWind == SHOW_WIND_BEAUFORT) {
-        text = beaufort.format("%d");
+      var windSpeed = windSpeedMs;
+      if ($._showWind == SHOW_WIND_KILOMETERS) {
+        windSpeed = $.mpsToKmPerHour(windSpeedMs);
+       } else if ($._showWind  == SHOW_WIND_METERS) {
+        windSpeed = windSpeedMs;  
       } else {
-        var value = windSpeedMs;
-        if ($._showWind == SHOW_WIND_KILOMETERS) {
-          value = $.mpsToKmPerHour(windSpeedMs);
-          var devSettings = System.getDeviceSettings();
-          if (devSettings.distanceUnits == System.UNIT_STATUTE) {
-            value = $.kilometerToMile(value);
-          }
+        windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
+        text = windSpeed.format("%d");
+        textWidthPadding = 3;
+      }      
+
+      if ($._showWind != SHOW_WIND_BEAUFORT) {      
+        if (windSpeed < 10) {
+          text = windSpeed.format("%.1f");          
+          } else {
+          windSpeed = Math.round(windSpeed);
+          text = windSpeed.format("%d");
         }
-        value = Math.round(value);
-        if (value < 10) {
-          text = value.format("%.1f");
-        } else {
-          text = value.format("%d");
-        }
+         // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
       }
-      radius = $.min(radius, dc.getTextWidthInPixels(text, wsFont)) + 1;
+      radius = (dc.getTextWidthInPixels(text, wsFont) / 2) + 3 + textWidthPadding; 
     }
 
     // dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);

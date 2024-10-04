@@ -146,12 +146,21 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Wind beaufort|0~17", null, "alertLevelWindSpeed", null);
+      mi = new WatchUi.MenuItem("Wind in", null, "alertWindIn", null);
+      var value = getStorageValue(mi.getId() as String, $._alertWindIn) as Number;
+      if (value == SHOW_WIND_NOTHING) { 
+        value = SHOW_WIND_BEAUFORT;
+      }
+      var windIn = $.getShowWindText(value);
+      mi.setSubLabel(windIn);
+      alertsMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Wind " + windIn, null, "alertLevelWindSpeed", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Wind gust", null, "alertLevelWindGust", null);
-      var value = getStorageValue(mi.getId() as String, 2) as Number;
+      value = getStorageValue(mi.getId() as String, 2) as Number;
       mi.setSubLabel($.getGustLevelText(value));
       alertsMenu.addItem(mi);
 
@@ -261,7 +270,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       sp.show();
       return;
     }
-    if (id instanceof String && id.equals("showWind")) {
+    if (id instanceof String && (id.equals("showWind") || id.equals("alertWindIn"))){
       var sp = new selectionMenuPicker("Wind display", id as String);
       for (var i = 0; i < 4; i++) {
         sp.add($.getShowWindText(i), null, i);

@@ -1,3 +1,21 @@
+alert -> backlight on
+
+x wide field -> regen per uur -> underline oid indicatie
+toaste
+or display
+or both
+clear alert mem after x minutes
+option disable alerts -> not in json
+-- hidden function drawWind( radius parameter refact
+
+mm 1st hour
+---|..
+
+wind alert
+in beauf, mps, kmh, mph
+circle width wind icon
+after update showwindin -> update other item -> sublabeltext update units
+
 check mm/h in minutely => sum of it
 0.1 ==> correct or
 

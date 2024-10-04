@@ -34,7 +34,7 @@ function stringReplaceAtInterval(str as String, nrOfChars as Number, newPart as 
     while (remainingLength > 0) {
       cursor = cursor + nrOfChars;
       if (cursor > str.length()) {
-        part = str.substring(cursor, null) as String;
+        part = str.substring(cursor, str.length()) as String;
       } else {
         part = str.substring(cursor, cursor + nrOfChars) as String;
       }

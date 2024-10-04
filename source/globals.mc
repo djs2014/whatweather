@@ -21,6 +21,8 @@ const COLOR_WHITE_GREEN = 0xE6ffE5;   // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xFFFFE1;  // 0xFFFFAA;
 const COLOR_WHITE_ORANGE = 0xFFE9E1;  // 0xF1AC4A;
 const COLOR_MM_RAIN =  0x154360; // DARK_BLUE_10
+const COLOR_MM_DIVIDER =  0xccccff; // Lavender BLUE
+// const COLOR_MM_DIVIDER =  0x000000; // Lavender BLUE
 
 var _showCurrentForecast as Lang.Boolean = true;
 var _maxHoursForecast as Lang.Number = 8;
@@ -39,8 +41,6 @@ var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
 var _showInfoWideField as Lang.Number = SHOW_INFO_NOTHING;
 var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
 
-var _alertLevelWindSpeed as Lang.Number = 5;    
-var _alertLevelWindGust as Lang.Number = 2;
 var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;
 var _showTemperature as Lang.Boolean = true;
 var _showRelativeHumidity as Lang.Boolean = true;
@@ -59,6 +59,9 @@ var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Float = 0.2f;
 var _alertLevelRainMMHour as Lang.Float = 0.2f;
 var _alertLevelDewpoint as Lang.Number = 19;
+var _alertWindIn as Lang.Number = SHOW_WIND_BEAUFORT;
+var _alertLevelWindSpeed as Lang.Float = 5.0f;    
+var _alertLevelWindGust as Lang.Number = 2;
 var _weatherDataSource as WeatherSource = wsOWMFirst;
 var _soundMode as Number = 1;
 

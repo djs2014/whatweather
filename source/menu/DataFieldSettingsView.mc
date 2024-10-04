@@ -132,9 +132,9 @@ function getShowWindText(value as Number) as String {
     case SHOW_WIND_NOTHING:
       return "Nothing";
     case SHOW_WIND_METERS:
-      return "Meters";
+      return "Meters/sec";
     case SHOW_WIND_KILOMETERS:
-      return "Kilometers";
+      return "Kilometers/hour";
     case SHOW_WIND_BEAUFORT:
       return "Beaufort";
     
@@ -167,11 +167,11 @@ function getGustLevelText(value as Number) as String {
     case 0:
       return "None";
     case 1:
-      return "Gusts";
+      return "Gusts (+18 km/h)";
     case 2:
-      return "Strong gusts";    
+      return "Strong gusts (+27.7km/h)";    
     case 3:
-      return "Violent gusts";
+      return "Violent gusts (+46 km/h)";
     
     default:
       return "--";

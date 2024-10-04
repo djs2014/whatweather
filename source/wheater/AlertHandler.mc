@@ -6,7 +6,8 @@ class AlertHandler {
   hidden var alertPrecipitationChance as Lang.Number = 0;
   hidden var alertRainMMfirstHour as Lang.Float = 0.0f;
   hidden var alertRainMMHour as Lang.Float = 0.0f;
-  hidden var alertWindSpeed as Lang.Number = 0;
+  hidden var alertWindIn as Lang.Number = SHOW_WIND_BEAUFORT;
+  hidden var alertWindSpeed as Lang.Float = 0.0f;
   hidden var alertWindGust as Lang.Number = 0;
   hidden var alertDewpoint as Lang.Number = 0;
 
@@ -56,8 +57,11 @@ class AlertHandler {
   function setAlertRainMMHour(value as Lang.Float) as Void {
     alertRainMMHour = value;
   }
-  //! is in beaufort
-  function setAlertWindSpeed(value as Lang.Number) as Void {
+  
+  function setAlertWindIn(value as Number) as Void {
+    alertWindIn = value;
+  }
+  function setAlertWindSpeed(value as Lang.Float) as Void {
     alertWindSpeed = value;
   }
   // level 1,2,3
@@ -348,16 +352,24 @@ class AlertHandler {
   }
 
   function processWindSpeed(windSpeedMs as Lang.Float?) as Void {
-    if (alertWindSpeed <= 0 || windSpeedMs == null) {
+    if (alertWindSpeed <= 0.0f || windSpeedMs == null) {
       return;
     }
     maxWindSpeed = $.max(maxWindSpeed, windSpeedMs) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    var beaufort = $.windSpeedToBeaufort(windSpeedMs);
-    if (statusWindSpeed == NEUTRAL && beaufort >= alertWindSpeed) {
+    var convertedWind = 0.0f;
+    if (alertWindIn == SHOW_WIND_KILOMETERS) {
+      convertedWind = $.mpsToKmPerHour(windSpeedMs);
+    } else if (alertWindIn == SHOW_WIND_METERS) {
+      convertedWind = windSpeedMs;
+    } else {      
+      convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
+    }
+
+    if (statusWindSpeed == NEUTRAL && convertedWind >= alertWindSpeed) {
       statusWindSpeed = TRIGGERED;
     }
-    if (beaufort >= alertWindSpeed) {
+    if (convertedWind >= alertWindSpeed) {
       allClearWindSpeed = false;
     }
   }
@@ -397,7 +409,7 @@ class AlertHandler {
     }
     if (hasOWMAlert) {
       allClearOWMAlert = false;
-    }   
+    }
   }
 }
 
