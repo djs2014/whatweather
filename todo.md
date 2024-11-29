@@ -1,5 +1,10 @@
 slippery road alert
-
+TODO slippery road
+ - temp -10 -- 2
+ - humidity > 80%
+ - rainy/snowy perc 
+ - prev hour wet and <2, current 2> 
+ - prev day wet 
 
 alert -> backlight on
 
