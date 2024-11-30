@@ -6,6 +6,30 @@ TODO slippery road
  - prev hour wet and <2, current 2> 
  - prev day wet 
 
+historical data: https://openweathermap.org/api/one-call-3#history
+
+
+historical data: https://open-meteo.com/
+curl "https://api.open-meteo.com/v1/forecast?latitude=52.3221&longitude=4.89532&past_days=1&forecase_days=0&hourly=temperature_2m,relative_humidity_2m,rain"
+
+
+Check for ijzel
+https://open-meteo.com/en/docs#hourly=dew_point_2m,soil_temperature_0cm,soil_moisture_0_to_1cm,freezing_level_height&daily=&timezone=Europe%2FBerlin&forecast_days=1
+
+https://www.weeronline.nl/nieuws/hoe-ontstaat-ijzel-en-wanneer-kunnen-we-dit-verwachten
+1: IJzel kan voorkomen bij intredende dooi na een vorstperiode.Vaak valt er eerst sneeuw, maar wanneer de lucht zachter wordt gaat de sneeuw over in regen. 
+Zolang het wegdek bevroren is kan regen ijzel veroorzaken. 
+--> past days: cold below zero + current above zero and rain
+2: Regen kouder dan het vriespunt  
+De zachtere lucht arriveert meestal als eerste hoger in de lucht. En als de lucht daaronder nog onder nul is kan regen afkoelen tot beneden het vriespunt. Zodra dit gebeurt zal de druppel niet meteen bevriezen, maar nog een tijd vloeibaar blijven. We spreken dan van onderkoelde regen. Wanneer deze ijskoude druppels iets raken vormt meteen ijs.
+
+
+----------------
+counter 10000 per dag
+open-meteo -> convert naar Garmin data (geen api key nodig dan.)
+
+
+
 alert -> backlight on
 
 x wide field -> regen per uur -> underline oid indicatie
