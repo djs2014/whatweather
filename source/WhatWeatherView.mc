@@ -389,8 +389,7 @@ class WhatWeatherView extends WatchUi.DataField {
             var columnWidth = 1;
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = 0;
-            var rainLastEntry = 0;
-            var rainLastEntry = 0;
+            var rainLastEntry = 0;            
             mDs.calculateColumnWidth(offset);
             for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
               var pop = (mm as WeatherMinutely).pops[i];
@@ -406,12 +405,7 @@ class WhatWeatherView extends WatchUi.DataField {
               drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop);
               x = x + columnWidth;
               rainLastEntry = rainLastEntry + 1;
-            }
-            if (rainLastEntry > 0 && rainLastEntry < 59) {
-              // System.println("rainLastEntry: " + rainLastEntry);
-              drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
-              rainLastEntry = rainLastEntry + 1;
-            }
+            }           
             if (rainLastEntry > 0 && rainLastEntry < 59) {
               // System.println("rainLastEntry: " + rainLastEntry);
               drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
@@ -420,8 +414,6 @@ class WhatWeatherView extends WatchUi.DataField {
             if (popTotal > 0.0) {
               mHasMinuteRains = true;
               dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-              // // popTotal is mm/hour, pop is for 1 minute
-              var rainTextTotal = (popTotal / 60.0).format("%.2f") + " mm";
               // // popTotal is mm/hour, pop is for 1 minute
               var rainTextTotal = (popTotal / 60.0).format("%.2f") + " mm";
               var rainTextTime = "in " + rainInXminutes.format("%d") + " min";
@@ -746,9 +738,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
               windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
             }
-
-            if (dashesUnderColumnHeight > 0 || (forecast.rain1hr > 0.0 && !mDs.oneField)) {
-              var dh = dashesUnderColumnHeight;
+            
             if (dashesUnderColumnHeight > 0 || (forecast.rain1hr > 0.0 && !mDs.oneField)) {
               var dh = dashesUnderColumnHeight;
               colorDashes = Graphics.COLOR_DK_GRAY;
@@ -1024,21 +1014,6 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.drawLine(x, y1, x, y2);
   }
 
-  function drawColumnPrecipitationMillimetersDivider(
-    dc as Dc,
-    color as Graphics.ColorType,
-    x as Number,
-    y as Number,
-    bar_width as Number,
-    bar_height as Number,
-    divider_height as Number
-  ) as Void {
-    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    var y1 = y + bar_height - divider_height;
-    var y2 = y + bar_height + divider_height;
-    dc.drawLine(x, y1, x, y2);
-  }
-
   function playAlert() as Void {
     if ($._alertBacklight && Attention has :backlight) {
       try {
@@ -1210,7 +1185,6 @@ class WhatWeatherView extends WatchUi.DataField {
             var pop = (mm as WeatherMinutely).pops[i];
             popTotal = popTotal + pop;
           }
-          popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
           popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
           mAlertHandler.processRainMMfirstHour(popTotal);
         }
