@@ -43,7 +43,6 @@ option disable alerts -> not in json
 mm 1st hour
 ---|..
 
-
 wind alert
 in beauf, mps, kmh, mph
 circle width wind icon

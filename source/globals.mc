@@ -64,6 +64,7 @@ var _alertLevelWindSpeed as Lang.Float = 5.0f;
 var _alertLevelWindGust as Lang.Number = 2;
 var _weatherDataSource as WeatherSource = wsOWMFirst;
 var _soundMode as Number = 1;
+var _alertBacklight as Boolean = false;
 
  (:typecheck(disableBackgroundCheck))
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
