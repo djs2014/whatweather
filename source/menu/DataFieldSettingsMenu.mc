@@ -65,6 +65,12 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       showMenu.addItem(new WatchUi.ToggleMenuItem("Current forecast", null, "showCurrentForecast", boolean, null));
       boolean = Storage.getValue("showMinuteForecast") ? true : false;
       showMenu.addItem(new WatchUi.ToggleMenuItem("Rain first hour", null, "showMinuteForecast", boolean, null));
+      
+      boolean = Storage.getValue("zoomMinuteForecast") ? true : false;
+      showMenu.addItem(new WatchUi.ToggleMenuItem("Zoom rain first hour", null, "zoomMinuteForecast", boolean, null));
+      mi = new WatchUi.MenuItem("Zoom when mm >|0.0~", null, "zoomMinuteForecastMM", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      showMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Max hours forecast|0~24", null, "maxHoursForecast", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));

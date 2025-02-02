@@ -57,6 +57,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden var mDs as DisplaySettings = new DisplaySettings();
 
+  // @@TODO Only wide fields for now and 2 weather columns // _zoomMinuteForecast  
+  hidden var mZoomMinutelyColumns as Number = 2;
+  hidden var mZoomMinutely as Boolean = false;
+  
   var mShowTemperature as Boolean = false;
   var mShowDewpoint as Boolean = false;
   var mShowPressure as Boolean = false;
@@ -362,6 +366,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var blueBarPercentage = [];
     var nightTime = false;
     var sunsetPassed = false;
+    var maxHoursForecast = $._maxHoursForecast;
 
     try {
       var mCurrentLocation = $.getCurrentLocation();
@@ -376,9 +381,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if ($._showMinuteForecast) {
         var maxIdx = 0;
+        
         if (mm != null) {
           maxIdx = mm.pops.size();
-
+          var show5minMarker = false;
           var popTotal = 0.0 as Lang.Float;
           if (maxIdx > 0 && mm.max > 0.049) {
             xOffsetWindFirstColumn = 60;
@@ -387,22 +393,33 @@ class WhatWeatherView extends WatchUi.DataField {
             // System.println("mmMinutesDelayed: " + mmMinutesDelayed);
             var xMMstart = x;
             var columnWidth = 1;
+            // @@TEST
+            if (mZoomMinutely && mDs.wideField) {
+              columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen             
+              maxHoursForecast = mZoomMinutelyColumns;
+              show5minMarker = true;
+            }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
-            var rainInXminutes = 0;
+            var rainInXminutes = -1;
             var rainLastEntry = 0;            
-            mDs.calculateColumnWidth(offset);
+            mDs.calculateColumnWidth(offset, maxHoursForecast);
             for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
               var pop = (mm as WeatherMinutely).pops[i];
               popTotal = popTotal + pop; // / 60.0; // popTotal is mm/hour, pop is for 1 minute
               if (DEBUG_DETAILS) {
                 System.println(Lang.format("minutely x[$1$] pop[$2$] i[$3$]", [x, pop, i]));
               }
-              if (pop > 0 && rainInXminutes == 0) {
+              if (pop > 0 && rainInXminutes < 0) {
                 // First rain happens in i minutes
-                rainInXminutes = i - mmMinutesDelayed;
+                rainInXminutes = i - mmMinutesDelayed - 1;
               }
 
               drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop);
+
+              if (show5minMarker && ((i + mmMinutesDelayed) % 5 == 0)) {
+                //@@ draw 5 min marker
+                drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
+              }
               x = x + columnWidth;
               rainLastEntry = rainLastEntry + 1;
             }           
@@ -474,6 +491,7 @@ class WhatWeatherView extends WatchUi.DataField {
             // No mm rain anymore, recalculate layout
             mCalculateLayout = true;
             mHasMinuteRains = false;
+            mZoomMinutely = false;
           }
         }
       }
@@ -622,7 +640,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if (hourlyForecast != null) {
         var maxSegment = hourlyForecast.size();
-        for (var segment = 0; validSegment < $._maxHoursForecast && segment < maxSegment; segment += 1) {
+        for (var segment = 0; validSegment < maxHoursForecast && segment < maxSegment; segment += 1) {
           var forecast = hourlyForecast[segment] as WeatherHourly;
           if (DEBUG_DETAILS) {
             System.println(forecast.info());
@@ -1166,6 +1184,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var current = null;
     var hourlyForecast = null;
 
+    mZoomMinutely = false;
+
     mAlertHandler.resetAllClear();
 
     try {
@@ -1187,6 +1207,8 @@ class WhatWeatherView extends WatchUi.DataField {
           }
           popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
           mAlertHandler.processRainMMfirstHour(popTotal);
+
+          mZoomMinutely = $._zoomMinuteForecast && popTotal >= $._zoomMinuteForecastMM;
         }
       } // showMinuteForecast
 

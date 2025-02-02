@@ -1,3 +1,19 @@
+option
+  focus rain first hour == zoom only showing this (+ wind etc)
+    small field, when amount > x mm
+      aka amount hours to show / 5 + wind right aligned
+    wide field, .. 
+    ..
+
+    hidden var mZoomMinutely as Boolean = false;
+  hidden var mZoomMinutelyColumns as Number = 0;
+  hidden var mZoomMinutelyMM as Float = 0.1f;
+zoomMinuteForecastMM
+
+
+add new fields 
+  weather sdk 8.0 + check if available
+
 slippery road alert
 TODO slippery road
  - temp -10 -- 2
