@@ -393,11 +393,17 @@ class WhatWeatherView extends WatchUi.DataField {
             // System.println("mmMinutesDelayed: " + mmMinutesDelayed);
             var xMMstart = x;
             var columnWidth = 1;
+            var max_mmPerHour = $._maxMMRainPerHour;
             // @@TEST
             if (mZoomMinutely && mDs.wideField) {
               columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen             
               maxHoursForecast = mZoomMinutelyColumns;
               show5minMarker = true;
+              if ($._zoomFactorMinuteForecast == 0)
+              {
+                $._zoomFactorMinuteForecast = 3;
+              } 
+              max_mmPerHour = max_mmPerHour / $._zoomFactorMinuteForecast; // Zoom in, or else small amounts not visible.              
             }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = -1;
@@ -414,7 +420,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 rainInXminutes = i - mmMinutesDelayed - 1;
               }
 
-              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop);
+              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop, max_mmPerHour);
 
               if (show5minMarker && ((i + mmMinutesDelayed) % 5 == 0)) {
                 //@@ draw 5 min marker
@@ -571,7 +577,8 @@ class WhatWeatherView extends WatchUi.DataField {
               mDs.columnY,
               mDs.columnWidth,
               mDs.columnHeight,
-              current.rain1hr
+              current.rain1hr,
+              $._maxMMRainPerHour
             );
           }
           if ($._showUVIndex) {
@@ -725,7 +732,8 @@ class WhatWeatherView extends WatchUi.DataField {
                 mDs.columnY,
                 mDs.columnWidth,
                 mDs.columnHeight,
-                forecast.rain1hr
+                forecast.rain1hr,
+                $._maxMMRainPerHour
               );
             }
             if (mShowDetails) {
@@ -1001,10 +1009,11 @@ class WhatWeatherView extends WatchUi.DataField {
     y as Number,
     bar_width as Number,
     bar_height as Number,
-    mmhour as Float
+    mmhour as Float,
+    max_mmPerHour as Number
   ) as Void {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    var max_mmPerHour = $._maxMMRainPerHour;
+    // var max_mmPerHour = $._maxMMRainPerHour;
     var perc = $.percentageOf(mmhour, max_mmPerHour).toNumber();
     if (perc <= 0) {
       return;

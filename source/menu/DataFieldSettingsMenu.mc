@@ -71,6 +71,9 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi = new WatchUi.MenuItem("Zoom when mm >|0.0~", null, "zoomMinuteForecastMM", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       showMenu.addItem(mi);
+      mi = new WatchUi.MenuItem("Zoom factor |1~10", null, "zoomFactorMinuteForecast", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      showMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Max hours forecast|0~24", null, "maxHoursForecast", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
@@ -198,7 +201,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi = new WatchUi.MenuItem("Max rain per hour (mm))|1~20", null, "maxMMRainPerHour", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
-
+      
       WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }

@@ -53,7 +53,8 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("showCurrentForecast", true);
         Storage.setValue("showMinuteForecast", true);
         Storage.setValue("zoomMinuteForecast", true);
-        Storage.setValue("zoomMinuteForecastMM", 0.3f);
+        Storage.setValue("zoomMinuteForecastMM", 0.2f);
+        Storage.setValue("zoomFactorMinuteForecast", 3);
         Storage.setValue("maxHoursForecast", 8);
         Storage.setValue("showClouds", true);
         Storage.setValue("showCurrentWind", true);
@@ -100,6 +101,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._showMinuteForecast = $.getStorageValue("showMinuteForecast", $._showMinuteForecast) as Boolean;
       $._zoomMinuteForecast = $.getStorageValue("zoomMinuteForecast", $._zoomMinuteForecast) as Boolean;
       $._zoomMinuteForecastMM = $.getStorageValue("zoomMinuteForecastMM", $._zoomMinuteForecastMM) as Float;
+      $._zoomFactorMinuteForecast = $.getStorageValue("zoomFactorMinuteForecast", $._zoomFactorMinuteForecast) as Number;      
       $._maxHoursForecast = $.getStorageValue("maxHoursForecast", $._maxHoursForecast) as Number;
       $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
       $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
