@@ -71,22 +71,26 @@ class DisplaySettings {
     self.heightWind = heightWind;
     self.heightWc = heightWc;
     self.heightWt = heightWt;
-    calculateColumnWidth(0);
+    calculateColumnWidth(0, self.nrOfColumns);
 
     if (self.heightWind > 0 || self.heightWc > 0) {
       self.dashesUnderColumnHeight = 0;
     }
   }
 
-  function calculateColumnWidth(offset as Lang.Number) as Void {
+  function calculateColumnWidth(offset as Lang.Number, nrOfColumns as Number) as Void {
     offsetX = offset;
     columnWidth = 0;
-    if (nrOfColumns > 0) {
-      columnWidth = ((width - offsetX - 2 * margin - (nrOfColumns - 1) * space) / nrOfColumns).toNumber();
+    var columns = nrOfColumns;
+    if (columns < 0) {
+      columns = self.nrOfColumns;
+    }
+    if (columns > 0) {
+      columnWidth = ((width - offsetX - 2 * margin - (columns - 1) * space) / columns).toNumber();
     }
     columnY = margin;
     var correction = (
-      (width - offsetX - 2 * margin - nrOfColumns * columnWidth - (nrOfColumns - 1) * space) /
+      (width - offsetX - 2 * margin - columns * columnWidth - (columns - 1) * space) /
       2
     ).toNumber();
     columnX = (margin + correction).toNumber();
