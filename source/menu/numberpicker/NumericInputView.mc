@@ -328,12 +328,12 @@ class NumericInputView extends WatchUi.View {
   //! state of your app here.
   function onHide() as Void {}
 
-  function setDebugInfo(event as String, coord as Lang.Array<Lang.Number>) as Void {
+  function setDebugInfo(event as String, coord as [Number, Number]) as Void {
     var key = getKeyPressed(coord);
     _debugInfo = Lang.format("Event[$1$] Coord[$2$,$3$] Key:[$4$]", [event, coord[0], coord[1], key]);
   }
 
-  function onKeyPressed(coord as Lang.Array<Lang.Number>) as Void {
+  function onKeyPressed(coord as [Number, Number]) as Void {
     _keyPressed = getKeyPressed(coord);
 
     // Controls

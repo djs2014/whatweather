@@ -1,3 +1,39 @@
+TEST delayed startup  see if it prevent startup crashes
+  - no bg process start for 5 seconds?
+  - check memory for bg task 
+
+Background: on Start
+Background: getServiceDelegate start bg task:
+Background: BackgroundServiceDelegate initialize
+Background: on Stop
+on Start
+Loading user settings
+Reset BG service
+Comfort settings
+Storage [openWeatherProxy] set to [https://owm.castlephoto.info/owm_one]
+Storage [openWeatherProxyAPIKey] set to [0548b3c7-61bc-4afc-b6e5-616f19d3cf23]
+User settings loaded
+=> BackgroundServiceDelegate initialize -> do this after on Start 
+
+depricated
+cc.observationLocationName =
+      $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
+
+How to prevent stackoverflow
+  - Point2DOnCircle -> too many nested calls?
+
+  optimize 
+    hidden function drawWind(
+    dc as Dc,
+    x as Number,
+    y as Number,
+    windBearingInDegrees as Number,
+    windSpeedMs as Float,
+    windGustMs as Float,
+    bigArrow as Boolean
+  ) as Void {
+
+
 option
   focus rain first hour == zoom only showing this (+ wind etc)
     small field, when amount > x mm

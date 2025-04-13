@@ -24,15 +24,16 @@ function getLatestGarminWeather() as WeatherData {
       cc.lat = $.getNumericValue(location[0], 0.0d) as Lang.Double;
       cc.lon = $.getNumericValue(location[1], 0.0d) as Lang.Double;
     }
-    cc.observationLocationName = $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
-    // Skip after first ,
-    var comma = cc.observationLocationName.find(",");
-    if (comma != null) {
-      var onlyName = (cc.observationLocationName as Lang.String).substring(0, comma);
-      if (onlyName != null) {
-        cc.observationLocationName = onlyName as Lang.String;
-      }
-    }
+    cc.observationLocationName = "G" + cc.lat + "," + cc.lon;
+    // cc.observationLocationName = $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
+    // // Skip after first ,
+    // var comma = cc.observationLocationName.find(",");
+    // if (comma != null) {
+    //   var onlyName = (cc.observationLocationName as Lang.String).substring(0, comma);
+    //   if (onlyName != null) {
+    //     cc.observationLocationName = onlyName as Lang.String;
+    //   }
+    // }
 
     cc.observationTime = garCurrent.observationTime;
     cc.clouds = 0; // Not available

@@ -21,9 +21,13 @@ class WhatWeatherApp extends Application.AppBase {
     AppBase.initialize();
   }
 
-  function onStart(state as Dictionary?) as Void {}
+  function onStart(state as Dictionary?) as Void {
+    System.println("on Start");
+  }
 
-  function onStop(state as Dictionary?) as Void {}
+  function onStop(state as Dictionary?) as Void {
+    System.println("on Stop");
+  }
 
   (:typecheck(disableBackgroundCheck))
   function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
@@ -246,6 +250,7 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   public function getServiceDelegate() as [System.ServiceDelegate] {
+    System.println("getServiceDelegate start bg task:");
     return [new BackgroundServiceDelegate()];
   }
 
