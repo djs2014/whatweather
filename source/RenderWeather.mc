@@ -54,7 +54,7 @@ class RenderWeather {
     uvPoints as Lang.Array,
     maxUvIndex as Lang.Number,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = uvPoints.size();
@@ -106,7 +106,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
@@ -158,7 +158,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
@@ -207,7 +207,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = points.size();
@@ -253,7 +253,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = points.size();
@@ -773,7 +773,7 @@ class RenderWeather {
   }
 
   hidden function getVulcanoPts(x as Number, y as Number, range as Number) as Polygon {
-    var pts = [];
+    var pts = [] as Polygon;
 
     var halfRange = (range * 0.5).toNumber();
     var p2Range = (range * 0.2).toNumber();
@@ -855,7 +855,7 @@ class RenderWeather {
   }
 
   hidden function getLightningPts(x as Number, y as Number, range as Number) as Polygon {
-    var pts = [];
+    var pts = [] as Polygon;
 
     pts.add([x, y - range]);
     pts.add([(x + range * 0.5).toNumber(), y - range]);

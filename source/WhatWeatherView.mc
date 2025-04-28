@@ -363,7 +363,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var hourlyForecast = null;
     var previousCondition = -1;
     var weatherTextLine = 0;
-    var blueBarPercentage = [];
+    var blueBarPercentage = [] as Array<Number>;
     var nightTime = false;
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
