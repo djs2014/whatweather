@@ -433,7 +433,7 @@ class NumericInputView extends WatchUi.View {
   //   _clickType = clickType;
   // }
 
-  function getKeyPressed(coord as Lang.Array<Lang.Number>) as String {
+  function getKeyPressed(coord as [Number, Number]) as String {
     var x = coord[0] as Number;
     var y = coord[1] as Number;
     // Double try/catch fix for bug Value may not be initialized.
