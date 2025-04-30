@@ -316,10 +316,10 @@ exports.convertOWMError = function (status, body) {
     return converted;
 }
 
-exports.getCachedAlerts = function (appid, lat, lon) {
-    let key = getCacheKey(appid, lat, lon);
-    let alerts = null;
-    if (key) { alerts = alertCache.get(key); }
-    if (!alerts || alerts.length == 0) { return []; }
-    return alerts;
-}
+// exports.getCachedAlerts = function (appid, lat, lon) {
+//     let key = getCacheKey(appid, lat, lon);
+//     let alerts = null;
+//     if (key) { alerts = alertCache.get(key); }
+//     if (!alerts || alerts.length == 0) { return []; }
+//     return alerts;
+// }

@@ -1,6 +1,7 @@
 const { app } = require('@azure/functions');
+// const fetch = require("node-fetch");
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const fetch = require("node-fetch");
 const owm = require('../services/owm.js');
 const apikeys = require('../helpers/apikeys.js');
 
@@ -9,7 +10,7 @@ const API_SERVICE_OWM_ONE_URL_3_0 = "https://api.openweathermap.org/data/3.0/one
 const API_SERVICE_OWM_PARAMETERS = "&units=metric&exclude=daily";
 
 app.http('weather', {
-    methods: ['GET'],
+    methods: ['GET', 'POST'],
     authLevel: 'anonymous',
     handler: async (request, context) => {
         context.log(`Http function processed request for url "${request.url}"`);
@@ -23,6 +24,7 @@ app.http('weather', {
             context.log('Process owm_one: ' + queryString);
 
             // authorization
+
             let authorization = request.headers.get("authorization");
             if (!authorization) {
                 context.log('Unauthorized');
@@ -97,7 +99,6 @@ app.http('weather', {
             if (fetchResp.status != 200) {
                 let m = JSON.stringify(owm.convertOWMError(fetchResp.status, resBody));
                 context.log('OWM response error: ' + m);
-                res.end(m);
                 return {
                     jsonBody: m
                 };
