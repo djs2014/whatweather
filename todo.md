@@ -1,3 +1,12 @@
+oracle cloud free? functions
+
+//@@ TEST, TODO setting
+    System.println("secondsToNext: " + secondsToNext);
+    if (secondsToNext < -15) {
+      // Force init webrequest, scheduling is not working?
+      mBGActive = false;
+    }
+    
 TEST delayed startup  see if it prevent startup crashes
   - no bg process start for 5 seconds?
   - check memory for bg task 

@@ -203,11 +203,13 @@ class BGServiceHandler {
     }
     var elapsedSeconds = Time.now().value() - lastTime.value();
     var secondsToNext = mUpdateFrequencyInMinutes * 60 - elapsedSeconds;
-    //@@ TEST
+    //@@ TEST, TODO setting
     System.println("secondsToNext: " + secondsToNext);
     if (secondsToNext < -15) {
       // Force init webrequest, scheduling is not working?
       mBGActive = false;
+      mHttpStatus = HTTP_OK;  
+      mError = CustomErrors.ERROR_BG_NONE;    
     }
     return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
