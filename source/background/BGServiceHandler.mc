@@ -203,14 +203,21 @@ class BGServiceHandler {
     }
     var elapsedSeconds = Time.now().value() - lastTime.value();
     var secondsToNext = mUpdateFrequencyInMinutes * 60 - elapsedSeconds;
-    //@@ TEST, TODO setting
+    
     System.println("secondsToNext: " + secondsToNext);
-    if (secondsToNext < -15) {
-      // Force init webrequest, scheduling is not working?
-      mBGActive = false;
-      mHttpStatus = HTTP_OK;  
-      mError = CustomErrors.ERROR_BG_NONE;    
+    if (secondsToNext < 0) {
+
+      secondsToNext = secondsToNext * -1;
+      if ($.g_bg_timeout_seconds > 0 && secondsToNext > $.g_bg_timeout_seconds) {
+        // TEST Force init webrequest, scheduling is not working?
+        Disable();
+        Enable();
+        mBGActive = false;     
+        startBGservice();   
+      }
+      return $.secondsToShortTimeString(secondsToNext, "-{m}:{s}");
     }
+
     return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
 
