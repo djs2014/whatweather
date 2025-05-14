@@ -1,32 +1,12 @@
+settings: start bg when there is activity 
+
+if mTimerState .. 
+ mBGServiceHandler.autoScheduleService();
+
 oracle cloud free? functions
 
-//@@ TEST, TODO setting
-    System.println("secondsToNext: " + secondsToNext);
-    if (secondsToNext < -15) {
-      // Force init webrequest, scheduling is not working?
-      mBGActive = false;
-    }
-    
-TEST delayed startup  see if it prevent startup crashes
-  - no bg process start for 5 seconds?
-  - check memory for bg task 
 
-Background: on Start
-Background: getServiceDelegate start bg task:
-Background: BackgroundServiceDelegate initialize
-Background: on Stop
-on Start
-Loading user settings
-Reset BG service
-Comfort settings
-Storage [openWeatherProxy] set to [https://owm.castlephoto.info/owm_one]
-Storage [openWeatherProxyAPIKey] set to [0548b3c7-61bc-4afc-b6e5-616f19d3cf23]
-User settings loaded
-=> BackgroundServiceDelegate initialize -> do this after on Start 
 
-depricated
-cc.observationLocationName =
-      $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
 
 How to prevent stackoverflow
   - Point2DOnCircle -> too many nested calls?
