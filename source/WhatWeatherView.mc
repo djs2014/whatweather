@@ -141,7 +141,11 @@ class WhatWeatherView extends WatchUi.DataField {
         mTimerState = info.timerState as Lang.Number;
       }
       mBGServiceHandler.onCompute(info);
-      mBGServiceHandler.autoScheduleService();
+      if ($.g_bg_delay_seconds <= 0) {
+        mBGServiceHandler.autoScheduleService();
+      } else {
+        $.g_bg_delay_seconds = $.g_bg_delay_seconds - 1;
+      }
 
       var garminWeather = $.purgePastWeatherdata(getLatestGarminWeather());
       // Ignore this, there is no event onNewGarminData
@@ -305,6 +309,9 @@ class WhatWeatherView extends WatchUi.DataField {
     } else {
       var counter = "#" + mBGServiceHandler.getCounterStats();
       var next = mBGServiceHandler.getWhenNextRequest("");
+      if ($.g_bg_delay_seconds > 0) {
+        next = $.g_bg_delay_seconds.format("%d");
+      }
       var status;
       if (mBGServiceHandler.hasError()) {
         status = mBGServiceHandler.getError();

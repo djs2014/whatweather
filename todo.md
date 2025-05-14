@@ -1,4 +1,4 @@
-settings: start bg when there is activity 
+delayed bg
 
 if mTimerState .. 
  mBGServiceHandler.autoScheduleService();
