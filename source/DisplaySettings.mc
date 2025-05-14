@@ -32,7 +32,6 @@ class DisplaySettings {
   var columnY as Lang.Number = 0;
   var columnX as Lang.Number = 0;
 
-  var fieldSize as String = "s";
   var smallField as Lang.Boolean = true;
   var wideField as Lang.Boolean = false;
   var largeField as Lang.Boolean = false;
@@ -53,12 +52,11 @@ class DisplaySettings {
     self.width = dc.getWidth();
     self.height = dc.getHeight();
 
-    fieldSize = $.getDisplaySize(width, height);
-    System.println(fieldSize);
-    smallField = fieldSize.equals("s");
-    wideField = fieldSize.equals("w");
-    largeField = fieldSize.equals("l");
-    oneField = fieldSize.equals("o");
+    var ef = $.getEdgeField(dc);
+    largeField = ef == EfLarge;
+    smallField = ef == EfSmall;
+    wideField = ef == EfWide;
+    oneField = ef == EfOne;
   }
 
   function calculate(

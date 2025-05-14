@@ -54,7 +54,7 @@ class RenderWeather {
     uvPoints as Lang.Array,
     maxUvIndex as Lang.Number,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = uvPoints.size();
@@ -106,7 +106,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
@@ -158,7 +158,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
@@ -207,7 +207,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = points.size();
@@ -253,7 +253,7 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array
+    blueBarPercentage as Array<Number>
   ) as Void {
     try {
       var max = points.size();
@@ -382,20 +382,30 @@ class RenderWeather {
     }
     var y = ds.columnY + ds.columnHeight / 2;
 
-    if (track != null) {
-      drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, true);
-    } else {
-      drawWind(dc, x, y, wp.bearing, wp.speed, wp.gust, false);
+    try {
+      if (track != null) {
+        drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, true);
+      } else {
+        drawWind(dc, x, y, wp.bearing, wp.speed, wp.gust, false);
+      }
+    } catch (ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
     }
   }
 
   function drawWindInfo(dc as Dc, windPoints as Array) as Void {
     var max = windPoints.size();
     for (var idx = 0; idx < max; idx++) {
-      var wp = windPoints[idx] as WindPoint;    
+      var wp = windPoints[idx] as WindPoint;
       var xW = wp.x + ds.columnWidth / 2;
       var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-      drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false);
+      try {
+        drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false);
+      } catch (ex) {
+        System.println(ex.getErrorMessage());
+        ex.printStackTrace();
+      }
     }
   }
 
@@ -441,7 +451,11 @@ class RenderWeather {
     if (ds.oneField) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
-        var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
+        //var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
+        var yOffset = 0;
+        if (yLine == null) {
+          yOffset = (yLine * ds.heightWt) as Number;
+        }
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawText(
           x,
@@ -759,7 +773,7 @@ class RenderWeather {
   }
 
   hidden function getVulcanoPts(x as Number, y as Number, range as Number) as Polygon {
-    var pts = [];
+    var pts = [] as Polygon;
 
     var halfRange = (range * 0.5).toNumber();
     var p2Range = (range * 0.2).toNumber();
@@ -841,7 +855,7 @@ class RenderWeather {
   }
 
   hidden function getLightningPts(x as Number, y as Number, range as Number) as Polygon {
-    var pts = [];
+    var pts = [] as Polygon;
 
     pts.add([x, y - range]);
     pts.add([(x + range * 0.5).toNumber(), y - range]);
@@ -957,12 +971,12 @@ class RenderWeather {
       var convertedWind = 0.0f;
       if ($._alertWindIn == SHOW_WIND_KILOMETERS) {
         convertedWind = $.mpsToKmPerHour(windSpeedMs);
-      } else if ($._alertWindIn  == SHOW_WIND_METERS) {
+      } else if ($._alertWindIn == SHOW_WIND_METERS) {
         convertedWind = windSpeedMs;
       } else {
         convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
-      }      
-      
+      }
+
       // System.println("Alert windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._alertWindIn " + $._alertWindIn);
 
       hasAlert = $._alertLevelWindSpeed > 0.0f && convertedWind >= $._alertLevelWindSpeed;
@@ -989,24 +1003,24 @@ class RenderWeather {
       var windSpeed = windSpeedMs;
       if ($._showWind == SHOW_WIND_KILOMETERS) {
         windSpeed = $.mpsToKmPerHour(windSpeedMs);
-       } else if ($._showWind  == SHOW_WIND_METERS) {
-        windSpeed = windSpeedMs;  
+      } else if ($._showWind == SHOW_WIND_METERS) {
+        windSpeed = windSpeedMs;
       } else {
         windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
         text = windSpeed.format("%d");
         textWidthPadding = 3;
-      }      
+      }
 
-      if ($._showWind != SHOW_WIND_BEAUFORT) {      
+      if ($._showWind != SHOW_WIND_BEAUFORT) {
         if (windSpeed < 10) {
-          text = windSpeed.format("%.1f");          
-          } else {
+          text = windSpeed.format("%.1f");
+        } else {
           windSpeed = Math.round(windSpeed);
           text = windSpeed.format("%d");
         }
-         // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
+        // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
       }
-      radius = (dc.getTextWidthInPixels(text, wsFont) / 2) + 3 + textWidthPadding; 
+      radius = dc.getTextWidthInPixels(text, wsFont) / 2 + 3 + textWidthPadding;
     }
 
     // dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
@@ -1092,10 +1106,17 @@ class RenderWeather {
     angleInDegrees as Lang.Numeric
   ) as Point2D {
     // Convert from degrees to radians
-    var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
-    var yP = radius * Math.sin((angleInDegrees * Math.PI) / 180) + y;
+    try {
+      var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
+      var yP = radius * Math.sin((angleInDegrees * Math.PI) / 180) + y;
 
-    return [xP.toNumber(), yP.toNumber()] as Point2D;
+      return [xP.toNumber(), yP.toNumber()] as Point2D;
+    } catch (ex) {
+      // Stack overflow error
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
+      return [0, 0] as Point2D;
+    }
   }
 
   // @@TODO onlayout -> get array of points

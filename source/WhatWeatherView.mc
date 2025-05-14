@@ -57,10 +57,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden var mDs as DisplaySettings = new DisplaySettings();
 
-  // @@TODO Only wide fields for now and 2 weather columns // _zoomMinuteForecast  
+  // @@TODO Only wide fields for now and 2 weather columns // _zoomMinuteForecast
   hidden var mZoomMinutelyColumns as Number = 2;
   hidden var mZoomMinutely as Boolean = false;
-  
+
   var mShowTemperature as Boolean = false;
   var mShowDewpoint as Boolean = false;
   var mShowPressure as Boolean = false;
@@ -363,7 +363,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var hourlyForecast = null;
     var previousCondition = -1;
     var weatherTextLine = 0;
-    var blueBarPercentage = [];
+    var blueBarPercentage = [] as Array<Number>;
     var nightTime = false;
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
@@ -381,7 +381,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if ($._showMinuteForecast) {
         var maxIdx = 0;
-        
+
         if (mm != null) {
           maxIdx = mm.pops.size();
           var show5minMarker = false;
@@ -396,18 +396,17 @@ class WhatWeatherView extends WatchUi.DataField {
             var max_mmPerHour = $._maxMMRainPerHour;
             // @@TEST
             if (mZoomMinutely && mDs.wideField) {
-              columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen             
+              columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen
               maxHoursForecast = mZoomMinutelyColumns;
               show5minMarker = true;
-              if ($._zoomFactorMinuteForecast == 0)
-              {
+              if ($._zoomFactorMinuteForecast == 0) {
                 $._zoomFactorMinuteForecast = 3;
-              } 
-              max_mmPerHour = max_mmPerHour / $._zoomFactorMinuteForecast; // Zoom in, or else small amounts not visible.              
+              }
+              max_mmPerHour = max_mmPerHour / $._zoomFactorMinuteForecast; // Zoom in, or else small amounts not visible.
             }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = -1;
-            var rainLastEntry = 0;            
+            var rainLastEntry = 0;
             mDs.calculateColumnWidth(offset, maxHoursForecast);
             for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
               var pop = (mm as WeatherMinutely).pops[i];
@@ -420,15 +419,24 @@ class WhatWeatherView extends WatchUi.DataField {
                 rainInXminutes = i - mmMinutesDelayed - 1;
               }
 
-              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop, max_mmPerHour);
+              drawColumnPrecipitationMillimeters(
+                dc,
+                COLOR_MM_RAIN,
+                x,
+                y,
+                columnWidth,
+                mDs.columnHeight,
+                pop,
+                max_mmPerHour
+              );
 
-              if (show5minMarker && ((i + mmMinutesDelayed) % 5 == 0)) {
+              if (show5minMarker && (i + mmMinutesDelayed) % 5 == 0) {
                 //@@ draw 5 min marker
                 drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
               }
               x = x + columnWidth;
               rainLastEntry = rainLastEntry + 1;
-            }           
+            }
             if (rainLastEntry > 0 && rainLastEntry < 59) {
               // System.println("rainLastEntry: " + rainLastEntry);
               drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
@@ -605,14 +613,16 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
             windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
-          
+
           if (dashesUnderColumnHeight > 0 || (current.rain1hr > 0.0 && !mDs.oneField)) {
             var dhc = dashesUnderColumnHeight;
             colorDashes = Graphics.COLOR_DK_GRAY;
-             if (current.rain1hr > 0.0) {
-                colorDashes = COLOR_MM_RAIN;
-                if (dhc == 0) { dhc = 1;}
-              } else if (current.precipitationChance == 0) {
+            if (current.rain1hr > 0.0) {
+              colorDashes = COLOR_MM_RAIN;
+              if (dhc == 0) {
+                dhc = 1;
+              }
+            } else if (current.precipitationChance == 0) {
               colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
             }
             dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
@@ -764,16 +774,18 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mShowWind != SHOW_WIND_NOTHING || mShowWindFirst) {
               windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
             }
-            
+
             if (dashesUnderColumnHeight > 0 || (forecast.rain1hr > 0.0 && !mDs.oneField)) {
               var dh = dashesUnderColumnHeight;
               colorDashes = Graphics.COLOR_DK_GRAY;
               if (forecast.rain1hr > 0.0) {
                 colorDashes = COLOR_MM_RAIN;
-                if (dh == 0) { dh = 1;}
+                if (dh == 0) {
+                  dh = 1;
+                }
               } else if (forecast.precipitationChance == 0) {
                 colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
-              } 
+              }
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dh);
               if (color != colorOther && forecast.precipitationChanceOther == 0) {
@@ -1063,6 +1075,12 @@ class WhatWeatherView extends WatchUi.DataField {
       return;
     }
     if ($._soundMode == 3) {
+      // TODO quick fix, no toneprofile on edge1050
+      if ($.getEdgeVersion() >= 1050) {
+        Attention.playTone(Attention.TONE_LAP);
+        return;
+      }
+
       var toneProfile =
         [
           new Attention.ToneProfile(800, 40),

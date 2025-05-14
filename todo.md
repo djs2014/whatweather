@@ -1,3 +1,28 @@
+settings: start bg when there is activity 
+
+if mTimerState .. 
+ mBGServiceHandler.autoScheduleService();
+
+oracle cloud free? functions
+
+
+
+
+How to prevent stackoverflow
+  - Point2DOnCircle -> too many nested calls?
+
+  optimize 
+    hidden function drawWind(
+    dc as Dc,
+    x as Number,
+    y as Number,
+    windBearingInDegrees as Number,
+    windSpeedMs as Float,
+    windGustMs as Float,
+    bigArrow as Boolean
+  ) as Void {
+
+
 option
   focus rain first hour == zoom only showing this (+ wind etc)
     small field, when amount > x mm

@@ -9,6 +9,8 @@ import Toybox.Position;
 
 // TODO var gDebug as Boolean = false;
 
+var g_bg_timeout_seconds as Number = 0;
+
 (:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
 
@@ -21,9 +23,13 @@ class WhatWeatherApp extends Application.AppBase {
     AppBase.initialize();
   }
 
-  function onStart(state as Dictionary?) as Void {}
+  function onStart(state as Dictionary?) as Void {
+    System.println("on Start");
+  }
 
-  function onStop(state as Dictionary?) as Void {}
+  function onStop(state as Dictionary?) as Void {
+    System.println("on Stop");
+  }
 
   (:typecheck(disableBackgroundCheck))
   function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
@@ -93,6 +99,8 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
+
+      $.g_bg_timeout_seconds = $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as Number;
 
       // showweather
       $._weatherDataSource = $.getStorageValue("weatherDataSource", $._weatherDataSource) as WeatherSource;
@@ -246,6 +254,7 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   public function getServiceDelegate() as [System.ServiceDelegate] {
+    System.println("getServiceDelegate start bg task:");
     return [new BackgroundServiceDelegate()];
   }
 
