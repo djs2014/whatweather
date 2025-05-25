@@ -1,5 +1,8 @@
 wind -> oncalculate 
 draw -> onupdate
+--
+no data/garmin data -> timer big on screen
+
 
 delayed bg
 
