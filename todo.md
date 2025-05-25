@@ -1,4 +1,7 @@
-settings: start bg when there is activity 
+wind -> oncalculate 
+draw -> onupdate
+
+delayed bg
 
 if mTimerState .. 
  mBGServiceHandler.autoScheduleService();

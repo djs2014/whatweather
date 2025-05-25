@@ -44,6 +44,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
 
+      mi = new WatchUi.MenuItem("Background delay sec", null, "g_bg_delay_seconds", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      proxyMenu.addItem(mi);
+
       // Set initial position
       // @@ reset to false when used.
       // var boolean = Storage.getValue("useInitialPosition") ? true : false;

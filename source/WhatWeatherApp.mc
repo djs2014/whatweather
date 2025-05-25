@@ -10,6 +10,7 @@ import Toybox.Position;
 // TODO var gDebug as Boolean = false;
 
 var g_bg_timeout_seconds as Number = 0;
+var g_bg_delay_seconds as Number = 0;
 
 (:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
@@ -101,6 +102,7 @@ class WhatWeatherApp extends Application.AppBase {
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
 
       $.g_bg_timeout_seconds = $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as Number;
+      $.g_bg_delay_seconds = $.getStorageValue("g_bg_delay_seconds", $.g_bg_delay_seconds) as Number;
 
       // showweather
       $._weatherDataSource = $.getStorageValue("weatherDataSource", $._weatherDataSource) as WeatherSource;
