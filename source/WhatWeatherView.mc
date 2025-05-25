@@ -184,6 +184,8 @@ class WhatWeatherView extends WatchUi.DataField {
           mAlertHandler.currentlyTriggeredHandled();
         }
       }
+      // TODO - calc all weather points ..
+      // computeWheater()
     } catch (ex) {
       ex.printStackTrace();
     }

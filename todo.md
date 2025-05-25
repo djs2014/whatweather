@@ -1,3 +1,6 @@
+wind -> oncalculate 
+draw -> onupdate
+
 delayed bg
 
 if mTimerState .. 
