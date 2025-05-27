@@ -1,5 +1,18 @@
 wind -> oncalculate 
 draw -> onupdate
+http://localhost:7071/api/weather and testscenario 1
+https://owm.castlephoto.info/owm_one
+
+Point2DOnCircle -> draw arrow different method? -> rotate ..
+1: wind error simpler 3 points instead of 5 points
+2: wind and wind alarm in same units always -> wind ms and wind converted once in model
+3: refactor draw wind -> oncompute calc wind points , onupdate draw
+  x,y -> uix, uiy polygon
+
+  first: calc wind first column / relative + gust -> polygons
+  second: draw polygon
+
+test with wind speed 13.8888888889 m/s == 50 mk/h
 --
 no data/garmin data -> timer big on screen
 

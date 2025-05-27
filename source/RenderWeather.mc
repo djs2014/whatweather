@@ -366,32 +366,26 @@ class RenderWeather {
 
   function drawWindInfoFirstColumn(
     dc as Dc,
-    windPoints as Array,
+    wp as WindPoint,
     xOffset as Number,
     showLeft as Boolean,
     track as Number?
-  ) as Void {
-    var max = windPoints.size();
-    if (max == 0) {
-      return;
-    }
-    var wp = windPoints[0] as WindPoint;
+  ) as Void {    
     var x = xOffset;
     if (showLeft) {
       x = wp.x + ds.columnWidth / 2 - xOffset;
     }
     var y = ds.columnY + ds.columnHeight / 2;
-
-    try {
-      if (track != null) {
-        drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, true);
-      } else {
-        drawWind(dc, x, y, wp.bearing, wp.speed, wp.gust, false);
-      }
-    } catch (ex) {
-      System.println(ex.getErrorMessage());
-      ex.printStackTrace();
+    var bigArrow = track != null;
+    if (track == null) {
+      track = 0;
     }
+    // try {
+      drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow);     
+    // } catch (ex) {
+    //   System.println(ex.getErrorMessage());
+    //   ex.printStackTrace();
+    // }
   }
 
   function drawWindInfo(dc as Dc, windPoints as Array) as Void {
@@ -944,7 +938,7 @@ class RenderWeather {
     }
   }
 
-  // --
+  // --  
   hidden function drawWind(
     dc as Dc,
     x as Number,
@@ -1036,7 +1030,7 @@ class RenderWeather {
       var gustInner = 0;
       var factor = 0;
       if (bigArrow) {
-        factor = (windSpeedMs / 8.0) * 2.0; // 4 BF @@ only when showing in center of field
+        factor = (windSpeedMs / 4.0); 
         pA = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees - 35 - 180);
         pB = point2DOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
         pC = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
@@ -1055,29 +1049,40 @@ class RenderWeather {
       }
       dc.fillPolygon([pA, pB, pC, pD] as Polygon);
 
-      if (windGustLevel >= 1) {
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+       if (windGustLevel >= 1) {
+         dc.setPenWidth(2);
+         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
-        factor = factor + 2;
-        pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
-        pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
-        pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
-        dc.fillPolygon([pA, pB, pC] as Polygon);
+         factor = factor + 2;
+         pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
+         pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
+         pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+         
+         dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
+         dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
+        //  dc.drawLine(pC[0], pC[1], pA[0], pA[1]);
+
+        //  dc.fillPolygon([pA, pB, pC] as Polygon); this will give stack overflow error
         if (windGustLevel >= 2) {
           factor = factor + 3;
           pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
           pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
           pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
-          dc.fillPolygon([pA, pB, pC] as Polygon);
+          dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
+          dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
+          // dc.fillPolygon([pA, pB, pC] as Polygon);
         }
         if (windGustLevel >= 3) {
           factor = factor + 3;
           pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
           pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
           pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
-          dc.fillPolygon([pA, pB, pC] as Polygon);
+          dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
+          dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
+          // dc.fillPolygon([pA, pB, pC] as Polygon);
         }
-      }
+        dc.setPenWidth(1);
+       }
     }
 
     // The circle
@@ -1090,7 +1095,6 @@ class RenderWeather {
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
-
   // hidden function drawPolygon(dc, data as Array<Point2D>) {
   //   for (var i = 0; i < data.size(); i++) {
   //     var pA = data[i] as Point2D;

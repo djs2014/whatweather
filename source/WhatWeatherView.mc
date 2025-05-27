@@ -920,15 +920,17 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       // @@ draw windgust test
-      if (showInfoRelativeWind) {
-        render.drawWindInfoFirstColumn(dc, windPoints, mDs.width / 2, false, wpBearing);
-        if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
+      if (windPoints.size() > 0) {
+        if (showInfoRelativeWind) {         
+          render.drawWindInfoFirstColumn(dc, windPoints[0] as WindPoint, mDs.width / 2, false, wpBearing);
+          if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
+            render.drawWindInfo(dc, windPoints);
+          }
+        } else if (mShowWindFirst && $._showRelativeWindFirst) { // TODO remove this option
+          render.drawWindInfoFirstColumn(dc, windPoints[0] as WindPoint, xOffsetWindFirstColumn, true, wpBearing);
+        } else if (mShowWind != SHOW_WIND_NOTHING) {
           render.drawWindInfo(dc, windPoints);
         }
-      } else if (mShowWindFirst && $._showRelativeWindFirst) {
-        render.drawWindInfoFirstColumn(dc, windPoints, xOffsetWindFirstColumn, true, wpBearing);
-      } else if (mShowWind != SHOW_WIND_NOTHING) {
-        render.drawWindInfo(dc, windPoints);
       }
 
       if (mDs.wideField) {
