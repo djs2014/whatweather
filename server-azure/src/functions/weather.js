@@ -42,11 +42,11 @@ app.http("weather", {
 
       if (searchParams.has("testScenario")) {
         let scenario = searchParams.get("testScenario");
+        let maxHoursTest = searchParams.get("maxhours");
+        let appidTest = searchParams.get("appid");
         try {
           context.log("use test data set: " + scenario);
-          // 1: wind
-
-          let testJson = await testScenarioHandler.getTestScenario(scenario);
+          let testJson = await testScenarioHandler.getTestScenario(appidTest, scenario, maxHoursTest);
           if (testJson) {
             return {
               jsonBody: testJson,

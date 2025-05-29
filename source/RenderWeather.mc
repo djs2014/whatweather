@@ -1036,7 +1036,7 @@ class RenderWeather {
         pC = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
         pD = point2DOnCircle(x, y, factor + radius * 3.0, windBearingInDegrees);
 
-        gustOuter = 2.4;
+        gustOuter = 2.6;
         gustInner = 1.8;
       } else {
         pA = point2DOnCircle(x, y, radius * 1.5, windBearingInDegrees - 35 - 180);
@@ -1044,13 +1044,13 @@ class RenderWeather {
         pC = point2DOnCircle(x, y, radius * 1.5, windBearingInDegrees + 35 - 180);
         pD = point2DOnCircle(x, y, radius * 1.9, windBearingInDegrees);
 
-        gustOuter = 1.5;
+        gustOuter = 1.6;
         gustInner = 1.2;
       }
       dc.fillPolygon([pA, pB, pC, pD] as Polygon);
 
        if (windGustLevel >= 1) {
-         dc.setPenWidth(2);
+         //dc.setPenWidth(2);
          dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
          factor = factor + 2;

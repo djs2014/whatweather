@@ -249,8 +249,13 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       return;
     }
     if (id instanceof String && id.equals("demo")) {
-      // var demoMenu = new WatchUi.Menu2({ :title => "Demo" });
-      // some scenarios, set duration, no OWM api key needed
+      var demoMenu = new WatchUi.Menu2({ :title => "Demo" });
+      
+      var mi = new WatchUi.MenuItem("Scenario alert/rain/wind|0~3", null, "testScenario", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      demoMenu.addItem(mi);
+
+      WatchUi.pushView(demoMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
     if (id instanceof String && menuItem instanceof ToggleMenuItem) {

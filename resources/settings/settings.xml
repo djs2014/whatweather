@@ -13,9 +13,5 @@
 	</setting>
 	<setting propertyKey="@Properties.openWeatherProxyAPIKey" title="@Strings.OpenWeatherProxyAPIKey">
 		<settingConfig type="alphanumeric" />
-	</setting>       					
-    
-	<setting propertyKey="@Properties.testScenario" title="@Strings.TestScenario">
-		<settingConfig type="numeric" min="0" max="2" />		
-	</setting>
+	</setting>       						
 </settings>

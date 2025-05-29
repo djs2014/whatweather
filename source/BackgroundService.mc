@@ -50,6 +50,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var maxhours = Storage.getValue("openWeatherMaxHours");
             var minutely = Storage.getValue("openWeatherMinutely");
             var testScenario = Storage.getValue("testScenario");
+          
  
         	System.println(Lang.format("Proxyurl[$1$] location [$2$] apiKey[$3$] apiVersion[$4$] maxhours[$5$] openWeatherMinutely[$6$] testScenario[$7$] openWeatherAlerts[$8$]",
                 [proxyUrl, location , apiKey, apiVersion, maxhours, minutely, testScenario, true]));    
@@ -63,7 +64,11 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if ((proxyUrl as String).length() == 0) { return CustomErrors.ERROR_BG_NO_PROXY; }
             if (maxhours == null) { maxhours = 8; }
             if (minutely == null) { minutely = true; }            
-            if (testScenario == null) { testScenario = 0; }
+            if (testScenario == null) { 
+                testScenario = 0;
+            } else if ((testScenario as Number) > 0) {
+              Storage.setValue("testScenario", 0);
+            }
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
             if ((lat >= 179.99 || lat <= -179.99) && (lon >= 179.99 || lon <= -179.99)) {

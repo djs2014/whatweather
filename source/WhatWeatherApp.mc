@@ -206,7 +206,7 @@ class WhatWeatherApp extends Application.AppBase {
       setStorageValueIfChanged("openWeatherProxy", "https://owm.castlephoto.info/owm_one");
       setStorageValueIfChanged("openWeatherProxyAPIKey", "0548b3c7-61bc-4afc-b6e5-616f19d3cf23");
       Storage.setValue("openWeatherAPIVersion", $.getStorageValue("openWeatherAPIVersion", 1) as Number);
-      Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
+      //Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
 
       Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);
       Storage.setValue("openWeatherMinutely", $._showMinuteForecast as Boolean);

@@ -1,7 +1,6 @@
-wind -> oncalculate 
-draw -> onupdate
 http://localhost:7071/api/weather and testscenario 1
 https://owm.castlephoto.info/owm_one
+
 
 Point2DOnCircle -> draw arrow different method? -> rotate ..
 1: wind error simpler 3 points instead of 5 points
@@ -15,12 +14,10 @@ Point2DOnCircle -> draw arrow different method? -> rotate ..
 test with wind speed 13.8888888889 m/s == 50 mk/h
 --
 no data/garmin data -> timer big on screen
+test scenario 1 - x
+play all
+loop - false -> only once / always
 
-
-delayed bg
-
-if mTimerState .. 
- mBGServiceHandler.autoScheduleService();
 
 oracle cloud free? functions
 

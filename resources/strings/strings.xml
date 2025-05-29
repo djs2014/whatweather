@@ -13,6 +13,5 @@
     <string id="OpenWeatherAPIVersionPrompt">Select OWM API version</string>       
     <string id="OpenWeatherAPIVersion25">onecall 2.5</string>       
     <string id="OpenWeatherAPIVersion30">onecall 3.0</string>       
-
-    <string id="TestScenario">Test scenario: 1 alerts, 2 rain</string>
+   
 </strings>
