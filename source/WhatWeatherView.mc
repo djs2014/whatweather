@@ -225,7 +225,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       showInfo(dc);
 
-      showBgInfo(dc, wheatherDataDisplayed > 0);
+      showBgInfo(dc, wheatherDataDisplayed);
 
       // TESt
       calculateOWMAlerts(dc);
@@ -370,7 +370,7 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   // Return > 0 if has weather data
-  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Number {
+  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Boolean {
     var x = mDs.columnX;
     var y = mDs.columnY;
     var uvPoints = [];
@@ -389,6 +389,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var nightTime = false;
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
+    
+    var validSegment = 0;
 
     try {
       var mCurrentLocation = $.getCurrentLocation();
@@ -531,8 +533,7 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
       }
-
-      var validSegment = 0;
+      
       if ($._showCurrentForecast) {
         if (current != null) {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
@@ -954,11 +955,10 @@ class WhatWeatherView extends WatchUi.DataField {
       } else {
         render.drawAlertMessages(dc, mAlertHandler.infoHandled(), mActivityPaused);
       }
-      return validSegment;
     } catch (ex) {
       ex.printStackTrace();
     }
-    return 0;
+    return validSegment > 0;
   }
 
   function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {
