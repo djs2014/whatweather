@@ -219,13 +219,13 @@ class WhatWeatherView extends WatchUi.DataField {
       dc.setColor(backgroundColor, backgroundColor);
       dc.clear();
 
-      onUpdateWeather(dc, mDs.dashesUnderColumnHeight);
+      var validWeatherSegments = onUpdateWeather(dc, mDs.dashesUnderColumnHeight);
 
       drawPrecipitationChanceAxis(dc, mDs.margin, mDs.columnHeight);
 
       showInfo(dc);
 
-      showBgInfo(dc);
+      showBgInfo(dc, validWeatherSegments > 0);
 
       // TESt
       calculateOWMAlerts(dc);
@@ -271,7 +271,7 @@ class WhatWeatherView extends WatchUi.DataField {
     render.initValues(dc, mDs);
   }
 
-  hidden function showBgInfo(dc as Dc) as Void {
+  hidden function showBgInfo(dc as Dc, hasWeatherData as Boolean) as Void {
     if ($._weatherDataSource == wsGarminOnly) {
       return;
     }
@@ -306,6 +306,12 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
 
     var text;
+    var status;
+    if (mBGServiceHandler.hasError()) {
+      status = mBGServiceHandler.getError();
+    } else {
+      status = mBGServiceHandler.getStatus();
+    }
     if (mDs.smallField || mDs.wideField) {
       text = obsTime;
     } else {
@@ -313,12 +319,6 @@ class WhatWeatherView extends WatchUi.DataField {
       var next = mBGServiceHandler.getWhenNextRequest("");
       if ($.g_bg_delay_seconds > 0) {
         next = $.g_bg_delay_seconds.format("%d");
-      }
-      var status;
-      if (mBGServiceHandler.hasError()) {
-        status = mBGServiceHandler.getError();
-      } else {
-        status = mBGServiceHandler.getStatus();
       }
       text = mBGServiceHandler.getErrorMessage() + " " + obsTime + " " + counter + " " + status + "(" + next + ")";
     }
@@ -331,6 +331,18 @@ class WhatWeatherView extends WatchUi.DataField {
       text,
       Graphics.TEXT_JUSTIFY_LEFT
     );
+
+    if (!hasWeatherData) {
+      text = mBGServiceHandler.getErrorMessage() + " " + status + "(" + mBGServiceHandler.getWhenNextRequest("") + ")";
+      dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(
+        dc.getWidth() / 2,
+        dc.getHeight() / 2,
+        Graphics.FONT_SYSTEM_SMALL,
+        text,
+        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+      );
+    }
   }
 
   hidden function showInfo(dc as Dc) as Void {
@@ -357,7 +369,8 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.drawText(xi + wi + 1, mDs.height / 2, mFontPostfix, postfix, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Void {
+  // Return > 0 if has weather data
+  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Number {
     var x = mDs.columnX;
     var y = mDs.columnY;
     var uvPoints = [];
@@ -376,10 +389,12 @@ class WhatWeatherView extends WatchUi.DataField {
     var nightTime = false;
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
+    
+    
 
     try {
       var mCurrentLocation = $.getCurrentLocation();
-
+      
       if (mWeatherData.valid()) {
         mm = mWeatherData.minutely;
         current = mWeatherData.current;
@@ -518,7 +533,7 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
       }
-
+      // When defined outside try/catch -> stack overflow
       var validSegment = 0;
       if ($._showCurrentForecast) {
         if (current != null) {
@@ -920,15 +935,18 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       // @@ draw windgust test
-      if (showInfoRelativeWind) {
-        render.drawWindInfoFirstColumn(dc, windPoints, mDs.width / 2, false, wpBearing);
-        if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
+      if (windPoints.size() > 0) {
+        if (showInfoRelativeWind) {
+          render.drawWindInfoFirstColumn(dc, windPoints[0] as WindPoint, mDs.width / 2, false, wpBearing);
+          if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
+            render.drawWindInfo(dc, windPoints);
+          }
+        } else if (mShowWindFirst && $._showRelativeWindFirst) {
+          // TODO remove this option
+          render.drawWindInfoFirstColumn(dc, windPoints[0] as WindPoint, xOffsetWindFirstColumn, true, wpBearing);
+        } else if (mShowWind != SHOW_WIND_NOTHING) {
           render.drawWindInfo(dc, windPoints);
         }
-      } else if (mShowWindFirst && $._showRelativeWindFirst) {
-        render.drawWindInfoFirstColumn(dc, windPoints, xOffsetWindFirstColumn, true, wpBearing);
-      } else if (mShowWind != SHOW_WIND_NOTHING) {
-        render.drawWindInfo(dc, windPoints);
       }
 
       if (mDs.wideField) {
@@ -938,9 +956,11 @@ class WhatWeatherView extends WatchUi.DataField {
       } else {
         render.drawAlertMessages(dc, mAlertHandler.infoHandled(), mActivityPaused);
       }
+      return validSegment;
     } catch (ex) {
       ex.printStackTrace();
     }
+    return 0;
   }
 
   function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {

@@ -1,10 +1,26 @@
-wind -> oncalculate 
-draw -> onupdate
+perc100bar - > countdown to next webrequest
+show settings per field one,large,wide,etc [1,1,1,1,..]
 
-delayed bg
+http://localhost:7071/api/weather and testscenario 1
+https://owm.castlephoto.info/owm_one
 
-if mTimerState .. 
- mBGServiceHandler.autoScheduleService();
+
+Point2DOnCircle -> draw arrow different method? -> rotate ..
+1: wind error simpler 3 points instead of 5 points
+2: wind and wind alarm in same units always -> wind ms and wind converted once in model
+3: refactor draw wind -> oncompute calc wind points , onupdate draw
+  x,y -> uix, uiy polygon
+
+  first: calc wind first column / relative + gust -> polygons
+  second: draw polygon
+
+test with wind speed 13.8888888889 m/s == 50 mk/h
+--
+no data/garmin data -> timer big on screen
+test scenario 1 - x
+play all
+loop - false -> only once / always
+
 
 oracle cloud free? functions
 

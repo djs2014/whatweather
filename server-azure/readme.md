@@ -1,3 +1,7 @@
+nvm use 22
+nvm install 22
+https://www.freecodecamp.org/news/node-version-manager-nvm-install-guide/
+
 weather: https://gweather.azurewebsites.net/api/weather
 
 
