@@ -219,13 +219,13 @@ class WhatWeatherView extends WatchUi.DataField {
       dc.setColor(backgroundColor, backgroundColor);
       dc.clear();
 
-      var wheatherDataDisplayed = onUpdateWeather(dc, mDs.dashesUnderColumnHeight);
+      var validWeatherSegments = onUpdateWeather(dc, mDs.dashesUnderColumnHeight);
 
       drawPrecipitationChanceAxis(dc, mDs.margin, mDs.columnHeight);
 
       showInfo(dc);
 
-      showBgInfo(dc, wheatherDataDisplayed);
+      showBgInfo(dc, validWeatherSegments > 0);
 
       // TESt
       calculateOWMAlerts(dc);
@@ -370,7 +370,7 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   // Return > 0 if has weather data
-  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Boolean {
+  function onUpdateWeather(dc as Dc, dashesUnderColumnHeight as Lang.Number) as Number {
     var x = mDs.columnX;
     var y = mDs.columnY;
     var uvPoints = [];
@@ -390,11 +390,11 @@ class WhatWeatherView extends WatchUi.DataField {
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
     
-    var validSegment = 0;
+    
 
     try {
       var mCurrentLocation = $.getCurrentLocation();
-
+      
       if (mWeatherData.valid()) {
         mm = mWeatherData.minutely;
         current = mWeatherData.current;
@@ -533,7 +533,8 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
       }
-      
+      // When defined outside try/catch -> stack overflow
+      var validSegment = 0;
       if ($._showCurrentForecast) {
         if (current != null) {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
@@ -955,10 +956,11 @@ class WhatWeatherView extends WatchUi.DataField {
       } else {
         render.drawAlertMessages(dc, mAlertHandler.infoHandled(), mActivityPaused);
       }
+      return validSegment;
     } catch (ex) {
       ex.printStackTrace();
     }
-    return validSegment > 0;
+    return 0;
   }
 
   function drawPrecipitationChanceAxis(dc as Dc, margin as Number, bar_height as Number) as Void {
