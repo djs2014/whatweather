@@ -10,6 +10,7 @@
             <iq:product id="edge1050"/>
             <iq:product id="edge530"/>
             <iq:product id="edge830"/>
+            <iq:product id="edgemtb"/>
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="Background"/>

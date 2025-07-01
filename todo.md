@@ -1,5 +1,6 @@
 perc100bar - > countdown to next webrequest
 show settings per field one,large,wide,etc [1,1,1,1,..]
+remove / optimize variables onupdatewheater 
 
 http://localhost:7071/api/weather and testscenario 1
 https://owm.castlephoto.info/owm_one
