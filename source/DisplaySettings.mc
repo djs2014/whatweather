@@ -32,39 +32,26 @@ class DisplaySettings {
   var columnY as Lang.Number = 0;
   var columnX as Lang.Number = 0;
 
-  var smallField as Lang.Boolean = true;
-  var wideField as Lang.Boolean = false;
-  var largeField as Lang.Boolean = false;
-  var oneField as Lang.Boolean = false;
-
   var dashesUnderColumnHeight as Lang.Number = 2;
 
   function initialize() {
     COLOR_TEXT = Graphics.COLOR_BLACK;
     COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
     COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
-    COLOR_TEXT_I = Graphics.COLOR_WHITE;
+    COLOR_TEXT_I = Graphics.COLOR_WHITE;    
     COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
     COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
   }
 
-  function detectFieldType(dc as Dc) as Void {
-    self.width = dc.getWidth();
-    self.height = dc.getHeight();
-
-    var ef = $.getEdgeField(dc);
-    largeField = ef == EfLarge;
-    smallField = ef == EfSmall;
-    wideField = ef == EfWide;
-    oneField = ef == EfOne;
-  }
-
   function calculate(
+    dc as Dc,
     nrOfColumns as Lang.Number,
     heightWind as Lang.Number,
     heightWc as Lang.Number,
     heightWt as Lang.Number
   ) as Void {
+    self.width = dc.getWidth();
+    self.height = dc.getHeight();    
     self.nrOfColumns = nrOfColumns;
     self.heightWind = heightWind;
     self.heightWc = heightWc;

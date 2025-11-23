@@ -1,5 +1,35 @@
+sync locations / numericinput  --> gives stack overflow issue.
+
+1 show settings per field one,large,wide,etc [1,1,1,1,..]
+  x get onsettingschanged
+  x hide current weather column when in zoom - only add the weather condition color if needed
+  - zoom # of columns
+  - calc onlayout
+2 -> default values
+
+3 -> refactor
+  - Class with display properties, columns, etc
+  - ?? cache wind icons -> only if displayed
+    - calc arrows and gust lines ..  draw circles later.
+    
+  - cache weather icons on first use -> only if displayed
+  - use profiler to optimize 
+4 add min temperature
+
+oncompute
+
+optimize drawwind code - remove RendeWeather object
+-> calc the arrows for wind
+onupdate
+draw 
+
+
+
+
+nightmode
+zoom -> current weather hide
+openmeteo -> counter save to txt / per month
 perc100bar - > countdown to next webrequest
-show settings per field one,large,wide,etc [1,1,1,1,..]
 remove / optimize variables onupdatewheater 
 
 http://localhost:7071/api/weather and testscenario 1
@@ -42,18 +72,6 @@ How to prevent stackoverflow
     bigArrow as Boolean
   ) as Void {
 
-
-option
-  focus rain first hour == zoom only showing this (+ wind etc)
-    small field, when amount > x mm
-      aka amount hours to show / 5 + wind right aligned
-    wide field, .. 
-    ..
-
-    hidden var mZoomMinutely as Boolean = false;
-  hidden var mZoomMinutelyColumns as Number = 0;
-  hidden var mZoomMinutelyMM as Float = 0.1f;
-zoomMinuteForecastMM
 
 
 add new fields 

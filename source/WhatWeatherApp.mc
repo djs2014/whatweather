@@ -9,9 +9,6 @@ import Toybox.Position;
 
 // TODO var gDebug as Boolean = false;
 
-var g_bg_timeout_seconds as Number = 0;
-var g_bg_delay_seconds as Number = 0;
-
 (:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
 
@@ -53,32 +50,105 @@ class WhatWeatherApp extends Application.AppBase {
   function loadUserSettings() as Void {
     try {
       System.println("Loading user settings");
+
+      var hadConversionToArrays = Storage.getValue("show_one_field");
+      if (hadConversionToArrays == null) {
+        conversionToArrays();
+      }
+
       var reset = Storage.getValue("resetDefaults");
       if (reset == null || (reset as Boolean)) {
         Storage.setValue("resetDefaults", false);
 
-        Storage.setValue("showCurrentForecast", true);
-        Storage.setValue("showMinuteForecast", true);
-        Storage.setValue("zoomMinuteForecast", true);
-        Storage.setValue("zoomMinuteForecastMM", 0.2f);
-        Storage.setValue("zoomFactorMinuteForecast", 3);
-        Storage.setValue("maxHoursForecast", 8);
-        Storage.setValue("showClouds", true);
-        Storage.setValue("showCurrentWind", true);
-        Storage.setValue("showRelativeWind", true);
-        Storage.setValue("showWind", SHOW_WIND_BEAUFORT);
-        Storage.setValue("showUVIndex", true);
-        Storage.setValue("showTemperature", true);
-        Storage.setValue("showRelativeHumidity", true);
-        Storage.setValue("showPressure", true);
-        Storage.setValue("showDewpoint", true);
-        Storage.setValue("showComfortZone", true);
-        Storage.setValue("showWeatherCondition", true);
+        Storage.setValue("show_one_field", [
+          8, // hours forecast
+          true, // rain first hour
+          false, // zoom when rain
+          0.2f, // zoom when mm
+          3, // zoom factor
+          3, // number of columns
+          true, // current forecast
+          true, // clouds
+          SHOW_WIND_KILOMETERS, // wind
+          true, // current wind
+          true, // uv
+          true, // temperature
+          true, // relative humidity
+          true, // pressure sealevel
+          true, // dewpoint
+          true, // comfort zone
+          true, // weather icons
+          SHOW_INFO_NOTHING, // extra info
+          true, // details when paused
+        ]);
 
-        Storage.setValue("showInfoOneField", SHOW_INFO_NOTHING);
-        Storage.setValue("showInfoLargeField", SHOW_INFO_NOTHING);
-        Storage.setValue("showInfoWideField", SHOW_INFO_RELATIVE_WIND);
-        Storage.setValue("showInfoSmallField", SHOW_INFO_RELATIVE_WIND);
+        Storage.setValue("show_large_field", [
+          8, // hours forecast
+          true, // rain first hour
+          true, // zoom when rain
+          0.2f, // zoom when mm
+          3, // zoom factor
+          3, // number of columns
+          true, // current forecast
+          true, // clouds
+          SHOW_WIND_KILOMETERS, // wind
+          true, // current wind
+          true, // uv
+          true, // temperature
+          true, // relative humidity
+          true, // pressure sealevel
+          true, // dewpoint
+          true, // comfort zone
+          true, // weather icons
+          SHOW_INFO_NOTHING, // extra info
+          true, // details when paused
+        ]);
+
+        Storage.setValue("show_wide_field", [
+          8, // hours forecast
+          true, // rain first hour
+          true, // zoom when rain
+          0.2f, // zoom when mm
+          3, // zoom factor
+          3, // number of columns
+          true, // current forecast
+          true, // clouds
+          SHOW_WIND_NOTHING, // wind
+          true, // current wind
+          true, // uv
+          true, // temperature
+          true, // relative humidity
+          false, // pressure sealevel
+          false, // dewpoint
+          true, // comfort zone
+          false, // weather icons
+          SHOW_INFO_RELATIVE_WIND, // extra info
+          false, // details when paused
+        ]);
+
+        Storage.setValue("show_small_field", [
+          6, // hours forecast
+          true, // rain first hour
+          true, // zoom when rain
+          0.2f, // zoom when mm
+          3, // zoom factor
+          3, // number of columns
+          true, // current forecast
+          true, // clouds
+          SHOW_WIND_NOTHING, // wind
+          true, // current wind
+          false, // uv
+          false, // temperature
+          false, // relative humidity
+          false, // pressure sealevel
+          false, // dewpoint
+          true, // comfort zone
+          false, // weather icons
+          SHOW_INFO_RELATIVE_WIND, // extra info
+          false, // details when paused
+        ]);
+
+        Storage.setValue("checkIntervalMinutes", 5);
 
         Storage.setValue("alertLevelPrecipitationChance", 70);
         Storage.setValue("alertLevelUVi", 6);
@@ -88,6 +158,8 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("alertLevelDewpoint", 19);
 
         Storage.setValue("maxUVIndex", 20);
+        Storage.setValue("hideTemperature", 8);
+        Storage.setValue("minTemperature", 0);
         Storage.setValue("maxTemperature", 50);
         Storage.setValue("minPressure", 870);
         Storage.setValue("maxPressure", 1080);
@@ -97,38 +169,41 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("comfortHumidityMax", 60);
         Storage.setValue("comfortTempMin", 19);
         Storage.setValue("comfortTempMax", 27);
+
+        // Init empty entry - for editing in simulator
+        var apikey = Storage.getValue("openWeatherAPIKey");
+        if (apikey == null) {
+          Storage.setValue("openWeatherAPIKey", "");
+        }
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
 
       $.g_bg_timeout_seconds = $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as Number;
       $.g_bg_delay_seconds = $.getStorageValue("g_bg_delay_seconds", $.g_bg_delay_seconds) as Number;
-
-      // showweather
       $._weatherDataSource = $.getStorageValue("weatherDataSource", $._weatherDataSource) as WeatherSource;
 
-      $._showCurrentForecast = $.getStorageValue("showCurrentForecast", $._showCurrentForecast) as Boolean;
-      $._showMinuteForecast = $.getStorageValue("showMinuteForecast", $._showMinuteForecast) as Boolean;
-      $._zoomMinuteForecast = $.getStorageValue("zoomMinuteForecast", $._zoomMinuteForecast) as Boolean;
-      $._zoomMinuteForecastMM = $.getStorageValue("zoomMinuteForecastMM", $._zoomMinuteForecastMM) as Float;
-      $._zoomFactorMinuteForecast = $.getStorageValue("zoomFactorMinuteForecast", $._zoomFactorMinuteForecast) as Number;      
-      $._maxHoursForecast = $.getStorageValue("maxHoursForecast", $._maxHoursForecast) as Number;
-      $._showClouds = $.getStorageValue("showClouds", $._showClouds) as Boolean;
-      $._showCurrentWind = $.getStorageValue("showCurrentWind", $._showCurrentWind) as Boolean;
-      $._showRelativeWindFirst = $.getStorageValue("showRelativeWind", $._showRelativeWindFirst) as Boolean;
-      $._showWind = $.getStorageValue("showWind", $._showWind) as Number;
-      $._showUVIndex = $.getStorageValue("showUVIndex", $._showUVIndex) as Boolean;
-      $._showTemperature = $.getStorageValue("showTemperature", $._showTemperature) as Boolean;
-      $._showRelativeHumidity = $.getStorageValue("showRelativeHumidity", $._showRelativeHumidity) as Boolean;
-      $._showPressure = $.getStorageValue("showPressure", $._showPressure) as Boolean;
-      $._showDewpoint = $.getStorageValue("showDewpoint", $._showDewpoint) as Boolean;
-      $._showComfortZone = $.getStorageValue("showComfortZone", $._showComfortZone) as Boolean;
-      $._showWeatherCondition = $.getStorageValue("showWeatherCondition", $._showWeatherCondition) as Boolean;
+      $.gShow_OneField =
+        $.getStorageValue("show_one_field", $.gShow_OneField as Array<Application.PropertyValueType>) as Array<Number>;
+      $.gShow_LargeField =
+        $.getStorageValue("show_large_field", $.gShow_LargeField as Array<Application.PropertyValueType>) as Array<Number>;
+      $.gShow_WideField =
+        $.getStorageValue("show_wide_field", $.gShow_WideField as Array<Application.PropertyValueType>) as Array<Number>;
+      $.gShow_SmallField =
+        $.getStorageValue("show_small_field", $.gShow_SmallField as Array<Application.PropertyValueType>) as Array<Number>;
 
-      $._showInfoOneField = $.getStorageValue("showInfoOneField", SHOW_INFO_NOTHING) as Number;
-      $._showInfoLargeField = $.getStorageValue("showInfoLargeField", SHOW_INFO_NOTHING) as Number;
-      $._showInfoWideField = $.getStorageValue("showInfoWideField", SHOW_INFO_NOTHING) as Number;
-      $._showInfoSmallField = $.getStorageValue("showInfoSmallField", SHOW_INFO_TIME_Of_DAY) as Number;
+      if ($.ensureArraySize($.gShow_OneField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_one_field", $.gShow_OneField);
+      }
+      if ($.ensureArraySize($.gShow_LargeField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_one_field", $.gShow_LargeField);
+      }
+      if ($.ensureArraySize($.gShow_WideField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_one_field", $.gShow_WideField);
+      }
+      if ($.ensureArraySize($.gShow_SmallField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_one_field", $.gShow_SmallField);
+      }
 
       $._alertLevelPrecipitationChance = $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
       $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
@@ -143,7 +218,9 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertBacklight = $.getStorageValue("alert_backlight", false) as Boolean;
 
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
+      $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
+      $._hideTemperature = $.getStorageValue("hideTemperature", 8) as Number;
       $._maxPressure = $.getStorageValue("maxPressure", 1080) as Number;
       $._minPressure = $.getStorageValue("minPressure", 870) as Number;
       if ($._minPressure > $._maxPressure) {
@@ -170,11 +247,7 @@ class WhatWeatherApp extends Application.AppBase {
       if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
         $._weatherDataSource = wsGarminFirst;
       }
-      if (
-        $._weatherDataSource == wsOWMFirst ||
-        $._weatherDataSource == wsOWMOnly ||
-        $._weatherDataSource == wsGarminFirst
-      ) {
+      if ($._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
         bgHandler.Enable();
       } else {
         bgHandler.Disable();
@@ -208,8 +281,14 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherAPIVersion", $.getStorageValue("openWeatherAPIVersion", 1) as Number);
       //Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
 
-      Storage.setValue("openWeatherMaxHours", $._maxHoursForecast + 1);
-      Storage.setValue("openWeatherMinutely", $._showMinuteForecast as Boolean);
+      var maxHours = $.max($.gShow_OneField[0], $.gShow_LargeField[0]);
+      maxHours = $.max($.gShow_WideField[0], maxHours);
+      maxHours = $.max($.gShow_SmallField[0], maxHours);
+
+      var showMinutely = $.gShow_OneField[1] || $.gShow_LargeField[1] || $.gShow_WideField[1] || $.gShow_SmallField[1];
+
+      Storage.setValue("openWeatherMaxHours", maxHours + 1);
+      Storage.setValue("openWeatherMinutely", showMinutely);
 
       $.gSettingsChanged = true;
       System.println("User settings loaded");
@@ -276,6 +355,117 @@ class WhatWeatherApp extends Application.AppBase {
 
     WatchUi.requestUpdate();
   }
+
+  function conversionToArrays() {
+    Storage.deleteValue("showCurrentForecast");
+    Storage.deleteValue("showMinuteForecast");
+    Storage.deleteValue("zoomMinuteForecast");
+    Storage.deleteValue("zoomMinuteForecastMM");
+    Storage.deleteValue("zoomFactorMinuteForecast");
+    Storage.deleteValue("maxHoursForecast");
+    Storage.deleteValue("showClouds");
+    Storage.deleteValue("showCurrentWind");
+    Storage.deleteValue("showRelativeWind");
+    Storage.deleteValue("showWind");
+    Storage.deleteValue("showUVIndex");
+    Storage.deleteValue("showTemperature");
+    Storage.deleteValue("showRelativeHumidity");
+    Storage.deleteValue("showPressure");
+    Storage.deleteValue("showDewpoint");
+    Storage.deleteValue("showComfortZone");
+    Storage.deleteValue("showWeatherCondition");
+    Storage.deleteValue("showInfoOneField");
+    Storage.deleteValue("showInfoLargeField");
+    Storage.deleteValue("showInfoWideField");
+    Storage.deleteValue("showInfoSmallField");
+    Storage.setValue("show_one_field", [
+      8, // hours forecast
+      true, // rain first hour
+      false, // zoom when rain
+      0.2f, // zoom when mm
+      3, // zoom factor
+      3, // number of columns
+      true, // current forecast
+      true, // clouds
+      SHOW_WIND_KILOMETERS, // wind
+      true, // current wind
+      true, // uv
+      true, // temperature
+      true, // relative humidity
+      true, // pressure sealevel
+      true, // dewpoint
+      true, // comfort zone
+      true, // weather icons
+      SHOW_INFO_NOTHING, // extra info
+      true, // details when paused
+    ]);
+
+    Storage.setValue("show_large_field", [
+      8, // hours forecast
+      true, // rain first hour
+      true, // zoom when rain
+      0.2f, // zoom when mm
+      3, // zoom factor
+      3, // number of columns
+      true, // current forecast
+      true, // clouds
+      SHOW_WIND_KILOMETERS, // wind
+      true, // current wind
+      true, // uv
+      true, // temperature
+      true, // relative humidity
+      true, // pressure sealevel
+      true, // dewpoint
+      true, // comfort zone
+      true, // weather icons
+      SHOW_INFO_NOTHING, // extra info
+      true, // details when paused
+    ]);
+
+    Storage.setValue("show_wide_field", [
+      8, // hours forecast
+      true, // rain first hour
+      true, // zoom when rain
+      0.2f, // zoom when mm
+      3, // zoom factor
+      3, // number of columns
+      true, // current forecast
+      true, // clouds
+      SHOW_WIND_NOTHING, // wind
+      true, // current wind
+      true, // uv
+      true, // temperature
+      true, // relative humidity
+      false, // pressure sealevel
+      false, // dewpoint
+      true, // comfort zone
+      false, // weather icons
+      SHOW_INFO_RELATIVE_WIND, // extra info
+      false, // details when paused
+    ]);
+
+    Storage.setValue("show_small_field", [
+      6, // hours forecast
+      true, // rain first hour
+      true, // zoom when rain
+      0.2f, // zoom when mm
+      3, // zoom factor
+      3, // number of columns
+      true, // current forecast
+      true, // clouds
+      SHOW_WIND_NOTHING, // wind
+      true, // current wind
+      false, // uv
+      false, // temperature
+      false, // relative humidity
+      false, // pressure sealevel
+      false, // dewpoint
+      true, // comfort zone
+      false, // weather icons
+      SHOW_INFO_RELATIVE_WIND, // extra info
+      false, // details when paused
+    ]);
+  }
 }
 
 function getApp() as WhatWeatherApp {
@@ -309,3 +499,11 @@ function getCurrentLocation() as CurrentLocation {
   }
   return $._CurrentLocation as CurrentLocation;
 }
+
+var g_bg_timeout_seconds as Number = 0;
+var g_bg_delay_seconds as Number = 0;
+var gSizeArrFieldItems = 19;
+var gShow_OneField as Array<Numeric> = [] as Array<Numeric>;
+var gShow_LargeField as Array<Numeric> = [] as Array<Numeric>;
+var gShow_WideField as Array<Numeric> = [] as Array<Numeric>;
+var gShow_SmallField as Array<Numeric> = [] as Array<Numeric>;

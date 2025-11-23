@@ -1,7 +1,7 @@
 import Toybox.Lang;
 import Toybox.System;
 
-const DEBUG_DETAILS = false;
+const DEBUG_DETAILS = true;
 const SHOW_WIND_NOTHING = 0;
 const SHOW_WIND_METERS = 1;
 const SHOW_WIND_KILOMETERS = 2;
@@ -24,40 +24,20 @@ const COLOR_MM_RAIN =  0x154360; // DARK_BLUE_10
 const COLOR_MM_DIVIDER =  0xccccff; // Lavender BLUE
 // const COLOR_MM_DIVIDER =  0x000000; // Lavender BLUE
 
-var _showCurrentForecast as Lang.Boolean = true;
-var _maxHoursForecast as Lang.Number = 8;
-var _showMinuteForecast as Lang.Boolean = true;
-var _zoomMinuteForecast as Lang.Boolean = true;
-var _zoomMinuteForecastMM as Lang.Float = 0.3f;
-var _zoomFactorMinuteForecast as Lang.Number = 3;
-var _alertLevelPrecipitationChance as Lang.Number = 70;
-var _showCurrentWind as Lang.Boolean = true;
-var _showRelativeWindFirst as Lang.Boolean = true;
-var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
-var _showClouds as Lang.Boolean = true;
+var _weatherDataSource as WeatherSource = wsOWMFirst;
+var _soundMode as Number = 1;
 
-var _showUVIndex as Lang.Boolean = true;
 var _maxUVIndex as Lang.Number = 20;
-
-var _showInfoOneField as Lang.Number = SHOW_INFO_NOTHING;
-var _showInfoLargeField as Lang.Number = SHOW_INFO_NOTHING;
-var _showInfoWideField as Lang.Number = SHOW_INFO_NOTHING;
-var _showInfoSmallField as Lang.Number = SHOW_INFO_TIME_Of_DAY;
-
-var _showWind as Lang.Number = SHOW_WIND_BEAUFORT;
-var _showTemperature as Lang.Boolean = true;
-var _showRelativeHumidity as Lang.Boolean = true;
-var _showWeatherCondition as Lang.Boolean = true;
-var _showComfortZone as Lang.Boolean = true;
-var _showPressure as Lang.Boolean = true;
-var _showDewpoint as Lang.Boolean = true;
-
+var _hideTemperature as Lang.Number = 8; // celcius
+var _minTemperature as Lang.Number = 0; // celcius
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;
 var _minPressure as Lang.Number = 870;
 var _maxMMRainPerHour as Lang.Number = 10;
 
+var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 
+var _alertLevelPrecipitationChance as Lang.Number = 70;
 var _alertLevelUVi as Lang.Number = 6;
 var _alertLevelRainMMfirstHour as Lang.Float = 0.2f;
 var _alertLevelRainMMHour as Lang.Float = 0.2f;
@@ -65,8 +45,6 @@ var _alertLevelDewpoint as Lang.Number = 19;
 var _alertWindIn as Lang.Number = SHOW_WIND_BEAUFORT;
 var _alertLevelWindSpeed as Lang.Float = 5.0f;    
 var _alertLevelWindGust as Lang.Number = 2;
-var _weatherDataSource as WeatherSource = wsOWMFirst;
-var _soundMode as Number = 1;
 var _alertBacklight as Boolean = false;
 
  (:typecheck(disableBackgroundCheck))

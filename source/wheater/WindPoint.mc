@@ -2,12 +2,13 @@ import Toybox.Lang;
 
 class WindPoint {
     var x as Lang.Number = 0;
+    var y as Lang.Number = 0;
     var bearing as Lang.Number = 0;
     var speed as Lang.Float = 0.0;
     var gust as Lang.Float = 0.0;
+    var alert as Boolean = false;
+    var text as String = "";
 
-    // TODO, calc y and arrow in onupdate 
-    // var y as Lang.Number = 0;
     // var arrow as Polygon = [];
     
     function initialize(x as Lang.Number, bearing as Lang.Number?, speed as Lang.Float?, gust as Lang.Float?) {

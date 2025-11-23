@@ -15,30 +15,20 @@ function getLatestGarminWeather() as WeatherData {
     }
 
     var cc = new WeatherCurrent();
-    cc.precipitationChance = $.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
+    cc.precipitationChance = $.getNumericValueOrDefault(garCurrent.precipitationChance, 0) as Lang.Number;
     cc.forecastTime = null; //@@ needed?
 
     var position = garCurrent.observationLocationPosition;
     if (position != null) {
       var location = position.toDegrees();
-      cc.lat = $.getNumericValue(location[0], 0.0d) as Lang.Double;
-      cc.lon = $.getNumericValue(location[1], 0.0d) as Lang.Double;
+      cc.lat = $.getNumericValueOrDefault(location[0], 0.0d) as Lang.Double;
+      cc.lon = $.getNumericValueOrDefault(location[1], 0.0d) as Lang.Double;
     }
     cc.observationLocationName = "G" + cc.lat + "," + cc.lon;
-    // cc.observationLocationName = $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
-    // // Skip after first ,
-    // var comma = cc.observationLocationName.find(",");
-    // if (comma != null) {
-    //   var onlyName = (cc.observationLocationName as Lang.String).substring(0, comma);
-    //   if (onlyName != null) {
-    //     cc.observationLocationName = onlyName as Lang.String;
-    //   }
-    // }
-
     cc.observationTime = garCurrent.observationTime;
     cc.clouds = 0; // Not available
     cc.uvi = null; // Not available
-    cc.condition = $.getNumericValue(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
+    cc.condition = $.getNumericValueOrDefault(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
     cc.windBearing = garCurrent.windBearing;
     cc.windSpeed = garCurrent.windSpeed;
     cc.temperature = garCurrent.temperature;
@@ -54,8 +44,8 @@ function getLatestGarminWeather() as WeatherData {
 
     var mm = new WeatherMinutely(); // Not available for Garmin
     // @@TEST weather minutely
-    // mm.pops = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,  0.12,  0.159,  0.198,  0.237,  0.9188,  1.6006,  2.2824,  2.9642,  3.646,  3.4636,  3.2812,  3.0988,  2.9164,  2.734,  2.5972,  2.4604,  2.3236,  2.1868,  2.05,  2.05,  2.05,  2.05,  2.05,  2.05,  2.1136,  2.1772,  2.2408,  2.3044,  2.368,  2.4412,  2.5144,  2.5876,  2.6608,  2.734,  2.734,  2.734,  2.734,  2.734,  2.734,  2.6608,  2.5876,  2.5144,  2.4412] as Array<Float>;
-    // mm.max = 2.0;
+    //  mm.pops = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,  0.12,  0.159,  0.198,  0.237,  0.9188,  1.6006,  2.2824,  2.9642,  3.646,  3.4636,  3.2812,  3.0988,  2.9164,  2.734,  2.5972,  2.4604,  2.3236,  2.1868,  2.05,  2.05,  2.05,  2.05,  2.05,  2.05,  2.1136,  2.1772,  2.2408,  2.3044,  2.368,  2.4412,  2.5144,  2.5876,  2.6608,  2.734,  2.734,  2.734,  2.734,  2.734,  2.734,  2.6608,  2.5876,  2.5144,  2.4412] as Array<Float>;
+    //  mm.max = 2.0;
     // mm.pops = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,  0.12,  0.159,  0.198,  0.237,  0.9188,  0.6006,  0.2824,  0.9642,  0.646,  0.4636,  0.2812,  0.0988,  0.9164,  0.734,  0.5972,  0.4604,  0.3236,  0.1868,  0.05,  0.05,  0.05,  0.05,  0.05,  0.05,  0.1136,  0.1772,  0.2408,  0.3044,  0.368,  0.4412,  0.5144,  0.5876,  0.6608,  0.734,  0.734,  0.734,  0.734,  0.734,  0.734,  0.6608,  0.5876,  0.5144,  0.4412] as Array<Float>;
     // mm.max = 0.8;
 
@@ -68,24 +58,24 @@ function getLatestGarminWeather() as WeatherData {
           var hf = new WeatherHourly();
           hf.forecastTime = garForecast.forecastTime as Time.Moment;          
           if (garForecast has :cloudCover) {
-            hf.clouds = $.getNumericValue(garForecast.cloudCover, 0) as Lang.Number; 
+            hf.clouds = $.getNumericValueOrDefault(garForecast.cloudCover, 0) as Lang.Number; 
           } else {
             hf.clouds = 0; // Not availablelastUpdateddity;
           }       
           if (garForecast has :uvIndex) {
-            hf.uvi = $.getNumericValue(garForecast.uvIndex, 0.0f) as Lang.Float; 
+            hf.uvi = $.getNumericValueOrDefault(garForecast.uvIndex, 0.0f) as Lang.Float; 
           } else {            
             hf.uvi = null; // Not available
           }
-          hf.precipitationChance = $.getNumericValue(garForecast.precipitationChance, 0) as Lang.Number;
+          hf.precipitationChance = $.getNumericValueOrDefault(garForecast.precipitationChance, 0) as Lang.Number;
           hf.condition =
-            $.getNumericValue(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
+            $.getNumericValueOrDefault(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
           hf.windBearing = garForecast.windBearing;
           hf.windSpeed = garForecast.windSpeed;
           hf.temperature = garForecast.temperature;
           hf.relativeHumidity = garForecast.relativeHumidity;
           if (garForecast has :dewPoint) {
-            hf.dewPoint = $.getNumericValue(garForecast.dewPoint, 0.0f) as Lang.Float; 
+            hf.dewPoint = $.getNumericValueOrDefault(garForecast.dewPoint, 0.0f) as Lang.Float; 
           } else {            
             hf.dewPoint = calculateDewpoint(hf.temperature, hf.relativeHumidity);
           }

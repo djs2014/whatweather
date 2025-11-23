@@ -9,7 +9,7 @@ typedef Polygon as Lang.Array<Point2D>;
 
 class RenderWeather {
   hidden var ds as DisplaySettings = new DisplaySettings();
-
+  hidden var ef as EdgeField  = EfLarge; // TODO refactor
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2 as Lang.Number = 0;
 
@@ -22,16 +22,19 @@ class RenderWeather {
   hidden const COLOR_TEXT_ALERT = Graphics.COLOR_ORANGE;
 
   // humidity is already percentage
+  hidden var minTemperature as Lang.Number = 0; // celcius
   hidden var maxTemperature as Lang.Number = 50; // celcius
   hidden var maxPressure as Lang.Number = 1080;
   hidden var minPressure as Lang.Number = 870;
 
   function initialize() {}
 
-  function initValues(dc as Dc, ds as DisplaySettings) as Void {
+  function initValues(dc as Dc, ds as DisplaySettings, ef as EdgeField) as Void {
     self.ds = ds;
+    self.ef = ef;
     topAdditionalInfo2 = dc.getFontHeight(ds.fontSmall);
 
+    self.minTemperature = $._minTemperature;
     self.maxTemperature = $._maxTemperature;
     self.maxPressure = $._maxPressure;
     self.minPressure = $._minPressure;
@@ -306,7 +309,7 @@ class RenderWeather {
     var color = dewpointToColor(dewpoint);
 
     dc.setColor(color, color);
-    if (ds.smallField) {
+    if (ef == EfSmall) { // TODO
       var percTemperature = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
       var yTop = ds.getYpostion($.max(percTemperature, comfort.humidityMax) as Lang.Number);
       percTemperature = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
@@ -364,44 +367,40 @@ class RenderWeather {
     dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
 
-  function drawWindInfoFirstColumn(
-    dc as Dc,
-    wp as WindPoint,
-    xOffset as Number,
-    showLeft as Boolean,
-    track as Number?
-  ) as Void {    
-    var x = xOffset;
-    if (showLeft) {
-      x = wp.x + ds.columnWidth / 2 - xOffset;
-    }
-    var y = ds.columnY + ds.columnHeight / 2;
-    var bigArrow = track != null;
-    if (track == null) {
-      track = 0;
-    }
-    // try {
-      drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow);     
-    // } catch (ex) {
-    //   System.println(ex.getErrorMessage());
-    //   ex.printStackTrace();
-    // }
-  }
+  // function drawWindInfoFirstColumn(
+  //   dc as Dc,
+  //   wp as WindPoint,
+  //   xOffset as Number,
+  //   showLeft as Boolean,
+  //   track as Number?,
+  //   showWind as Number
+  // ) as Void {    
+  //   var x = xOffset;
+  //   if (showLeft) {
+  //     x = wp.x + ds.columnWidth / 2 - xOffset;
+  //   }
+  //   var y = ds.columnY + ds.columnHeight / 2;
+  //   var bigArrow = track != null;
+  //   if (track == null) {
+  //     track = 0;
+  //   }
+  //   drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow, showWind);         
+  // }
 
-  function drawWindInfo(dc as Dc, windPoints as Array) as Void {
-    var max = windPoints.size();
-    for (var idx = 0; idx < max; idx++) {
-      var wp = windPoints[idx] as WindPoint;
-      var xW = wp.x + ds.columnWidth / 2;
-      var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-      try {
-        drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false);
-      } catch (ex) {
-        System.println(ex.getErrorMessage());
-        ex.printStackTrace();
-      }
-    }
-  }
+  // function drawWindInfo(dc as Dc, windPoints as Array, showWind as Number) as Void {
+  //   var max = windPoints.size();
+  //   for (var idx = 0; idx < max; idx++) {
+  //     var wp = windPoints[idx] as WindPoint;
+  //     var xW = wp.x + ds.columnWidth / 2;
+  //     var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
+  //     try {
+  //       drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false, showWind);
+  //     } catch (ex) {
+  //       System.println(ex.getErrorMessage());
+  //       ex.printStackTrace();
+  //     }
+  //   }
+  // }
 
   function drawAlertMessages(dc as Dc, activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
@@ -442,7 +441,7 @@ class RenderWeather {
     condition as Lang.Number,
     yLine as Lang.Number
   ) as Void {
-    if (ds.oneField) {
+    if (ef == EfOne) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
         //var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
@@ -463,7 +462,7 @@ class RenderWeather {
   }
 
   function drawSunsetIndication(dc as Dc, x as Lang.Number) as Void {
-    if (!ds.oneField) {
+    if (ef != EfOne) { // @@TODO should be from settings
       return;
     }
     var yOffset = ds.heightWt;
@@ -939,14 +938,15 @@ class RenderWeather {
   }
 
   // --  
-  hidden function drawWind(
+  public function drawWind(
     dc as Dc,
     x as Number,
     y as Number,
     windBearingInDegrees as Number,
     windSpeedMs as Float,
     windGustMs as Float,
-    bigArrow as Boolean
+    bigArrow as Boolean,
+    showWind as Number
   ) as Void {
     var hasAlert = false;
     var text = "";
@@ -994,10 +994,11 @@ class RenderWeather {
         }
       }
 
+      // TODO -> Somewhere else?
       var windSpeed = windSpeedMs;
-      if ($._showWind == SHOW_WIND_KILOMETERS) {
+      if (showWind == SHOW_WIND_KILOMETERS) {
         windSpeed = $.mpsToKmPerHour(windSpeedMs);
-      } else if ($._showWind == SHOW_WIND_METERS) {
+      } else if (showWind == SHOW_WIND_METERS) {
         windSpeed = windSpeedMs;
       } else {
         windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
@@ -1005,7 +1006,7 @@ class RenderWeather {
         textWidthPadding = 3;
       }
 
-      if ($._showWind != SHOW_WIND_BEAUFORT) {
+      if (showWind != SHOW_WIND_BEAUFORT) {
         if (windSpeed < 10) {
           text = windSpeed.format("%.1f");
         } else {

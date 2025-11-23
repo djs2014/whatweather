@@ -103,21 +103,21 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       }
       // First entry of hourly - > clouds + pop goes to current (it is the current hour)
       // @@ todo, fix proxy to get pop value from daily
-      cc.forecastTime = new Time.Moment(($.getNumericValue(firstHour[0], 0.0) as Number).toNumber());
-      cc.clouds = ($.getNumericValue(firstHour[1], 0) as Number).toNumber();
-      cc.precipitationChance = (($.getNumericValue(firstHour[2], 0.0) as Float) * 100.0).toNumber();
+      cc.forecastTime = new Time.Moment(($.getNumericValueOrDefault(firstHour[0], 0.0) as Number).toNumber());
+      cc.clouds = ($.getNumericValueOrDefault(firstHour[1], 0) as Number).toNumber();
+      cc.precipitationChance = (($.getNumericValueOrDefault(firstHour[2], 0.0) as Float) * 100.0).toNumber();
 
-      cc.condition = ($.getNumericValue(carr[3], 0) as Number).toNumber();
-      cc.uvi = ($.getNumericValue(carr[4], 0.0) as Float).toFloat();
-      cc.windSpeed = ($.getNumericValue(carr[5], 0) as Float).toFloat();
-      cc.windBearing = ($.getNumericValue(carr[6], 0) as Number).toNumber();
-      cc.temperature = ($.getNumericValue(carr[7], 0) as Number).toNumber(); // as Float;
-      cc.pressure = ($.getNumericValue(carr[8], 0) as Number).toNumber();
-      cc.relativeHumidity = ($.getNumericValue(carr[9], 0) as Number).toNumber();
-      cc.dewPoint = ($.getNumericValue(carr[10], 0.0) as Float).toFloat();
-      cc.rain1hr = ($.getNumericValue(carr[11], 0.0) as Float).toFloat();
-      cc.snow1hr = ($.getNumericValue(carr[12], 0.0) as Float).toFloat();
-      cc.windGust = ($.getNumericValue(carr[13], 0) as Float).toFloat();
+      cc.condition = ($.getNumericValueOrDefault(carr[3], 0) as Number).toNumber();
+      cc.uvi = ($.getNumericValueOrDefault(carr[4], 0.0) as Float).toFloat();
+      cc.windSpeed = ($.getNumericValueOrDefault(carr[5], 0) as Float).toFloat();
+      cc.windBearing = ($.getNumericValueOrDefault(carr[6], 0) as Number).toNumber();
+      cc.temperature = ($.getNumericValueOrDefault(carr[7], 0) as Number).toNumber(); // as Float;
+      cc.pressure = ($.getNumericValueOrDefault(carr[8], 0) as Number).toNumber();
+      cc.relativeHumidity = ($.getNumericValueOrDefault(carr[9], 0) as Number).toNumber();
+      cc.dewPoint = ($.getNumericValueOrDefault(carr[10], 0.0) as Float).toFloat();
+      cc.rain1hr = ($.getNumericValueOrDefault(carr[11], 0.0) as Float).toFloat();
+      cc.snow1hr = ($.getNumericValueOrDefault(carr[12], 0.0) as Float).toFloat();
+      cc.windGust = ($.getNumericValueOrDefault(carr[13], 0) as Float).toFloat();
 
       System.println("bgData Current: " + cc.info());
     }
@@ -133,21 +133,21 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       for (var i = startIdx; i < bg_hh.size(); i++) {
         var hf = new WeatherHourly();
         var arr = bg_hh[i] as Array<Numeric>;
-        hf.forecastTime = new Time.Moment(($.getNumericValue(arr[0], 0) as Number).toNumber());
-        hf.clouds = ($.getNumericValue(arr[1], 0) as Number).toNumber();
+        hf.forecastTime = new Time.Moment(($.getNumericValueOrDefault(arr[0], 0) as Number).toNumber());
+        hf.clouds = ($.getNumericValueOrDefault(arr[1], 0) as Number).toNumber();
         // OWM pop from o.o - 1
-        hf.precipitationChance = (($.getNumericValue(arr[2], 0.0) as Float) * 100.0).toNumber();
-        hf.condition = ($.getNumericValue(arr[3], 0) as Number).toNumber();
-        hf.uvi = ($.getNumericValue(arr[4], 0.0) as Float).toFloat();
-        hf.windSpeed = ($.getNumericValue(arr[5], 0) as Float).toFloat();
-        hf.windBearing = ($.getNumericValue(arr[6], 0) as Number).toNumber();
-        hf.temperature = ($.getNumericValue(arr[7], 0) as Number).toNumber();
-        hf.pressure = ($.getNumericValue(arr[8], 0) as Number).toNumber();
-        hf.relativeHumidity = ($.getNumericValue(arr[9], 0) as Number).toNumber();
-        hf.dewPoint = ($.getNumericValue(arr[10], 0.0) as Float).toFloat();
-        hf.rain1hr = ($.getNumericValue(arr[11], 0.0) as Float).toFloat();
-        hf.snow1hr = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
-        hf.windGust = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
+        hf.precipitationChance = (($.getNumericValueOrDefault(arr[2], 0.0) as Float) * 100.0).toNumber();
+        hf.condition = ($.getNumericValueOrDefault(arr[3], 0) as Number).toNumber();
+        hf.uvi = ($.getNumericValueOrDefault(arr[4], 0.0) as Float).toFloat();
+        hf.windSpeed = ($.getNumericValueOrDefault(arr[5], 0) as Float).toFloat();
+        hf.windBearing = ($.getNumericValueOrDefault(arr[6], 0) as Number).toNumber();
+        hf.temperature = ($.getNumericValueOrDefault(arr[7], 0) as Number).toNumber();
+        hf.pressure = ($.getNumericValueOrDefault(arr[8], 0) as Number).toNumber();
+        hf.relativeHumidity = ($.getNumericValueOrDefault(arr[9], 0) as Number).toNumber();
+        hf.dewPoint = ($.getNumericValueOrDefault(arr[10], 0.0) as Float).toFloat();
+        hf.rain1hr = ($.getNumericValueOrDefault(arr[11], 0.0) as Float).toFloat();
+        hf.snow1hr = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
+        hf.windGust = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
 
         System.println("bgData Hourly: " + hf.info());
         hh.add(hf);
@@ -175,10 +175,10 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       for (var i = 0; i < bg_al.size(); i++) {
         var wal = new WeatherAlert();
         var warr = bg_al[i] as Array<Numeric or String>;
-        wal.event = $.getStringValue(warr[0] as String, "") as String;
-        wal.start = new Time.Moment(($.getNumericValue(warr[1] as Number, 0.0) as Number).toNumber());
-        wal.end = new Time.Moment(($.getNumericValue(warr[2] as Number, 0.0) as Number).toNumber());
-        wal.description = $.getStringValue(warr[3] as String, "") as String;
+        wal.event = $.getStringValueOrDefault(warr[0] as String, "") as String;
+        wal.start = new Time.Moment(($.getNumericValueOrDefault(warr[1] as Number, 0.0) as Number).toNumber());
+        wal.end = new Time.Moment(($.getNumericValueOrDefault(warr[2] as Number, 0.0) as Number).toNumber());
+        wal.description = $.getStringValueOrDefault(warr[3] as String, "") as String;
         wal.description = $.stringReplace(wal.description, "\n"," ");
         wal.description = $.stringReplace(wal.description, "\r"," ");
         System.println("bgData Alert: " + wal.info());
