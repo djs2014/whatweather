@@ -1,4 +1,4 @@
-// v2024-06-8 
+// v2024-06-8
 // substring null -> .length()
 // v2024-06-11 fix num of items edge 840
 
@@ -6,6 +6,7 @@ import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
 import Toybox.StringUtil;
+import Toybox.System;
 
 //! Show the text the user picked
 class NumericInputView extends WatchUi.View {
@@ -450,12 +451,7 @@ class NumericInputView extends WatchUi.View {
     try {
       for (var idxCtrl = 0; idxCtrl < _controlCoord.size(); idxCtrl++) {
         var range = _controlCoord[idxCtrl] as Lang.Array<Lang.Number>;
-        if (
-          (range[0] as Number) < x &&
-          x < (range[1] as Number) &&
-          (range[2] as Number) < y &&
-          y < (range[3] as Number)
-        ) {
+        if ((range[0] as Number) < x && x < (range[1] as Number) && (range[2] as Number) < y && y < (range[3] as Number)) {
           return _controls[idxCtrl] as String;
         }
       }
@@ -674,6 +670,7 @@ function parseLabelToOptions(label as String?) as NumericOptions {
       options.maxValue = temp;
     }
   }
+  // System.println(options.info());
   return options;
 }
 
@@ -696,4 +693,18 @@ class NumericOptions {
   // public var negative as Boolean = false;
 
   public function initialize() {}
+
+  // public function info() as String {
+  //   return Lang.format("$1$ minmax[$2$~$3$]($4$~$5$) float:$6$ minus:$7$ units:$8$ factor:$9$", [
+  //     prompt,
+  //     minValue,
+  //     maxValue,
+  //     hasMinValue,
+  //     hasMaxValue,
+  //     isFloat,
+  //     useMinus,
+  //     units,
+  //     factor,
+  //   ]);
+  // }
 }

@@ -46,7 +46,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       // @@ proxy url - text picker
       // @@ proxy apikey - text picker
       // @@ owm apikey - text picker
-      mi = new WatchUi.MenuItem("Checkinterval minutes |5~", null, "checkIntervalMinutes", null);
+      mi = new WatchUi.MenuItem("Checkinterval|5~(minutes)", null, "checkIntervalMinutes", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
 
@@ -83,7 +83,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       var array = $.getStorageValue(storageKey, []) as Array<Number>;
       // Check size
       if ($.ensureArraySize(array as Array<Application.PropertyValueType>, $.gSizeArrFieldItems, 0)) {
-        $.setStorageValueOrArray(storageKey, array);
+        $.setStorageValueOrArray(storageKey, array as Array<Application.PropertyValueType>);
       }
       var index = 0;
       $.addMenuItem(fieldMenu, "Hours forecast|0~24", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
@@ -95,13 +95,13 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       $.addToggleMenuItem(fieldMenu, "Zoom when rain", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
       index = 3;
-      $.addMenuItem(fieldMenu, "Zoom when mm >|.", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+      $.addMenuItem(fieldMenu, "Zoom when more than|.(mm)", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
 
       index = 4;
-      $.addMenuItem(fieldMenu, "Zoom factor |1~10", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+      $.addMenuItem(fieldMenu, "Zoom factor|1~10", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
 
       index = 5;
-      $.addMenuItem(fieldMenu, "Zoom columns |1~6", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+      $.addMenuItem(fieldMenu, "Zoom columns|1~6", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
 
       index = 6;
       $.addToggleMenuItem(fieldMenu, "Current forecast", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
@@ -112,7 +112,6 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       index = 8; // show_one_field|8 etc
       $.addMenuItem(fieldMenu, "Wind", $.getShowWindText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
 
-      // @@TODO Current wind is always relative
       index = 9;
       $.addToggleMenuItem(fieldMenu, "Current wind", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
@@ -185,7 +184,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getGustLevelText(value));
       alertsMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Dewpoint (C) |0~50", null, "alertLevelDewpoint", null);
+      mi = new WatchUi.MenuItem("Dewpoint|0~50 (C)", null, "alertLevelDewpoint", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
@@ -194,15 +193,15 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     if (id instanceof String && id.equals("advanced")) {
       var advancedMenu = new WatchUi.Menu2({ :title => "Advanced" });
 
-      var mi = new WatchUi.MenuItem("Min temperature (C)|-10~50", null, "minTemperature", null);
+      var mi = new WatchUi.MenuItem("Min temperature|-10~50 (C)", null, "minTemperature", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max temperature (C)|0~50", null, "maxTemperature", null);
+      mi = new WatchUi.MenuItem("Max temperature|0~50 (C)", null, "maxTemperature", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Hide temperature < (C)|-10~50", null, "hideTemperature", null);
+      mi = new WatchUi.MenuItem("Hide temperature <|-10~50 (C)", null, "hideTemperature", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
@@ -210,15 +209,15 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Min pressure (hPa)|0~1200", null, "minPressure", null);
+      mi = new WatchUi.MenuItem("Min pressure|0~1200 (hPa)", null, "minPressure", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max pressure (hPa)|0~1200", null, "maxPressure", null);
+      mi = new WatchUi.MenuItem("Max pressure|0~1200 (hPa)", null, "maxPressure", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max rain per hour (mm))|1~20", null, "maxMMRainPerHour", null);
+      mi = new WatchUi.MenuItem("Max rain per hour|1~20 (mm)", null, "maxMMRainPerHour", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
@@ -228,18 +227,18 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     if (id instanceof String && id.equals("comfort")) {
       var comfortMenu = new WatchUi.Menu2({ :title => "Comfort" });
 
-      var mi = new WatchUi.MenuItem("Min humidity (%)|0~100", null, "comfortHumidityMin", null);
+      var mi = new WatchUi.MenuItem("Min humidity|0~100 (%)", null, "comfortHumidityMin", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max humidity (%)|0~100", null, "comfortHumidityMax", null);
+      mi = new WatchUi.MenuItem("Max humidity|0~100(%)", null, "comfortHumidityMax", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Min temp (C)|0~100", null, "comfortTempMin", null);
+      mi = new WatchUi.MenuItem("Min temp|-10~100(C)", null, "comfortTempMin", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
-      mi = new WatchUi.MenuItem("Max temp (C)|0~100", null, "comfortTempMax", null);
+      mi = new WatchUi.MenuItem("Max temp|0~100(C)", null, "comfortTempMax", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
@@ -470,6 +469,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     // Numeric input
     var prompt = _item.getLabel();
+    System.println(["Numeric input:", prompt]);
     var value = $.getStorageValue(id as String, 0) as Numeric;
     var view = $.getNumericInputView(prompt, value);
     view.setOnAccept(self, :onAcceptNumericinput);

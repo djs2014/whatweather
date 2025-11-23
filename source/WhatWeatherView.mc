@@ -34,9 +34,9 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mGarminCheck as WeatherCheck = new WeatherCheck();
   hidden var mCurrentInfo as CurrentInfo?;
 
-  hidden var mTotalRain1stHour as Lang.Float = 0.0f;
-  hidden var mRain1stHour as Array<WeatherPoint> = [];
-  hidden var mWindPoints as Array<WindPoint> = [];
+  // hidden var mTotalRain1stHour as Lang.Float = 0.0f;
+  // hidden var mRain1stHour as Array<WeatherPoint> = [];
+  // hidden var mWindPoints as Array<WindPoint> = [];
 
   hidden var mFontInfo as Graphics.FontType = Graphics.FONT_LARGE;
   hidden var mFontPostfix as Graphics.FontType = Graphics.FONT_TINY;
@@ -199,7 +199,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
       // TODO - calc all weather points ..
-      computeAllWheater();
+      // computeAllWheater();
     } catch (ex) {
       ex.printStackTrace();
     }
@@ -1044,7 +1044,7 @@ class WhatWeatherView extends WatchUi.DataField {
   ) as Void {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     // var max_mmPerHour = $._maxMMRainPerHour;
-    var perc = $.percentageOf(mmhour, max_mmPerHour).toNumber();
+    var perc = $.percentageOf(mmhour, 0, max_mmPerHour).toNumber();
     if (perc <= 0) {
       return;
     }
@@ -1213,6 +1213,7 @@ class WhatWeatherView extends WatchUi.DataField {
     return ci;
   }
 
+/*
   function computeAllWheater() as Void {
     if (!mWeatherData.valid()) {
       return;
@@ -1272,6 +1273,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
     }
   }
+*/
 
   function checkForWeatherAlerts() as Void {
     var mm = null;

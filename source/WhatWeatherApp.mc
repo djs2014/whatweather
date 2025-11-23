@@ -64,7 +64,7 @@ class WhatWeatherApp extends Application.AppBase {
           8, // hours forecast
           true, // rain first hour
           false, // zoom when rain
-          0.2f, // zoom when mm
+          0.1f, // zoom when mm
           3, // zoom factor
           3, // number of columns
           true, // current forecast
@@ -86,7 +86,7 @@ class WhatWeatherApp extends Application.AppBase {
           8, // hours forecast
           true, // rain first hour
           true, // zoom when rain
-          0.2f, // zoom when mm
+          0.1f, // zoom when mm
           3, // zoom factor
           3, // number of columns
           true, // current forecast
@@ -108,7 +108,7 @@ class WhatWeatherApp extends Application.AppBase {
           8, // hours forecast
           true, // rain first hour
           true, // zoom when rain
-          0.2f, // zoom when mm
+          0.1f, // zoom when mm
           3, // zoom factor
           3, // number of columns
           true, // current forecast
@@ -130,7 +130,7 @@ class WhatWeatherApp extends Application.AppBase {
           6, // hours forecast
           true, // rain first hour
           true, // zoom when rain
-          0.2f, // zoom when mm
+          0.1f, // zoom when mm
           3, // zoom factor
           3, // number of columns
           true, // current forecast
@@ -382,7 +382,7 @@ class WhatWeatherApp extends Application.AppBase {
       8, // hours forecast
       true, // rain first hour
       false, // zoom when rain
-      0.2f, // zoom when mm
+      0.1f, // zoom when mm
       3, // zoom factor
       3, // number of columns
       true, // current forecast
@@ -404,7 +404,7 @@ class WhatWeatherApp extends Application.AppBase {
       8, // hours forecast
       true, // rain first hour
       true, // zoom when rain
-      0.2f, // zoom when mm
+      0.1f, // zoom when mm
       3, // zoom factor
       3, // number of columns
       true, // current forecast
@@ -426,7 +426,7 @@ class WhatWeatherApp extends Application.AppBase {
       8, // hours forecast
       true, // rain first hour
       true, // zoom when rain
-      0.2f, // zoom when mm
+      0.1f, // zoom when mm
       3, // zoom factor
       3, // number of columns
       true, // current forecast
@@ -448,7 +448,7 @@ class WhatWeatherApp extends Application.AppBase {
       6, // hours forecast
       true, // rain first hour
       true, // zoom when rain
-      0.2f, // zoom when mm
+      0.1f, // zoom when mm
       3, // zoom factor
       3, // number of columns
       true, // current forecast

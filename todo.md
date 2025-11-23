@@ -1,10 +1,54 @@
-sync locations / numericinput  --> gives stack overflow issue.
+Low memory edge 830 / 530 / ? 1030?
+-> separate version -> stripped down.
+-> max hours = 7 no icons, simple wind icon?
+-> less menu options -> or field part a / field part b?
+--- aka keep current 
+-> new whatweather for *40 / *50
 
+
+sync locations / numericinput  --> gives stack overflow issue.
+class NumericOptions {
+  public var prompt as String = "";
+  public var minValue as Number or Float = 0;
+  public var maxValue as Number or Float = 0;
+  public var hasMinValue as Boolean = false;
+  public var hasMaxValue as Boolean = false;
+  public var isFloat as Boolean = false;
+  public var useMinus as Boolean = false;
+  public var units as String = "";
+  // Example factor: storage value meters (10000)
+  // -> factor = 0.001, unit = km
+  // Edit and display in km (10.0)
+  public var factor as Float = 1.0f;
+
+  // flags @@TODO
+  // public var negative as Boolean = false;
+
+  public function initialize() {}
+
+  public function info() as String {
+    return String.format("$1$ minmax[$2$~$3$]($4$~$5$) float:$6$ minus:$7$ units:$8$ factor:$9$", [
+      prompt,
+      minValue,
+      maxValue,
+      hasMinValue,
+      hasMaxValue,
+      isFloat,
+      useMinus,
+      units,
+      factor,
+    ]);
+
+  }
 1 show settings per field one,large,wide,etc [1,1,1,1,..]
   x get onsettingschanged
   x hide current weather column when in zoom - only add the weather condition color if needed
   - zoom # of columns
   - calc onlayout
+  - min temperature
+  - perc of min/max
+  - drawTemperatureGraph / etc hide details when lower than.. (C)
+
 2 -> default values
 
 3 -> refactor
@@ -16,6 +60,7 @@ sync locations / numericinput  --> gives stack overflow issue.
   - use profiler to optimize 
 4 add min temperature
 
+add windfeel temp? 
 oncompute
 
 optimize drawwind code - remove RendeWeather object

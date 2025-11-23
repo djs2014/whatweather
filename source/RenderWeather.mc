@@ -9,7 +9,7 @@ typedef Polygon as Lang.Array<Point2D>;
 
 class RenderWeather {
   hidden var ds as DisplaySettings = new DisplaySettings();
-  hidden var ef as EdgeField  = EfLarge; // TODO refactor
+  hidden var ef as EdgeField = EfLarge; // TODO refactor
   hidden const TOP_ADDITIONAL_INFO = 1;
   hidden var topAdditionalInfo2 as Lang.Number = 0;
 
@@ -46,9 +46,9 @@ class RenderWeather {
     var comfort = getComfort();
     self.yHumTop = ds.getYpostion(comfort.humidityMax);
     self.yHumBottom = ds.getYpostion(comfort.humidityMin);
-    var perc = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+    var perc = $.percentageOf(comfort.temperatureMax, self.minTemperature, self.maxTemperature).toNumber();
     self.yTempTop = ds.getYpostion(perc);
-    perc = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+    perc = $.percentageOf(comfort.temperatureMin, self.minTemperature, self.maxTemperature).toNumber();
     self.yTempBottom = ds.getYpostion(perc);
   }
 
@@ -65,7 +65,7 @@ class RenderWeather {
         var uvp = uvPoints[i] as UvPoint;
         if (!uvp.isHidden) {
           var x = uvp.x;
-          var perc = $.percentageOf(uvp.uvi, maxUvIndex).toNumber();
+          var perc = $.percentageOf(uvp.uvi, 0, maxUvIndex).toNumber();
           var y = ds.getYpostion(perc);
           var r = uviToRadius(uvp.uvi);
 
@@ -118,7 +118,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
         if (!p.isHidden) {
           var x = p.x;
-          var perc = $.percentageOf(p.value, self.maxTemperature).toNumber();
+          var perc = $.percentageOf(p.value, self.minTemperature, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
 
           if (showDetails && p.value > 10) {
@@ -170,7 +170,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
         if (!p.isHidden) {
           var x = p.x;
-          var perc = $.percentageOf(p.value, self.maxTemperature).toNumber();
+          var perc = $.percentageOf(p.value, self.minTemperature, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           var r = 3;
           var color = dewpointToColor(y.toFloat());
@@ -218,7 +218,7 @@ class RenderWeather {
         var p = points[i] as WeatherPoint;
 
         var x = p.x as Number;
-        var perc = $.percentageOf(p.value - self.minPressure, self.maxPressure - self.minPressure).toNumber();
+        var perc = $.percentageOf(p.value, self.minPressure, self.maxPressure).toNumber();
         var y = ds.getYpostion(perc).toNumber();
 
         if (showDetails) {
@@ -298,21 +298,17 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(
-    dc as Dc,
-    x as Lang.Number,
-    temperature as Lang.Numeric?,
-    dewpoint as Lang.Float?
-  ) as Void {
+  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Numeric?, dewpoint as Lang.Float?) as Void {
     var comfort = getComfort();
 
     var color = dewpointToColor(dewpoint);
 
     dc.setColor(color, color);
-    if (ef == EfSmall) { // TODO
-      var percTemperature = $.percentageOf(comfort.temperatureMax, self.maxTemperature).toNumber();
+    if (ef == EfSmall) {
+      // TODO
+      var percTemperature = $.percentageOf(comfort.temperatureMax, self.minTemperature, self.maxTemperature).toNumber();
       var yTop = ds.getYpostion($.max(percTemperature, comfort.humidityMax) as Lang.Number);
-      percTemperature = $.percentageOf(comfort.temperatureMin, self.maxTemperature).toNumber();
+      percTemperature = $.percentageOf(comfort.temperatureMin, self.minTemperature, self.maxTemperature).toNumber();
       var yBottom = ds.getYpostion($.min(percTemperature, comfort.humidityMin) as Lang.Number);
       var height = yBottom - yTop;
       dc.fillRectangle(x - ds.space / 2, yTop, ds.columnWidth + ds.space, height);
@@ -374,7 +370,7 @@ class RenderWeather {
   //   showLeft as Boolean,
   //   track as Number?,
   //   showWind as Number
-  // ) as Void {    
+  // ) as Void {
   //   var x = xOffset;
   //   if (showLeft) {
   //     x = wp.x + ds.columnWidth / 2 - xOffset;
@@ -384,7 +380,7 @@ class RenderWeather {
   //   if (track == null) {
   //     track = 0;
   //   }
-  //   drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow, showWind);         
+  //   drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow, showWind);
   // }
 
   // function drawWindInfo(dc as Dc, windPoints as Array, showWind as Number) as Void {
@@ -435,12 +431,7 @@ class RenderWeather {
     }
   }
 
-  function drawWeatherConditionText(
-    dc as Dc,
-    x as Lang.Number,
-    condition as Lang.Number,
-    yLine as Lang.Number
-  ) as Void {
+  function drawWeatherConditionText(dc as Dc, x as Lang.Number, condition as Lang.Number, yLine as Lang.Number) as Void {
     if (ef == EfOne) {
       var text = getWeatherConditionText(condition);
       if (text != null) {
@@ -462,19 +453,15 @@ class RenderWeather {
   }
 
   function drawSunsetIndication(dc as Dc, x as Lang.Number) as Void {
-    if (ef != EfOne) { // @@TODO should be from settings
+    if (ef != EfOne) {
+      // @@TODO should be from settings
       return;
     }
     var yOffset = ds.heightWt;
     drawMoon(dc, x + ds.columnWidth / 2, ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset, 3);
   }
 
-  function drawWeatherCondition(
-    dc as Dc,
-    xPos as Lang.Number,
-    condition as Lang.Number,
-    nightTime as Lang.Boolean
-  ) as Void {
+  function drawWeatherCondition(dc as Dc, xPos as Lang.Number, condition as Lang.Number, nightTime as Lang.Boolean) as Void {
     if (condition == null) {
       return;
     }
@@ -626,11 +613,7 @@ class RenderWeather {
       return;
     }
 
-    if (
-      condition == Weather.CONDITION_SLEET ||
-      condition == Weather.CONDITION_ICE_SNOW ||
-      condition == Weather.CONDITION_ICE
-    ) {
+    if (condition == Weather.CONDITION_SLEET || condition == Weather.CONDITION_ICE_SNOW || condition == Weather.CONDITION_ICE) {
       dc.setColor(Graphics.COLOR_BLUE, Graphics.COLOR_TRANSPARENT);
       dc.fillPolygon(getHailPoints(x, y, 4));
       dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
@@ -786,14 +769,7 @@ class RenderWeather {
     return pts as Polygon;
   }
 
-  hidden function drawDustIcon(
-    dc as Dc,
-    x as Number,
-    y as Number,
-    range as Number,
-    size as Number,
-    particles as Number
-  ) as Void {
+  hidden function drawDustIcon(dc as Dc, x as Number, y as Number, range as Number, size as Number, particles as Number) as Void {
     var xD, yD;
     for (var i = 0; i < particles; i++) {
       if (i % 2 == 0) {
@@ -937,7 +913,7 @@ class RenderWeather {
     }
   }
 
-  // --  
+  // --
   public function drawWind(
     dc as Dc,
     x as Number,
@@ -1031,7 +1007,7 @@ class RenderWeather {
       var gustInner = 0;
       var factor = 0;
       if (bigArrow) {
-        factor = (windSpeedMs / 4.0); 
+        factor = windSpeedMs / 4.0;
         pA = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees - 35 - 180);
         pB = point2DOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
         pC = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
@@ -1050,17 +1026,17 @@ class RenderWeather {
       }
       dc.fillPolygon([pA, pB, pC, pD] as Polygon);
 
-       if (windGustLevel >= 1) {
-         //dc.setPenWidth(2);
-         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+      if (windGustLevel >= 1) {
+        //dc.setPenWidth(2);
+        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
-         factor = factor + 2;
-         pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
-         pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
-         pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
-         
-         dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
-         dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
+        factor = factor + 2;
+        pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
+        pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
+        pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+
+        dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
+        dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
         //  dc.drawLine(pC[0], pC[1], pA[0], pA[1]);
 
         //  dc.fillPolygon([pA, pB, pC] as Polygon); this will give stack overflow error
@@ -1083,7 +1059,7 @@ class RenderWeather {
           // dc.fillPolygon([pA, pB, pC] as Polygon);
         }
         dc.setPenWidth(1);
-       }
+      }
     }
 
     // The circle
@@ -1104,12 +1080,7 @@ class RenderWeather {
   //   }
   // }
 
-  hidden function point2DOnCircle(
-    x as Number,
-    y as Number,
-    radius as Lang.Numeric,
-    angleInDegrees as Lang.Numeric
-  ) as Point2D {
+  hidden function point2DOnCircle(x as Number, y as Number, radius as Lang.Numeric, angleInDegrees as Lang.Numeric) as Point2D {
     // Convert from degrees to radians
     try {
       var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
