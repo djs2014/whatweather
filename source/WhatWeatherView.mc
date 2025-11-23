@@ -389,9 +389,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var nightTime = false;
     var sunsetPassed = false;
     var maxHoursForecast = $._maxHoursForecast;
+    var showCurrentForecast = $._showCurrentForecast;
     
-    
-
     try {
       var mCurrentLocation = $.getCurrentLocation();
       
@@ -426,7 +425,8 @@ class WhatWeatherView extends WatchUi.DataField {
               if ($._zoomFactorMinuteForecast == 0) {
                 $._zoomFactorMinuteForecast = 3;
               }
-              max_mmPerHour = max_mmPerHour / $._zoomFactorMinuteForecast; // Zoom in, or else small amounts not visible.
+              max_mmPerHour = max_mmPerHour / $._zoomFactorMinuteForecast; // Zoom in, or else small amounts not visible.              
+              showCurrentForecast = false;
             }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = -1;
@@ -535,7 +535,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
       // When defined outside try/catch -> stack overflow
       var validSegment = 0;
-      if ($._showCurrentForecast) {
+      if (showCurrentForecast) {
         if (current != null) {
           color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
           colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
@@ -936,7 +936,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       // @@ draw windgust test
       if (windPoints.size() > 0) {
-        if (showInfoRelativeWind) {
+        if (showInfoRelativeWind) {          
           render.drawWindInfoFirstColumn(dc, windPoints[0] as WindPoint, mDs.width / 2, false, wpBearing);
           if (mDs.oneField && mShowWind != SHOW_WIND_NOTHING) {
             render.drawWindInfo(dc, windPoints);

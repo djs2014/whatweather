@@ -1,3 +1,8 @@
+Fix memory for *30 devices ??
+Max -> 7 forecast
+No weather icons
+
+
 perc100bar - > countdown to next webrequest
 show settings per field one,large,wide,etc [1,1,1,1,..]
 
