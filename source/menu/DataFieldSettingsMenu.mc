@@ -221,6 +221,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
+      mi = new WatchUi.MenuItem("Hide details below y-axis|0~100 (%)", null, "percHideDetails", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
       WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
@@ -292,7 +296,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     // view.setOnAccept(self, :onAcceptNumericinput);
     // view.setOnKeypressed(self, :onNumericinput);
 
-    // Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(false, view), WatchUi.SLIDE_RIGHT);
+    // Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_RIGHT);
   }
 
   // function onAcceptNumericinput(value as Numeric, subLabel as String) as Void {
@@ -323,7 +327,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
   //   view.setOnAccept(self, :onAcceptNumericinput);
   //   view.setOnKeypressed(self, :onNumericinput);
 
-  //   Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_IMMEDIATE);
+  //   Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_IMMEDIATE);
   // }
 
   function onSelectedSelection(storageKey as String, value as Application.PropertyValueType) as Void {
@@ -337,7 +341,6 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   hidden var _arrayIndex as Number = -1;
 
   hidden var _currentPrompt as String = "";
-  hidden var _debug as Boolean = false;
 
   function initialize() {
     Menu2InputDelegate.initialize();
@@ -475,7 +478,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
 
-    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_RIGHT);
+    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_RIGHT);
   }
 
   function onAcceptNumericinput(value as Numeric, subLabel as String) as Void {
@@ -506,7 +509,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
 
-    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_IMMEDIATE);
+    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_IMMEDIATE);
   }
 
   //! Handle the back key being pressed

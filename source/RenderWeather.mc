@@ -121,7 +121,7 @@ class RenderWeather {
           var perc = $.percentageOf(p.value, self.minTemperature, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
 
-          if (showDetails && p.value > 10) {
+          if (showDetails && perc > $._percHideDetails) {
             var yBlueBar = ds.getYpostion((blueBarPercentage[i] as Number).toNumber());
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             if (yBlueBar < y) {
@@ -175,7 +175,7 @@ class RenderWeather {
           var r = 3;
           var color = dewpointToColor(y.toFloat());
 
-          if (showDetails && p.value > 7) {
+          if (showDetails && perc > $._percHideDetails) {
             var h = dc.getFontHeight(Graphics.FONT_TINY);
             dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
             var dewpoint = p.value;
@@ -266,7 +266,7 @@ class RenderWeather {
         var y = ds.getYpostion(p.value.toNumber()); // value is percentage
         var r = 3;
 
-        if (showDetails) {
+        if (showDetails && perc > $._percHideDetails) {
           var h = dc.getFontHeight(Graphics.FONT_TINY);
           dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
           dc.drawText(

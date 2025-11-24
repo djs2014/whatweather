@@ -454,6 +454,7 @@ class WhatWeatherView extends WatchUi.DataField {
               }
               max_mmPerHour = max_mmPerHour / mZoomMinuteForecastFactor; // Zoom in, or else small amounts not visible.
               showCurrentForecast = false;
+              System.println(["Zoom maxHoursForecast", maxHoursForecast]);
             }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = -1;
@@ -1213,7 +1214,7 @@ class WhatWeatherView extends WatchUi.DataField {
     return ci;
   }
 
-/*
+  /*
   function computeAllWheater() as Void {
     if (!mWeatherData.valid()) {
       return;
