@@ -1,11 +1,6 @@
 <strings>
-    <string id="AppName">What Weather</string>    
-    <string id="AppNameBeta">What Weather Beta</string>        
-    
-    
-        
-    <!-- <string id="ShowWeatherAlerts">Show weather alerts (OWM 3.0)</string> -->
-                
+    <string id="AppName">What Weather*30</string>    
+                        
     <string id="OpenWeatherAPIKey">OWM API key</string>
     <string id="OpenWeatherProxy">OWM Proxy (compress json)</string>
     <string id="OpenWeatherProxyAPIKey">OWM Proxy API key</string>   

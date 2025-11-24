@@ -1,5 +1,6 @@
 # What Weather
 
+For Edge *30 versions
 # TL;DR;
 
 Connect IQ datafield showing predicted weather information.
