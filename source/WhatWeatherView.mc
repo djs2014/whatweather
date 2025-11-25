@@ -66,8 +66,8 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mZoomMinuteForecastColumns as Number = 2;
   hidden var mShowCurrentForecast as Boolean = false;
   hidden var mShowClouds as Boolean = false;
-  hidden var mShowWind as Number = SHOW_WIND_NOTHING;
-  hidden var mShowCurrentWind as Boolean = false;
+  hidden var mShowWind as Boolean = false;
+  hidden var mShowWindUnit as Number = SHOW_WIND_KILOMETERS;
   hidden var mShowUv as Boolean = false;
   hidden var mShowTemperature as Boolean = false;
   hidden var mShowRelativeHumidity as Boolean = false;
@@ -78,6 +78,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mShowExtraInfo as Number = SHOW_INFO_NOTHING;
   hidden var mShowDetailsWhenPaused as Boolean = false;
 
+  hidden var mShowRelativeWind as Boolean = false;
   hidden var mShowComfortBorders as Boolean = false;
   hidden var mShowObservationLocationName as Boolean = false;
   hidden var mShowObservationTime as Boolean = false;
@@ -284,8 +285,8 @@ class WhatWeatherView extends WatchUi.DataField {
     mZoomMinuteForecastColumns = arrShowField[5];
     mShowCurrentForecast = arrShowField[6] == true;
     mShowClouds = arrShowField[7] == true;
-    mShowWind = arrShowField[8];
-    mShowCurrentWind = arrShowField[9] == true;
+    mShowWind = arrShowField[8] == true;
+    mShowWindUnit = arrShowField[9];
     mShowUv = arrShowField[10] == true;
     mShowTemperature = arrShowField[11] == true;
     mShowRelativeHumidity = arrShowField[12] == true;
@@ -295,9 +296,10 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowWeatherCondition = arrShowField[16] == true;
     mShowExtraInfo = arrShowField[17];
     mShowDetailsWhenPaused = arrShowField[18] == true;
+    mShowRelativeWind = mShowExtraInfo == SHOW_INFO_RELATIVE_WIND;
 
     // Height wind icons
-    var heightWind = mShowWind == SHOW_WIND_NOTHING ? 0 : 15;
+    var heightWind = mShowWind ? 0 : 15;
     // Height weather icons / text
     var heightWc = !mShowWeatherCondition ? 0 : 15;
     var heightWt = mShowWeatherCondition ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
@@ -390,9 +392,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var wi = dc.getTextWidthInPixels(info, mFontInfo);
     var wp = dc.getTextWidthInPixels(postfix, mFontPostfix);
     var xi = mDs.width / 2 - (wi + wp) / 2;
-    // if (mShowWindFirst && mDs.smallField) {
-    //   xi = xi + dc.getTextWidthInPixels("0", mFontInfo) / 2;
-    // }
+
     dc.setColor(mDs.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
     dc.drawText(xi, mDs.height / 2, mFontInfo, info, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
     dc.drawText(xi + wi + 1, mDs.height / 2, mFontPostfix, postfix, Graphics.TEXT_JUSTIFY_LEFT);
@@ -648,7 +648,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if (mShowDewpoint) {
             dewPoints.add(new WeatherPoint(x + mDs.columnWidth / 2, current.getDewPoint(), $._hideTemperature));
           }
-          if (mShowWind != SHOW_WIND_NOTHING) {
+          if (mShowWind || mShowRelativeWind) {
             windPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
           }
 
@@ -801,7 +801,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (mShowDewpoint) {
               dewPoints.add(new WeatherPoint(x + mDs.columnWidth / 2, forecast.getDewPoint(), $._hideTemperature));
             }
-            if (mShowWind != SHOW_WIND_NOTHING) {
+            if (mShowWind || mShowRelativeWind) {
               windPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
             }
 
@@ -911,23 +911,21 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       // Wind icons or wind relative or wind first column
-
-      var showInfoRelativeWind = false;
-      if (mCurrentInfo != null) {
-        showInfoRelativeWind = (mCurrentInfo as CurrentInfo).nr == SHOW_INFO_RELATIVE_WIND;
-      }
-
       var maxWp = windPoints.size();
-      if (mShowWind != SHOW_WIND_NOTHING) {
+
+      if (mShowWind) {
         for (var idx = 0; idx < maxWp; idx++) {
           var wp = windPoints[idx] as WindPoint;
           var xW = wp.x + mDs.columnWidth / 2;
           var yW = mDs.columnY + mDs.columnHeight + mDs.heightWind - mDs.heightWind / 2;
-          render.drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false, mShowWind);
+          render.drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false, mShowWindUnit);
         }
       }
+
+      // TODO refactor, should be in showinfo method -> mShowRelativeWind -> only get first windpoint.
       // Show relative wind, not when wind icons are enabled and activity is paused (overlap wind icons)
-      if (maxWp > 0 && showInfoRelativeWind && (!mActivityPaused || mShowWind == SHOW_WIND_NOTHING)) {
+      if (windPoints.size() > 0 && mShowRelativeWind) {
+        
         var activityBearing = mBearing;
         if (mActivityPaused) {
           activityBearing = 0;
@@ -936,7 +934,16 @@ class WhatWeatherView extends WatchUi.DataField {
         var wp1st = windPoints[0] as WindPoint;
         var yW1st = mDs.columnY + mDs.columnHeight / 2;
         var bigArrow = activityBearing != 0;
-        render.drawWind(dc, mDs.width / 2, yW1st, wp1st.bearing - activityBearing, wp1st.speed, wp1st.gust, bigArrow, mShowWind);
+        render.drawWind(
+          dc,
+          mDs.width / 2,
+          yW1st,
+          wp1st.bearing - activityBearing,
+          wp1st.speed,
+          wp1st.gust,
+          bigArrow,
+          mShowWindUnit
+        );
       }
 
       if (mCurrentEdgeField == EfWide) {
@@ -1204,9 +1211,11 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
         break;
+      case SHOW_INFO_RELATIVE_WIND:
+        break;
     }
 
-    System.println("Info: " + info + " " + postfix);
+    System.println("Info: " + mShowExtraInfo + "|" + info + " " + postfix);
     var ci = new CurrentInfo();
     ci.nr = mShowExtraInfo;
     ci.info = info;
@@ -1253,7 +1262,7 @@ class WhatWeatherView extends WatchUi.DataField {
     // TODO  calculate the x,y and arrow
     // If relative wind -> x y is center of screen (last entry but with current weather data)
     if (mShowCurrentForecast) {
-      if (mShowWind != SHOW_WIND_NOTHING) {
+      if (mShowWind) {
         mWindPoints.add(new WindPoint(x, current.windBearing, current.windSpeed, current.windGust));
         validSegment += 1;
       }
@@ -1267,7 +1276,7 @@ class WhatWeatherView extends WatchUi.DataField {
       if (forecast.forecastTime.compare(Time.now()) >= 0) {
         validSegment += 1;
 
-        if (mShowWind != SHOW_WIND_NOTHING) {
+        if (mShowWind) {
           mWindPoints.add(new WindPoint(x, forecast.windBearing, forecast.windSpeed, forecast.windGust));
         }
         x = x + mDs.columnWidth + mDs.space;

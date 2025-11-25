@@ -69,8 +69,8 @@ class WhatWeatherApp extends Application.AppBase {
           3, // number of columns
           true, // current forecast
           true, // clouds
-          SHOW_WIND_KILOMETERS, // wind
-          true, // current wind
+          true, // wind
+          SHOW_WIND_KILOMETERS, // wind format
           true, // uv
           true, // temperature
           true, // relative humidity
@@ -91,8 +91,8 @@ class WhatWeatherApp extends Application.AppBase {
           3, // number of columns
           true, // current forecast
           true, // clouds
-          SHOW_WIND_KILOMETERS, // wind
-          true, // current wind
+          true, // wind
+          SHOW_WIND_KILOMETERS, // wind format
           true, // uv
           true, // temperature
           true, // relative humidity
@@ -113,8 +113,8 @@ class WhatWeatherApp extends Application.AppBase {
           3, // number of columns
           true, // current forecast
           true, // clouds
-          SHOW_WIND_NOTHING, // wind
-          true, // current wind
+          false, // wind
+          SHOW_WIND_KILOMETERS, // wind format
           true, // uv
           true, // temperature
           true, // relative humidity
@@ -135,8 +135,8 @@ class WhatWeatherApp extends Application.AppBase {
           3, // number of columns
           true, // current forecast
           true, // clouds
-          SHOW_WIND_NOTHING, // wind
-          true, // current wind
+          false, // wind
+          SHOW_WIND_KILOMETERS, // wind format
           false, // uv
           false, // temperature
           false, // relative humidity
@@ -154,7 +154,9 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("alertLevelUVi", 6);
         Storage.setValue("alertLevelRainMMfirstHour", 0.2f);
         Storage.setValue("alertLevelRainMMHour", 0.2f);
-        Storage.setValue("alertLevelWindSpeed", 5);
+        Storage.setValue("alertWindIn", SHOW_WIND_KILOMETERS);
+        Storage.setValue("alertLevelWindSpeed", 30);
+        Storage.setValue("alertLevelWindGust", 2);
         Storage.setValue("alertLevelDewpoint", 19);
 
         Storage.setValue("maxUVIndex", 20);
@@ -219,11 +221,11 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertBacklight = $.getStorageValue("alert_backlight", false) as Boolean;
 
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
+      $._hideTemperature = $.getStorageValue("hideTemperature", 8) as Number;
       $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
-      $._hideTemperature = $.getStorageValue("hideTemperature", 8) as Number;
-      $._maxPressure = $.getStorageValue("maxPressure", 1080) as Number;
       $._minPressure = $.getStorageValue("minPressure", 870) as Number;
+      $._maxPressure = $.getStorageValue("maxPressure", 1080) as Number;
       if ($._minPressure > $._maxPressure) {
         $._minPressure = 870;
         $._maxPressure = 1080;
@@ -390,8 +392,8 @@ class WhatWeatherApp extends Application.AppBase {
       3, // number of columns
       true, // current forecast
       true, // clouds
-      SHOW_WIND_KILOMETERS, // wind
-      true, // current wind
+      true, // wind
+      SHOW_WIND_KILOMETERS, // wind format
       true, // uv
       true, // temperature
       true, // relative humidity
@@ -412,8 +414,8 @@ class WhatWeatherApp extends Application.AppBase {
       3, // number of columns
       true, // current forecast
       true, // clouds
+      true, // wind
       SHOW_WIND_KILOMETERS, // wind
-      true, // current wind
       true, // uv
       true, // temperature
       true, // relative humidity
@@ -434,8 +436,8 @@ class WhatWeatherApp extends Application.AppBase {
       3, // number of columns
       true, // current forecast
       true, // clouds
-      SHOW_WIND_NOTHING, // wind
-      true, // current wind
+      false, // wind
+      SHOW_WIND_KILOMETERS, // wind
       true, // uv
       true, // temperature
       true, // relative humidity
@@ -456,8 +458,8 @@ class WhatWeatherApp extends Application.AppBase {
       3, // number of columns
       true, // current forecast
       true, // clouds
-      SHOW_WIND_NOTHING, // wind
-      true, // current wind
+      false, // wind
+      SHOW_WIND_KILOMETERS, // wind
       false, // uv
       false, // temperature
       false, // relative humidity

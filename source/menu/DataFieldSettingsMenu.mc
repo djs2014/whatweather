@@ -109,11 +109,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       index = 7;
       $.addToggleMenuItem(fieldMenu, "Clouds", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      index = 8; // show_one_field|8 etc
-      $.addMenuItem(fieldMenu, "Wind", $.getShowWindText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
-
-      index = 9;
-      $.addToggleMenuItem(fieldMenu, "Current wind", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      index = 8;
+      $.addToggleMenuItem(fieldMenu, "Wind", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      
+      index = 9; // show_one_field|9 etc
+      $.addMenuItem(fieldMenu, "Wind unit", $.getShowWindText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
 
       index = 10;
       $.addToggleMenuItem(fieldMenu, "UV", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
@@ -167,10 +167,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       alertsMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Wind in", null, "alertWindIn", null);
-      var value = getStorageValue(mi.getId() as String, $._alertWindIn) as Number;
-      if (value == SHOW_WIND_NOTHING) {
-        value = SHOW_WIND_BEAUFORT;
-      }
+      var value = getStorageValue(mi.getId() as String, $._alertWindIn) as Number;      
       var windIn = $.getShowWindText(value);
       mi.setSubLabel(windIn);
       alertsMenu.addItem(mi);
@@ -380,14 +377,14 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
     if (
       id instanceof String &&
       (id.equals("showWind") ||
-        id.equals("show_one_field|8") ||
-        id.equals("show_large_field|8") ||
-        id.equals("show_wide_field|8") ||
-        id.equals("show_small_field|8") ||
+        id.equals("show_one_field|9") ||
+        id.equals("show_large_field|9") ||
+        id.equals("show_wide_field|9") ||
+        id.equals("show_small_field|9") ||
         id.equals("alertWindIn"))
     ) {
       var sp = new selectionMenuPicker("Wind display", id as String);
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < $.SHOW_WIND_COUNT; i++) {
         sp.add($.getShowWindText(i), null, i);
       }
       sp.setOnSelected(self, :onSelectedSelection, _item);

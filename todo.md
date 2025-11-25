@@ -1,10 +1,3 @@
-Separate app for Low memory edge 830 / 530 / 1030
-TODO: separate version -> stripped down.
--> max hours = 7 no icons, simple wind icon?
--> less menu options -> or field part a / field part b?
---- Generate new app guid for this version
----------------------------------------------------------
-
 sync locations / numericinput --> to other projects  
 
 5 nightmode
@@ -13,6 +6,21 @@ sync locations / numericinput --> to other projects
   - calc onlayout
   x drawTemperatureGraph / etc hide details when lower than.. (C)
 
+6 Wind icons
+
+x    Toon ja/nee
+    Formaat normaal, minimal
+x    Wind units
+
+7 Extra info
+
+x    Relative wind (zelfde wind units)
+    Formaat normaal, minimal
+
+8 Alert
+
+x    Wind units
+
 3 -> refactor
   - Class with display properties, columns, etc
   - ?? cache wind icons -> only if displayed
@@ -20,7 +28,11 @@ sync locations / numericinput --> to other projects
   - cache wobble line      
   - cache weather icons on first use -> only if displayed
   - use profiler to optimize 
-4 add min temperature
+x 4 add min temperature
+
+5 First rain -> status info verbergd regen op 59 min etc..
+
+
 
 add windfeel temp? 
 oncompute

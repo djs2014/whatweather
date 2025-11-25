@@ -922,7 +922,7 @@ class RenderWeather {
     windSpeedMs as Float,
     windGustMs as Float,
     bigArrow as Boolean,
-    showWind as Number
+    windUnit as Number
   ) as Void {
     var hasAlert = false;
     var text = "";
@@ -937,6 +937,7 @@ class RenderWeather {
       wsFont = Graphics.FONT_SMALL;
       wsFontAlert = Graphics.FONT_MEDIUM;
     }
+    // TODO -> can be done in alert calculations
     if (windSpeedMs != null) {
       var convertedWind = 0.0f;
       if ($._alertWindIn == SHOW_WIND_KILOMETERS) {
@@ -972,9 +973,9 @@ class RenderWeather {
 
       // TODO -> Somewhere else?
       var windSpeed = windSpeedMs;
-      if (showWind == SHOW_WIND_KILOMETERS) {
+      if (windUnit == SHOW_WIND_KILOMETERS) {
         windSpeed = $.mpsToKmPerHour(windSpeedMs);
-      } else if (showWind == SHOW_WIND_METERS) {
+      } else if (windUnit == SHOW_WIND_METERS) {
         windSpeed = windSpeedMs;
       } else {
         windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
@@ -982,7 +983,7 @@ class RenderWeather {
         textWidthPadding = 3;
       }
 
-      if (showWind != SHOW_WIND_BEAUFORT) {
+      if (windUnit != SHOW_WIND_BEAUFORT) {
         if (windSpeed < 10) {
           text = windSpeed.format("%.1f");
         } else {

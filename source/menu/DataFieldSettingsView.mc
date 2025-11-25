@@ -138,8 +138,6 @@ function getWeatherDataSourceText(value as WeatherSource) as String {
 
 function getShowWindText(value as Number) as String {
   switch (value) {
-    case SHOW_WIND_NOTHING:
-      return "Nothing";
     case SHOW_WIND_METERS:
       return "Meters/sec";
     case SHOW_WIND_KILOMETERS:
