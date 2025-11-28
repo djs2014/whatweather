@@ -224,6 +224,9 @@ class WhatWeatherApp extends Application.AppBase {
       $._hideTemperature = $.getStorageValue("hideTemperature", 8) as Number;
       $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
+
+      $.initDewpointColors($._maxTemperature);
+
       $._minPressure = $.getStorageValue("minPressure", 870) as Number;
       $._maxPressure = $.getStorageValue("maxPressure", 1080) as Number;
       if ($._minPressure > $._maxPressure) {

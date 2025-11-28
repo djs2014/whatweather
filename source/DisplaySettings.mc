@@ -7,11 +7,27 @@ class DisplaySettings {
   var fontSmall as Graphics.FontType = Graphics.FONT_XTINY;
 
   var COLOR_TEXT as Lang.Number = Graphics.COLOR_BLACK;
+  var COLOR_BACKGROUND as Lang.Number = Graphics.COLOR_WHITE;
   var COLOR_TEXT_ADDITIONAL as Lang.Number = Graphics.COLOR_BLACK;
   var COLOR_TEXT_ADDITIONAL2 as Lang.Number = Graphics.COLOR_DK_GRAY;
-  var COLOR_TEXT_I as Lang.Number = Graphics.COLOR_WHITE;
-  var COLOR_TEXT_I_ADDITIONAL as Lang.Number = Graphics.COLOR_WHITE;
-  var COLOR_TEXT_I_ADDITIONAL2 as Lang.Number = Graphics.COLOR_LT_GRAY;
+  var COLOR_TEXT_ALERT as Lang.Number = Graphics.COLOR_RED;
+  var COLOR_TEXT_ALERT2 as Lang.Number = Graphics.COLOR_PINK;
+  var COLOR_TEXT_ALERT3 as Lang.Number = Graphics.COLOR_PURPLE;
+  var COLOR_BACKGROUND_ALERT as Lang.Number = Graphics.COLOR_YELLOW;
+  var COLOR_TEXT_DASHES as Lang.Number = Graphics.COLOR_DK_GRAY;
+  var COLOR_TEXT_DETAILS as Lang.Number = Graphics.COLOR_WHITE;
+  var COLOR_HUMIDITY_DETAILS as Lang.Number = Graphics.COLOR_DK_BLUE;
+  var COLOR_HUMIDITY as Lang.Number = Graphics.COLOR_DK_BLUE;
+  var COLOR_WIND_ICON as Lang.Number = Graphics.COLOR_BLACK;
+  var COLOR_CLOUDS as Lang.Number = 0xccd1d1; // rgb(204, 209, 209)
+  var COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
+  var COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
+  var COLOR_MM_DETAILS = Graphics.COLOR_BLACK;
+
+  var COLOR_WHITE_BLUE = 0xe1e5f8;
+  var COLOR_WHITE_GREEN = 0xe6ffe5; // 0x8DDA8D;
+  var COLOR_WHITE_YELLOW = 0xffffe1; // 0xFFFFAA;
+  var COLOR_WHITE_ORANGE = 0xffe9e1; // 0xF1AC4A;
 
   var width as Lang.Number = 0;
   var height as Lang.Number = 0;
@@ -34,13 +50,10 @@ class DisplaySettings {
 
   var dashesUnderColumnHeight as Lang.Number = 2;
 
+  hidden var colorCloudsNight as Lang.Number = 0;
+
   function initialize() {
-    COLOR_TEXT = Graphics.COLOR_BLACK;
-    COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
-    COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
-    COLOR_TEXT_I = Graphics.COLOR_WHITE;    
-    COLOR_TEXT_I_ADDITIONAL = Graphics.COLOR_WHITE;
-    COLOR_TEXT_I_ADDITIONAL2 = Graphics.COLOR_WHITE;
+    colorCloudsNight = $.shadeColor(255, 204, 209, 209, -20);
   }
 
   function calculate(
@@ -51,7 +64,7 @@ class DisplaySettings {
     heightWt as Lang.Number
   ) as Void {
     self.width = dc.getWidth();
-    self.height = dc.getHeight();    
+    self.height = dc.getHeight();
     self.nrOfColumns = nrOfColumns;
     self.heightWind = heightWind;
     self.heightWc = heightWc;
@@ -74,10 +87,7 @@ class DisplaySettings {
       columnWidth = ((width - offsetX - 2 * margin - (columns - 1) * space) / columns).toNumber();
     }
     columnY = margin;
-    var correction = (
-      (width - offsetX - 2 * margin - columns * columnWidth - (columns - 1) * space) /
-      2
-    ).toNumber();
+    var correction = ((width - offsetX - 2 * margin - columns * columnWidth - (columns - 1) * space) / 2).toNumber();
     columnX = (margin + correction).toNumber();
 
     // Height of the weather column, 2 lines for weather condition text
@@ -87,6 +97,45 @@ class DisplaySettings {
     dashesPosY = (columnY + columnHeight).toNumber();
   }
 
+  function setColors(darkBackground as Boolean) as Void {
+    if (darkBackground) {
+      COLOR_TEXT = Graphics.COLOR_WHITE;
+      COLOR_BACKGROUND = Graphics.COLOR_BLACK;
+      COLOR_TEXT_ADDITIONAL = Graphics.COLOR_WHITE;
+      COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_WHITE;
+      COLOR_BACKGROUND_ALERT = Graphics.COLOR_YELLOW;
+      COLOR_TEXT_ALERT = Graphics.COLOR_RED;
+      COLOR_TEXT_ALERT2 = Graphics.COLOR_PINK;
+      COLOR_TEXT_ALERT3 = Graphics.COLOR_PURPLE;
+      COLOR_TEXT_DASHES = Graphics.COLOR_DK_GRAY;
+      COLOR_TEXT_DETAILS = Graphics.COLOR_LT_GRAY;
+      COLOR_HUMIDITY = Graphics.COLOR_DK_BLUE;
+      COLOR_HUMIDITY_DETAILS = Graphics.COLOR_BLUE;
+      COLOR_WIND_ICON = Graphics.COLOR_WHITE;
+      COLOR_CLOUDS = colorCloudsNight;
+      COLOR_MM_RAIN = Graphics.createColor(255, 0, 213, 255); // rgb(0,213,255)
+      COLOR_MM_DIVIDER = Graphics.COLOR_WHITE;
+      COLOR_MM_DETAILS = Graphics.COLOR_WHITE;
+    } else {
+      COLOR_TEXT = Graphics.COLOR_BLACK;
+      COLOR_BACKGROUND = Graphics.COLOR_WHITE;
+      COLOR_TEXT_ADDITIONAL = Graphics.COLOR_BLACK;
+      COLOR_TEXT_ADDITIONAL2 = Graphics.COLOR_DK_GRAY;
+      COLOR_BACKGROUND_ALERT = Graphics.COLOR_YELLOW;
+      COLOR_TEXT_ALERT = Graphics.COLOR_RED;
+      COLOR_TEXT_ALERT2 = Graphics.COLOR_PINK;
+      COLOR_TEXT_ALERT3 = Graphics.COLOR_PURPLE;
+      COLOR_TEXT_DASHES = Graphics.COLOR_DK_GRAY;
+      COLOR_TEXT_DETAILS = Graphics.COLOR_WHITE;
+      COLOR_HUMIDITY = Graphics.COLOR_DK_BLUE;
+      COLOR_HUMIDITY_DETAILS = Graphics.COLOR_DK_BLUE;
+      COLOR_WIND_ICON = Graphics.COLOR_BLACK;
+      COLOR_CLOUDS = 0xccd1d1; // rgb(204, 209, 209)
+      COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
+      COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
+      COLOR_MM_DETAILS = Graphics.COLOR_BLACK;
+    }
+  }
   function info() as Lang.String {
     return Lang.format("w[$1$] h[$2$] #c[$3$] offset[$4$] cw[$5$] ch[$6$]", [
       width,

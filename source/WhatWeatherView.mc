@@ -95,8 +95,13 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mCalculateLayout as Boolean = false;
   hidden var mCurrentEdgeField as EdgeField = EfLarge;
   hidden var mActiveZoomMinuteForecast as Boolean = false;
+
+  hidden var mDarkBackground as Boolean = false;;
+
   function initialize() {
     DataField.initialize();
+
+    $.checkFeatures();
 
     var mCurrentLocation = $.getCurrentLocation();
     mCurrentLocation.setOnLocationChanged(self, :onLocationChanged);
@@ -223,13 +228,15 @@ class WhatWeatherView extends WatchUi.DataField {
         dc.setAntiAlias(true);
       }
 
-      // TODO night mode colors
-      // @@ var backgroundColor = getBackgroundColor();
-      var backgroundColor = Graphics.COLOR_WHITE;
+      // var backgroundColor = Graphics.COLOR_WHITE;
+      var backgroundColor = getBackgroundColor();
+      mDarkBackground = backgroundColor == Graphics.COLOR_BLACK;
+      mDs.setColors(mDarkBackground);
+      
       mAlertHandler.checkStatus();
       if (mFlashScreen) {
         mFlashScreen = false;
-        backgroundColor = Graphics.COLOR_YELLOW;
+        backgroundColor = mDs.COLOR_BACKGROUND_ALERT;
       }
 
       dc.setColor(backgroundColor, backgroundColor);
@@ -359,7 +366,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     if (delayed) {
-      color = Graphics.COLOR_RED;
+      color = mDs.COLOR_TEXT_ALERT;
     }
     obsTime = $.getShortTimeString(mBgWeatherData.getObservationTime());
 
@@ -471,23 +478,23 @@ class WhatWeatherView extends WatchUi.DataField {
                 rainInXminutes = i - mmMinutesDelayed - 1;
               }
 
-              drawColumnPrecipitationMillimeters(dc, COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop, max_mmPerHour);
+              drawColumnPrecipitationMillimeters(dc, mDs.COLOR_MM_RAIN, x, y, columnWidth, mDs.columnHeight, pop, max_mmPerHour);
 
               if (show5minMarker && (i + mmMinutesDelayed) % 5 == 0) {
                 //Draw 5 min marker
-                drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
+                drawColumnPrecipitationMillimetersDivider(dc, mDs.COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
               }
               x = x + columnWidth;
               rainLastEntry = rainLastEntry + 1;
             }
             if (rainLastEntry > 0 && rainLastEntry < 59) {
               // System.println("rainLastEntry: " + rainLastEntry);
-              drawColumnPrecipitationMillimetersDivider(dc, COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
+              drawColumnPrecipitationMillimetersDivider(dc, mDs.COLOR_MM_DIVIDER, x, y, columnWidth, mDs.columnHeight, 5);
             }
 
             if (popTotal > 0.0) {
               mHasMinuteRains = true;
-              dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+              dc.setColor(mDs.COLOR_MM_DETAILS, Graphics.COLOR_TRANSPARENT);
               // // popTotal is mm/hour, pop is for 1 minute
               var rainTextTotal = (popTotal / 60.0).format("%.2f") + " mm";
               var rainTextTime = "in " + rainInXminutes.format("%d") + " min";
@@ -533,7 +540,7 @@ class WhatWeatherView extends WatchUi.DataField {
               }
               x = x + mDs.space;
               if (dashesUnderColumnHeight > 0) {
-                dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+                dc.setColor(mDs.COLOR_TEXT_DASHES, Graphics.COLOR_TRANSPARENT);
                 dc.fillRectangle(xMMstart, mDs.columnY + mDs.columnHeight, maxIdx * columnWidth, dashesUnderColumnHeight);
               }
               x = xMMstart + offset;
@@ -551,8 +558,8 @@ class WhatWeatherView extends WatchUi.DataField {
       var validSegment = 0;
       if (showCurrentForecast) {
         if (current != null) {
-          color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
-          colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
+          color = getConditionColor(current.condition, Graphics.COLOR_BLUE, mDarkBackground);
+          colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE, mDarkBackground);
           if (DEBUG_DETAILS) {
             System.println(Lang.format("current x[$1$] pop[$2$] color[$3$]", [x, current.info(), color]));
           }
@@ -561,11 +568,11 @@ class WhatWeatherView extends WatchUi.DataField {
 
           var cHeight = 0;
           nightTime = mCurrentLocation.isAtNightTime(current.forecastTime, false);
-          colorClouds = COLOR_CLOUDS;
+          colorClouds = mDs.COLOR_CLOUDS;
           if (mShowClouds) {
-            if (nightTime) {
-              colorClouds = COLOR_CLOUDS_NIGHT;
-            }
+            // if (nightTime) {
+            //   colorClouds = COLOR_CLOUDS_NIGHT;
+            // }
             cHeight = drawColumnPrecipitationChance(
               dc,
               colorClouds,
@@ -577,7 +584,7 @@ class WhatWeatherView extends WatchUi.DataField {
             );
           }
           if (mShowComfortZone) {
-            render.drawComfortColumn(dc, x, current.temperature, current.dewPoint);
+            render.drawComfortColumn(dc, x, current.dewPoint, mDarkBackground);
           }
           // rain
           var rHeight = drawColumnPrecipitationChance(
@@ -618,7 +625,7 @@ class WhatWeatherView extends WatchUi.DataField {
           if (current.rain1hr > 0.0) {
             drawColumnPrecipitationMillimeters(
               dc,
-              COLOR_MM_RAIN,
+              mDs.COLOR_MM_RAIN,
               x,
               mDs.columnY,
               mDs.columnWidth,
@@ -657,17 +664,17 @@ class WhatWeatherView extends WatchUi.DataField {
             var dhc = dashesUnderColumnHeight;
             colorDashes = Graphics.COLOR_DK_GRAY;
             if (current.rain1hr > 0.0) {
-              colorDashes = COLOR_MM_RAIN;
+              colorDashes = mDs.COLOR_MM_RAIN;
               if (dhc == 0) {
                 dhc = 1;
               }
             } else if (current.precipitationChance == 0) {
-              colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY);
+              colorDashes = getConditionColor(current.condition, Graphics.COLOR_DK_GRAY, mDarkBackground);
             }
             dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
             dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dhc);
             if (color != colorOther && current.precipitationChanceOther == 0) {
-              colorDashes = getConditionColor(current.conditionOther, Graphics.COLOR_DK_GRAY);
+              colorDashes = getConditionColor(current.conditionOther, Graphics.COLOR_DK_GRAY, mDarkBackground);
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x + (mDs.columnWidth / 3) * 2, mDs.columnY + mDs.columnHeight + 1, mDs.columnWidth / 3, dhc);
             }
@@ -702,8 +709,8 @@ class WhatWeatherView extends WatchUi.DataField {
           if (forecast.forecastTime.compare(Time.now()) >= 0) {
             validSegment += 1;
 
-            color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
-            colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE);
+            color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE, mDarkBackground);
+            colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE, mDarkBackground);
 
             if (DEBUG_DETAILS) {
               System.println(Lang.format("valid hour x[$1$] hourly[$2$] color[$3$]", [x, forecast.info(), color]));
@@ -711,14 +718,14 @@ class WhatWeatherView extends WatchUi.DataField {
 
             // if ($._showColumnBorder) { drawColumnBorder(dc, x, mDs.columnY, mDs.columnWidth, mDs.columnHeight); }
 
-            colorClouds = COLOR_CLOUDS;
+            colorClouds = mDs.COLOR_CLOUDS;
             nightTime = mCurrentLocation.isAtNightTime(forecast.forecastTime, false);
 
             var cHeight = 0;
             if (mShowClouds) {
-              if (nightTime) {
-                colorClouds = COLOR_CLOUDS_NIGHT;
-              }
+              // if (nightTime) {
+              //   colorClouds = COLOR_CLOUDS_NIGHT;
+              // }
               cHeight = drawColumnPrecipitationChance(
                 dc,
                 colorClouds,
@@ -730,7 +737,7 @@ class WhatWeatherView extends WatchUi.DataField {
               );
             }
             if (mShowComfortZone) {
-              render.drawComfortColumn(dc, x, forecast.temperature, forecast.dewPoint);
+              render.drawComfortColumn(dc, x, forecast.dewPoint, mDarkBackground);
             }
             // rain
             var rHeight = drawColumnPrecipitationChance(
@@ -771,7 +778,7 @@ class WhatWeatherView extends WatchUi.DataField {
             if (forecast.rain1hr > 0.0) {
               drawColumnPrecipitationMillimeters(
                 dc,
-                COLOR_MM_RAIN,
+                mDs.COLOR_MM_RAIN,
                 x,
                 mDs.columnY,
                 mDs.columnWidth,
@@ -810,17 +817,17 @@ class WhatWeatherView extends WatchUi.DataField {
               var dh = dashesUnderColumnHeight;
               colorDashes = Graphics.COLOR_DK_GRAY;
               if (forecast.rain1hr > 0.0) {
-                colorDashes = COLOR_MM_RAIN;
+                colorDashes = mDs.COLOR_MM_RAIN;
                 if (dh == 0) {
                   dh = 1;
                 }
               } else if (forecast.precipitationChance == 0) {
-                colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY);
+                colorDashes = getConditionColor(forecast.condition, Graphics.COLOR_DK_GRAY, mDarkBackground);
               }
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(x, mDs.columnY + mDs.columnHeight, mDs.columnWidth, dh);
               if (color != colorOther && forecast.precipitationChanceOther == 0) {
-                colorDashes = getConditionColor(forecast.conditionOther, Graphics.COLOR_DK_GRAY);
+                colorDashes = getConditionColor(forecast.conditionOther, Graphics.COLOR_DK_GRAY, mDarkBackground);
                 dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
                 dc.fillRectangle(x + (mDs.columnWidth / 3) * 2, mDs.columnY + mDs.columnHeight + 1, mDs.columnWidth / 3, dh);
               }
@@ -831,7 +838,7 @@ class WhatWeatherView extends WatchUi.DataField {
               var infoStr = "";
               if (forecast.rain1hr > 0.0) {
                 infoStr = forecast.rain1hr.format("%.1f");
-                dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+                dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
                 dc.drawText(
                   x + mDs.columnWidth / 2,
                   mDs.columnY + mDs.columnHeight - 30,
@@ -870,7 +877,7 @@ class WhatWeatherView extends WatchUi.DataField {
         render.drawHumidityGraph(dc, humidityPoints, mShowDetails, blueBarPercentage);
       }
       if (mShowDewpoint) {
-        render.drawDewpointGraph(dc, dewPoints, mShowDetails, blueBarPercentage);
+        render.drawDewpointGraph(dc, dewPoints, mShowDetails, blueBarPercentage, mDarkBackground);
       }
       if (mShowPressure) {
         render.drawPressureGraph(dc, pressurePoints, mShowDetails, blueBarPercentage);
@@ -925,7 +932,6 @@ class WhatWeatherView extends WatchUi.DataField {
       // TODO refactor, should be in showinfo method -> mShowRelativeWind -> only get first windpoint.
       // Show relative wind, not when wind icons are enabled and activity is paused (overlap wind icons)
       if (windPoints.size() > 0 && mShowRelativeWind) {
-        
         var activityBearing = mBearing;
         if (mActivityPaused) {
           activityBearing = 0;
@@ -1000,7 +1006,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
     //
     if (mShowDetails && precipitationChance > 50 && precipitationChance < 100) {
-      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+      dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
       var h = dc.getFontHeight(Graphics.FONT_SMALL);
       dc.drawText(
         x + bar_width / 2,
@@ -1060,7 +1066,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var height = bar_height - ymm;
     var barFilledY = y + bar_height - height;
     dc.fillRectangle(x, barFilledY, bar_width, height);
-    dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
     dc.drawLine(x, barFilledY - 1, x + bar_width, barFilledY - 1);
   }
 
@@ -1320,8 +1326,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
       var validSegment = 0;
       if (mShowCurrentForecast) {
-        var color = getConditionColor(current.condition, Graphics.COLOR_BLUE);
-        var colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE);
+        var color = getConditionColor(current.condition, Graphics.COLOR_BLUE, mDarkBackground);
+        var colorOther = getConditionColor(current.conditionOther, Graphics.COLOR_BLUE, mDarkBackground);
         mAlertHandler.processPrecipitationChance(current.precipitationChance);
         mAlertHandler.processPrecipitationChance(current.precipitationChanceOther);
         mAlertHandler.processWeather(color);
@@ -1342,8 +1348,8 @@ class WhatWeatherView extends WatchUi.DataField {
         if (forecast.forecastTime.compare(Time.now()) >= 0) {
           validSegment += 1;
 
-          var color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE);
-          var colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE);
+          var color = getConditionColor(forecast.condition, Graphics.COLOR_BLUE, mDarkBackground);
+          var colorOther = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE, mDarkBackground);
           mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
           mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
           mAlertHandler.processWeather(color.toNumber());
@@ -1484,15 +1490,15 @@ class WhatWeatherView extends WatchUi.DataField {
       var y = 1;
       var width = dc.getWidth();
       var height = dc.getHeight();
-      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_WHITE);
+      dc.setColor(mDs.COLOR_BACKGROUND, mDs.COLOR_BACKGROUND);
       dc.fillRectangle(x, y, width, height);
-      dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_TRANSPARENT);
+      dc.setColor(mDs.COLOR_TEXT_ALERT, Graphics.COLOR_TRANSPARENT);
       dc.setPenWidth(3);
       dc.drawRectangle(x, y, width, height);
       dc.setPenWidth(1);
 
       x = 5;
-      dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+      dc.setColor(mDs.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
 
       var lineHeight = dc.getFontHeight(mAlertFont);
       y = y + lineHeight;

@@ -14,15 +14,10 @@ const SHOW_INFO_SEALEVEL_PRESSURE = 3;
 const SHOW_INFO_DISTANCE = 4;
 const SHOW_INFO_RELATIVE_WIND = 5;
 
-const COLOR_CLOUDS = 0xccd1d1;
-const COLOR_CLOUDS_NIGHT = 0xbfc9ca;
 const COLOR_WHITE_BLUE = 0xe1e5f8;
 const COLOR_WHITE_GREEN = 0xe6ffe5; // 0x8DDA8D;
 const COLOR_WHITE_YELLOW = 0xffffe1; // 0xFFFFAA;
 const COLOR_WHITE_ORANGE = 0xffe9e1; // 0xF1AC4A;
-const COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
-const COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
-// const COLOR_MM_DIVIDER =  0x000000; // Lavender BLUE
 
 var _weatherDataSource as WeatherSource = wsOWMFirst;
 var _soundMode as Number = 1;

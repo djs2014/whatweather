@@ -1,9 +1,19 @@
 sync locations / numericinput --> to other projects  
 
 5 nightmode
+ - option to set always dark / light / auto
+  - weather condition color -> darker when dark background
+    - clouds, comfort, 
+    - so only the wind arrows and details are clear.
+    = dewpointToColor -> scale + darken when night mode
+    - check vanaf welke versie createcolor kan
+
+
 
 1 show settings per field one,large,wide,etc [1,1,1,1,..]
   - calc onlayout
+    wind -> if its alert mode + current unit km/m/beauf..
+    relative wind 
   x drawTemperatureGraph / etc hide details when lower than.. (C)
 
 6 Wind icons

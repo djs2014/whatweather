@@ -161,7 +161,8 @@ class RenderWeather {
     dc as Dc,
     points as Lang.Array,
     showDetails as Lang.Boolean,
-    blueBarPercentage as Array<Number>
+    blueBarPercentage as Array<Number>,
+    darkBackground as Boolean
   ) as Void {
     try {
       var devSettings = System.getDeviceSettings();
@@ -173,7 +174,8 @@ class RenderWeather {
           var perc = $.percentageOf(p.value, self.minTemperature, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           var r = 3;
-          var color = dewpointToColor(y.toFloat());
+          var color = dewpointToColor(y.toFloat(), darkBackground);
+
 
           if (showDetails && perc > $._percHideDetails) {
             var h = dc.getFontHeight(Graphics.FONT_TINY);
@@ -263,12 +265,13 @@ class RenderWeather {
       for (var i = 0; i < max; i += 1) {
         var p = points[i] as WeatherPoint;
         var x = p.x;
-        var y = ds.getYpostion(p.value.toNumber()); // value is percentage
+        var perc = p.value.toNumber();
+        var y = ds.getYpostion(perc); // value is percentage
         var r = 3;
 
         if (showDetails && perc > $._percHideDetails) {
           var h = dc.getFontHeight(Graphics.FONT_TINY);
-          dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+          dc.setColor(ds.COLOR_HUMIDITY_DETAILS, Graphics.COLOR_TRANSPARENT);
           dc.drawText(
             x,
             y - h / 2,
@@ -281,7 +284,7 @@ class RenderWeather {
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
 
-        dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ds.COLOR_HUMIDITY, Graphics.COLOR_TRANSPARENT);
         var pts = [
           [x - r, y],
           [x, y - 5],
@@ -298,10 +301,17 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(dc as Dc, x as Lang.Number, temperature as Lang.Numeric?, dewpoint as Lang.Float?) as Void {
+  function drawComfortColumn(
+    dc as Dc,
+    x as Lang.Number,
+    dewpoint as Lang.Float?,
+    darkBackground as Boolean
+  ) as Void {
+    if (dewpoint == null) {
+      return;
+    }
     var comfort = getComfort();
-
-    var color = dewpointToColor(dewpoint);
+    var color = dewpointToColor(dewpoint.toNumber(), darkBackground);
 
     dc.setColor(color, color);
     if (ef == EfSmall) {
@@ -403,7 +413,8 @@ class RenderWeather {
       return;
     }
 
-    dc.setColor(COLOR_TEXT_ALERT, Graphics.COLOR_WHITE);
+    // Alert always visible
+    dc.setColor(COLOR_TEXT_ALERT, ds.COLOR_BACKGROUND);
     var y = TOP_ADDITIONAL_INFO;
     if (onSecondLine) {
       y = topAdditionalInfo2;
@@ -929,7 +940,7 @@ class RenderWeather {
     var wsFont = Graphics.FONT_XTINY;
     var wsFontAlert = Graphics.FONT_TINY;
     var windGustLevel = 0;
-    var iconColor = ds.COLOR_TEXT_ADDITIONAL;
+    var iconColor = ds.COLOR_WIND_ICON;
     var radius = 5;
     var textWidthPadding = 1;
 
@@ -1029,7 +1040,7 @@ class RenderWeather {
 
       if (windGustLevel >= 1) {
         //dc.setPenWidth(2);
-        dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
 
         factor = factor + 2;
         pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
@@ -1064,7 +1075,7 @@ class RenderWeather {
     }
 
     // The circle
-    dc.setColor(iconColor, Graphics.COLOR_TRANSPARENT);
+    dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(x, y, radius);
     dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
     dc.fillCircle(x, y, radius - 1);
