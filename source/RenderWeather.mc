@@ -174,8 +174,7 @@ class RenderWeather {
           var perc = $.percentageOf(p.value, self.minTemperature, self.maxTemperature).toNumber();
           var y = ds.getYpostion(perc);
           var r = 3;
-          var color = dewpointToColor(y.toFloat(), darkBackground);
-
+          var color = dewpointToColor(y, darkBackground);
 
           if (showDetails && perc > $._percHideDetails) {
             var h = dc.getFontHeight(Graphics.FONT_TINY);
@@ -301,12 +300,7 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(
-    dc as Dc,
-    x as Lang.Number,
-    dewpoint as Lang.Float?,
-    darkBackground as Boolean
-  ) as Void {
+  function drawComfortColumn(dc as Dc, x as Lang.Number, dewpoint as Lang.Float?, darkBackground as Boolean) as Void {
     if (dewpoint == null) {
       return;
     }
@@ -372,41 +366,6 @@ class RenderWeather {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     dc.drawText(textX, TOP_ADDITIONAL_INFO, ds.fontSmall, observationTimeString, Graphics.TEXT_JUSTIFY_LEFT);
   }
-
-  // function drawWindInfoFirstColumn(
-  //   dc as Dc,
-  //   wp as WindPoint,
-  //   xOffset as Number,
-  //   showLeft as Boolean,
-  //   track as Number?,
-  //   showWind as Number
-  // ) as Void {
-  //   var x = xOffset;
-  //   if (showLeft) {
-  //     x = wp.x + ds.columnWidth / 2 - xOffset;
-  //   }
-  //   var y = ds.columnY + ds.columnHeight / 2;
-  //   var bigArrow = track != null;
-  //   if (track == null) {
-  //     track = 0;
-  //   }
-  //   drawWind(dc, x, y, wp.bearing - (track as Number), wp.speed, wp.gust, bigArrow, showWind);
-  // }
-
-  // function drawWindInfo(dc as Dc, windPoints as Array, showWind as Number) as Void {
-  //   var max = windPoints.size();
-  //   for (var idx = 0; idx < max; idx++) {
-  //     var wp = windPoints[idx] as WindPoint;
-  //     var xW = wp.x + ds.columnWidth / 2;
-  //     var yW = ds.columnY + ds.columnHeight + ds.heightWind - ds.heightWind / 2;
-  //     try {
-  //       drawWind(dc, xW, yW, wp.bearing, wp.speed, wp.gust, false, showWind);
-  //     } catch (ex) {
-  //       System.println(ex.getErrorMessage());
-  //       ex.printStackTrace();
-  //     }
-  //   }
-  // }
 
   function drawAlertMessages(dc as Dc, activeAlerts as Lang.String?, onSecondLine as Boolean) as Void {
     if (activeAlerts == null || (activeAlerts as Lang.String).length() <= 0) {
@@ -929,89 +888,67 @@ class RenderWeather {
     dc as Dc,
     x as Number,
     y as Number,
-    windBearingInDegrees as Number,
-    windSpeedMs as Float,
-    windGustMs as Float,
-    bigArrow as Boolean,
-    windUnit as Number
+    wp as WindPoint,
+    activityBearing as Number,
+    bigArrow as Boolean
   ) as Void {
-    var hasAlert = false;
-    var text = "";
+    // Option to show it relative to activity direction
+    var bearingDegrees = wp.bearing - activityBearing;
     var wsFont = Graphics.FONT_XTINY;
-    var wsFontAlert = Graphics.FONT_TINY;
-    var windGustLevel = 0;
-    var iconColor = ds.COLOR_WIND_ICON;
-    var radius = 5;
-    var textWidthPadding = 1;
-
     if (bigArrow) {
       wsFont = Graphics.FONT_SMALL;
-      wsFontAlert = Graphics.FONT_MEDIUM;
-    }
-    // TODO -> can be done in alert calculations
-    if (windSpeedMs != null) {
-      var convertedWind = 0.0f;
-      if ($._alertWindIn == SHOW_WIND_KILOMETERS) {
-        convertedWind = $.mpsToKmPerHour(windSpeedMs);
-      } else if ($._alertWindIn == SHOW_WIND_METERS) {
-        convertedWind = windSpeedMs;
-      } else {
-        convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
-      }
-
-      // System.println("Alert windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._alertWindIn " + $._alertWindIn);
-
-      hasAlert = $._alertLevelWindSpeed > 0.0f && convertedWind >= $._alertLevelWindSpeed;
-      if (hasAlert) {
-        iconColor = Graphics.COLOR_RED;
-        wsFont = wsFontAlert;
-      }
-      if (windGustMs > 0) {
-        windGustLevel = $.getWindGustLevel(windSpeedMs, windGustMs);
-
-        if ($._alertLevelWindGust > 0 && windGustLevel >= $._alertLevelWindGust) {
-          iconColor = Graphics.COLOR_RED;
-          hasAlert = true;
-          wsFont = wsFontAlert;
-        } else if (windGustLevel >= 3) {
-          iconColor = Graphics.COLOR_PURPLE;
-        } else if (windGustLevel == 2) {
-          iconColor = Graphics.COLOR_PINK;
-        } else if (windGustLevel == 1) {
-          iconColor = 0xe06666; //
-        }
-      }
-
-      // TODO -> Somewhere else?
-      var windSpeed = windSpeedMs;
-      if (windUnit == SHOW_WIND_KILOMETERS) {
-        windSpeed = $.mpsToKmPerHour(windSpeedMs);
-      } else if (windUnit == SHOW_WIND_METERS) {
-        windSpeed = windSpeedMs;
-      } else {
-        windSpeed = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
-        text = windSpeed.format("%d");
-        textWidthPadding = 3;
-      }
-
-      if (windUnit != SHOW_WIND_BEAUFORT) {
-        if (windSpeed < 10) {
-          text = windSpeed.format("%.1f");
-        } else {
-          windSpeed = Math.round(windSpeed);
-          text = windSpeed.format("%d");
-        }
-        // System.println("Show windSpeedMs " + windSpeedMs + "convertedWind " + convertedWind + "$._showWind " + $._showWind);
-      }
-      radius = dc.getTextWidthInPixels(text, wsFont) / 2 + 3 + textWidthPadding;
     }
 
-    // dc.setColor(ds.COLOR_TEXT_ADDITIONAL, Graphics.COLOR_TRANSPARENT);
+    var radius = 5;
+    var padding = 5;
+
+    var windGustLevel = wp.gustLevel;
+    var iconColor = ds.COLOR_WIND_ICON;
+    var hasAlert = wp.speedAlert;
+    if (hasAlert) {
+      iconColor = Graphics.COLOR_RED;
+    }
+    if (wp.gustAlert) {
+      iconColor = Graphics.COLOR_RED;
+      hasAlert = true;
+    } else if (windGustLevel >= 3) {
+      iconColor = Graphics.COLOR_PURPLE;
+    } else if (windGustLevel == 2) {
+      iconColor = Graphics.COLOR_PINK;
+    } else if (windGustLevel == 1) {
+      iconColor = 0xe06666; // TODO night mode color
+    }
+    var text = wp.text;
+  
+    if (hasAlert) {
+      var circleMaxWidth;
+      if (bigArrow) {
+        // only 1 windpoint in center of screen
+        circleMaxWidth = dc.getWidth() / 5;
+      } else {
+        // half columnwidth
+        circleMaxWidth = ds.columnWidth - (ds.columnWidth / 2);
+      }
+      wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
+    }
+
+    
+    // Only get font if bigArrow
+    if (bigArrow && hasAlert) {      
+      // only 1 windpoint in center of screen
+      var circleMaxWidth = dc.getWidth() / 5;
+      wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
+    }
+
+    var textWidth = dc.getTextWidthInPixels(text, wsFont);
+    radius = textWidth / 2 + padding;
+
     // Bearing arrow
-    if (windBearingInDegrees != null && windSpeedMs != null && windSpeedMs > NO_BEARING_SPEED) {
+    if (bearingDegrees != 0 && wp.speed != 0 && wp.speed > NO_BEARING_SPEED) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +160 degrees
-      windBearingInDegrees = windBearingInDegrees + 90;
+      // Total is + 90 degrees
+      bearingDegrees = bearingDegrees + 90;
       dc.setColor(iconColor, Graphics.COLOR_TRANSPARENT);
 
       var pA, pB, pC, pD;
@@ -1019,19 +956,19 @@ class RenderWeather {
       var gustInner = 0;
       var factor = 0;
       if (bigArrow) {
-        factor = windSpeedMs / 4.0;
-        pA = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees - 35 - 180);
-        pB = point2DOnCircle(x, y, factor + radius * 1.5, windBearingInDegrees - 180);
-        pC = point2DOnCircle(x, y, factor + radius * 2.4, windBearingInDegrees + 35 - 180);
-        pD = point2DOnCircle(x, y, factor + radius * 3.0, windBearingInDegrees);
+        factor = wp.speed / 4.0;
+        pA = point2DOnCircle(x, y, factor + radius * 2.4, bearingDegrees - 35 - 180);
+        pB = point2DOnCircle(x, y, factor + radius * 1.5, bearingDegrees - 180);
+        pC = point2DOnCircle(x, y, factor + radius * 2.4, bearingDegrees + 35 - 180);
+        pD = point2DOnCircle(x, y, factor + radius * 3.0, bearingDegrees);
 
         gustOuter = 2.6;
         gustInner = 1.8;
       } else {
-        pA = point2DOnCircle(x, y, radius * 1.5, windBearingInDegrees - 35 - 180);
-        pB = point2DOnCircle(x, y, radius * 1.0, windBearingInDegrees - 180);
-        pC = point2DOnCircle(x, y, radius * 1.5, windBearingInDegrees + 35 - 180);
-        pD = point2DOnCircle(x, y, radius * 1.9, windBearingInDegrees);
+        pA = point2DOnCircle(x, y, radius * 1.5, bearingDegrees - 35 - 180);
+        pB = point2DOnCircle(x, y, radius * 1.0, bearingDegrees - 180);
+        pC = point2DOnCircle(x, y, radius * 1.5, bearingDegrees + 35 - 180);
+        pD = point2DOnCircle(x, y, radius * 1.9, bearingDegrees);
 
         gustOuter = 1.6;
         gustInner = 1.2;
@@ -1039,36 +976,32 @@ class RenderWeather {
       dc.fillPolygon([pA, pB, pC, pD] as Polygon);
 
       if (windGustLevel >= 1) {
-        //dc.setPenWidth(2);
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
 
         factor = factor + 2;
-        pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
-        pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
-        pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+        pA = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees - 30 - 180);
+        pB = point2DOnCircle(x, y, factor + radius * gustInner, bearingDegrees - 180);
+        pC = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees + 30 - 180);
 
         dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
         dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
-        //  dc.drawLine(pC[0], pC[1], pA[0], pA[1]);
 
         //  dc.fillPolygon([pA, pB, pC] as Polygon); this will give stack overflow error
         if (windGustLevel >= 2) {
           factor = factor + 3;
-          pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
-          pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
-          pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+          pA = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees - 30 - 180);
+          pB = point2DOnCircle(x, y, factor + radius * gustInner, bearingDegrees - 180);
+          pC = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees + 30 - 180);
           dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
           dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
-          // dc.fillPolygon([pA, pB, pC] as Polygon);
         }
         if (windGustLevel >= 3) {
           factor = factor + 3;
-          pA = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees - 30 - 180);
-          pB = point2DOnCircle(x, y, factor + radius * gustInner, windBearingInDegrees - 180);
-          pC = point2DOnCircle(x, y, factor + radius * gustOuter, windBearingInDegrees + 30 - 180);
+          pA = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees - 30 - 180);
+          pB = point2DOnCircle(x, y, factor + radius * gustInner, bearingDegrees - 180);
+          pC = point2DOnCircle(x, y, factor + radius * gustOuter, bearingDegrees + 30 - 180);
           dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
           dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
-          // dc.fillPolygon([pA, pB, pC] as Polygon);
         }
         dc.setPenWidth(1);
       }
@@ -1084,13 +1017,6 @@ class RenderWeather {
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
     dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
-  // hidden function drawPolygon(dc, data as Array<Point2D>) {
-  //   for (var i = 0; i < data.size(); i++) {
-  //     var pA = data[i] as Point2D;
-  //     var pB = data[(i + 1) % data.size()] as Point2D;
-  //     dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
-  //   }
-  // }
 
   hidden function point2DOnCircle(x as Number, y as Number, radius as Lang.Numeric, angleInDegrees as Lang.Numeric) as Point2D {
     // Convert from degrees to radians

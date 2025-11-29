@@ -80,3 +80,23 @@ function idxToColor(
   }
   return $.shadeColor(alpha, red, green, blue, shadePercentage);
 }
+
+function getMatchingFont(dc as Dc, fontList as Array, maxwidth as Number, text as String, startIndex as Number) as FontType {
+  var index = startIndex;
+  if (index < 0) {
+    index = fontList.size() - 1;
+    if (index < 0) {
+      return Graphics.FONT_SMALL;
+    }
+  }
+  var font = fontList[index] as FontType;
+  var widthValue = dc.getTextWidthInPixels(text, font);
+
+  while (widthValue > maxwidth && index > 0) {
+    index = index - 1;
+    font = fontList[index] as FontType;
+    widthValue = dc.getTextWidthInPixels(text, font);
+  }
+  // System.println(["matching font: maxwidth", maxwidth, "text:", text, "->", index, "width:", widthValue, "font", font]);
+  return font;
+}

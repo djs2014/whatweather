@@ -50,6 +50,14 @@ class DisplaySettings {
 
   var dashesUnderColumnHeight as Lang.Number = 2;
 
+  var alertFonts as Array = [
+    Graphics.FONT_XTINY,
+    Graphics.FONT_TINY,
+    Graphics.FONT_SYSTEM_SMALL,
+    Graphics.FONT_SYSTEM_MEDIUM,
+    Graphics.FONT_SYSTEM_LARGE,
+  ];
+
   hidden var colorCloudsNight as Lang.Number = 0;
 
   function initialize() {

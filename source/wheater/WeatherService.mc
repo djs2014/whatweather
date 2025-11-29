@@ -21,6 +21,7 @@ enum apiVersion {
   owmOneCall30 = 1,
 }
 
+// TODO, when shift hours, update current needed?
 (:typecheck(disableBackgroundCheck))
 function purgePastWeatherdata(data as WeatherData?) as WeatherData {
   if (data == null) {

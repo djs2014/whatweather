@@ -338,16 +338,16 @@ class CurrentLocation {
     var dayLightTime =
       (sunrise as Moment).value() <= (time as Moment).value() &&
       (time as Moment).value() <= (sunset as Moment).value();
-    System.println([
-      "IsDayLight:",
-      dayLightTime.toString(),
-      "Sunrise:",
-      $.getLongTimeString(sunrise),
-      " sunset:",
-      $.getLongTimeString(sunset),
-      " when:",
-      $.getLongTimeString(time),
-    ]);
+    // System.println([
+    //   "IsDayLight:",
+    //   dayLightTime.toString(),
+    //   "Sunrise:",
+    //   $.getLongTimeString(sunrise),
+    //   " sunset:",
+    //   $.getLongTimeString(sunset),
+    //   " when:",
+    //   $.getLongTimeString(time),
+    // ]);
 
     return dayLightTime;
   }
@@ -378,16 +378,16 @@ class CurrentLocation {
       (time as Moment).value() < (sunrise as Moment).value() ||
       (sunset as Moment).value() <= (time as Moment).value();
 
-    System.println([
-      "IsAtNight:",
-      nightTime.toString(),
-      "Sunrise:",
-      $.getLongTimeString(sunrise),
-      " sunset:",
-      $.getLongTimeString(sunset),
-      " when:",
-      $.getLongTimeString(time),
-    ]);
+    // System.println([
+    //   "IsAtNight:",
+    //   nightTime.toString(),
+    //   "Sunrise:",
+    //   $.getLongTimeString(sunrise),
+    //   " sunset:",
+    //   $.getLongTimeString(sunset),
+    //   " when:",
+    //   $.getLongTimeString(time),
+    // ]);
 
     return nightTime;
   }

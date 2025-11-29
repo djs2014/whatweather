@@ -1,14 +1,32 @@
+Note: garmin weather -> when update date shift 1 day previous bug in simulator (linux)
+
 sync locations / numericinput --> to other projects  
 
-5 nightmode
- - option to set always dark / light / auto
-  - weather condition color -> darker when dark background
-    - clouds, comfort, 
-    - so only the wind arrows and details are clear.
-    = dewpointToColor -> scale + darken when night mode
-    - check vanaf welke versie createcolor kan
+windpoint -> check TODO
+- set text + set font in checkForWeatherAlerts
+- setConvertedSpeed -> setUIelements
+5 nightmode 
+  x - weather condition color -> darker when dark background
+    x- clouds, comfort, 
+    x- so only the wind arrows and details are clear.
+    x dewpointToColor -> scale + darken when night mode
+    x- check vanaf welke versie createcolor kan
 
+0 Weatherpoint
+- in check alert method:
+  - calc speed unit oncompute
+  - check is alert oncompute
+  - windgust details
 
+- when on change weather
+  - check alarm + build weather 
+  - indicate wind alert / gust alert
+  - get wind unit (because of onlayout)
+
+  ?? hidden var mCurrentWindPoint as WindPoint?;
+  ?? hidden var mWindPoints as Array<WindPoint> = [];
+
+  
 
 1 show settings per field one,large,wide,etc [1,1,1,1,..]
   - calc onlayout
