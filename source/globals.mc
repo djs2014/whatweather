@@ -24,13 +24,12 @@ var _weatherDataSource as WeatherSource = wsOWMFirst;
 var _soundMode as Number = 1;
 
 var _maxUVIndex as Lang.Number = 20;
-var _hideTemperature as Lang.Number = 8; // celcius
 var _minTemperature as Lang.Number = 0; // celcius
 var _maxTemperature as Lang.Number = 50; // celcius
 var _maxPressure as Lang.Number = 1080;
 var _minPressure as Lang.Number = 870;
 var _maxMMRainPerHour as Lang.Number = 10;
-var _percHideDetails as Lang.Number = 20;
+var _percHideDetails as Lang.Number = 5;
 
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 

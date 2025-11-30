@@ -1,128 +1,47 @@
 Note: garmin weather -> when update date shift 1 day previous bug in simulator (linux)
-
 sync locations / numericinput --> to other projects  
-
-windpoint -> check TODO
-- set text + set font in checkForWeatherAlerts
-- setConvertedSpeed -> setUIelements
-5 nightmode 
-  x - weather condition color -> darker when dark background
-    x- clouds, comfort, 
-    x- so only the wind arrows and details are clear.
-    x dewpointToColor -> scale + darken when night mode
-    x- check vanaf welke versie createcolor kan
-
-0 Weatherpoint
-- in check alert method:
-  - calc speed unit oncompute
-  - check is alert oncompute
-  - windgust details
+- show weather icons
+- show weather text
+  - check y pos calculation
+ - mShowComfortBorders 
 
 - when on change weather
-  - check alarm + build weather 
-  - indicate wind alert / gust alert
-  - get wind unit (because of onlayout)
+  - check alarm + build weather data to show
+  - text / font / values
+  - indicate alerts
+  - if show details when alert then build all
+  - rewrite loop drawing current and forecast
+    - one loop
+    [0] is current
+    [1] .. forecast
+      - draw everything per column (also temp/wind/dewpoint/etc)
+      - one function to draw one column (current and forecastitem same properties)
 
-  ?? hidden var mCurrentWindPoint as WindPoint?;
-  ?? hidden var mWindPoints as Array<WindPoint> = [];
-
-  
-
-1 show settings per field one,large,wide,etc [1,1,1,1,..]
-  - calc onlayout
-    wind -> if its alert mode + current unit km/m/beauf..
-    relative wind 
-  x drawTemperatureGraph / etc hide details when lower than.. (C)
-
-6 Wind icons
-
-x    Toon ja/nee
-    Formaat normaal, minimal
-x    Wind units
-
-7 Extra info
-
-x    Relative wind (zelfde wind units)
-    Formaat normaal, minimal
-
-8 Alert
-
-x    Wind units
-
-3 -> refactor
-  - Class with display properties, columns, etc
-  - ?? cache wind icons -> only if displayed
-    - calc arrows and gust lines ..  draw circles later.
   - cache wobble line      
-  - cache weather icons on first use -> only if displayed
   - use profiler to optimize 
-x 4 add min temperature
+  - cache weather icons on first use -> only if displayed
 
-5 First rain -> status info verbergd regen op 59 min etc..
+- wind icons
+  - minimal -> small arrow 
 
+- First rain -> status info verbergd regen op 59 min etc..
 
+- add windfeel temp?  (temperature / wind feel temperature)
+- underline bigger when has alert / rain mm in weather column
+- option to hide status info?
+- memory should be < 100
+- rain first hour -> current condition color
 
-add windfeel temp? 
-oncompute
-
-optimize drawwind code - remove RendeWeather object
--> calc the arrows for wind
-onupdate
-draw 
-
-
-
-
+-----------
 openmeteo -> counter save to txt / per month
-??perc100bar - > countdown to next webrequest
 
 http://localhost:7071/api/weather and testscenario 1
 https://owm.castlephoto.info/owm_one
 
-
-Point2DOnCircle -> draw arrow different method? -> rotate ..
-1: wind error simpler 3 points instead of 5 points
-2: wind and wind alarm in same units always -> wind ms and wind converted once in model
-3: refactor draw wind -> oncompute calc wind points , onupdate draw
-  x,y -> uix, uiy polygon
-
-  first: calc wind first column / relative + gust -> polygons
-  second: draw polygon
-
 test with wind speed 13.8888888889 m/s == 50 mk/h
---
-no data/garmin data -> timer big on screen
-test scenario 1 - x
-play all
-loop - false -> only once / always
 
-
-oracle cloud free? functions
-
-
-
-
-How to prevent stackoverflow
-  - Point2DOnCircle -> too many nested calls?
-
-  optimize 
-    hidden function drawWind(
-    dc as Dc,
-    x as Number,
-    y as Number,
-    windBearingInDegrees as Number,
-    windSpeedMs as Float,
-    windGustMs as Float,
-    bigArrow as Boolean
-  ) as Void {
-
-
-
-add new fields 
-  weather sdk 8.0 + check if available
-
+??
 slippery road alert
-TODO slippery road
  - temp -10 -- 2
  - humidity > 80%
  - rainy/snowy perc 
@@ -131,10 +50,8 @@ TODO slippery road
 
 historical data: https://openweathermap.org/api/one-call-3#history
 
-
 historical data: https://open-meteo.com/
 curl "https://api.open-meteo.com/v1/forecast?latitude=52.3221&longitude=4.89532&past_days=1&forecase_days=0&hourly=temperature_2m,relative_humidity_2m,rain"
-
 
 Check for ijzel
 https://open-meteo.com/en/docs#hourly=dew_point_2m,soil_temperature_0cm,soil_moisture_0_to_1cm,freezing_level_height&daily=&timezone=Europe%2FBerlin&forecast_days=1
@@ -146,14 +63,11 @@ Zolang het wegdek bevroren is kan regen ijzel veroorzaken.
 2: Regen kouder dan het vriespunt  
 De zachtere lucht arriveert meestal als eerste hoger in de lucht. En als de lucht daaronder nog onder nul is kan regen afkoelen tot beneden het vriespunt. Zodra dit gebeurt zal de druppel niet meteen bevriezen, maar nog een tijd vloeibaar blijven. We spreken dan van onderkoelde regen. Wanneer deze ijskoude druppels iets raken vormt meteen ijs.
 
-
 ----------------
 counter 10000 per dag
 open-meteo -> convert naar Garmin data (geen api key nodig dan.)
 
 
-
-alert -> backlight on
 
 x wide field -> regen per uur -> underline oid indicatie
 toaste
@@ -225,7 +139,7 @@ update documentation:
 
 - point object -> kan weg?
 - profile 
- 
+ 52.35424867721783, 4.832538735395953
 - show mem on screen? if debug -> crash
 - on device settings
   - Proxy
@@ -312,9 +226,4 @@ http://localhost:4000/owm_one
 ams 52.188950, 4.549666
 lasvegas 36.16373271614203, -115.1262537886411
 
-
-	- BUG - one column + weather alarm -> continue beep
-	
-
-
-
+BUG - one column + weather alarm -> continue beep

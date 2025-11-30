@@ -5,6 +5,7 @@ import Toybox.Math;
 class WindPoint {
   var x as Lang.Number = 0;
   var bearing as Lang.Number = 0;
+  // meter per second
   var speed as Lang.Float = 0.0;
   var convertedSpeed as Lang.Float = 0.0;
   var speedAlert as Boolean = false;
@@ -12,6 +13,38 @@ class WindPoint {
   var gustLevel as Lang.Number = 0;
   var gustAlert as Boolean = false;
 
+  function initialize(
+    bearing as Lang.Number?,
+    speed as Lang.Float?,
+    speedAlert as Boolean,
+    gust as Lang.Float?,
+    gustAlert as Boolean
+  ) {
+    if (bearing != null) {
+      self.bearing = bearing;
+    }
+    if (speed != null) {
+      self.speed = speed;
+    }
+    self.speed = speed;
+    self.speedAlert = speedAlert;
+    if (gust != null) {
+      self.gust = gust;
+    }
+    if (self.speed != null && self.gust != null) {
+      gustLevel = $.getWindGustLevel(self.speed, self.gust);
+    }
+    self.gustAlert = gustAlert;
+  }
+
+  function hasAlert() as Boolean {
+    //debug();
+    return speedAlert || gustAlert;
+  }
+
+  function debug() as Void {
+    System.println(["wp", x, bearing, speed, convertedSpeed, speedAlert, gust, gustLevel, gustAlert]); 
+  }
   // Display text
   var text as String = "";
 
@@ -57,30 +90,7 @@ class WindPoint {
     } else {
       convertedSpeed = $.windSpeedToBeaufort(speed).toFloat() as Float;
       text = convertedSpeed.format("%d");
-    }  
-  }
-
-  function initialize(
-    bearing as Lang.Number?,
-    speed as Lang.Float?,
-    speedAlert as Boolean,
-    gust as Lang.Float?,
-    gustAlert as Boolean
-  ) {
-    if (bearing != null) {
-      self.bearing = bearing;
     }
-    if (speed == null) {
-      return;
-    }
-    self.speed = speed; // meter per second
-    self.speedAlert = speedAlert;
-    if (gust == null) {
-      return;
-    }
-    self.gust = gust;
-    gustLevel = $.getWindGustLevel(self.speed, self.gust);
-    self.gustAlert = gustAlert;
   }
 }
 

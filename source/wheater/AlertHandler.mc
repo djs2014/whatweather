@@ -19,8 +19,6 @@ class AlertHandler {
   var maxWindGust as Lang.Number = 0;
   var maxDewpoint as Lang.Float = 0.0;
 
-  hidden var CONDITION_NEUTRAL as Lang.Number = 0x00aaff; // COLOR_BLUE
-
   hidden const NEUTRAL = 0;
   hidden const TRIGGERED = 1;
   hidden const HANDLED = 2;
@@ -57,7 +55,7 @@ class AlertHandler {
   function setAlertRainMMHour(value as Lang.Float) as Void {
     alertRainMMHour = value;
   }
-  
+
   function setAlertWindIn(value as Number) as Void {
     alertWindIn = value;
   }
@@ -73,11 +71,7 @@ class AlertHandler {
   }
 
   function infoUvi() as Lang.String {
-    return Lang.format("alerthandler alertUvi[$1$] statusUvi[$2$] allClearUvi[$3$]", [
-      alertUvi,
-      statusUvi,
-      allClearUvi,
-    ]);
+    return Lang.format("alerthandler alertUvi[$1$] statusUvi[$2$] allClearUvi[$3$]", [alertUvi, statusUvi, allClearUvi]);
   }
 
   function infoPrecipitationChance() as Lang.String {
@@ -290,7 +284,7 @@ class AlertHandler {
     if (uvi >= alertUvi) {
       allClearUvi = false;
     }
-    return  uvi >= alertUvi;
+    return uvi >= alertUvi;
   }
 
   function processPrecipitationChance(chance as Lang.Number?) as Boolean {
@@ -345,15 +339,16 @@ class AlertHandler {
     return mm >= alertRainMMHour;
   }
 
-  function processWeather(colorValue as Lang.Number?) as Boolean {
+  function processWeather(condition as Lang.Number?) as Boolean {
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    if (statusCondition == NEUTRAL && colorValue != CONDITION_NEUTRAL) {
+    var alerted = isConditionAlert(condition);
+    if (statusCondition == NEUTRAL && alerted) {
       statusCondition = TRIGGERED;
     }
-    if (colorValue != CONDITION_NEUTRAL) {
+    if (alerted) {
       allClearCondition = false;
     }
-    return colorValue != CONDITION_NEUTRAL;
+    return alerted;
   }
 
   function processWindSpeed(windSpeedMs as Lang.Float?) as Boolean {
@@ -367,7 +362,7 @@ class AlertHandler {
       convertedWind = $.mpsToKmPerHour(windSpeedMs);
     } else if (alertWindIn == SHOW_WIND_METERS) {
       convertedWind = windSpeedMs;
-    } else {      
+    } else {
       convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
     }
 
@@ -384,6 +379,7 @@ class AlertHandler {
     if (alertWindGust <= 0 || windSpeedMs == null || windGustMs == null) {
       return false;
     }
+
     var level = $.getWindGustLevel(windSpeedMs, windGustMs);
     maxWindGust = $.max(maxWindGust, level) as Number;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
@@ -393,6 +389,7 @@ class AlertHandler {
     if (level >= alertWindGust) {
       allClearWindGust = false;
     }
+    return level >= alertWindGust;
   }
   function processDewpoint(dewPoint as Lang.Float?) as Boolean {
     if (alertDewpoint <= 0 || dewPoint == null) {
@@ -418,5 +415,34 @@ class AlertHandler {
       allClearOWMAlert = false;
     }
   }
-}
 
+  hidden function isConditionAlert(condition as Number?) as Boolean {
+    if (condition == null) {
+      return false;
+    }
+    switch (condition) {
+      case Weather.CONDITION_THUNDERSTORMS:
+      case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
+      case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
+      case Weather.CONDITION_HEAVY_SHOWERS:
+      case Weather.CONDITION_HEAVY_RAIN:
+      case Weather.CONDITION_FREEZING_RAIN:
+      case Weather.CONDITION_HAIL:
+      case Weather.CONDITION_HEAVY_RAIN_SNOW:
+      case Weather.CONDITION_HEAVY_SNOW:
+      case Weather.CONDITION_WINTRY_MIX:
+      case Weather.CONDITION_RAIN_SNOW:
+      case Weather.CONDITION_SNOW:
+      case Weather.CONDITION_ICE:
+      case Weather.CONDITION_ICE_SNOW:
+      case Weather.CONDITION_HURRICANE:
+      case Weather.CONDITION_TORNADO:
+      case Weather.CONDITION_SANDSTORM:
+      case Weather.CONDITION_TROPICAL_STORM:
+      case Weather.CONDITION_VOLCANIC_ASH:
+        return true;
+      default:
+        return false;
+    }
+  }
+}

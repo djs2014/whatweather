@@ -67,7 +67,7 @@ class WhatWeatherApp extends Application.AppBase {
           0.1f, // zoom when mm
           3, // zoom factor
           3, // number of columns
-          true, // current forecast
+          true, // current forecast //@@TODO convert to -> show weather details when has alert (if was hidden)
           true, // clouds
           true, // wind
           SHOW_WIND_KILOMETERS, // wind format
@@ -79,7 +79,8 @@ class WhatWeatherApp extends Application.AppBase {
           true, // comfort zone
           true, // weather icons
           SHOW_INFO_NOTHING, // extra info
-          true, // details when paused
+          true, // details when paused,
+          false, // show weather details when has alert (if was hidden)
         ]);
 
         Storage.setValue("show_large_field", [
@@ -102,6 +103,7 @@ class WhatWeatherApp extends Application.AppBase {
           true, // weather icons
           SHOW_INFO_NOTHING, // extra info
           true, // details when paused
+          false, // show weather details when has alert (if was hidden)
         ]);
 
         Storage.setValue("show_wide_field", [
@@ -124,6 +126,7 @@ class WhatWeatherApp extends Application.AppBase {
           false, // weather icons
           SHOW_INFO_RELATIVE_WIND, // extra info
           false, // details when paused
+          true, // show weather details when has alert (if was hidden)
         ]);
 
         Storage.setValue("show_small_field", [
@@ -146,6 +149,7 @@ class WhatWeatherApp extends Application.AppBase {
           false, // weather icons
           SHOW_INFO_RELATIVE_WIND, // extra info
           false, // details when paused
+          true, // show weather details when has alert (if was hidden)
         ]);
 
         Storage.setValue("checkIntervalMinutes", 5);
@@ -160,13 +164,12 @@ class WhatWeatherApp extends Application.AppBase {
         Storage.setValue("alertLevelDewpoint", 19);
 
         Storage.setValue("maxUVIndex", 20);
-        Storage.setValue("hideTemperature", 8);
         Storage.setValue("minTemperature", 0);
         Storage.setValue("maxTemperature", 50);
         Storage.setValue("minPressure", 870);
         Storage.setValue("maxPressure", 1080);
         Storage.setValue("maxMMRainPerHour", 10);
-        Storage.setValue("percHideDetails", 20);
+        Storage.setValue("percHideDetails", 5);
 
         Storage.setValue("comfortHumidityMin", 40);
         Storage.setValue("comfortHumidityMax", 60);
@@ -221,7 +224,6 @@ class WhatWeatherApp extends Application.AppBase {
       $._alertBacklight = $.getStorageValue("alert_backlight", false) as Boolean;
 
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
-      $._hideTemperature = $.getStorageValue("hideTemperature", 8) as Number;
       $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;
 
@@ -235,7 +237,7 @@ class WhatWeatherApp extends Application.AppBase {
       }
       $._maxMMRainPerHour = $.getStorageValue("maxMMRainPerHour", 10) as Number;
       // Hide values if below 20% of y-axis
-      $._percHideDetails = $.getStorageValue("percHideDetails", 20) as Number;
+      $._percHideDetails = $.getStorageValue("percHideDetails", 5) as Number;
 
       var bgHandler = $.getBGServiceHandler();
       bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
@@ -406,6 +408,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // weather icons
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused
+      false, // show weather details when has alert (if was hidden)
     ]);
 
     Storage.setValue("show_large_field", [
@@ -428,6 +431,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // weather icons
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused
+      false, // show weather details when has alert (if was hidden)
     ]);
 
     Storage.setValue("show_wide_field", [
@@ -450,6 +454,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // weather icons
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
+      true, // show weather details when has alert (if was hidden)
     ]);
 
     Storage.setValue("show_small_field", [
@@ -472,6 +477,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // weather icons
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
+      true, // show weather details when has alert (if was hidden)
     ]);
   }
 }
@@ -510,7 +516,7 @@ function getCurrentLocation() as CurrentLocation {
 
 var g_bg_timeout_seconds as Number = 0;
 var g_bg_delay_seconds as Number = 0;
-var gSizeArrFieldItems = 19;
+var gSizeArrFieldItems = 20;
 var gShow_OneField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_LargeField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_WideField as Array<Numeric> = [] as Array<Numeric>;

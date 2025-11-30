@@ -91,7 +91,7 @@ function uviToRadius(uvi as Lang.Float?) as Lang.Number {
   }
 }
 
-function getConditionColor(condition as Lang.Number?, def as Lang.Number, darkBackground as Boolean) as Lang.Number {
+function getConditionColor(condition as Lang.Number, def as Lang.Number, darkBackground as Boolean) as Lang.Number {
   if (condition == null) {
     return def; // Graphics.COLOR_BLUE;
   }
@@ -108,7 +108,7 @@ function getConditionColor(condition as Lang.Number?, def as Lang.Number, darkBa
     case Weather.CONDITION_HEAVY_RAIN_SNOW:
     case Weather.CONDITION_HEAVY_SNOW:
       if (darkBackground) {
-        return Graphics.createColor(255, 0,77,230); //rgb(0,77,230) 
+        return Graphics.createColor(255, 0, 77, 230); //rgb(0,77,230)
       }
       return Graphics.COLOR_DK_BLUE;
 
@@ -118,7 +118,7 @@ function getConditionColor(condition as Lang.Number?, def as Lang.Number, darkBa
     case Weather.CONDITION_ICE:
     case Weather.CONDITION_ICE_SNOW:
       if (darkBackground) {
-        return Graphics.createColor(255, 153,238,255); //rgb(153,238,255)
+        return Graphics.createColor(255, 153, 238, 255); //rgb(153,238,255)
       }
       return Graphics.COLOR_DK_GRAY;
 

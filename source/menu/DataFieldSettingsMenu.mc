@@ -142,6 +142,10 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
 
       index = 18;
       $.addToggleMenuItem(fieldMenu, "Details paused", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+            
+      index = 19;
+      $.addToggleMenuItem(fieldMenu, "Show on alert", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
 
       WatchUi.pushView(fieldMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
@@ -195,10 +199,6 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       advancedMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Max temperature|0~50 (C)", null, "maxTemperature", null);
-      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      advancedMenu.addItem(mi);
-
-      mi = new WatchUi.MenuItem("Hide temperature <|-10~50 (C)", null, "hideTemperature", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
