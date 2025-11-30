@@ -36,6 +36,10 @@ function getLatestGarminWeather() as WeatherData {
     // Note: hourly forecast from garmin starts at next hour, currentconditions contains first hour.
     // Ex. now is 025-11-30 10:10:00, hourlyforecast starts with 025-11-30 11:00:00
     var hf1 = $.getGarminHourly(wo.observationTime, garCurrent);
+    if (DEBUG_DETAILS) {
+      System.println("Gar Hourly current: " + hf1.info());
+    }
+
     hh.add(hf1);
 
     var garHourlyForecast = Weather.getHourlyForecast();
@@ -43,13 +47,30 @@ function getLatestGarminWeather() as WeatherData {
     if (garHourlyForecast == null) {
       return new WeatherData(wo, mm, hh, [] as Array<WeatherAlert>, wo.observationTime);
     }
-
-    // Get only the hours we need, start from current hour
+    /* BUG or FEATURE
+    // Get only the hours we need, start from current hour (set minutes to 0)
     var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
-
-    var now = new Time.Moment(Time.now().value());
-    var oneHour = Gregorian.duration({ :hours => 1 });
-    var startTime = now.subtract(oneHour);
+    System.println(["Gar start time pre:", $.getDateTimeString(Time.now())]);
+    // [Gar start time pre:, 2025-11-30 20:32:53] OK
+    var todayStartOfhour = Gregorian.moment({
+      :year => today.year,
+      :month => today.month,
+      :day => today.day,
+      :hour => today.hour,
+      // :minute => 0,
+      // :second => 0 
+      });
+    System.println(["Gar start time init:", $.getDateTimeString(todayStartOfhour)]);
+    // [Gar start time init:, 2025-11-30 21:00:00] -> 1 hour later?, should this not be 20:00:00
+    // var oneHour = Gregorian.duration({ :hours => 1 });
+    var oneHour = Gregorian.duration({ :hours => 1 }); 
+    var startTime = todayStartOfhour.subtract(oneHour);
+    System.println(["Gar start time forecast hourly:", $.getDateTimeString(startTime)]);
+    // [Gar start time forecast hourly:, 2025-11-30 20:00:00]
+*/
+    var nowSeconds = Time.now().value() - 3600;
+    var cutOffTime = new Time.Moment(nowSeconds);
+    System.println("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
 
     // Plus 1, for handling hour change. Not showing empty column
     var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
@@ -67,28 +88,20 @@ function getLatestGarminWeather() as WeatherData {
       }
       // Skip forecast of different days/previous hours
       var fcTime = garForecast.forecastTime as Time.Moment;
-      if (fcTime.lessThan(startTime)) {
+      if (fcTime.lessThan(cutOffTime)) {
         System.println(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
         continue;
       }
 
-      // Should be current hour or next ..
-      var infoFcTime = Gregorian.info(fcTime, Time.FORMAT_MEDIUM);
-      if (infoFcTime.hour < today.hour) {
-        System.println(["Gar skip forecast hour:", infoFcTime.hour]);
-        continue;
-      }
-
       var hf = $.getGarminHourly(fcTime, garForecast);
-
       // TEST
       // hf.windGust = 5.0;
+
+      hh.add(hf);
 
       if (DEBUG_DETAILS) {
         System.println("Gar Hourly: " + hf.info());
       }
-
-      hh.add(hf);
     } // for garHourlyForecast
 
     return new WeatherData(wo, mm, hh, [] as Array<WeatherAlert>, wo.observationTime);
@@ -103,8 +116,6 @@ function getGarminHourly(forecastTime as Moment, forecast as CurrentConditions o
   var hf = new WeatherHourly();
 
   hf.forecastTime = forecastTime;
-  var infoFcTime = Gregorian.info(hf.forecastTime, Time.FORMAT_MEDIUM);
-  hf.hour = infoFcTime.hour;
   if (forecast has :cloudCover) {
     hf.clouds = $.getNumericValueOrDefault(forecast.cloudCover, 0) as Lang.Number;
   } else {

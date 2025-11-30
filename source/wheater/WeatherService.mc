@@ -28,7 +28,10 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
     return emptyWeatherData();
   }
 
-  var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+  // Get start of the hour, minus 1 hour
+  var nowSeconds = Time.now().value() - 3600;
+  var cutOffTime = new Time.Moment(nowSeconds);
+  System.println("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
 
   var wData = data as WeatherData;
   var newIdx = -1;
@@ -39,7 +42,7 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
       System.println("purgePastWeatherdata?: " + $.getDateTimeString(weatherHourly.forecastTime));
     }
 
-    if (weatherHourly.hour < today.hour) {
+    if (weatherHourly.forecastTime.lessThan(cutOffTime)) {
       // Is a past hour
       if ($.DEBUG_DETAILS) {
         System.println("purgePastWeatherdata past hour!: " + $.getDateTimeString(weatherHourly.forecastTime));
@@ -86,13 +89,27 @@ function toWeatherData(data as Dictionary?) as WeatherData {
 
     if (hourly != null) {
       var bg_hh = hourly as Array<Array>;
-
+      /*
       // Get only the hours we need, start from current hour
       var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
 
-      var now = new Time.Moment(Time.now().value());
+      var todayStartOfhour = Gregorian.moment({
+        :year => today.year,
+        :month => today.month,
+        :day => today.day,
+        :hour => today.hour,
+        :minute => 0,
+        :second => 0,
+      });
+
       var oneHour = Gregorian.duration({ :hours => 1 });
-      var startTime = now.subtract(oneHour);
+      var startTime = todayStartOfhour.subtract(oneHour);
+      System.println(["OWM start time forecast hourly:", $.getDateTimeString(startTime)]);
+*/
+      // Get start of the hour, minus 1 hour
+      var nowSeconds = Time.now().value() - 3600;
+      var cutOffTime = new Time.Moment(nowSeconds);
+      System.println("OWM cutOffTime: " + $.getDateTimeString(cutOffTime));
 
       // Plus 1, for handling hour change. Not showing empty column
       var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
@@ -111,20 +128,12 @@ function toWeatherData(data as Dictionary?) as WeatherData {
         var fcTime = new Time.Moment(($.getNumericValueOrDefault(arr[0], 0) as Number).toNumber());
 
         // Skip forecast of different days/previous hours
-        if (fcTime.lessThan(startTime)) {
+        if (fcTime.lessThan(cutOffTime)) {
           System.println(["OWM skip forecast hour:", $.getDateTimeString(fcTime)]);
           continue;
         }
 
-        // Should be current hour or next ..
-        var infoFcTime = Gregorian.info(fcTime, Time.FORMAT_MEDIUM);
-        if (infoFcTime.hour < today.hour) {
-          System.println(["OWM skip forecast hour:", infoFcTime.hour]);
-          continue;
-        }
-
         hf.forecastTime = fcTime;
-        hf.hour = infoFcTime.hour;
         hf.clouds = ($.getNumericValueOrDefault(arr[1], 0) as Number).toNumber();
         // OWM pop from o.o - 1
         hf.precipitationChance = (($.getNumericValueOrDefault(arr[2], 0.0) as Float) * 100.0).toNumber();
@@ -197,7 +206,7 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
       case wsGarminOnly:
         return garminData;
       case wsOWMOnly:
-        return bgData;       
+        return bgData;
     }
 
     if (garminData.hourly.size() == 0) {

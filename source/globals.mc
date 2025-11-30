@@ -1,7 +1,7 @@
 import Toybox.Lang;
 import Toybox.System;
 
-const DEBUG_DETAILS = false;
+const DEBUG_DETAILS = true;
 const SHOW_WIND_COUNT = 3;
 const SHOW_WIND_METERS = 0;
 const SHOW_WIND_KILOMETERS = 1;

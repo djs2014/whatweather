@@ -325,7 +325,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWind = mShowWind ? 15 : 0;
     // Height weather icons / text
     var heightWc = mShowWeatherCondition ? 15 : 0;
-    var heightWt = mShowWeatherCondition ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
+    var heightWt = mShowWeatherCondition ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;    
     mDs.calculate(dc, mHoursForecast, heightWind, heightWc, heightWt);
 
     render.initValues(dc, mDs, mCurrentEdgeField);

@@ -2,8 +2,10 @@ Note: garmin weather -> when update date shift 1 day previous bug in simulator (
 sync locations / numericinput --> to other projects  
 - show weather icons
 - show weather text
-  - check y pos calculation
+  - check y pos calculation its same as wind icon now
  - mShowComfortBorders 
+- onlayout --> get the right number of columns
+
 
 - when on change weather
   - check alarm + build weather data to show

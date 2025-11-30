@@ -82,6 +82,8 @@ class DisplaySettings {
     if (self.heightWind > 0 || self.heightWc > 0) {
       self.dashesUnderColumnHeight = 0;
     }
+
+    System.println(["calculate",nrOfColumns, heightWind,heightWc ,heightWt]);
   }
 
   function calculateColumnWidth(offset as Lang.Number, nrOfColumns as Number) as Void {
