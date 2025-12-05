@@ -103,8 +103,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       index = 5;
       $.addMenuItem(fieldMenu, "Zoom columns|1~6", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
 
-      index = 6;
-      $.addToggleMenuItem(fieldMenu, "Current forecast", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      index = 6;       
+      $.addToggleMenuItem(fieldMenu, "Details on alert", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
       index = 7;
       $.addToggleMenuItem(fieldMenu, "Clouds", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
@@ -143,8 +143,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       index = 18;
       $.addToggleMenuItem(fieldMenu, "Details paused", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
             
-      index = 19;
-      $.addToggleMenuItem(fieldMenu, "Show on alert", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      // index = 19;
+      // $.addToggleMenuItem(fieldMenu, "XXXXX", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
 
       WatchUi.pushView(fieldMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
@@ -286,46 +286,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       return;
     }
 
-    // Numeric input
-    // var prompt = menuItem.getLabel();
-    // var value = $.getStorageValue(id as String, 0) as Numeric;
-    // var view = $.getNumericInputView(prompt, value);
-    // view.setOnAccept(self, :onAcceptNumericinput);
-    // view.setOnKeypressed(self, :onNumericinput);
-
-    // Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_RIGHT);
   }
-
-  // function onAcceptNumericinput(value as Numeric, subLabel as String) as Void {
-  //   try {
-  //     if (_item != null) {
-  //       // Note contains `storageKey|index` or `storageKey`
-  //       var key = _item.getId() as String;
-  //       $.setStorageValueOrArray(key, value);
-  //       (_item as MenuItem).setSubLabel(subLabel);
-  //     }
-  //   } catch (ex) {
-  //     ex.printStackTrace();
-  //   }
-  // }
-
-  // function onNumericinput(
-  //   editData as Array<Char>,
-  //   cursorPos as Number,
-  //   insert as Boolean,
-  //   negative as Boolean,
-  //   opt as NumericOptions
-  // ) as Void {
-  //   // Hack to refresh screen
-  //   WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-  //   var view = new $.NumericInputView("", 0);
-  //   view.processOptions(opt);
-  //   view.setEditData(editData, cursorPos, insert, negative);
-  //   view.setOnAccept(self, :onAcceptNumericinput);
-  //   view.setOnKeypressed(self, :onNumericinput);
-
-  //   Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_IMMEDIATE);
-  // }
 
   function onSelectedSelection(storageKey as String, value as Application.PropertyValueType) as Void {
     $.setStorageValueOrArray(storageKey, value);

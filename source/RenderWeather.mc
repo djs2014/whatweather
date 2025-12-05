@@ -252,16 +252,20 @@ class RenderWeather {
   }
 
   // top is max (temp/humid), low is min(temp/humid)
-  function drawComfortColumn(dc as Dc, x as Lang.Number, dewpoint as Lang.Float?, darkBackground as Boolean) as Void {
+  function drawComfortColumn(
+    dc as Dc,
+    x as Lang.Number,
+    dewpoint as Lang.Float?,
+    darkBackground as Boolean,
+    hour as Number
+  ) as Void {
     if (dewpoint == null) {
       return;
     }
     var comfort = getComfort();
-    var color = dewpointToColor(dewpoint.toNumber(), darkBackground);
-
+    var color = $.dewpointToColor(dewpoint.toNumber(), darkBackground);    
     dc.setColor(color, color);
     if (ef == EfSmall) {
-      // TODO
       var percTemperature = $.percentageOf(comfort.temperatureMax, self.minTemperature, self.maxTemperature).toNumber();
       var yTop = ds.getYpostion($.max(percTemperature, comfort.humidityMax) as Lang.Number);
       percTemperature = $.percentageOf(comfort.temperatureMin, self.minTemperature, self.maxTemperature).toNumber();
@@ -273,6 +277,30 @@ class RenderWeather {
 
     dc.fillRectangle(x - ds.space / 2, self.yHumTop, ds.columnWidth + ds.space, self.yHumBottom - self.yHumTop);
     dc.fillRectangle(x - ds.space / 2, self.yTempTop, ds.columnWidth + ds.space, self.yTempBottom - self.yTempTop);
+
+    // Draw current observation hour in comfort region
+    // TODO menu + not draw last values ??
+    // System.println(["hour", hour]);
+    if (hour > -1) {
+      var hourText = hour.format("%d");
+      var nr = dewpoint.toNumber() - 4;
+      if (nr < 0) {
+        nr = 0;
+      }
+      color = $.dewpointToColor(nr, darkBackground);      
+      var fontHours = $.getMatchingFont(dc, ds.alertFonts, ds.columnWidth / 2, hourText, -1);
+      //y = yTop + (yBottom  - yTop) / 2;
+      var yHours = self.yTempTop + (self.yTempBottom - self.yTempTop) / 2;
+      System.println(["hour", hour,hourText, nr, yHours, x]);
+      dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+      dc.drawText(
+        x + ds.columnWidth / 2,
+        yHours,
+        fontHours,
+        hourText,
+        Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
+      );
+    }
   }
 
   function drawComfortBorders(dc as Dc) as Void {
@@ -891,6 +919,10 @@ class RenderWeather {
       var circleMaxWidth = dc.getWidth() / 5;
       wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
     }
+    // Only displaying numbers. They are vertical and horizontal aligned in the circle.
+    // But still some space below base line (because of py etc charcters, but numbers are all above baseline)
+    // Do a correction, lower the placement some pixels.
+    var yOffset = dc.getFontDescent(wsFont) / 2;
 
     var textWidth = dc.getTextWidthInPixels(text, wsFont);
     radius = textWidth / 2 + padding;
@@ -962,12 +994,17 @@ class RenderWeather {
     // The circle
     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(x, y, radius);
-    dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    if (hasAlert && !bigArrow) {
+      // https://rgbcolorcode.com/color/FF0080  rgb(255,0,128)
+      dc.setColor(0xff0080, Graphics.COLOR_TRANSPARENT);
+    } else {
+      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+    }
     dc.fillCircle(x, y, radius - 1);
 
     // Windspeed
     dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-    dc.drawText(x, y, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+    dc.drawText(x, y + yOffset, wsFont, text, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
   }
 
   hidden function point2DOnCircle(x as Number, y as Number, radius as Lang.Numeric, angleInDegrees as Lang.Numeric) as Point2D {

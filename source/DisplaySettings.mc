@@ -53,9 +53,13 @@ class DisplaySettings {
   var alertFonts as Array = [
     Graphics.FONT_XTINY,
     Graphics.FONT_TINY,
-    Graphics.FONT_SYSTEM_SMALL,
-    Graphics.FONT_SYSTEM_MEDIUM,
-    Graphics.FONT_SYSTEM_LARGE,
+    Graphics.FONT_SYSTEM_SMALL,    
+    Graphics.FONT_NUMBER_MILD,
+    Graphics.FONT_NUMBER_MEDIUM,
+    Graphics.FONT_SYSTEM_NUMBER_HOT,
+
+    // Graphics.FONT_SYSTEM_MEDIUM,
+    // Graphics.FONT_SYSTEM_LARGE,
   ];
 
   hidden var colorCloudsNight as Lang.Number = 0;

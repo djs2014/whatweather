@@ -41,7 +41,7 @@ class WeatherObservation {
       "]obsname[" +
       observationLocationName +
       "]obstime[" +
-      $.getDateTimeString(observationTime) +      
+      $.getDateTimeString(observationTime) +
       "]"
     );
   }
@@ -55,6 +55,7 @@ class WeatherMinutely {
 
 class WeatherHourly {
   var forecastTime as Time.Moment = Time.now();
+  var hour as Number = 0;
   var clouds as Lang.Number = 0;
   var precipitationChance as Lang.Number = 0;
   var precipitationChanceOther as Lang.Number = 0;
@@ -67,7 +68,7 @@ class WeatherHourly {
   var temperature as Lang.Numeric = 0;
   var uvi as Lang.Float = 0.0f;
   var pressure as Lang.Number = 0; // hPa
-  var dewPoint as Lang.Float = 0.0f; 
+  var dewPoint as Lang.Float = 0.0f;
   var rain1hr as Lang.Float = 0.0f; // mm / hour
   var snow1hr as Lang.Float = 0.0f; // mm / hour
 
@@ -132,9 +133,8 @@ class WeatherAlert {
 }
 
 class WeatherData {
-  
   public var observation as WeatherObservation;
-  public var minutely as WeatherMinutely;  
+  public var minutely as WeatherMinutely;
   public var hourly as Lang.Array<WeatherHourly>;
   public var alerts as Lang.Array<WeatherAlert>;
   public var lastUpdated as Time.Moment?;
@@ -183,4 +183,16 @@ function emptyWeatherData() as WeatherData {
   );
   wd.setChanged(true);
   return wd;
+}
+
+class WeatherForecastAlert {
+  var alertPrecipitationChance as Boolean = false;
+  var alertRainMMHour as Boolean = false;
+  
+  var alertWeatherCondition as Boolean = false;
+  var alertUvi as Boolean = false;
+  var alertWind as Boolean = false;
+  var alertDewpoint as Boolean = false;
+
+  function initialize() {}
 }

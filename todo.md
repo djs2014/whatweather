@@ -1,10 +1,29 @@
+TODO fix 1030 -> mmrain current
+TODO readme update menu settings etc.
+
 Note: garmin weather -> when update date shift 1 day previous bug in simulator (linux)
 sync locations / numericinput --> to other projects  
 - show weather icons
 - show weather text
   - check y pos calculation its same as wind icon now
+---------
+info1/ weathercolumn
+info2
+..
+wind / dashes under weathercolumn
+condition 
+text
+hours
+
+---------
+
  - mShowComfortBorders 
 - onlayout --> get the right number of columns
+- set dash underline height -> indicatie alert aanwezig 
+==> dan column hoogte kleiner ..
+- alleen wanneer alert aanwezig?
+
+- alert wind icon licht rood.
 
 
 - when on change weather

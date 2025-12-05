@@ -94,9 +94,6 @@ function getLatestGarminWeather() as WeatherData {
       }
 
       var hf = $.getGarminHourly(fcTime, garForecast);
-      // TEST
-      // hf.windGust = 5.0;
-
       hh.add(hf);
 
       if (DEBUG_DETAILS) {
@@ -116,6 +113,9 @@ function getGarminHourly(forecastTime as Moment, forecast as CurrentConditions o
   var hf = new WeatherHourly();
 
   hf.forecastTime = forecastTime;
+  var today = Gregorian.info(forecastTime, Time.FORMAT_MEDIUM);
+  hf.hour = today.hour;
+  
   if (forecast has :cloudCover) {
     hf.clouds = $.getNumericValueOrDefault(forecast.cloudCover, 0) as Lang.Number;
   } else {
@@ -145,7 +145,7 @@ function getGarminHourly(forecastTime as Moment, forecast as CurrentConditions o
   }
 
   // TEST
-  // hf.windGust = 5.0;
+  // hf.windGust = 20.0;
   return hf;
 }
 

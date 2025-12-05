@@ -134,6 +134,8 @@ function toWeatherData(data as Dictionary?) as WeatherData {
         }
 
         hf.forecastTime = fcTime;
+        var today = Gregorian.info(fcTime, Time.FORMAT_MEDIUM);
+        hf.hour = today.hour;
         hf.clouds = ($.getNumericValueOrDefault(arr[1], 0) as Number).toNumber();
         // OWM pop from o.o - 1
         hf.precipitationChance = (($.getNumericValueOrDefault(arr[2], 0.0) as Float) * 100.0).toNumber();
@@ -239,25 +241,25 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
           case wsGarminFirst:
             wData.hourly[h].precipitationChanceOther = bgData.hourly[h].precipitationChance;
             wData.hourly[h].conditionOther = bgData.hourly[h].condition;
-            if (wData.hourly[h].uvi == null) {
+            if (wData.hourly[h].uvi == 0) {
               wData.hourly[h].uvi = bgData.hourly[h].uvi;
             }
-            if (wData.hourly[h].clouds == null) {
+            if (wData.hourly[h].clouds == 0) {
               wData.hourly[h].clouds = bgData.hourly[h].clouds;
             }
-            if (wData.hourly[h].dewPoint == null) {
+            if (wData.hourly[h].dewPoint == 0) {
               wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint;
             }
-            if (wData.hourly[h].pressure == null) {
+            if (wData.hourly[h].pressure == 0) {
               wData.hourly[h].pressure = bgData.hourly[h].pressure;
             }
-            if (wData.hourly[h].rain1hr == null) {
+            if (wData.hourly[h].rain1hr == 0) {
               wData.hourly[h].rain1hr = bgData.hourly[h].rain1hr;
             }
-            if (wData.hourly[h].snow1hr == null) {
+            if (wData.hourly[h].snow1hr == 0) {
               wData.hourly[h].snow1hr = bgData.hourly[h].snow1hr;
             }
-            if (wData.hourly[h].windGust == null) {
+            if (wData.hourly[h].windGust == 0) {
               wData.hourly[h].windGust = bgData.hourly[h].windGust;
             }
             break;

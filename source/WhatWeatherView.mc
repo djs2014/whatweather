@@ -34,9 +34,8 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mGarminCheck as WeatherCheck = new WeatherCheck();
   hidden var mCurrentInfo as CurrentInfo?;
 
-  // hidden var mTotalRain1stHour as Lang.Float = 0.0f;
-  // hidden var mRain1stHour as Array<WeatherPoint> = [];
   hidden var mWindPoints as Array<WindPoint> = [];
+  hidden var mWeatherAlerts as Array<WeatherForecastAlert> = [];
 
   hidden var mFontInfo as Graphics.FontType = Graphics.FONT_LARGE;
   hidden var mFontPostfix as Graphics.FontType = Graphics.FONT_TINY;
@@ -57,7 +56,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mZoomMinuteForecastWhenMM as Float = 0.2f;
   hidden var mZoomMinuteForecastFactor as Number = 3;
   hidden var mZoomMinuteForecastColumns as Number = 2;
-  hidden var mShowCurrentForecast as Boolean = false;
+  hidden var mShowDetailsWhenAlert as Boolean = false;
   hidden var mShowClouds as Boolean = false;
   hidden var mShowWind as Boolean = false;
   hidden var mShowWindUnit as Number = SHOW_WIND_KILOMETERS;
@@ -71,7 +70,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mShowExtraInfo as Number = SHOW_INFO_NOTHING;
   hidden var mShowDetailsWhenPaused as Boolean = false;
   // Note, all weather and windpoints must be calculated for mShowDetailsWhenAlert == true
-  hidden var mShowDetailsWhenAlert as Boolean = false;
+  hidden var mShowHourOnColumn as Boolean = false;
   // Info fields
   hidden var mShowRelativeWind as Boolean = false;
   hidden var mShowComfortBorders as Boolean = false;
@@ -90,7 +89,6 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mCalculateLayout as Boolean = false;
   hidden var mCurrentEdgeField as EdgeField = EfLarge;
   hidden var mActiveZoomMinuteForecast as Boolean = false;
-  // hidden var mCurrentHour as Number = -1;
   hidden var mDarkBackground as Boolean = false;
 
   function initialize() {
@@ -272,6 +270,9 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   hidden function calculateLayout(dc as Dc) as Void {
+    var windIconHeight = 15;
+    var weatherIconHeight = 15;
+
     mShowComfortBorders = true;
     mShowObservationLocationName = true;
     mShowObservationTime = true;
@@ -294,6 +295,7 @@ class WhatWeatherView extends WatchUi.DataField {
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
       mShowObservationTime = false;
+      windIconHeight = 10;
     }
 
     if (DEBUG_DETAILS) {
@@ -305,8 +307,8 @@ class WhatWeatherView extends WatchUi.DataField {
     mZoomMinuteForecastWhenMM = arrShowField[3];
     mZoomMinuteForecastFactor = arrShowField[4];
     mZoomMinuteForecastColumns = arrShowField[5];
-    mShowCurrentForecast = arrShowField[6] == true;
-    mShowClouds = arrShowField[7] == true;
+    mShowDetailsWhenAlert = arrShowField[6] == true;
+    mShowClouds = arrShowField[7] == true; 
     mShowWind = arrShowField[8] == true;
     mShowWindUnit = arrShowField[9];
     mShowUv = arrShowField[10] == true;
@@ -318,14 +320,16 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowWeatherCondition = arrShowField[16] == true;
     mShowExtraInfo = arrShowField[17];
     mShowDetailsWhenPaused = arrShowField[18] == true;
-    mShowDetailsWhenAlert = arrShowField[19] == true;
+    // mShowDetailsWhenAlert = arrShowField[19] == true;
     mShowRelativeWind = mShowExtraInfo == SHOW_INFO_RELATIVE_WIND;
 
+    mShowHourOnColumn = true; // TEST TODO @@@
+
     // Height wind icons
-    var heightWind = mShowWind ? 15 : 0;
+    var heightWind = mShowWind ? windIconHeight : 0;
     // Height weather icons / text
-    var heightWc = mShowWeatherCondition ? 15 : 0;
-    var heightWt = mShowWeatherCondition ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;    
+    var heightWc = mShowWeatherCondition ? weatherIconHeight : 0;
+    var heightWt = mShowWeatherCondition ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY) : 0;
     mDs.calculate(dc, mHoursForecast, heightWind, heightWc, heightWt);
 
     render.initValues(dc, mDs, mCurrentEdgeField);
@@ -429,8 +433,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
     var tempPoints = [];
     var dewPoints = [];
-
-    var blueBarPercentage = [] as Array<Number>;
 
     var previousCondition = -1;
     var weatherTextLine = 0;
@@ -576,6 +578,13 @@ class WhatWeatherView extends WatchUi.DataField {
             System.println(forecast.info());
           }
 
+          var wa;
+          if (mShowDetailsWhenAlert && fcIdx < mWeatherAlerts.size()) {
+            wa = mWeatherAlerts[fcIdx];
+          } else {
+            wa = new WeatherForecastAlert();
+          }
+
           var colorCondition = getConditionColor(forecast.condition, Graphics.COLOR_BLUE, mDarkBackground);
           var colorOtherCondition = getConditionColor(forecast.conditionOther, Graphics.COLOR_BLUE, mDarkBackground);
           var cloudColor = mDs.COLOR_CLOUDS;
@@ -591,9 +600,13 @@ class WhatWeatherView extends WatchUi.DataField {
             cloudHeight = drawColumnChance(dc, cloudColor, x, mDs.columnY, mDs.columnWidth, mDs.columnHeight, forecast.clouds);
           }
           if (mShowComfortZone) {
-            render.drawComfortColumn(dc, x, forecast.dewPoint, mDarkBackground);
+            var hour = -1;
+            if (mShowHourOnColumn && mShowDetails) {
+              hour = forecast.hour;
+            }
+            render.drawComfortColumn(dc, x, forecast.dewPoint, mDarkBackground, hour);
           }
-          // rain
+          // rain chance and rain mm is always shown, the base of the weather columns.
           var rainHeight = drawColumnChance(
             dc,
             colorCondition,
@@ -645,30 +658,22 @@ class WhatWeatherView extends WatchUi.DataField {
           var bluebarPerc = forecast.precipitationChance;
           var xCenterColumn = x + mDs.columnWidth / 2;
 
-          if (mShowDetails) {
-            blueBarPercentage.add(forecast.precipitationChance);
-          }
-
-          if (mShowUv) {
+          if (mShowUv || wa.alertUvi) {
             render.drawUvIndexItem(dc, xCenterColumn, forecast.uvi, $._maxUVIndex, mShowDetails, bluebarPerc);
           }
           if (mShowPressure) {
             render.drawPressureItem(dc, xCenterColumn, forecast.pressure, mShowDetails, bluebarPerc);
           }
 
-          if (mShowRelativeHumidity) {            
+          if (mShowRelativeHumidity) {
             render.drawHumidityItem(dc, xCenterColumn, forecast.relativeHumidity, mShowDetails, bluebarPerc);
           }
           if (mShowTemperature) {
-            render.drawTemperatureItem(dc, xCenterColumn,forecast.temperature, mShowDetails, bluebarPerc);
+            render.drawTemperatureItem(dc, xCenterColumn, forecast.temperature, mShowDetails, bluebarPerc);
           }
 
-          if (mShowDewpoint) {
-            render.drawDewpointItem(dc, xCenterColumn,forecast.dewPoint, mShowDetails, bluebarPerc, mDarkBackground);
-          }
-
-          if (fcIdx < mWindPoints.size()) {
-            mWindPoints[fcIdx].setXposition(x);
+          if (mShowDewpoint || wa.alertDewpoint) {
+            render.drawDewpointItem(dc, xCenterColumn, forecast.dewPoint, mShowDetails, bluebarPerc, mDarkBackground);
           }
 
           if (mDs.dashesUnderColumnHeight > 0 || forecast.rain1hr > 0.0) {
@@ -708,7 +713,7 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
 
-          if (mShowWeatherCondition) {
+          if (mShowWeatherCondition || wa.alertWeatherCondition) {
             var nightTime = mCurrentLocation.isAtNightTime(forecast.forecastTime, false);
             render.drawWeatherCondition(dc, x, forecast.condition, nightTime);
             if (nightTime && !sunsetPassed) {
@@ -722,10 +727,20 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
 
+          if (mShowWind || wa.alertWind) {
+            if (fcIdx < mWindPoints.size()) {
+              mWindPoints[fcIdx].setXposition(x);
+              var wp = mWindPoints[fcIdx] as WindPoint;
+              var xW = wp.x + mDs.columnWidth / 2;
+              var yW = mDs.columnY + mDs.columnHeight + mDs.heightWind / 2;
+              render.drawWind(dc, xW, yW, wp, 0, false);
+            }
+          }
+
           x = x + mDs.columnWidth + mDs.space;
         }
       } // hourlyForecast
-     
+
       // TODO dashed line ??
       if (mShowComfortBorders) {
         render.drawComfortBorders(dc);
@@ -762,21 +777,7 @@ class WhatWeatherView extends WatchUi.DataField {
         render.drawObservationTime(dc, wo.observationTime);
       }
 
-      // Wind icons or wind relative or wind first column
-
       // mShowDetailsWhenAlert only for wind TODO others
-      // TODO merge in forecastloop
-      if (mShowWind || mShowDetailsWhenAlert) {
-        var maxWp = mWindPoints.size();
-        for (var idx = 0; idx < maxWp; idx++) {
-          var wp = mWindPoints[idx] as WindPoint;
-          if (mShowWind || wp.hasAlert()) {
-            var xW = wp.x + mDs.columnWidth / 2;
-            var yW = mDs.columnY + mDs.columnHeight + mDs.heightWind / 2;
-            render.drawWind(dc, xW, yW, wp, 0, false);
-          }
-        }
-      }
 
       if (mShowRelativeWind || mShowDetailsWhenAlert) {
         var activityBearing = mBearing;
@@ -1069,19 +1070,13 @@ class WhatWeatherView extends WatchUi.DataField {
     return ci;
   }
 
-  // Build weather data to be displayed - TEST calculate windpoints
-  // TODO, build all weather points
-  // TODO -> current will be index 0 [0]?
-  // Check for alerts
+  // Check for alerts and build windpoints
   function checkForWeatherAlerts() as Void {
     mActiveZoomMinuteForecast = false;
 
-    var hasAlert;
-    var hasAlert2;
-    var wPoint;
-
     mAlertHandler.resetAllClear();
     mWindPoints = [];
+    mWeatherAlerts = [];
 
     try {
       if (!mWeatherData.valid()) {
@@ -1106,29 +1101,44 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       } // showMinuteForecast
 
-      // ?? mShowCurrentForecast
-
       // We always have valid forecast hours
       var maxHourly = hourlyForecast.size();
       for (var idx = 0; idx < mHoursForecast && idx < maxHourly; idx += 1) {
         var forecast = hourlyForecast[idx] as WeatherHourly;
+        var wa = new WeatherForecastAlert();
 
-        mAlertHandler.processPrecipitationChance(forecast.precipitationChance);
-        mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther);
-        mAlertHandler.processWeather(forecast.condition);
-        mAlertHandler.processWeather(forecast.conditionOther);
-        mAlertHandler.processUvi(forecast.uvi);
-
-        hasAlert = mAlertHandler.processWindSpeed(forecast.windSpeed);
-        hasAlert2 = mAlertHandler.processWindGust(forecast.windSpeed, forecast.windGust);
-        if (mShowWind || mShowRelativeWind || mShowDetailsWhenAlert) {
-          wPoint = new WindPoint(forecast.windBearing, forecast.windSpeed, hasAlert, forecast.windGust, hasAlert2);
-          wPoint.setUIelements(mShowWindUnit);
-          mWindPoints.add(wPoint);
+        if (mAlertHandler.processPrecipitationChance(forecast.precipitationChance)) {
+          wa.alertPrecipitationChance = true;
+        }
+        if (mAlertHandler.processPrecipitationChance(forecast.precipitationChanceOther)) {
+          wa.alertPrecipitationChance = true;
+        }
+        if (mAlertHandler.processWeather(forecast.condition)) {
+          wa.alertWeatherCondition = true;
+        }
+        if (mAlertHandler.processWeather(forecast.conditionOther)) {
+          wa.alertWeatherCondition = true;
+        }
+        if (mAlertHandler.processUvi(forecast.uvi)) {
+          wa.alertUvi = true;
         }
 
-        mAlertHandler.processDewpoint(forecast.dewPoint);
-        mAlertHandler.processRainMMHour(forecast.rain1hr);
+        var hasAlert = mAlertHandler.processWindSpeed(forecast.windSpeed);
+        var hasAlert2 = mAlertHandler.processWindGust(forecast.windSpeed, forecast.windGust);
+        // Always fill in the wind, testing for (ShowWind || mShowRelativeWind || mShowDetailsWhenAlert)
+        // doesnt work, because at startup of app they dont have the correct value.
+        // Could be that onlayout event is not called?
+        var wPoint = new WindPoint(forecast.windBearing, forecast.windSpeed, hasAlert, forecast.windGust, hasAlert2);
+        wPoint.setUIelements(mShowWindUnit);
+        mWindPoints.add(wPoint);
+        if (hasAlert || hasAlert2) {
+          wa.alertWind = true;
+        }
+
+        wa.alertDewpoint = mAlertHandler.processDewpoint(forecast.dewPoint);
+        wa.alertRainMMHour = mAlertHandler.processRainMMHour(forecast.rain1hr);
+
+        mWeatherAlerts.add(wa);
       }
 
       var hasOWMAlert = mWeatherData.alerts.size() > 0;

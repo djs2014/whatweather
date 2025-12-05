@@ -77,8 +77,7 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
     boolean = Storage.getValue("resetAlerts") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Show alerts again", null, "resetAlerts", boolean, null));
-    // boolean = Storage.getValue("debug") ? true : false;
-    // menu.addItem(new WatchUi.ToggleMenuItem("Debug", null, "debug", boolean, null));
+  
     boolean = Storage.getValue("resetDefaults") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Reset to defaults", null, "resetDefaults", boolean, null));
 
