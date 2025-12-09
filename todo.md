@@ -1,3 +1,5 @@
+no api key check
+kan al meteen als owm / owmfirst / garminfirst gekozen is, hoeft niet in background
 TODO fix 1030 -> mmrain current
 TODO readme update menu settings etc.
 

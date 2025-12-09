@@ -149,14 +149,14 @@ class RenderWeather {
 
       if (showDetails && perc > $._percHideDetails) {
         var h = dc.getFontHeight(Graphics.FONT_TINY);
-        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+        dc.setColor(ds.COLOR_DEWPOINT_DETAILS, Graphics.COLOR_TRANSPARENT);
         var convertedDewpoint = dewPoint;
         if (devSettings.temperatureUnits == System.UNIT_STATUTE) {
           convertedDewpoint = $.celciusToFarenheit(dewPoint);
         }
         dc.drawText(
           x,
-          y + h / 2,
+          y + h / 2 + 1,
           Graphics.FONT_TINY,
           convertedDewpoint.format("%d"),
           Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER

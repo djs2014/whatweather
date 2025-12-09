@@ -16,6 +16,7 @@ class DisplaySettings {
   var COLOR_BACKGROUND_ALERT as Lang.Number = Graphics.COLOR_YELLOW;
   var COLOR_TEXT_DASHES as Lang.Number = Graphics.COLOR_DK_GRAY;
   var COLOR_TEXT_DETAILS as Lang.Number = Graphics.COLOR_WHITE;
+  var COLOR_DEWPOINT_DETAILS as Lang.Number = Graphics.COLOR_DK_GRAY;
   var COLOR_HUMIDITY_DETAILS as Lang.Number = Graphics.COLOR_DK_BLUE;
   var COLOR_HUMIDITY as Lang.Number = Graphics.COLOR_DK_BLUE;
   var COLOR_WIND_ICON as Lang.Number = Graphics.COLOR_BLACK;
@@ -65,7 +66,7 @@ class DisplaySettings {
   hidden var colorCloudsNight as Lang.Number = 0;
 
   function initialize() {
-    colorCloudsNight = $.shadeColor(255, 204, 209, 209, -20);
+    colorCloudsNight = $.shadeColor(255, 104, 109, 109, -20);
   }
 
   function calculate(
@@ -130,6 +131,7 @@ class DisplaySettings {
       COLOR_MM_RAIN = Graphics.createColor(255, 0, 213, 255); // rgb(0,213,255)
       COLOR_MM_DIVIDER = Graphics.COLOR_WHITE;
       COLOR_MM_DETAILS = Graphics.COLOR_WHITE;
+      COLOR_DEWPOINT_DETAILS = Graphics.COLOR_WHITE;
     } else {
       COLOR_TEXT = Graphics.COLOR_BLACK;
       COLOR_BACKGROUND = Graphics.COLOR_WHITE;
@@ -148,6 +150,7 @@ class DisplaySettings {
       COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
       COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
       COLOR_MM_DETAILS = Graphics.COLOR_BLACK;
+      COLOR_DEWPOINT_DETAILS = Graphics.COLOR_DK_GRAY;
     }
   }
   function info() as Lang.String {
