@@ -4,3 +4,5 @@ TODO: separate version -> stripped down.
 -> max hours = 7 no icons, simple wind icon?
 -> less menu options -> or field part a / field part b?
 ---------------------------------------------------------
+
+TODO fix 1030 -> mmrain current
