@@ -1,5 +1,6 @@
 no api key check
 kan al meteen als owm / owmfirst / garminfirst gekozen is, hoeft niet in background
+font comfort toon uren -> indien < dewpoint maak kleur iets donkerder, > dewpoint  text iets lichter
 TODO fix 1030 -> mmrain current
 TODO readme update menu settings etc.
 
