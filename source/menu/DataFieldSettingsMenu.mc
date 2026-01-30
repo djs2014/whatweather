@@ -143,9 +143,8 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       index = 18;
       $.addToggleMenuItem(fieldMenu, "Details paused", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
             
-      // index = 19;
-      // $.addToggleMenuItem(fieldMenu, "XXXXX", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
-
+      index = 19;
+      $.addToggleMenuItem(fieldMenu, "0 temperature line", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
       WatchUi.pushView(fieldMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;

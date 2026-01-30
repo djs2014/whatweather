@@ -1,3 +1,19 @@
+show 0 temperature line
+
+curl https://ishetglad.nl/includes/render.php?address_from=madrid&geocoor=52.3528505%2C4.8534054
+
+{"lat_start":0,"lon_start":0,"temp":27,"temp_min":27,"temp_max":27,"weather":null,"humidity":77,"warning":"","final":"Nee! Het is niet glad"}
+
+52.3516012130595, 4.859189163397057
+
+https://ishetglad.nl/includes/render.php?geolocation=1&geocoor=52.3516012130595%2C4.859189163397057
+
+post form test
+
+
+https://ishetglad.nl/includes/render.php?address_from=madrid&geocoor=52.3528505%2C4.8534054
+
+{"lat_start":0,"lon_start":0,"temp":27,"temp_min":27,"temp_max":27,"weather":null,"humidity":77,"warning":"","final":"Nee! Het is niet glad"}
 no api key check
 kan al meteen als owm / owmfirst / garminfirst gekozen is, hoeft niet in background
 font comfort toon uren -> indien < dewpoint maak kleur iets donkerder, > dewpoint  text iets lichter

@@ -24,6 +24,7 @@ class DisplaySettings {
   var COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
   var COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
   var COLOR_MM_DETAILS = Graphics.COLOR_BLACK;
+  var COLOR_0_TEMPERATURE = 0xa0a0ff; // Light Blue
 
   var COLOR_WHITE_BLUE = 0xe1e5f8;
   var COLOR_WHITE_GREEN = 0xe6ffe5; // 0x8DDA8D;

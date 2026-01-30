@@ -322,6 +322,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // weather icons
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused,      
+      true, // show 0 temperature line
     ]);
 
     Storage.setValue("show_large_field", [
@@ -344,6 +345,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // weather icons
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused
+      true, // show 0 temperature line
     ]);
 
     Storage.setValue("show_wide_field", [
@@ -366,6 +368,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // weather icons
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
+      false, // show 0 temperature line
     ]);
 
     Storage.setValue("show_small_field", [
@@ -388,6 +391,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // weather icons
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
+      false, // show 0 temperature line
     ]);
   }
 }
@@ -426,7 +430,7 @@ function getCurrentLocation() as CurrentLocation {
 
 var g_bg_timeout_seconds as Number = 0;
 var g_bg_delay_seconds as Number = 0;
-var gSizeArrFieldItems = 19;
+var gSizeArrFieldItems = 20;
 var gShow_OneField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_LargeField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_WideField as Array<Numeric> = [] as Array<Numeric>;
