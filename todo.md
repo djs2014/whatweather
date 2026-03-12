@@ -1,4 +1,5 @@
-show 0 temperature line
+alert wind -> font white
+
 
 curl https://ishetglad.nl/includes/render.php?address_from=madrid&geocoor=52.3528505%2C4.8534054
 

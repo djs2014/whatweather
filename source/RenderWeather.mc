@@ -1285,18 +1285,20 @@ class RenderWeather {
     }
 
     // The circle
+    var textColor = Graphics.COLOR_BLACK;
     dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
     dc.drawCircle(x, y, radius);
     if (hasAlert && !bigArrow) {
       // https://rgbcolorcode.com/color/FF0080  rgb(255,0,128)
       dc.setColor(0xff0080, Graphics.COLOR_TRANSPARENT);
+      textColor = Graphics.COLOR_WHITE;
     } else {
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
     }
     dc.fillCircle(x, y, radius - 1);
 
     // Windspeed
-    dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
+    dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);
     dc.drawText(
       x,
       y + yOffset,
