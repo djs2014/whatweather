@@ -2,8 +2,8 @@
 const http = require("http");
 
 const https = require("https");
-const axios = require('axios');
-const wim = require('./services/wimage.js');
+// const axios = require('axios');
+// const wim = require('./services/wimage.js');
 const fs = require('fs/promises');
 const compression = require('compression');
 
@@ -45,79 +45,79 @@ app.get("/", async function (req, res) {
     res.end(response);
 });
 
-app.get("/image_pi", async function (req, res) {
+// app.get("/image_pi", async function (req, res) {
 
-    try {
-        const queryString = req.originalUrl.split('?').splice(1).join('?');
-        const uri = API_SERVICE_PI_URL + '?' + queryString;
-        console.log('Process image_pi: ' + queryString);
+//     try {
+//         const queryString = req.originalUrl.split('?').splice(1).join('?');
+//         const uri = API_SERVICE_PI_URL + '?' + queryString;
+//         console.log('Process image_pi: ' + queryString);
 
-        // authorization
-        if (!req.headers.authorization) {
-            res.writeHead(401);
-            res.end("Unauthorized");
-            console.log('Unauthorized');
-            return;
-        }
+//         // authorization
+//         if (!req.headers.authorization) {
+//             res.writeHead(401);
+//             res.end("Unauthorized");
+//             console.log('Unauthorized');
+//             return;
+//         }
 
-        let allowed = await apikeys.validApikey(req.headers.authorization);
-        if (!allowed) {
-            res.writeHead(403);
-            res.end("Forbidden");
-            console.log('Forbidden');
-            return;
-        }
+//         let allowed = await apikeys.validApikey(req.headers.authorization);
+//         if (!allowed) {
+//             res.writeHead(403);
+//             res.end("Forbidden");
+//             console.log('Forbidden');
+//             return;
+//         }
 
-        const httpsAgent = new https.Agent({
-            rejectUnauthorized: false,
-        })
-        const response = await axios.get(
-            uri,
-            { responseType: 'arraybuffer', httpsAgent }
-        );
-        const image = Buffer.from(response.data, 'utf-8');
-        //res.status(200).send(buffer);
+//         const httpsAgent = new https.Agent({
+//             rejectUnauthorized: false,
+//         })
+//         const response = await axios.get(
+//             uri,
+//             { responseType: 'arraybuffer', httpsAgent }
+//         );
+//         const image = Buffer.from(response.data, 'utf-8');
+//         //res.status(200).send(buffer);
 
-        res.writeHead(200, { 'Content-Type': 'image/png' });
-        res.end(image);
-    } catch (err) {
-        res.writeHead(500);
-        res.end(err.message);
-    }
-});
+//         res.writeHead(200, { 'Content-Type': 'image/png' });
+//         res.end(image);
+//     } catch (err) {
+//         res.writeHead(500);
+//         res.end(err.message);
+//     }
+// });
 
-app.get("/image", async function (req, res) {
+// app.get("/image", async function (req, res) {
 
-    try {
-        const queryString = req.originalUrl.split('?').splice(1).join('?');
-        const uri = API_SERVICE_URL + '?' + queryString;
-        console.log('Process image: ' + queryString);
+//     try {
+//         const queryString = req.originalUrl.split('?').splice(1).join('?');
+//         const uri = API_SERVICE_URL + '?' + queryString;
+//         console.log('Process image: ' + queryString);
 
-        // authorization
-        if (!req.headers.authorization) {
-            res.writeHead(401);
-            res.end("Unauthorized");
-            console.log('Unauthorized');
-            return;
-        }
+//         // authorization
+//         if (!req.headers.authorization) {
+//             res.writeHead(401);
+//             res.end("Unauthorized");
+//             console.log('Unauthorized');
+//             return;
+//         }
 
-        let allowed = await apikeys.validApikey(req.headers.authorization);
-        if (!allowed) {
-            res.writeHead(403);
-            res.end("Forbidden");
-            console.log('Forbidden');
-            return;
-        }
+//         let allowed = await apikeys.validApikey(req.headers.authorization);
+//         if (!allowed) {
+//             res.writeHead(403);
+//             res.end("Forbidden");
+//             console.log('Forbidden');
+//             return;
+//         }
 
-        const image = await wim.getImageFromWebpage(uri);
+//         const image = await wim.getImageFromWebpage(uri);
 
-        res.writeHead(200, { 'Content-Type': 'image/png' });
-        res.end(image);
-    } catch (err) {
-        res.writeHead(500);
-        res.end(err.message);
-    }
-});
+//         res.writeHead(200, { 'Content-Type': 'image/png' });
+//         res.end(image);
+//     } catch (err) {
+//         res.writeHead(500);
+//         res.end(err.message);
+//     }
+// });
 
 
 app.get("/owm_one", async function (req, res) {
