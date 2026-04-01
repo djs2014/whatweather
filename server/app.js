@@ -7,7 +7,8 @@ const https = require("https");
 const fs = require('fs/promises');
 const compression = require('compression');
 
-const fetch = require("node-fetch");
+// node-fetch is built-in in node 18+ and global, no need to import
+// const fetch = require("node-fetch");
 const owm = require('./services/owm.js');
 const apikeys = require('./helpers/apikeys.js');
 
