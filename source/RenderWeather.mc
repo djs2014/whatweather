@@ -543,6 +543,7 @@ class RenderWeather {
       :accent => darkBackground ? Graphics.COLOR_YELLOW : Graphics.COLOR_ORANGE,
       :water => darkBackground ? Graphics.COLOR_BLUE : Graphics.COLOR_DK_BLUE,
       :haze => darkBackground ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY,
+      :danger => darkBackground ? Graphics.COLOR_PINK : Graphics.COLOR_PURPLE
     };
   }
 
@@ -616,7 +617,7 @@ class RenderWeather {
         border,
         colors[:accent]
       );
-      drawClouds(dc, x, y, cloudWidthSmall, border, colors[:main]);
+      drawClouds(dc, x, y, cloudWidth, border, colors[:main]);
       return;
     }
 
@@ -631,7 +632,7 @@ class RenderWeather {
         border,
         colors[:accent]
       );
-      drawClouds(dc, x, y + 3, cloudWidthSmall, border, colors[:main]);
+      drawClouds(dc, x, y + 3, cloudWidth, border, colors[:main]);
       return;
     }
     if (condition == Weather.CONDITION_CLEAR) {
@@ -659,11 +660,11 @@ class RenderWeather {
         border,
         colors[:accent]
       );
-      drawClouds(dc, x, y, cloudWidthSmall, border, colors[:main]);
+      drawClouds(dc, x, y, cloudWidth, border, colors[:main]);
       return;
     }
     if (condition == Weather.CONDITION_THIN_CLOUDS) {
-      drawClouds(dc, x, y, cloudWidthSmall, border, colors[:main]);
+      drawClouds(dc, x, y, cloudWidth, border, colors[:main]);
       return;
     }
     if (condition == Weather.CONDITION_MOSTLY_CLOUDY) {
@@ -817,13 +818,13 @@ class RenderWeather {
 
     if (condition == Weather.CONDITION_THUNDERSTORMS) {
       drawLightning(dc, x - 4, y - 2, widthLightning, colors[:accent]);
-      drawLightning(dc, x + 2, y, widthLightningLarge, colors[:accent]);
+      drawLightning(dc, x + 2, y, widthLightningLarge, colors[:danger]);
       return;
     }
 
     if (condition == Weather.CONDITION_TROPICAL_STORM) {
       drawLightning(dc, x - 1, y + 1, widthLightningLarge, colors[:accent]);
-      drawLightning(dc, x + 4, y + 4, widthLightning, colors[:accent]);
+      drawLightning(dc, x + 4, y + 4, widthLightning, colors[:danger]);
       drawClouds(dc, x, y, cloudWidthLarge, border, colors[:strong]);
       return;
     }
