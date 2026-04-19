@@ -134,6 +134,9 @@ class WhatWeatherApp extends Application.AppBase {
       $._soundMode = $.getStorageValue("sound_mode", 1) as Number;
       $._alertBacklight = $.getStorageValue("alert_backlight", false) as Boolean;
 
+
+      $._loopWeatherCondition = $.getStorageValue("weather_condition_loop", false) as Boolean;
+
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
       $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
       $._maxTemperature = $.getStorageValue("maxTemperature", 50) as Number;

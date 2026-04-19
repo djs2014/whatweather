@@ -1,5 +1,5 @@
 show weather icons ?
-
+ darkblue color -> make it icy color on dark background
 
 migrate to azure functions
 - poi / weather

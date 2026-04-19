@@ -269,6 +269,9 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       demoMenu.addItem(mi);
 
+      var boolean = Storage.getValue("weather_condition_loop") ? true : false;
+      demoMenu.addItem(new WatchUi.ToggleMenuItem("Loop weather condition", null, "weather_condition_loop", boolean, null));
+
       WatchUi.pushView(demoMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }

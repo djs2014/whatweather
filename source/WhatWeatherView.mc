@@ -67,10 +67,12 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mShowDewpoint as Boolean = false;
   hidden var mShowComfortZone as Boolean = false;
   hidden var mShowWeatherCondition as Boolean = false;
-  hidden var mShowWeatherText as Boolean = false;
   hidden var mShowExtraInfo as Number = SHOW_INFO_NOTHING;
   hidden var mShowDetailsWhenPaused as Boolean = false;
   hidden var m0TemperatureLineYpos as Number = -1;
+  hidden var mShowWeatherText as Boolean = false;
+
+  hidden var mWeatherConditionLoop as Number = 0;
 
   // Note, all weather and windpoints must be calculated for mShowDetailsWhenAlert == true
   hidden var mShowHourOnColumn as Boolean = false;
@@ -523,6 +525,11 @@ class WhatWeatherView extends WatchUi.DataField {
         return false;
       }
 
+      if ($._loopWeatherCondition) {
+        // Loop through all conditions, for testing (0-53 conditions in Garmin API)
+        mWeatherConditionLoop = (mWeatherConditionLoop + 1) % 54;
+      }
+
       var mCurrentLocation = $.getCurrentLocation();
 
       if (mShowMinuteForecast) {
@@ -919,12 +926,16 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
 
+          if ($._loopWeatherCondition) {            
+            forecast.condition = mWeatherConditionLoop;
+          }
+
           if (mShowWeatherCondition || wa.alertWeatherCondition) {
             var nightTime = mCurrentLocation.isAtNightTime(
               forecast.forecastTime,
               false
             );
-            render.drawWeatherCondition(dc, x, forecast.condition, nightTime);
+            render.drawWeatherCondition(dc, x, forecast.condition, nightTime, mDarkBackground);
             if (nightTime && !sunsetPassed) {
               render.drawSunsetIndication(dc, x);
               sunsetPassed = true;
@@ -947,7 +958,7 @@ class WhatWeatherView extends WatchUi.DataField {
               var wp = mWindPoints[fcIdx] as WindPoint;
               var xW = wp.x + mDs.columnWidth / 2;
               var yW = mDs.columnY + mDs.columnHeight + mDs.heightWind / 2;
-              render.drawWind(dc, xW, yW, wp, 0, false);
+              render.drawWindArrow(dc, xW, yW, wp, 0, false);
             }
           }
 
@@ -1018,7 +1029,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var show = mShowRelativeWind || wp1.hasAlert();
           // In center of screen. Show big arrow when moving or has alert
           var bigArrow = activityBearing != 0 || wp1.hasAlert();
-          render.drawWind(
+          render.drawWindArrow(
             dc,
             mDs.width / 2,
             mDs.columnY + mDs.columnHeight / 2,

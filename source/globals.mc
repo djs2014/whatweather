@@ -42,6 +42,7 @@ var _alertWindIn as Lang.Number = SHOW_WIND_KILOMETERS;
 var _alertLevelWindSpeed as Lang.Float = 5.0f;
 var _alertLevelWindGust as Lang.Number = 2;
 var _alertBacklight as Boolean = false;
+var _loopWeatherCondition as Boolean = false;
 
 (:typecheck(disableBackgroundCheck))
 function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
