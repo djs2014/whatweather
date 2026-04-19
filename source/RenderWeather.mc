@@ -561,12 +561,12 @@ class RenderWeather {
     var x = xPos + ds.columnWidth / 2;
     // 2px Below bar
     var y = ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2;
-    var iconWidth = (ds.columnWidth / 3).toNumber();
+    var iconWidth = (ds.columnWidth / 2.5).toNumber();
     var cloudWidthSmall = ds.columnWidth / 4;
-    var cloudWidth = (ds.columnWidth / 3).toNumber();
+    var cloudWidth = (ds.columnWidth / 2.5).toNumber();
     var cloudWidthLarge = ds.columnWidth / 2;
 
-    var rainWidth = (ds.columnWidth / 3).toNumber();
+    var rainWidth = (ds.columnWidth / 2.5).toNumber();
     var rainWidthLarge = ds.columnWidth / 2;
     var rainHeight = ds.heightWc / 2;
     var rainHeightLarge = (ds.heightWc / 1.5).toNumber();
@@ -576,8 +576,8 @@ class RenderWeather {
     var widthLightning = ds.columnWidth / 4;
     var widthLightningLarge = (ds.columnWidth / 3).toNumber();
 
-    var windWidth = ds.columnWidth / (3).toNumber();
-    var dustWidth = ds.columnWidth / (3).toNumber();
+    var windWidth = (ds.columnWidth / 3).toNumber();
+    var dustWidth = (ds.columnWidth / 3).toNumber();
     var dustWidthLarge = ds.columnWidth / 2;
 
     var colors = getThemeColor(darkBackground);
