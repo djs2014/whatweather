@@ -67,6 +67,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mShowDewpoint as Boolean = false;
   hidden var mShowComfortZone as Boolean = false;
   hidden var mShowWeatherCondition as Boolean = false;
+  hidden var mShowWeatherText as Boolean = false;
   hidden var mShowExtraInfo as Number = SHOW_INFO_NOTHING;
   hidden var mShowDetailsWhenPaused as Boolean = false;
   hidden var m0TemperatureLineYpos as Number = -1;
@@ -288,8 +289,8 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 
   hidden function calculateLayout(dc as Dc) as Void {
-    var windIconHeight = 15;
-    var weatherIconHeight = 15;
+    var windIconHeight = 30;
+    var weatherIconHeight = 20;
 
     mShowComfortBorders = true;
     mShowObservationLocationName = true;
@@ -339,8 +340,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowExtraInfo = arrShowField[17];
     mShowDetailsWhenPaused = arrShowField[18] == true;
     var show0TemperatureLine = arrShowField[19] == true;
-
-   
+    mShowWeatherText = arrShowField[20] == true;
 
     mShowRelativeWind = mShowExtraInfo == SHOW_INFO_RELATIVE_WIND;
 
@@ -350,7 +350,8 @@ class WhatWeatherView extends WatchUi.DataField {
     var heightWind = mShowWind ? windIconHeight : 0;
     // Height weather icons / text
     var heightWc = mShowWeatherCondition ? weatherIconHeight : 0;
-    var heightWt = mShowWeatherCondition
+    // 2 lines of weather text
+    var heightWt = mShowWeatherText
       ? dc.getFontHeight(Graphics.FONT_SYSTEM_XTINY)
       : 0;
     mDs.calculate(dc, mHoursForecast, heightWind, heightWc, heightWt);
@@ -546,12 +547,12 @@ class WhatWeatherView extends WatchUi.DataField {
               // Zoom in, or else small amounts not visible.
               max_mmPerHour = max_mmPerHour / mZoomMinuteForecastFactor;
               skipFirstForecast = true;
-              System.println(["Zoom maxHoursForecast", maxHoursForecast]);
+              // System.println(["Zoom maxHoursForecast", maxHoursForecast]);
             }
             var offset = (maxIdx * columnWidth + mDs.space).toNumber();
             var rainInXminutes = -1;
             var rainLastEntry = 0;
-            mDs.calculateColumnWidth(offset, maxHoursForecast);
+            mDs.calculateColumns(offset, maxHoursForecast);
             for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
               var pop = (mm as WeatherMinutely).pops[i];
               popTotal = popTotal + pop; // / 60.0; // popTotal is mm/hour, pop is for 1 minute
@@ -832,7 +833,11 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           if (m0TemperatureLineYpos > -1) {
-            render.draw0TemperatureLine(dc, xCenterColumn, m0TemperatureLineYpos);
+            render.draw0TemperatureLine(
+              dc,
+              xCenterColumn,
+              m0TemperatureLineYpos
+            );
           }
 
           if (mShowTemperature) {
@@ -924,16 +929,16 @@ class WhatWeatherView extends WatchUi.DataField {
               render.drawSunsetIndication(dc, x);
               sunsetPassed = true;
             }
-            if (previousCondition != forecast.condition) {
-              weatherTextLine = weatherTextLine == 0 ? 1 : 0;
-              render.drawWeatherConditionText(
-                dc,
-                x,
-                forecast.condition,
-                weatherTextLine
-              );
-              previousCondition = forecast.condition;
-            }
+          }
+          if (mShowWeatherText && previousCondition != forecast.condition) {
+            weatherTextLine = weatherTextLine == 0 ? 1 : 0;
+            render.drawWeatherConditionText(
+              dc,
+              x,
+              forecast.condition,
+              weatherTextLine
+            );
+            previousCondition = forecast.condition;
           }
 
           if (mShowWind || wa.alertWind) {
@@ -1316,7 +1321,7 @@ class WhatWeatherView extends WatchUi.DataField {
         break;
     }
 
-    System.println("Info: " + mShowExtraInfo + "|" + info + " " + postfix);
+    // System.println("Info: " + mShowExtraInfo + "|" + info + " " + postfix);
     var ci = new CurrentInfo();
     ci.nr = mShowExtraInfo;
     ci.info = info;

@@ -31,20 +31,21 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
   // Get start of the hour, minus 1 hour
   var nowSeconds = Time.now().value() - 3600;
   var cutOffTime = new Time.Moment(nowSeconds);
-  System.println("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
-
+  if (DEBUG_DETAILS) {
+    System.println("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
+  }  
   var wData = data as WeatherData;
   var newIdx = -1;
   var max = wData.hourly.size();
   for (var idx = 0; idx < max; idx += 1) {
     var weatherHourly = wData.hourly[idx] as WeatherHourly;
-    if ($.DEBUG_DETAILS) {
+    if (DEBUG_DETAILS) {
       System.println("purgePastWeatherdata?: " + $.getDateTimeString(weatherHourly.forecastTime));
     }
 
     if (weatherHourly.forecastTime.lessThan(cutOffTime)) {
       // Is a past hour
-      if ($.DEBUG_DETAILS) {
+      if (DEBUG_DETAILS) {
         System.println("purgePastWeatherdata past hour!: " + $.getDateTimeString(weatherHourly.forecastTime));
       }
       newIdx = idx;

@@ -226,7 +226,7 @@ class RenderWeather {
     ).toNumber();
     var y = ds.getYpostion(perc).toNumber();
 
-    System.println(["drawPressureItem", perc, x, y, pressure]);
+    // System.println(["drawPressureItem", perc, x, y, pressure]);
 
     if (showDetails) {
       var yBlueBar = ds.getYpostion(bluebarPerc).toNumber();
@@ -364,9 +364,8 @@ class RenderWeather {
         hourText,
         -1
       );
-      //y = yTop + (yBottom  - yTop) / 2;
       var yHours = self.yTempTop + (self.yTempBottom - self.yTempTop) / 2;
-      System.println(["hour", hour, hourText, nr, yHours, x]);
+      // System.println(["hour", hour, hourText, nr, yHours, x]);
       dc.setColor(color, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
         x + ds.columnWidth / 2,
@@ -549,6 +548,7 @@ class RenderWeather {
     var x = xPos + ds.columnWidth / 2;
     // 2px Below bar
     var y = ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2;
+    // TODO weather icons under wind    
 
     // clear
     if (condition == Weather.CONDITION_FAIR) {
@@ -1308,7 +1308,7 @@ class RenderWeather {
     );
   }
 
-  hidden function point2DOnCircle(
+  hidden function point2DOnCircleSlow(
     x as Number,
     y as Number,
     radius as Lang.Numeric,
@@ -1326,6 +1326,33 @@ class RenderWeather {
       ex.printStackTrace();
       return [0, 0] as Point2D;
     }
+  }
+
+  hidden var SIN_TABLE = [] as Array<Number>;
+  hidden var COS_TABLE = [] as Array<Number>;
+  hidden function point2DOnCircle(
+    x as Number,
+    y as Number,
+    radius as Lang.Numeric,
+    angleInDegrees as Lang.Numeric
+  ) as Point2D {
+    if (SIN_TABLE.size() == 0) {
+      var DEG_TO_RAD = Math.PI / 180;
+      var angle = 0;
+      while (angle < 360) {
+        SIN_TABLE.add(Math.sin((angle * DEG_TO_RAD)));
+        COS_TABLE.add(Math.cos((angle * DEG_TO_RAD)));
+        angle = angle + 1;
+      }
+    }
+    var angleInt = angleInDegrees.toNumber() % 360;
+    if (angleInt < 0) {
+      angleInt = angleInt + 360;
+    }
+    var xP = radius * COS_TABLE[angleInt] + x;
+    var yP = radius * SIN_TABLE[angleInt] + y;
+
+    return [xP.toNumber(), yP.toNumber()] as Point2D;
   }
 
   // @@TODO onlayout -> get array of points

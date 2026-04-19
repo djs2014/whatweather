@@ -186,8 +186,7 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.resetStatus();
 
       initComfortSettings();
-      System.println("Comfort settings");
-
+      
       Storage.setValue("weatherDataSource", ws);
       setStorageValueIfChanged("openWeatherAPIKey", "");
 
@@ -323,6 +322,7 @@ class WhatWeatherApp extends Application.AppBase {
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused,      
       true, // show 0 temperature line
+      true, // show weather text
     ]);
 
     Storage.setValue("show_large_field", [
@@ -346,6 +346,7 @@ class WhatWeatherApp extends Application.AppBase {
       SHOW_INFO_NOTHING, // extra info
       true, // details when paused
       true, // show 0 temperature line
+      false, // show weather text
     ]);
 
     Storage.setValue("show_wide_field", [
@@ -369,6 +370,7 @@ class WhatWeatherApp extends Application.AppBase {
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
       false, // show 0 temperature line
+      false, // show weather text
     ]);
 
     Storage.setValue("show_small_field", [
@@ -392,6 +394,7 @@ class WhatWeatherApp extends Application.AppBase {
       SHOW_INFO_RELATIVE_WIND, // extra info
       false, // details when paused
       false, // show 0 temperature line
+      false, // show weather text
     ]);
   }
 }
@@ -430,7 +433,7 @@ function getCurrentLocation() as CurrentLocation {
 
 var g_bg_timeout_seconds as Number = 0;
 var g_bg_delay_seconds as Number = 0;
-var gSizeArrFieldItems = 20;
+var gSizeArrFieldItems = 21;
 var gShow_OneField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_LargeField as Array<Numeric> = [] as Array<Numeric>;
 var gShow_WideField as Array<Numeric> = [] as Array<Numeric>;

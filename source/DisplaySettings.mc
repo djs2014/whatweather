@@ -58,10 +58,7 @@ class DisplaySettings {
     Graphics.FONT_SYSTEM_SMALL,    
     Graphics.FONT_NUMBER_MILD,
     Graphics.FONT_NUMBER_MEDIUM,
-    Graphics.FONT_SYSTEM_NUMBER_HOT,
-
-    // Graphics.FONT_SYSTEM_MEDIUM,
-    // Graphics.FONT_SYSTEM_LARGE,
+    Graphics.FONT_SYSTEM_NUMBER_HOT,    
   ];
 
   hidden var colorCloudsNight as Lang.Number = 0;
@@ -83,16 +80,15 @@ class DisplaySettings {
     self.heightWind = heightWind;
     self.heightWc = heightWc;
     self.heightWt = heightWt;
-    calculateColumnWidth(0, self.nrOfColumns);
+    calculateColumns(0, self.nrOfColumns);
 
     if (self.heightWind > 0 || self.heightWc > 0) {
       self.dashesUnderColumnHeight = 0;
     }
 
-    System.println(["calculate",nrOfColumns, heightWind,heightWc ,heightWt]);
   }
 
-  function calculateColumnWidth(offset as Lang.Number, nrOfColumns as Number) as Void {
+  function calculateColumns(offset as Lang.Number, nrOfColumns as Number) as Void {
     offsetX = offset;
     columnWidth = 0;
     var columns = nrOfColumns;
@@ -107,10 +103,11 @@ class DisplaySettings {
     columnX = (margin + correction).toNumber();
 
     // Height of the weather column, 2 lines for weather condition text
-    columnHeight = (height - 2 * margin - heightWind - heightWc - heightWt * 2).toNumber();
+    columnHeight = (height - (2 * margin) - heightWind - heightWc - (heightWt * 2)).toNumber();
 
     // Position of dashes under columns
     dashesPosY = (columnY + columnHeight).toNumber();
+    System.println(["#columns",nrOfColumns, "height column", columnHeight, "wind", heightWind, "weather icon", heightWc, "text", heightWt]);
   }
 
   function setColors(darkBackground as Boolean) as Void {
@@ -167,6 +164,6 @@ class DisplaySettings {
 
   //! Get correct y position based on a percentage
   function getYpostion(percentage as Lang.Number) as Lang.Number {
-    return (margin + columnHeight - columnHeight * (percentage / 100.0)).toNumber();
+    return (margin + columnHeight - (columnHeight * (percentage / 100.0))).toNumber();
   }
 }

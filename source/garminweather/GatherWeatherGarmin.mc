@@ -70,15 +70,18 @@ function getLatestGarminWeather() as WeatherData {
 */
     var nowSeconds = Time.now().value() - 3600;
     var cutOffTime = new Time.Moment(nowSeconds);
-    System.println("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
-
+    if (DEBUG_DETAILS) {
+      System.println("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
+    }
     // Plus 1, for handling hour change. Not showing empty column
     var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
 
     var max = garHourlyForecast.size();
     for (var idx = 0; idx < max; idx += 1) {
       if (hh.size() > maxHoursDisplayed) {
-        System.println(["Gar skip forecast:", idx, "max display:", maxHoursDisplayed]);
+        if (DEBUG_DETAILS) {
+          System.println(["Gar skip forecast:", idx, "max display:", maxHoursDisplayed]);
+        }
         continue;
       }
 
@@ -89,7 +92,9 @@ function getLatestGarminWeather() as WeatherData {
       // Skip forecast of different days/previous hours
       var fcTime = garForecast.forecastTime as Time.Moment;
       if (fcTime.lessThan(cutOffTime)) {
-        System.println(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
+        if (DEBUG_DETAILS) {
+          System.println(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
+        }
         continue;
       }
 

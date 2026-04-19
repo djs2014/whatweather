@@ -141,10 +141,13 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       $.addMenuItem(fieldMenu, "Extra info", $.getShowInfoText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
 
       index = 18;
-      $.addToggleMenuItem(fieldMenu, "Details paused", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      $.addToggleMenuItem(fieldMenu, "Details on pause", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
             
       index = 19;
       $.addToggleMenuItem(fieldMenu, "0 temperature line", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      
+      index = 20;
+      $.addToggleMenuItem(fieldMenu, "Weather text", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
       WatchUi.pushView(fieldMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
@@ -429,7 +432,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
 
     // Numeric input
     var prompt = _item.getLabel();
-    System.println(["Numeric input:", prompt]);
+    // System.println(["Numeric input:", prompt]);
     var value = $.getStorageValue(id as String, 0) as Numeric;
     var view = $.getNumericInputView(prompt, value);
     view.setOnAccept(self, :onAcceptNumericinput);

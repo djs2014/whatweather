@@ -1,3 +1,6 @@
+show weather icons ?
+
+
 migrate to azure functions
 - poi / weather
 alert wind -> font white

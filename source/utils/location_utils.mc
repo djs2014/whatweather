@@ -37,7 +37,7 @@ class CurrentLocation {
     }
     if (lat != 0 && lon != 0 && mLat != lat && mLon != lon) {
       Storage.setValue(mStorageLatestLocation, degrees); // [lat,lng]
-      System.println("Update cached location lat/lon: " + degrees);
+      // System.println("Update cached location lat/lon: " + degrees);
     }
     mLat = lat;
     mLon = lon;
