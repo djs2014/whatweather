@@ -1,6 +1,9 @@
-show weather icons ?
- darkblue color -> make it icy color on dark background
 
+hide stats after x seconds if active only show time to next
+optimize drawWindArrow
+ darkblue color -> make it icy color on dark background
+ok TEST: weather alert show details on alert
+- wind / icon / text?
 migrate to azure functions
 - poi / weather
 alert wind -> font white

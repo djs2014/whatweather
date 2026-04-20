@@ -43,7 +43,17 @@ class WindPoint {
   }
 
   function debug() as Void {
-    System.println(["wp", x, bearing, speed, convertedSpeed, speedAlert, gust, gustLevel, gustAlert]); 
+    System.println([
+      "wp",
+      x,
+      bearing,
+      speed,
+      convertedSpeed,
+      speedAlert,
+      gust,
+      gustLevel,
+      gustAlert,
+    ]);
   }
   // Display text
   var text as String = "";
@@ -73,6 +83,7 @@ class WindPoint {
     }
 
     // Show 1.1 m/s or 1 Beaufort or 10 m/s
+    // TODO 10.0 remove the 0
     if (windUnit == SHOW_WIND_KILOMETERS) {
       convertedSpeed = $.mpsToKmPerHour(speed);
       if (convertedSpeed >= 10) {
@@ -91,10 +102,17 @@ class WindPoint {
       convertedSpeed = $.windSpeedToBeaufort(speed).toFloat() as Float;
       text = convertedSpeed.format("%d");
     }
+    var decimal = $.stringRight(text, ".", "");
+    if (decimal == "0") {
+      text = $.stringLeft(text, ".", text);
+    }
   }
 }
 
-function getWindGustLevel(windSpeedMs as Lang.Float, windGustMs as Lang.Float) as Number {
+function getWindGustLevel(
+  windSpeedMs as Lang.Float,
+  windGustMs as Lang.Float
+) as Number {
   var windGustDiff = 0;
   var level = 0;
   if (windGustMs > 0) {
