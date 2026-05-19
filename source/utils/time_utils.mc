@@ -40,7 +40,7 @@ function getMinutesDelayed(timeValue as TimeValue?) as Number {
   if (differenceInSeconds <= 0) {
     return 0;
   }
-  return differenceInSeconds / 60;
+  return (differenceInSeconds / 60).toNumber();
 }
 
 function ensureXSecondsPassed(
@@ -103,10 +103,10 @@ function millisecondsToShortTimeString(
 
   var totalMilliSecondsInt = totalMilliSeconds.toNumber();
 
-  var hours = (totalMilliSecondsInt / 3600000) % 24; // (1000 * 60 * 60)
-  var minutes = (totalMilliSecondsInt / 60000) % 60; // (1000 * 60)
-  var seconds = (totalMilliSecondsInt / 1000) % 60;
-  var mseconds = totalMilliSecondsInt % 1000;
+  var hours = ((totalMilliSecondsInt / 3600000).toNumber() % 24).toNumber(); // (1000 * 60 * 60)
+  var minutes = ((totalMilliSecondsInt / 60000).toNumber() % 60).toNumber(); // (1000 * 60)
+  var seconds = ((totalMilliSecondsInt / 1000).toNumber() % 60).toNumber();
+  var mseconds = (totalMilliSecondsInt.toNumber() % 1000).toNumber();
 
   if (template.length() == 0) {
     template = "{h}:{m}:{s}:{ms}";
@@ -129,9 +129,9 @@ function secondsToShortTimeString(
   }
   var totalSecondsInt = totalSeconds.toNumber();
 
-  var hours = (totalSecondsInt / 3600) % 24;
-  var minutes = (totalSecondsInt / 60) % 60;
-  var seconds = totalSecondsInt % 60;
+  var hours = ((totalSecondsInt / 3600).toNumber() % 24).toNumber();
+  var minutes = ((totalSecondsInt / 60).toNumber() % 60).toNumber();
+  var seconds = (totalSecondsInt.toNumber() % 60).toNumber();
 
   if (template.length() == 0) {
     template = "{h}:{m}:{s}";
@@ -154,10 +154,10 @@ function secondsToCompactTimeString(
   // Force conversion to a standard integer Number to prevent UnexpectedTypeException
   var totalSecondsInt = totalSeconds.toNumber();
 
-  var minutes = totalSecondsInt / 60;
+  var minutes = ((totalSecondsInt / 60).toNumber() % 60).toNumber();
   var timeString = stringReplace(template, "{m}", minutes.format("%01d"));
 
-  var seconds = totalSecondsInt % 60;
+  var seconds = (totalSecondsInt.toNumber() % 60).toNumber();
   timeString = stringReplace(timeString, "{s}", seconds.format("%02d"));
 
   return timeString;

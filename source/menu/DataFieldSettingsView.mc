@@ -25,8 +25,8 @@ class DataFieldSettingsView extends WatchUi.View {
     var versionString = Lang.format("$1$.$2$.$3$", version);
 
     dc.drawText(
-      dc.getWidth() / 2,
-      dc.getHeight() / 2 - 30,
+      (dc.getWidth() / 2).toNumber(),
+      (dc.getHeight() / 2 - 30).toNumber(),
       Graphics.FONT_SMALL,
       "Press Menu \nfor settings \nCIQ " + versionString,
       Graphics.TEXT_JUSTIFY_CENTER

@@ -84,14 +84,14 @@ class RenderWeather {
       var h = dc.getFontHeight(Graphics.FONT_TINY);
       dc.drawText(
         x,
-        y + h / 2,
+        y + (h / 2).toNumber(),
         Graphics.FONT_TINY,
         uvi.format("%.1f"),
         Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
       );
     }
     dc.fillCircle(x, y, r);
-    var rh = (r + 2) / 2;
+    var rh = ((r + 2) / 2).toNumber();
     dc.drawLine(x - r - rh, y - r - rh, x + r + rh, y + r + rh);
     dc.drawLine(x + r + rh, y - r - rh, x - r - rh, y + r + rh);
   }
@@ -139,7 +139,7 @@ class RenderWeather {
         }
         dc.drawText(
           x,
-          y - h / 2,
+          (y - h / 2).toNumber(),
           Graphics.FONT_TINY,
           convertedTemperature.format("%d"),
           Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
@@ -147,7 +147,7 @@ class RenderWeather {
       }
 
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+      dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 1);
 
       dc.drawRectangle(x - 1, y - 6, 3, 8);
       dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
@@ -188,7 +188,7 @@ class RenderWeather {
         }
         dc.drawText(
           x,
-          y + h / 2 + 1,
+          (y + (h / 2).toNumber() + 1).toNumber(),
           Graphics.FONT_TINY,
           convertedDewpoint.format("%d"),
           Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
@@ -199,7 +199,7 @@ class RenderWeather {
       dc.fillCircle(x, y + r - 1, 2);
 
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+      dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 1);
       dc.drawLine(x - r, y, x, y - 5);
       dc.drawLine(x, y - 5, x + r, y);
       dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
@@ -238,7 +238,7 @@ class RenderWeather {
       }
       dc.drawText(
         x,
-        y - h / 2,
+        y - (h / 2).toNumber(),
         Graphics.FONT_XTINY,
         pressure.format("%d"),
         Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
@@ -246,7 +246,7 @@ class RenderWeather {
     }
 
     dc.setColor(Graphics.COLOR_DK_RED, Graphics.COLOR_TRANSPARENT);
-    dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 1);
+    dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 1);
     var pts = [
       [x - 3, y],
       [x, y + 5],
@@ -271,7 +271,7 @@ class RenderWeather {
       dc.setColor(ds.COLOR_HUMIDITY_DETAILS, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
         x,
-        y - h / 2,
+        y - (h / 2).toNumber(),
         Graphics.FONT_TINY,
         humidity.format("%d"),
         Graphics.TEXT_JUSTIFY_VCENTER | Graphics.TEXT_JUSTIFY_CENTER
@@ -279,7 +279,7 @@ class RenderWeather {
     }
 
     dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-    dc.drawRectangle(x - ds.columnWidth / 2, y, ds.columnWidth, 2);
+    dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 2);
 
     dc.setColor(ds.COLOR_HUMIDITY, Graphics.COLOR_TRANSPARENT);
     var pts = [
@@ -326,7 +326,7 @@ class RenderWeather {
       );
       var height = yBottom - yTop;
       dc.fillRectangle(
-        x - ds.space / 2,
+        (x - (ds.space / 2).toNumber()),
         yTop,
         ds.columnWidth + ds.space,
         height
@@ -335,13 +335,13 @@ class RenderWeather {
     }
 
     dc.fillRectangle(
-      x - ds.space / 2,
+      x - (ds.space / 2).toNumber(),
       self.yHumTop,
       ds.columnWidth + ds.space,
       self.yHumBottom - self.yHumTop
     );
     dc.fillRectangle(
-      x - ds.space / 2,
+      x - (ds.space / 2).toNumber(),
       self.yTempTop,
       ds.columnWidth + ds.space,
       self.yTempBottom - self.yTempTop
@@ -360,15 +360,15 @@ class RenderWeather {
       var fontHours = $.getMatchingFont(
         dc,
         ds.alertFonts,
-        ds.columnWidth / 2,
+        (ds.columnWidth / 2).toNumber(),
         hourText,
         -1
       );
-      var yHours = self.yTempTop + (self.yTempBottom - self.yTempTop) / 2;
+      var yHours = self.yTempTop + ((self.yTempBottom - self.yTempTop) / 2).toNumber();
       // System.println(["hour", hour, hourText, nr, yHours, x]);
       dc.setColor(color, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
-        x + ds.columnWidth / 2,
+        x + (ds.columnWidth / 2).toNumber(),
         yHours,
         fontHours,
         hourText,
@@ -378,7 +378,7 @@ class RenderWeather {
   }
 
   function drawComfortBorders(dc as Dc) as Void {
-    var size = dc.getWidth() / 40;
+    var size = (dc.getWidth() / 40).toNumber();
     dc.setColor(Graphics.COLOR_DK_BLUE, Graphics.COLOR_TRANSPARENT);
     dashedLine(dc, 0, ds.width, self.yHumTop, size);
     dashedLine(dc, 0, ds.width, self.yHumBottom, size);
@@ -464,7 +464,7 @@ class RenderWeather {
       y = topAdditionalInfo2;
     }
     dc.drawText(
-      ds.width / 2,
+      (ds.width / 2).toNumber(),
       y,
       ds.fontSmall,
       activeAlerts,
@@ -505,7 +505,7 @@ class RenderWeather {
     if (text != null) {
       //var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
       var yOffset = 0;
-      if (yLine == null) {
+      if (yLine == 0) {
         yOffset = (yLine * ds.heightWt) as Number;
       }
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
@@ -527,15 +527,15 @@ class RenderWeather {
     var yOffset = ds.heightWt;
     drawMoon(
       dc,
-      x + ds.columnWidth / 2,
+      x + (ds.columnWidth / 2).toNumber(),
       ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset,
-      ds.columnWidth / 5,
+      (ds.columnWidth / 5).toNumber(),
       Graphics.COLOR_BLACK,
       Graphics.COLOR_ORANGE
     );
   }
 
-  function getThemeColor(darkBackground) {
+  function getThemeColor(darkBackground) as Dictionary<String, ColorType> {
     return {
       :border => darkBackground ? Graphics.COLOR_WHITE : Graphics.COLOR_BLACK,
       :main => darkBackground ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_LT_GRAY,
@@ -543,14 +543,14 @@ class RenderWeather {
       :accent => darkBackground ? Graphics.COLOR_YELLOW : Graphics.COLOR_ORANGE,
       :water => darkBackground ? Graphics.COLOR_BLUE : Graphics.COLOR_DK_BLUE,
       :haze => darkBackground ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_DK_GRAY,
-      :danger => darkBackground ? Graphics.COLOR_PINK : Graphics.COLOR_PURPLE
+      :danger => darkBackground ? Graphics.COLOR_PINK : Graphics.COLOR_PURPLE,
     };
   }
 
   function drawWeatherCondition(
     dc as Dc,
     xPos as Lang.Number,
-    condition as Lang.Number,
+    condition as Lang.Number?,
     nightTime as Lang.Boolean,
     darkBackground as Lang.Boolean
   ) as Void {
@@ -559,27 +559,27 @@ class RenderWeather {
     }
 
     // Center of bar
-    var x = xPos + ds.columnWidth / 2;
+    var x = xPos + (ds.columnWidth / 2).toNumber();
     // 2px Below bar
-    var y = ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc / 2 + 2;
-    var iconWidth = (ds.columnWidth / 2.5).toNumber();
-    var cloudWidthSmall = ds.columnWidth / 4;
+    var y = ds.columnY + ds.columnHeight + ds.heightWind + (ds.heightWc / 2).toNumber() + 2;
+    // var iconWidth = (ds.columnWidth / 2.5).toNumber();
+    // var cloudWidthSmall = ds.columnWidth / 4;
     var cloudWidth = (ds.columnWidth / 2.5).toNumber();
-    var cloudWidthLarge = ds.columnWidth / 2;
+    var cloudWidthLarge = (ds.columnWidth / 2).toNumber();
 
     var rainWidth = (ds.columnWidth / 2.5).toNumber();
-    var rainWidthLarge = ds.columnWidth / 2;
-    var rainHeight = ds.heightWc / 2;
+    var rainWidthLarge = (ds.columnWidth / 2).toNumber();
+    var rainHeight = (ds.heightWc / 2).toNumber();
     var rainHeightLarge = (ds.heightWc / 1.5).toNumber();
 
-    var widthSnowFlake = ds.columnWidth / 4;
+    var widthSnowFlake = (ds.columnWidth / 4).toNumber();
     var widthSnowFlakeLarge = (ds.columnWidth / 3).toNumber();
-    var widthLightning = ds.columnWidth / 4;
+    var widthLightning = (ds.columnWidth / 4).toNumber();
     var widthLightningLarge = (ds.columnWidth / 3).toNumber();
 
     var windWidth = (ds.columnWidth / 3).toNumber();
     var dustWidth = (ds.columnWidth / 3).toNumber();
-    var dustWidthLarge = ds.columnWidth / 2;
+    var dustWidthLarge = (ds.columnWidth / 2).toNumber();
 
     var colors = getThemeColor(darkBackground);
     var border = colors[:border];
@@ -933,10 +933,10 @@ class RenderWeather {
 
     for (var i = 0; i < segments; i++) {
       // Line gets narrower as i increases
-      var lineWidth = width - i * (width / (segments + 1));
+      var lineWidth = (width - i * (width / (segments + 1))).toNumber();
 
       // Offset creates a "sway" or "twist" effect
-      var xOffset = i % 2 == 0 ? 2 : -2;
+      var xOffset = (i % 2).toNumber() == 0 ? 2 : -2;
 
       var yPos = y + i * gap;
       var xStart = x - (lineWidth / 2).toNumber() + xOffset;
@@ -989,18 +989,25 @@ class RenderWeather {
     particles as Number,
     color as ColorType
   ) as Void {
+    if (width <= 0) {
+      return;
+    }
+
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
 
     var half = (width / 2).toNumber();
 
     for (var i = 0; i < particles; i++) {
       // Randomize position within the [-half, +half] range relative to x,y
-      var xD = x - half + (Math.rand() % width);
-      var yD = y - half + (Math.rand() % width);
+      var randomXOffset = (Math.rand() % width).toNumber();
+      var randomYOffset = (Math.rand() % width).toNumber();
+
+      var xD = x - half + randomXOffset;
+      var yD = y - half + randomYOffset;
 
       // Vary the size slightly so it's not a grid of identical dots
       // Size will be between 1 and 2 pixels
-      var size = (Math.rand() % 2) + 1;
+      var size = (Math.rand() % 2).toNumber() + 1;
 
       dc.fillCircle(xD, yD, size);
     }
@@ -1158,8 +1165,13 @@ class RenderWeather {
     x as Number, // Center of cloud
     y as Number, // Bottom of cloud
     width as Number, // Width of the impact area
-    height as Number // Height of the impact area
+    height as Number, // Height of the impact area
+    color as ColorType
   ) as Void {
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
     dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
     var stoneSize = (width * 0.15).toNumber(); // Small stones
@@ -1169,11 +1181,14 @@ class RenderWeather {
 
     // Draw 5-7 individual hailstones
     for (var i = 0; i < 6; i++) {
-      // Randomize position within the width/height box
-      var hx = x - width / 2 + (Math.rand() % width);
-      var hy = y + (Math.rand() % height);
+      var randomXOffset = (Math.rand() % width).toNumber();
+      var randomYOffset = (Math.rand() % height).toNumber();
 
-      drawHailStone(dc, hx, hy, stoneSize);
+      // Randomize position within the width/height box
+      var hx = x - (width / 2).toNumber() + randomXOffset;
+      var hy = y + randomYOffset;
+
+      drawHailStone(dc, hx, hy, stoneSize, color);
     }
   }
   // hidden function getHailPoints(x, y, width) as Polygon {
@@ -1223,6 +1238,12 @@ class RenderWeather {
     height as Number,
     color as ColorType
   ) as Void {
+    // Safety check: If there is no width or height to draw in, just exit
+    // modulo (%) 0 is undefined
+    if (width <= 0 || height <= 0) {
+      return;
+    }
+
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
 
     var dropLength = 4;
@@ -1231,11 +1252,17 @@ class RenderWeather {
     // We use a fixed seed if you want the rain to stay in one place,
     // or Math.getRandom() for 'animated' flickering rain.
     for (var i = 0; i < 10; i++) {
-      var rx = (x - width / 2 + (Math.rand() % width)).toNumber();
-      var ry = (y + (Math.rand() % height)).toNumber();
+      // Ensure Math.rand() result is positive and explicitly cast width/height
+      //to absolute numbers
+      var randomXOffset = (Math.rand() % width).toNumber();
+      var randomYOffset = (Math.rand() % height).toNumber();
+
+      // Calculate final coordinates ensuring everything stays an integer
+      var rx = x - (width / 2).toNumber() + randomXOffset;
+      var ry = y + randomYOffset;
 
       dc.drawLine(rx, ry, rx - slant, ry + dropLength);
-    }
+    }    
   }
 
   hidden function drawMoon(
@@ -1279,7 +1306,7 @@ class RenderWeather {
     color as ColorType
   ) as Void {
     if (nightTime) {
-      drawMoon(dc, x, y, width / 2, border, color);
+      drawMoon(dc, x, y, (width / 2).toNumber(), border, color);
       return;
     }
 
@@ -1352,10 +1379,10 @@ class RenderWeather {
       var circleMaxWidth;
       if (bigArrow) {
         // only 1 windpoint in center of screen
-        circleMaxWidth = dc.getWidth() / 5;
+        circleMaxWidth = (dc.getWidth() / 5).toNumber();
       } else {
         // half columnwidth
-        circleMaxWidth = ds.columnWidth - ds.columnWidth / 2;
+        circleMaxWidth = (ds.columnWidth - ds.columnWidth / 2).toNumber();
       }
       wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
     }
@@ -1363,16 +1390,16 @@ class RenderWeather {
     // Only get font if bigArrow
     if (bigArrow && hasAlert) {
       // only 1 windpoint in center of screen
-      var circleMaxWidth = dc.getWidth() / 5;
+      var circleMaxWidth = (dc.getWidth() / 5).toNumber();
       wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
     }
     // Only displaying numbers. They are vertical and horizontal aligned in the circle.
     // But still some space below base line (because of py etc charcters, but numbers are all above baseline)
     // Do a correction, lower the placement some pixels.
-    var yOffset = dc.getFontDescent(wsFont) / 2;
+    var yOffset = (dc.getFontDescent(wsFont) / 2).toNumber();
 
     var textWidth = dc.getTextWidthInPixels(text, wsFont);
-    radius = textWidth / 2 + padding;
+    radius = (textWidth / 2).toNumber() + padding;
 
     // Bearing arrow
     if (bearingDegrees != 0 && wp.speed != 0 && wp.speed > NO_BEARING_SPEED) {
@@ -1387,7 +1414,7 @@ class RenderWeather {
       var gustInner = 0;
       var factor = 0;
       if (bigArrow) {
-        factor = wp.speed / 4.0;
+        factor = (wp.speed / 4.0).toNumber();
         pA = point2DOnCircle(
           x,
           y,
@@ -1554,7 +1581,7 @@ class RenderWeather {
         angle = angle + 1;
       }
     }
-    var angleInt = angleInDegrees.toNumber() % 360;
+    var angleInt = (angleInDegrees.toNumber() % 360).toNumber();
     if (angleInt < 0) {
       angleInt = angleInt + 360;
     }
@@ -1572,7 +1599,7 @@ class RenderWeather {
     size as Number
   ) as Void {
     var x = x1;
-    var space = size / 3;
+    var space = (size / 3).toNumber();
     while (x <= x2) {
       dc.drawLine(x, y, x + size, y);
       x = x + size + space;
@@ -1593,7 +1620,7 @@ class RenderWeather {
     var step = 20; // Increased step for efficiency
 
     // 1. Left Arch (Starts at x - width/2)
-    var xLeft = x - width / 2 + (r * 0.3).toNumber();
+    var xLeft = x - (width / 2).toNumber() + (r * 0.3).toNumber();
     for (var d = -180; d <= -90; d += step) {
       pts.add(point2DOnCircle(xLeft, y, r * 0.4, d));
     }
@@ -1604,7 +1631,7 @@ class RenderWeather {
     }
 
     // 3. Right Arch (Ends at x + width/2)
-    var xRight = x + width / 2 - (r * 0.6).toNumber();
+    var xRight = x + (width / 2).toNumber() - (r * 0.6).toNumber();
     for (var d = -90; d <= 0; d += step) {
       pts.add(point2DOnCircle(xRight, y, r * 0.7, d));
     }

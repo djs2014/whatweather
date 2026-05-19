@@ -1,4 +1,8 @@
+Math.rand() % 0 is invalid operation
 
+In Monkey C, the / operator between a Number and a Number (like width / 2) can sometimes result in a Float depending on the SDK version and compiler settings.
+
+----
 hide stats after x seconds if active only show time to next
 optimize drawWindArrow
  darkblue color -> make it icy color on dark background

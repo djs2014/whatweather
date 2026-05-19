@@ -406,8 +406,8 @@ class WhatWeatherView extends WatchUi.DataField {
         ")";
       dc.setColor(color, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
-        dc.getWidth() / 2,
-        dc.getHeight() / 2,
+        (dc.getWidth() / 2).toNumber(),
+        (dc.getHeight() / 2).toNumber(),
         Graphics.FONT_SYSTEM_SMALL,
         text,
         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
@@ -485,19 +485,19 @@ class WhatWeatherView extends WatchUi.DataField {
 
     var wi = dc.getTextWidthInPixels(info, mFontInfo);
     var wp = dc.getTextWidthInPixels(postfix, mFontPostfix);
-    var xi = mDs.width / 2 - (wi + wp) / 2;
+    var xi = (mDs.width / 2 - (wi + wp) / 2).toNumber();
 
     dc.setColor(mDs.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
     dc.drawText(
       xi,
-      mDs.height / 2,
+      (mDs.height / 2).toNumber(),
       mFontInfo,
       info,
       Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER
     );
     dc.drawText(
       xi + wi + 1,
-      mDs.height / 2,
+      (mDs.height / 2).toNumber(),
       mFontPostfix,
       postfix,
       Graphics.TEXT_JUSTIFY_LEFT
@@ -527,7 +527,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if ($._loopWeatherCondition) {
         // Loop through all conditions, for testing (0-53 conditions in Garmin API)
-        mWeatherConditionLoop = (mWeatherConditionLoop + 1) % 54;
+        mWeatherConditionLoop = ((mWeatherConditionLoop + 1) % 54).toNumber();
       }
 
       var mCurrentLocation = $.getCurrentLocation();
@@ -552,7 +552,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 mZoomMinuteForecastFactor = 3;
               }
               // Zoom in, or else small amounts not visible.
-              max_mmPerHour = max_mmPerHour / mZoomMinuteForecastFactor;
+              max_mmPerHour = (max_mmPerHour / mZoomMinuteForecastFactor).toNumber();
               skipFirstForecast = true;
               // System.println(["Zoom maxHoursForecast", maxHoursForecast]);
             }
@@ -584,7 +584,7 @@ class WhatWeatherView extends WatchUi.DataField {
                 max_mmPerHour
               );
 
-              if (show5minMarker && (i + mmMinutesDelayed) % 5 == 0) {
+              if (show5minMarker && (((i + mmMinutesDelayed) % 5).toNumber() == 0)) {
                 //Draw 5 min marker
                 drawColumnPrecipitationMillimetersDivider(
                   dc,
@@ -776,7 +776,7 @@ class WhatWeatherView extends WatchUi.DataField {
               mDs.columnY,
               mDs.columnWidth,
               mDs.columnHeight,
-              mDs.columnWidth / 3,
+              (mDs.columnWidth / 3).toNumber(),
               forecast.clouds
             );
           }
@@ -789,7 +789,7 @@ class WhatWeatherView extends WatchUi.DataField {
             mDs.columnY,
             mDs.columnWidth,
             mDs.columnHeight,
-            mDs.columnWidth / 4,
+            (mDs.columnWidth / 4).toNumber(),
             forecast.precipitationChanceOther
           );
           // mm per hour
@@ -807,7 +807,7 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           var bluebarPerc = forecast.precipitationChance;
-          var xCenterColumn = x + mDs.columnWidth / 2;
+          var xCenterColumn = x + (mDs.columnWidth / 2).toNumber();
 
           if (mShowUv || wa.alertUvi) {
             render.drawUvIndexItem(
@@ -902,9 +902,9 @@ class WhatWeatherView extends WatchUi.DataField {
               );
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(
-                x + (mDs.columnWidth / 3) * 2,
+                x + ((mDs.columnWidth / 3).toNumber() * 2),
                 mDs.columnY + mDs.columnHeight + 1,
-                mDs.columnWidth / 3,
+                (mDs.columnWidth / 3).toNumber(),
                 dh
               );
             }
@@ -917,7 +917,7 @@ class WhatWeatherView extends WatchUi.DataField {
               infoStr = forecast.rain1hr.format("%.1f");
               dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
               dc.drawText(
-                x + mDs.columnWidth / 2,
+                x + (mDs.columnWidth / 2).toNumber(),
                 mDs.columnY + mDs.columnHeight - 30,
                 Graphics.FONT_XTINY,
                 infoStr,
@@ -956,8 +956,8 @@ class WhatWeatherView extends WatchUi.DataField {
             if (fcIdx < mWindPoints.size()) {
               mWindPoints[fcIdx].setXposition(x);
               var wp = mWindPoints[fcIdx] as WindPoint;
-              var xW = wp.x + mDs.columnWidth / 2;
-              var yW = mDs.columnY + mDs.columnHeight + mDs.heightWind / 2;
+              var xW = wp.x + (mDs.columnWidth / 2).toNumber();
+              var yW = mDs.columnY + mDs.columnHeight + (mDs.heightWind / 2).toNumber();
               render.drawWindArrow(dc, xW, yW, wp, 0, false);
             }
           }
@@ -1031,8 +1031,8 @@ class WhatWeatherView extends WatchUi.DataField {
           var bigArrow = activityBearing != 0 || wp1.hasAlert();
           render.drawWindArrow(
             dc,
-            mDs.width / 2,
-            mDs.columnY + mDs.columnHeight / 2,
+            (mDs.width / 2).toNumber(),
+            mDs.columnY + (mDs.columnHeight / 2).toNumber(),
             wp1,
             activityBearing,
             bigArrow
@@ -1098,7 +1098,7 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     var barFilledHeight =
       bar_height -
-      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance);
+      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance).toNumber();
     var barFilledY = y + bar_height - barFilledHeight;
     dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
 
@@ -1107,7 +1107,7 @@ class WhatWeatherView extends WatchUi.DataField {
       dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
       var h = dc.getFontHeight(Graphics.FONT_SMALL);
       dc.drawText(
-        x + bar_width / 2,
+        x + (bar_width / 2).toNumber(),
         barFilledY + h,
         Graphics.FONT_SMALL,
         precipitationChance.format("%d"),
@@ -1133,7 +1133,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
     var barFilledHeight =
       bar_height -
-      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance);
+      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance).toNumber();
     var barFilledY = y + bar_height - barFilledHeight;
     // var lineWidth = bar_width / 3;
     var posX = x + bar_width - line_width;
@@ -1267,7 +1267,7 @@ class WhatWeatherView extends WatchUi.DataField {
               postfix = "pm";
             }
           }
-          nowHour = ((nowHour + 11).toNumber() % 12) + 1;
+          nowHour = ((nowHour + 11).toNumber() % 12).toNumber() + 1;
         }
         info = nowHour.format("%02d") + ":" + nowMin.format("%02d");
         break;
@@ -1543,7 +1543,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       var x = 1;
       var width = dc.getWidth() - 2;
-      var height = dc.getHeight() / 3;
+      var height = (dc.getHeight() / 3).toNumber();
       var y = height;
       dc.setColor(Graphics.COLOR_RED, Graphics.COLOR_RED);
       dc.fillRectangle(x, y, width, height);
@@ -1552,8 +1552,8 @@ class WhatWeatherView extends WatchUi.DataField {
       System.println(text);
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
-        dc.getWidth() / 2,
-        dc.getHeight() / 2,
+        (dc.getWidth() / 2).toNumber(),
+        (dc.getHeight() / 2).toNumber(),
         mAlertFont,
         text,
         Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
@@ -1586,7 +1586,7 @@ class WhatWeatherView extends WatchUi.DataField {
       var lineHeight = dc.getFontHeight(mAlertFont);
       y = y + lineHeight;
       dc.drawText(
-        dc.getWidth() / 2,
+        (dc.getWidth() / 2).toNumber(),
         y,
         mAlertFont,
         alert.event,
@@ -1604,7 +1604,7 @@ class WhatWeatherView extends WatchUi.DataField {
           mWeatherData.alerts.size().format("%d");
       }
       dc.drawText(
-        dc.getWidth() / 2,
+        (dc.getWidth() / 2).toNumber(),
         y,
         Graphics.FONT_TINY,
         counterText,
