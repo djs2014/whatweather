@@ -964,12 +964,14 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
           if (mShowWeatherText && previousCondition != forecast.condition) {
-            weatherTextLine = weatherTextLine == 0 ? 1 : 0;
+            var line = (weatherTextLine % 2) == 0 ? 0 : 1;
+            weatherTextLine++;            
+            // When changing condition, show text on other line, to avoid flickering                        
             render.drawWeatherConditionText(
               dc,
               x,
               forecast.condition,
-              weatherTextLine
+              line
             );
             previousCondition = forecast.condition;
           }

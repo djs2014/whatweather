@@ -1,3 +1,6 @@
+thunder icon higher
+text alternate row 
+
 memory check background
 test onbg data -> set data to null, still crash?
 

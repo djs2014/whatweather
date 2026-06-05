@@ -503,12 +503,8 @@ class RenderWeather {
     yLine as Lang.Number
   ) as Void {
     var text = getWeatherConditionText(condition);
-    if (text != null) {
-      //var yOffset = yLine == null ? 0 : yLine * ds.heightWt;
-      var yOffset = 0;
-      if (yLine == 0) {
-        yOffset = (yLine * ds.heightWt) as Number;
-      }
+    if (text != null) {      
+      var yOffset = (yLine * ds.heightWt).toNumber();      
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
         x,

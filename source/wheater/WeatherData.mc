@@ -112,7 +112,7 @@ class WeatherAlert {
   var start as Time.Moment?;
   var end as Time.Moment?;
   var description as String = "";
-  var tags as Array<String> = [] as Array<String>;
+  // var tags as Array<String> = [] as Array<String>;
   var handled as Boolean = false;
 
   function info() as Lang.String {
