@@ -580,14 +580,7 @@ class RenderWeather {
 
     var colors = getThemeColor(darkBackground);
     var border = colors[:border];
-
-    // condition = Weather.CONDITION_HURRICANE;
-    // System.println([
-    //   "drawWeatherCondition",
-    //   getWeatherConditionText(condition),
-    //   condition,
-    // ]);
-
+    
     // clear
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(

@@ -12,9 +12,6 @@ import Toybox.Position;
 (:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
 
-// (:typecheck(disableBackgroundCheck))
-// var _weatherDescriptions as Lang.Array = []; // Lang.Dictionary = {};
-
 (:background)
 class WhatWeatherApp extends Application.AppBase {
   function initialize() {
@@ -30,14 +27,17 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   (:typecheck(disableBackgroundCheck))
-  function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
-    // $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
+  function getInitialView() as
+    [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates]
+  {
     loadUserSettings();
     return [new WhatWeatherView()];
   }
 
   (:typecheck(disableBackgroundCheck))
-  function getSettingsView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] or Null {
+  function getSettingsView() as
+    [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] or Null
+  {
     return [new $.DataFieldSettingsView(), new $.DataFieldSettingsDelegate()];
   }
 
@@ -96,46 +96,59 @@ class WhatWeatherApp extends Application.AppBase {
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
 
-      $.g_bg_timeout_seconds = $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as Number;
-      $.g_bg_delay_seconds = $.getStorageValue("g_bg_delay_seconds", $.g_bg_delay_seconds) as Number;
-      $._weatherDataSource = $.getStorageValue("weatherDataSource", $._weatherDataSource) as WeatherSource;
+      $.g_bg_timeout_seconds =
+        $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
+        Number;
+      $.g_bg_delay_seconds =
+        $.getStorageValue("g_bg_delay_seconds", $.g_bg_delay_seconds) as Number;
+      $._weatherDataSource =
+        $.getStorageValue("weatherDataSource", $._weatherDataSource) as
+        WeatherSource;
 
-      $.gShow_OneField =
-        $.getStorageValue("show_one_field", $.gShow_OneField as Array<Application.PropertyValueType>) as Array<Number>;
-      $.gShow_LargeField =
-        $.getStorageValue("show_large_field", $.gShow_LargeField as Array<Application.PropertyValueType>) as Array<Number>;
-      $.gShow_WideField =
-        $.getStorageValue("show_wide_field", $.gShow_WideField as Array<Application.PropertyValueType>) as Array<Number>;
-      $.gShow_SmallField =
-        $.getStorageValue("show_small_field", $.gShow_SmallField as Array<Application.PropertyValueType>) as Array<Number>;
+      var show_OneField =
+        $.getStorageValue("show_one_field", []) as Array<Numeric>;
+      var show_LargeField =
+        $.getStorageValue("show_large_field", []) as Array<Numeric>;
+      var show_WideField =
+        $.getStorageValue("show_wide_field", []) as Array<Numeric>;
+      var show_SmallField =
+        $.getStorageValue("show_small_field", []) as Array<Numeric>;
 
-      if ($.ensureArraySize($.gShow_OneField, $.gSizeArrFieldItems, 0)) {
-        $.setStorageValueOrArray("show_one_field", $.gShow_OneField);
+      if ($.ensureArraySize(show_OneField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_one_field", show_OneField);
       }
-      if ($.ensureArraySize($.gShow_LargeField, $.gSizeArrFieldItems, 0)) {
-        $.setStorageValueOrArray("show_one_field", $.gShow_LargeField);
+      if ($.ensureArraySize(show_LargeField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_large_field", show_LargeField);
       }
-      if ($.ensureArraySize($.gShow_WideField, $.gSizeArrFieldItems, 0)) {
-        $.setStorageValueOrArray("show_one_field", $.gShow_WideField);
+      if ($.ensureArraySize(show_WideField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_wide_field", show_WideField);
       }
-      if ($.ensureArraySize($.gShow_SmallField, $.gSizeArrFieldItems, 0)) {
-        $.setStorageValueOrArray("show_one_field", $.gShow_SmallField);
+      if ($.ensureArraySize(show_SmallField, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray("show_small_field", show_SmallField);
       }
 
-      $._alertLevelPrecipitationChance = $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
+      $._alertLevelPrecipitationChance =
+        $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
       $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
-      $._alertLevelRainMMfirstHour = $.getStorageValue("alertLevelRainMMfirstHour", 0.2f) as Float;
-      $._alertLevelRainMMHour = $.getStorageValue("alertLevelRainMMHour", 0.2f) as Float;
-      $._alertWindIn = $.getStorageValue("alertWindIn", $._alertWindIn) as Number;
-      $._alertLevelWindSpeed = $.getStorageValue("alertLevelWindSpeed", 5.0f) as Float;
-      $._alertLevelWindGust = $.getStorageValue("alertLevelWindGust", 2) as Number;
-      $._alertLevelDewpoint = $.getStorageValue("alertLevelDewpoint", 19) as Number;
+      $._alertLevelRainMMfirstHour =
+        $.getStorageValue("alertLevelRainMMfirstHour", 0.2f) as Float;
+      $._alertLevelRainMMHour =
+        $.getStorageValue("alertLevelRainMMHour", 0.2f) as Float;
+      $._alertWindIn =
+        $.getStorageValue("alertWindIn", $._alertWindIn) as Number;
+      $._alertLevelWindSpeed =
+        $.getStorageValue("alertLevelWindSpeed", 5.0f) as Float;
+      $._alertLevelWindGust =
+        $.getStorageValue("alertLevelWindGust", 2) as Number;
+      $._alertLevelDewpoint =
+        $.getStorageValue("alertLevelDewpoint", 19) as Number;
 
       $._soundMode = $.getStorageValue("sound_mode", 1) as Number;
-      $._alertBacklight = $.getStorageValue("alert_backlight", false) as Boolean;
+      $._alertBacklight =
+        $.getStorageValue("alert_backlight", false) as Boolean;
 
-
-      $._loopWeatherCondition = $.getStorageValue("weather_condition_loop", false) as Boolean;
+      $._loopWeatherCondition =
+        $.getStorageValue("weather_condition_loop", false) as Boolean;
 
       $._maxUVIndex = $.getStorageValue("maxUVIndex", 20) as Number;
       $._minTemperature = $.getStorageValue("minTemperature", 0) as Number;
@@ -154,8 +167,11 @@ class WhatWeatherApp extends Application.AppBase {
       $._percHideDetails = $.getStorageValue("percHideDetails", 5) as Number;
 
       var bgHandler = $.getBGServiceHandler();
-      bgHandler.setObservationTimeDelayedMinutes($._observationTimeDelayedMinutesThreshold);
-      var minimalGPSquality = $.getStorageValue("minimalGPSquality", 1) as Number; // 1 is last known location
+      bgHandler.setObservationTimeDelayedMinutes(
+        $._observationTimeDelayedMinutesThreshold
+      );
+      var minimalGPSquality =
+        $.getStorageValue("minimalGPSquality", 1) as Number; // 1 is last known location
       bgHandler.setMinimalGPSLevel(minimalGPSquality);
       var interval = $.getStorageValue("checkIntervalMinutes", 5) as Number;
       if (interval < 5) {
@@ -171,14 +187,20 @@ class WhatWeatherApp extends Application.AppBase {
       if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
         $._weatherDataSource = wsGarminFirst;
       }
-      if ($._weatherDataSource == wsOWMFirst || $._weatherDataSource == wsOWMOnly || $._weatherDataSource == wsGarminFirst) {
+      if (
+        $._weatherDataSource == wsOWMFirst ||
+        $._weatherDataSource == wsOWMOnly ||
+        $._weatherDataSource == wsGarminFirst
+      ) {
         bgHandler.Enable();
       } else {
         bgHandler.Disable();
       }
 
       var alertHandler = $.getAlertHandler();
-      alertHandler.setAlertPrecipitationChance($._alertLevelPrecipitationChance);
+      alertHandler.setAlertPrecipitationChance(
+        $._alertLevelPrecipitationChance
+      );
       alertHandler.setAlertUVi($._alertLevelUVi);
       alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
       alertHandler.setAlertRainMMHour($._alertLevelRainMMHour);
@@ -189,26 +211,42 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.resetStatus();
 
       initComfortSettings();
-      
+
       Storage.setValue("weatherDataSource", ws);
       setStorageValueIfChanged("openWeatherAPIKey", "");
 
       // Fix proxy url
       var proxuUrl = $.getApplicationProperty("openWeatherProxy", "") as String;
       if (proxuUrl.equals("https://api.castlephoto.info/owm_one")) {
-        Application.Properties.setValue("openWeatherProxy", "https://owm.castlephoto.info/owm_one");
+        Application.Properties.setValue(
+          "openWeatherProxy",
+          "https://owm.castlephoto.info/owm_one"
+        );
       }
 
-      setStorageValueIfChanged("openWeatherProxy", "https://owm.castlephoto.info/owm_one");
-      setStorageValueIfChanged("openWeatherProxyAPIKey", "0548b3c7-61bc-4afc-b6e5-616f19d3cf23");
-      Storage.setValue("openWeatherAPIVersion", $.getStorageValue("openWeatherAPIVersion", 1) as Number);
+      setStorageValueIfChanged(
+        "openWeatherProxy",
+        "https://owm.castlephoto.info/owm_one"
+      );
+      setStorageValueIfChanged(
+        "openWeatherProxyAPIKey",
+        "0548b3c7-61bc-4afc-b6e5-616f19d3cf23"
+      );
+      Storage.setValue(
+        "openWeatherAPIVersion",
+        $.getStorageValue("openWeatherAPIVersion", 1) as Number
+      );
       //Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
 
-      var maxHours = $.max($.gShow_OneField[0], $.gShow_LargeField[0]);
-      maxHours = $.max($.gShow_WideField[0], maxHours);
-      maxHours = $.max($.gShow_SmallField[0], maxHours);
+      var maxHours = $.max(show_OneField[0], show_LargeField[0]);
+      maxHours = $.max(show_WideField[0], maxHours);
+      maxHours = $.max(show_SmallField[0], maxHours);
 
-      var showMinutely = $.gShow_OneField[1] || $.gShow_LargeField[1] || $.gShow_WideField[1] || $.gShow_SmallField[1];
+      var showMinutely =
+        show_OneField[1] == true ||
+        show_LargeField[1] == true ||
+        show_WideField[1] == true ||
+        show_SmallField[1] == true;
 
       Storage.setValue("openWeatherMaxHours", maxHours + 1);
       Storage.setValue("openWeatherMinutely", showMinutely);
@@ -231,9 +269,14 @@ class WhatWeatherApp extends Application.AppBase {
       }
       if (propertyValue.length() > 0) {
         var storageValue = Storage.getValue(key);
-        if (storageValue == null || !(storageValue as String).equals(propertyValue)) {
+        if (
+          storageValue == null ||
+          !(storageValue as String).equals(propertyValue)
+        ) {
           Storage.setValue(key, propertyValue);
-          System.println("Storage [" + key + "] set to [" + propertyValue + "]");
+          System.println(
+            "Storage [" + key + "] set to [" + propertyValue + "]"
+          );
         }
       }
     } catch (ex) {
@@ -264,7 +307,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    System.println("Background data recieved");    
+    System.println("Background data recieved");
 
     if (data instanceof Lang.Number && data == 0) {
       System.println("Response code is 0 -> reset bg service");
@@ -273,7 +316,7 @@ class WhatWeatherApp extends Application.AppBase {
     }
 
     var bgHandler = $.getBGServiceHandler();
-    bgHandler.onBackgroundData(data as Dictionary or Number or Null);
+    bgHandler.onBackgroundData(data as Application.PropertyValueType);
 
     WatchUi.requestUpdate();
   }
@@ -322,7 +365,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // comfort zone
       true, // weather icons
       SHOW_INFO_NOTHING, // extra info
-      true, // details when paused,      
+      true, // details when paused,
       true, // show 0 temperature line
       true, // show weather text
     ]);
@@ -436,7 +479,3 @@ function getCurrentLocation() as CurrentLocation {
 var g_bg_timeout_seconds as Number = 0;
 var g_bg_delay_seconds as Number = 0;
 var gSizeArrFieldItems = 21;
-var gShow_OneField as Array<Numeric> = [] as Array<Numeric>;
-var gShow_LargeField as Array<Numeric> = [] as Array<Numeric>;
-var gShow_WideField as Array<Numeric> = [] as Array<Numeric>;
-var gShow_SmallField as Array<Numeric> = [] as Array<Numeric>;

@@ -2,6 +2,7 @@
 // 2026-06-02 callback weak reference fix
 // 2026-06-04 added methods
 // 2026-06-05 Application.PropertyValueType mCurrentLocation
+// 2026-06-06 onBackgroundData check for null data
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
@@ -231,12 +232,17 @@ class BGServiceHandler {
   }
 
   function onBackgroundData(
-    data as Application.PropertyValueType /*as Dictionary or Number or Null*/
+    data as Application.PropertyValueType 
   ) as Void {
+    if (data == null) {
+      System.println("bgservicehandler onBackgroundData received null data");
+      return;
+    }
     System.println("bgservicehandler onBackgroundData received data");
-    //, obj as Object, cbProcessData as Symbol) as Void {
+
     mLastRequestMoment = Time.now();
     mErrorMessage = "";
+
     if (data instanceof Lang.Number) {
       // Check for known error else http status
       var code = data as Lang.Number;
@@ -250,23 +256,22 @@ class BGServiceHandler {
       return;
     }
 
-    if (data != null) {
-      var bgData = data as Dictionary;
-      if (bgData["error"] != null && bgData["status"] != null) {
-        mErrorMessage = Lang.format("$1$ $2$", [
-          bgData["status"] as Number,
-          bgData["error"] as String,
-        ]);
-        System.println("bgservicehandler onBackgroundData error OWM: " + mErrorMessage);
-        return;
-      }
-    }
+    // Check for OWM error response
+    var bgData = data as Dictionary;
+    if (bgData["error"] != null && bgData["status"] != null) {
+      mErrorMessage = Lang.format("$1$ $2$", [
+        bgData["status"] as Number,
+        bgData["error"] as String,
+      ]);
+      System.println("bgservicehandler onBackgroundData error OWM: " + mErrorMessage);
+      return;
+    }    
 
     mHttpStatus = HTTP_OK;
     mError = CustomErrors.ERROR_BG_NONE;
     mRequestCounter = mRequestCounter + 1;
 
-    if (methodBackgroundData == null || data == null) {
+    if (methodBackgroundData == null) {
       return;
     }
     if (
@@ -282,6 +287,7 @@ class BGServiceHandler {
       }
     }
   }
+
   function setLastObservationMoment(moment as Time.Moment?) as Void {
     mLastObservationMoment = moment;
   }

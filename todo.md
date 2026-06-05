@@ -1,3 +1,5 @@
+onlayout get field array -> ook voor metrics
+
 thunder icon higher
 text alternate row 
 

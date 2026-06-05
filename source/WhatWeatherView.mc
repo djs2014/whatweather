@@ -310,19 +310,24 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowRainTotalSize = 3;
     mCurrentEdgeField = $.getEdgeField(dc);
     System.println("CurrentEdgeField: " + mCurrentEdgeField);
-    var arrShowField = $.gShow_OneField;
+
+    var arrShowField = [] as Array<Numeric>;
+    if (mCurrentEdgeField == EfOne) {
+      arrShowField = $.getStorageValue("show_one_field", []) as Array<Numeric>;
+      mShowRainTotalSize = 3;
+    } else
     if (mCurrentEdgeField == EfLarge) {
-      arrShowField = $.gShow_LargeField;
+      arrShowField = $.getStorageValue("show_large_field", []) as Array<Numeric>;
       mShowRainTotalSize = 2;
       mShowObservationLocationName = false;
     } else if (mCurrentEdgeField == EfWide) {
-      arrShowField = $.gShow_WideField;
+      arrShowField = $.getStorageValue("show_wide_field", []) as Array<Numeric>;
       mShowRainTotalSize = 2;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
       mShowObservationTime = false;
     } else if (mCurrentEdgeField == EfSmall) {
-      arrShowField = $.gShow_SmallField;
+      arrShowField = $.getStorageValue("show_small_field", []) as Array<Numeric>;
       mShowRainTotalSize = 1;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
@@ -330,6 +335,8 @@ class WhatWeatherView extends WatchUi.DataField {
       windIconHeight = 10;
     }
 
+    $.ensureArraySize(arrShowField, $.gSizeArrFieldItems, 0);
+    
     if (DEBUG_DETAILS) {
       System.println(["Onlayout", arrShowField]);
     }

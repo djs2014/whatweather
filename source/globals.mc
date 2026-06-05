@@ -45,18 +45,6 @@ var _alertLevelWindGust as Lang.Number = 2;
 var _alertBacklight as Boolean = false;
 var _loopWeatherCondition as Boolean = false;
 
-// (:typecheck(disableBackgroundCheck))
-// function getWeatherConditionText(condition as Lang.Number?) as Lang.String? {
-//   if (condition == null) {
-//     return null;
-//   }
-//   var key = condition as Lang.Number;
-
-//   if (key < $._weatherDescriptions.size()) {
-//     return $._weatherDescriptions[key] as Lang.String;
-//   }
-//   return null;
-// }
 (:typecheck(disableBackgroundCheck))
 function getWeatherConditionText(conditionCode as Number) {
   var text = "Unknown";
