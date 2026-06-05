@@ -1,3 +1,14 @@
+memory check background
+test onbg data -> set data to null, still crash?
+
+show hours garmin
+7 | 7 | 8| 9 .. 
+-> waarom 2x 7? --> observatie tijd kolommen met garmin weather?
+ook met owm? gelukkig niet :-)
+
+Egde 1040 (start activity) na eerste background req -> crash, activity paused.
+restart edge dan gaat alles ok.
+
 Math.rand() % 0 is invalid operation
 
 In Monkey C, the / operator between a Number and a Number (like width / 2) can sometimes result in a Float depending on the SDK version and compiler settings.

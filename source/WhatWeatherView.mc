@@ -9,6 +9,7 @@ import Toybox.Time.Gregorian;
 import Toybox.Position;
 import Toybox.Application.Storage;
 import Toybox.Background;
+import Toybox.Application;
 
 class CurrentInfo {
   var nr as Number = 0;
@@ -105,7 +106,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mCurrentLocation.setOnLocationChanged(self, :onLocationChanged);
 
     var mBGServiceHandler = $.getBGServiceHandler();
-    mBGServiceHandler.setOnBackgroundData(self, :onBackgroundData);
+    mBGServiceHandler.setOnBackgroundData(self, :onBackgroundDataView);
     mBGServiceHandler.setCurrentLocation(mCurrentLocation);
 
     mAlertHandler = $.getAlertHandler();
@@ -117,14 +118,21 @@ class WhatWeatherView extends WatchUi.DataField {
     mLon = degrees[1];
   }
 
-  function onBackgroundData(data as Dictionary) as Void {
-    mBgWeatherData = $.toWeatherData(data);
-    var mBGServiceHandler = $.getBGServiceHandler();
-    mBGServiceHandler.setLastObservationMoment(
-      mBgWeatherData.getObservationTime()
-    );
-    mTriggerCheckWeatherAlerts = true;
-    data = null;
+  function onBackgroundDataView(data as Application.PropertyValueType) as Void {
+    System.println("onBackgroundDataView convert to weatherdata");
+    try {
+      mBgWeatherData = $.toWeatherData(data as Dictionary);
+      var mBGServiceHandler = $.getBGServiceHandler();
+      mBGServiceHandler.setLastObservationMoment(
+        mBgWeatherData.getObservationTime()
+      );
+      mTriggerCheckWeatherAlerts = true;
+      data = null;
+      System.println("onBackgroundDataView end");
+    } catch (ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
+    }
   }
 
   function onLayout(dc as Dc) as Void {
@@ -231,6 +239,7 @@ class WhatWeatherView extends WatchUi.DataField {
       // TODO - calc all weather points ..
       // computeAllWheater();
     } catch (ex) {
+      System.println("Error compute: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -286,6 +295,7 @@ class WhatWeatherView extends WatchUi.DataField {
       calculateOWMAlerts(dc);
       handleOWMAlerts(dc);
     } catch (ex) {
+      System.println("Error on update: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -299,6 +309,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowObservationTime = true;
     mShowRainTotalSize = 3;
     mCurrentEdgeField = $.getEdgeField(dc);
+    System.println("CurrentEdgeField: " + mCurrentEdgeField);
     var arrShowField = $.gShow_OneField;
     if (mCurrentEdgeField == EfLarge) {
       arrShowField = $.gShow_LargeField;
@@ -552,7 +563,9 @@ class WhatWeatherView extends WatchUi.DataField {
                 mZoomMinuteForecastFactor = 3;
               }
               // Zoom in, or else small amounts not visible.
-              max_mmPerHour = (max_mmPerHour / mZoomMinuteForecastFactor).toNumber();
+              max_mmPerHour = (
+                max_mmPerHour / mZoomMinuteForecastFactor
+              ).toNumber();
               skipFirstForecast = true;
               // System.println(["Zoom maxHoursForecast", maxHoursForecast]);
             }
@@ -584,7 +597,10 @@ class WhatWeatherView extends WatchUi.DataField {
                 max_mmPerHour
               );
 
-              if (show5minMarker && (((i + mmMinutesDelayed) % 5).toNumber() == 0)) {
+              if (
+                show5minMarker &&
+                ((i + mmMinutesDelayed) % 5).toNumber() == 0
+              ) {
                 //Draw 5 min marker
                 drawColumnPrecipitationMillimetersDivider(
                   dc,
@@ -902,7 +918,7 @@ class WhatWeatherView extends WatchUi.DataField {
               );
               dc.setColor(colorDashes, Graphics.COLOR_TRANSPARENT);
               dc.fillRectangle(
-                x + ((mDs.columnWidth / 3).toNumber() * 2),
+                x + (mDs.columnWidth / 3).toNumber() * 2,
                 mDs.columnY + mDs.columnHeight + 1,
                 (mDs.columnWidth / 3).toNumber(),
                 dh
@@ -926,7 +942,7 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
 
-          if ($._loopWeatherCondition) {            
+          if ($._loopWeatherCondition) {
             forecast.condition = mWeatherConditionLoop;
           }
 
@@ -935,7 +951,13 @@ class WhatWeatherView extends WatchUi.DataField {
               forecast.forecastTime,
               false
             );
-            render.drawWeatherCondition(dc, x, forecast.condition, nightTime, mDarkBackground);
+            render.drawWeatherCondition(
+              dc,
+              x,
+              forecast.condition,
+              nightTime,
+              mDarkBackground
+            );
             if (nightTime && !sunsetPassed) {
               render.drawSunsetIndication(dc, x);
               sunsetPassed = true;
@@ -957,7 +979,10 @@ class WhatWeatherView extends WatchUi.DataField {
               mWindPoints[fcIdx].setXposition(x);
               var wp = mWindPoints[fcIdx] as WindPoint;
               var xW = wp.x + (mDs.columnWidth / 2).toNumber();
-              var yW = mDs.columnY + mDs.columnHeight + (mDs.heightWind / 2).toNumber();
+              var yW =
+                mDs.columnY +
+                mDs.columnHeight +
+                (mDs.heightWind / 2).toNumber();
               render.drawWindArrow(dc, xW, yW, wp, 0, false);
             }
           }
@@ -1053,6 +1078,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
       return true;
     } catch (ex) {
+      System.println("Error showing weather: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
     return false;
@@ -1098,7 +1124,10 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     var barFilledHeight =
       bar_height -
-      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance).toNumber();
+      (
+        bar_height -
+        (bar_height.toFloat() / 100.0) * precipitationChance
+      ).toNumber();
     var barFilledY = y + bar_height - barFilledHeight;
     dc.fillRectangle(x, barFilledY, bar_width, barFilledHeight);
 
@@ -1133,7 +1162,10 @@ class WhatWeatherView extends WatchUi.DataField {
     }
     var barFilledHeight =
       bar_height -
-      (bar_height - (bar_height.toFloat() / 100.0) * precipitationChance).toNumber();
+      (
+        bar_height -
+        (bar_height.toFloat() / 100.0) * precipitationChance
+      ).toNumber();
     var barFilledY = y + bar_height - barFilledHeight;
     // var lineWidth = bar_width / 3;
     var posX = x + bar_width - line_width;
@@ -1430,6 +1462,7 @@ class WhatWeatherView extends WatchUi.DataField {
       var hasOWMAlert = mWeatherData.alerts.size() > 0;
       mAlertHandler.processOWMAlert(hasOWMAlert);
     } catch (ex) {
+      System.println("Error check for weather alerts: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }

@@ -15,9 +15,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
     }
 
     public function onTemporalEvent() as Void {
-        System.println("BackgroundServiceDelegate onTemporalEvent");
-       
-        System.println("BackgroundServiceDelegate handleOWM");
+        System.println("BackgroundServiceDelegate onTemporalEvent");       
         var error = handleOWM();
         System.println("BackgroundServiceDelegate result handleOWM " + error);
         if (error != 0) {            
@@ -111,8 +109,10 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
 
         // API DOC: https://openweathermap.org/api/one-call-api
         // OWM json is too big for connect IQ background app, so proxy needed to minify the json
-		var url = proxy;                  
+		var url = proxy;     
+        System.println("Request OWM data from url " + url);             
         Communications.makeWebRequest(url, params, options, responseCallBack);
+        System.println("OWM request sent");
    	}
 
     function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null or Lang.String) as Void {

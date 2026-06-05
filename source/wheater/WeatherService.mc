@@ -192,6 +192,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
     wd.setChanged(true);
     return wd;
   } catch (ex) {
+    System.println("Error toWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }
@@ -273,6 +274,7 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
     }
     return wData;
   } catch (ex) {
+     System.println("Error mergeWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }

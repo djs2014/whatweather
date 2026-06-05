@@ -1,4 +1,7 @@
 // Version 1.0.2
+// 2026-06-02 callback weak reference fix
+// 2026-06-04 added methods
+// 2026-06-05 Application.PropertyValueType mCurrentLocation
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
@@ -27,14 +30,19 @@ class BGServiceHandler {
 
   var mLastRequestMoment as Time.Moment?;
   var mLastObservationMoment as Time.Moment?;
-
-  // var methodOnBeforeWebrequest = null;
-
-  var methodBackgroundData as Method?;
-  function setOnBackgroundData(objInstance as Object?, callback as Symbol) as Void {
-    methodBackgroundData = new Lang.Method(objInstance, callback) as Method;
+  
+  var methodBackgroundDataTargetRef as WeakReference?;
+  var methodBackgroundData as Symbol?;
+  function setOnBackgroundData(target as Object, callback as Symbol) as Void {
+    methodBackgroundDataTargetRef = target.weak();
+    methodBackgroundData = callback;
   }
-
+  function isDisabled() as Boolean {
+    return mBGDisabled;
+  }
+  function getRequestCounter() as Number {
+    return mRequestCounter;
+  }
   function initialize() {}
   function setCurrentLocation(currentLocation as $.CurrentLocation) as Void {
     mCurrentLocation = currentLocation;
@@ -44,9 +52,18 @@ class BGServiceHandler {
     mMinimalGPSLevel = level;
   }
   function setUpdateFrequencyInMinutes(minutes as Number) as Void {
+    if (minutes < 5) {
+      minutes = 5;
+    }
     mUpdateFrequencyInMinutes = minutes;
   }
   function Disable() as Void {
+    try {
+      Background.deleteTemporalEvent();
+    } catch (ex) {
+      System.println(ex.getErrorMessage());
+      ex.printStackTrace();
+    }
     mBGDisabled = true;
   }
   function Enable() as Void {
@@ -57,7 +74,10 @@ class BGServiceHandler {
     mObservationTimeDelayedMinutesThreshold = minutes;
   }
   function isDataDelayed() as Boolean {
-    return $.isDelayedFor(mLastObservationMoment, mObservationTimeDelayedMinutesThreshold);
+    return $.isDelayedFor(
+      mLastObservationMoment,
+      mObservationTimeDelayedMinutesThreshold
+    );
   }
   function isEnabled() as Boolean {
     return !mBGDisabled;
@@ -89,7 +109,6 @@ class BGServiceHandler {
     try {
       testOnNonFatalError();
 
-      // @@?? disable temporary when position not changed ( less than x km distance) and last call < x minutes?
       if (hasError()) {
         stopBGservice();
         return;
@@ -99,14 +118,7 @@ class BGServiceHandler {
     } catch (ex) {
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
-    }
-    // Doesnt work!
-    // finally {
-    //     mError = error;
-    //     if (error !=BGService.ERROR_BG_NONE) {
-    //         stopBGservice();
-    //     }
-    // }
+    }   
   }
 
   hidden function testOnNonFatalError() as Void {
@@ -122,11 +134,14 @@ class BGServiceHandler {
     if (!mPhoneConnected) {
       mError = CustomErrors.ERROR_BG_NO_PHONE;
     } else if (mCurrentLocation != null) {
-      var currentLocation = mCurrentLocation as $.CurrentLocation;
+      //var currentLocation = mCurrentLocation as $.CurrentLocation;
       // @@ first request, use last location
-      if (mRequestCounter > 0 && currentLocation.getAccuracy() < mMinimalGPSLevel) {
+      if (
+        mRequestCounter > 0 &&
+        mCurrentLocation.getAccuracy() < mMinimalGPSLevel
+      ) {
         mError = CustomErrors.ERROR_BG_GPS_LEVEL;
-      } else if (!currentLocation.hasLocation()) {
+      } else if (!mCurrentLocation.hasLocation()) {
         mError = CustomErrors.ERROR_BG_NO_POSITION;
       }
     }
@@ -142,7 +157,6 @@ class BGServiceHandler {
       // mError =BGService.ERROR_BG_NONE; //- Keep the last error
       System.println("stopBGservice stopped");
     } catch (ex) {
-      System.println("4");
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
       mError = CustomErrors.ERROR_BG_EXCEPTION;
@@ -156,7 +170,7 @@ class BGServiceHandler {
       return;
     }
     if (mBGActive) {
-      System.println("startBGservice already active");
+      // System.println("startBGservice already active");
       return;
     }
 
@@ -164,29 +178,21 @@ class BGServiceHandler {
       if (Toybox.System has :ServiceDelegate) {
         mError = CustomErrors.ERROR_BG_NONE;
         mHttpStatus = HTTP_OK;
-        // TEST
-        Background.registerForTemporalEvent(new Time.Duration(mUpdateFrequencyInMinutes * 60));
 
-        // Does not work?
-        // var lastTime = Background.getLastTemporalEventTime();
-        // if (lastTime != null) {
-        //   // Events scheduled for a time in the past trigger immediately
-        //   var nextTime = lastTime.add(new Time.Duration(mUpdateFrequencyInMinutes * 60));
-        //   Background.registerForTemporalEvent(nextTime);
-        // } else {
-        //   Background.registerForTemporalEvent(Time.now());
-        // }
+        Background.registerForTemporalEvent(
+          new Time.Duration(mUpdateFrequencyInMinutes * 60)
+        );
 
         mBGActive = true;
         System.println("startBGservice registerForTemporalEvent scheduled");
       } else {
-        System.println("Unable to start BGservice (no registerForTemporalEvent)");
+        System.println(
+          "Unable to start BGservice (no registerForTemporalEvent)"
+        );
         mBGActive = false;
         mError = CustomErrors.ERROR_BG_NOT_SUPPORTED;
-        // System.exit(); // @@ ??
       }
     } catch (ex) {
-      System.println("5");
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
       mError = CustomErrors.ERROR_BG_EXCEPTION;
@@ -204,17 +210,19 @@ class BGServiceHandler {
     }
     var elapsedSeconds = Time.now().value() - lastTime.value();
     var secondsToNext = mUpdateFrequencyInMinutes * 60 - elapsedSeconds;
-    
-    System.println("secondsToNext: " + secondsToNext);
-    if (secondsToNext < 0) {
 
+    // System.println("secondsToNext: " + secondsToNext);
+    if (secondsToNext < 0) {
       secondsToNext = secondsToNext * -1;
-      if ($.g_bg_timeout_seconds > 0 && secondsToNext > $.g_bg_timeout_seconds) {
+      if (
+        $.g_bg_timeout_seconds > 0 &&
+        secondsToNext > $.g_bg_timeout_seconds
+      ) {
         // TEST Force init webrequest, scheduling is not working?
         Disable();
         Enable();
-        mBGActive = false;     
-        startBGservice();   
+        mBGActive = false;
+        startBGservice();
       }
       return $.secondsToShortTimeString(secondsToNext, "-{m}:{s}");
     }
@@ -222,7 +230,10 @@ class BGServiceHandler {
     return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
 
-  function onBackgroundData(data as Dictionary or Number or Null) as Void {
+  function onBackgroundData(
+    data as Application.PropertyValueType /*as Dictionary or Number or Null*/
+  ) as Void {
+    System.println("bgservicehandler onBackgroundData received data");
     //, obj as Object, cbProcessData as Symbol) as Void {
     mLastRequestMoment = Time.now();
     mErrorMessage = "";
@@ -235,15 +246,18 @@ class BGServiceHandler {
         mHttpStatus = code;
         mError = CustomErrors.ERROR_BG_HTTPSTATUS;
       }
-      System.println("onBackgroundData error responsecode: " + data);
+      System.println("bgservicehandler onBackgroundData error responsecode: " + data);
       return;
     }
 
     if (data != null) {
       var bgData = data as Dictionary;
       if (bgData["error"] != null && bgData["status"] != null) {
-        mErrorMessage = Lang.format("$1$ $2$", [bgData["status"] as Number, bgData["error"] as String]);
-        System.println("onBackgroundData error OWM: " + mErrorMessage);
+        mErrorMessage = Lang.format("$1$ $2$", [
+          bgData["status"] as Number,
+          bgData["error"] as String,
+        ]);
+        System.println("bgservicehandler onBackgroundData error OWM: " + mErrorMessage);
         return;
       }
     }
@@ -252,8 +266,20 @@ class BGServiceHandler {
     mError = CustomErrors.ERROR_BG_NONE;
     mRequestCounter = mRequestCounter + 1;
 
-    if (methodBackgroundData != null && data != null) {
-      (methodBackgroundData as Method).invoke(data as Dictionary);
+    if (methodBackgroundData == null || data == null) {
+      return;
+    }
+    if (
+      methodBackgroundDataTargetRef != null &&
+      methodBackgroundDataTargetRef.stillAlive()
+    ) {
+      var target = methodBackgroundDataTargetRef.get();
+
+      if (target != null) {
+        var callback = target.method(methodBackgroundData);
+
+        callback.invoke(data as Application.PropertyValueType);
+      }
     }
   }
   function setLastObservationMoment(moment as Time.Moment?) as Void {

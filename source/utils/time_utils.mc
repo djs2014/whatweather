@@ -51,7 +51,7 @@ function ensureXSecondsPassed(
     return true;
   }
   var diff = Time.now().value() - previousMomentInSeconds;
-  System.println("ensureXSecondsPassed difference: " + diff);
+  // System.println("ensureXSecondsPassed difference: " + diff);
   return diff >= seconds;
 }
 

@@ -204,6 +204,7 @@ class RenderWeather {
       dc.drawLine(x, y - 5, x + r, y);
       dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
     } catch (ex) {
+      System.println("Error draw dewpoint: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }

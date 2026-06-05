@@ -83,7 +83,7 @@ function getStorageValue(
   try {
     // Check if key contains index (for array)
     var idx = $.stringRight(key, "|", "").toNumber();
-    System.println(["getStorageValue key -> idx", key, idx]);
+    // System.println(["getStorageValue key -> idx", key, idx]);
     if (idx == null || idx == "") {
       var val = Toybox.Application.Storage.getValue(key);
       if (val != null) {

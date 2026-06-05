@@ -12,8 +12,8 @@ import Toybox.Position;
 (:typecheck(disableBackgroundCheck))
 var gSettingsChanged as Boolean = false;
 
-(:typecheck(disableBackgroundCheck))
-var _weatherDescriptions as Lang.Array = []; // Lang.Dictionary = {};
+// (:typecheck(disableBackgroundCheck))
+// var _weatherDescriptions as Lang.Array = []; // Lang.Dictionary = {};
 
 (:background)
 class WhatWeatherApp extends Application.AppBase {
@@ -31,7 +31,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function getInitialView() as [WatchUi.Views] or [WatchUi.Views, WatchUi.InputDelegates] {
-    $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
+    // $._weatherDescriptions = Application.loadResource(Rez.JsonData.weatherDescriptions) as Array;
     loadUserSettings();
     return [new WhatWeatherView()];
   }
@@ -264,8 +264,7 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    System.println("Background data recieved");
-    //System.println(data);
+    System.println("Background data recieved");    
 
     if (data instanceof Lang.Number && data == 0) {
       System.println("Response code is 0 -> reset bg service");

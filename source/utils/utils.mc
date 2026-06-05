@@ -14,6 +14,7 @@ function checkFeatures() as Void {
       $.gUseSetFillStroke = Graphics.Dc has :setFill;
     }
   } catch (ex) {
+    System.println("Error get features: " + ex.getErrorMessage());
     ex.printStackTrace();
   }
 }
