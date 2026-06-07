@@ -154,7 +154,7 @@ class RenderWeather {
       dc.drawLine(x, y, x, y - 4);
       dc.fillCircle(x, y + 2, 2);
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -204,7 +204,7 @@ class RenderWeather {
       dc.drawLine(x, y - 5, x + r, y);
       dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
     } catch (ex) {
-      System.println("Error draw dewpoint: " + ex.getErrorMessage());
+      $.logInfo("Error draw dewpoint: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -1530,26 +1530,6 @@ class RenderWeather {
       text,
       Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER
     );
-  }
-
-  hidden function point2DOnCircleSlow(
-    x as Number,
-    y as Number,
-    radius as Lang.Numeric,
-    angleInDegrees as Lang.Numeric
-  ) as Point2D {
-    // Convert from degrees to radians
-    try {
-      var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
-      var yP = radius * Math.sin((angleInDegrees * Math.PI) / 180) + y;
-
-      return [xP.toNumber(), yP.toNumber()] as Point2D;
-    } catch (ex) {
-      // Stack overflow error
-      System.println(ex.getErrorMessage());
-      ex.printStackTrace();
-      return [0, 0] as Point2D;
-    }
   }
 
   hidden var SIN_TABLE = [] as Array<Number>;

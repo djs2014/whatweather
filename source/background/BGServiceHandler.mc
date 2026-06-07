@@ -3,7 +3,7 @@
 // 2026-06-04 added methods
 // 2026-06-05 Application.PropertyValueType mCurrentLocation
 // 2026-06-06 onBackgroundData check for null data
-// 2026-06-06 onBackgroundData updated
+// 2026-06-07 onBackgroundData updated + loginfo
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
@@ -16,6 +16,11 @@ import Toybox.Background;
 import Toybox.Application.Storage;
 
 class BGServiceHandler {
+  hidden var debugMode = false;
+  function setDebugMode(enabled as Boolean) as Void {
+    debugMode = enabled;
+  }
+
   const HTTP_OK as Number = 200;
   var mCurrentLocation as $.CurrentLocation?;
   var mError as Number = 0;
@@ -63,7 +68,7 @@ class BGServiceHandler {
     try {
       Background.deleteTemporalEvent();
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
     mBGDisabled = true;
@@ -91,7 +96,9 @@ class BGServiceHandler {
     return mError != CustomErrors.ERROR_BG_NONE || mHttpStatus != HTTP_OK;
   }
   function reset() as Void {
-    System.println("Reset BG service");
+    if (debugMode) {
+      logInfo("Resetting BG service");
+    }
     mError = 0;
     mHttpStatus = HTTP_OK;
     mErrorMessage = "";
@@ -118,7 +125,7 @@ class BGServiceHandler {
 
       startBGservice();
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -157,9 +164,11 @@ class BGServiceHandler {
       Background.deleteTemporalEvent();
       mBGActive = false;
       // mError =BGService.ERROR_BG_NONE; //- Keep the last error
-      System.println("stopBGservice stopped");
+      if (debugMode) {
+        logInfo("BG service stopped");
+      }
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      logInfo(ex.getErrorMessage());
       ex.printStackTrace();
       mError = CustomErrors.ERROR_BG_EXCEPTION;
       mBGActive = false;
@@ -168,11 +177,13 @@ class BGServiceHandler {
 
   function startBGservice() as Void {
     if (mBGDisabled) {
-      System.println("startBGservice Service is disabled, no scheduling");
+      if (debugMode) {
+        logInfo("startBGservice Service is disabled, no scheduling");
+      }
       return;
     }
     if (mBGActive) {
-      // System.println("startBGservice already active");
+      // logInfo("startBGservice already active");
       return;
     }
 
@@ -186,16 +197,16 @@ class BGServiceHandler {
         );
 
         mBGActive = true;
-        System.println("startBGservice registerForTemporalEvent scheduled");
+        logInfo("startBGservice registerForTemporalEvent scheduled");
       } else {
-        System.println(
+        logInfo(
           "Unable to start BGservice (no registerForTemporalEvent)"
         );
         mBGActive = false;
         mError = CustomErrors.ERROR_BG_NOT_SUPPORTED;
       }
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      logInfo(ex.getErrorMessage());
       ex.printStackTrace();
       mError = CustomErrors.ERROR_BG_EXCEPTION;
       mBGActive = false;
@@ -213,7 +224,7 @@ class BGServiceHandler {
     var elapsedSeconds = Time.now().value() - lastTime.value();
     var secondsToNext = mUpdateFrequencyInMinutes * 60 - elapsedSeconds;
 
-    // System.println("secondsToNext: " + secondsToNext);
+    // logInfo("secondsToNext: " + secondsToNext);
     if (secondsToNext < 0) {
       secondsToNext = secondsToNext * -1;
       if (
@@ -234,10 +245,10 @@ class BGServiceHandler {
 
   function onBackgroundData(data as Application.PersistableType) as Void {
     if (data == null) {
-      System.println("bgservicehandler onBackgroundData received null data");
+      logInfo("bgservicehandler onBackgroundData received null data");
       return;
     }
-    System.println("bgservicehandler onBackgroundData received data");
+    logInfo("bgservicehandler onBackgroundData received data");
 
     mLastRequestMoment = Time.now();
     mErrorMessage = "";
@@ -251,14 +262,14 @@ class BGServiceHandler {
         mHttpStatus = code;
         mError = CustomErrors.ERROR_BG_HTTPSTATUS;
       }
-      System.println(
-        "bgservicehandler onBackgroundData error responsecode: " + data
+      logInfo(
+        ["bgservicehandler onBackgroundData error", mError, " http status: ", mHttpStatus]
       );
       return;
     }
 
     if (!(data instanceof Lang.Dictionary)) {
-      System.println(
+      logInfo(
         "bgservicehandler onBackgroundData received non-dictionary data"
       );
       mError = CustomErrors.ERROR_BG_INVALID_DATA;
@@ -272,8 +283,8 @@ class BGServiceHandler {
         bgData["status"] as Number,
         bgData["error"] as String,
       ]);
-      System.println(
-        "bgservicehandler onBackgroundData error OWM: " + mErrorMessage
+      logInfo(
+        "bgservicehandler onBackgroundData OWM error message: " + mErrorMessage
       );
       return;
     }
@@ -334,5 +345,18 @@ class BGServiceHandler {
       return mErrorMessage.substring(0, 30) as String;
     }
     return mErrorMessage;
+  }
+
+  function logInfo(info) as Void {
+    var clockTime = System.getClockTime();
+
+    var timeString = Lang.format("$1$:$2$:$3$ - background - $4$", [
+      clockTime.hour.format("%02d"),
+      clockTime.min.format("%02d"),
+      clockTime.sec.format("%02d"),
+      info,
+    ]);
+
+    System.println(timeString);
   }
 }

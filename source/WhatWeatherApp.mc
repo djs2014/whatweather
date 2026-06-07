@@ -49,7 +49,7 @@ class WhatWeatherApp extends Application.AppBase {
   (:typecheck(disableBackgroundCheck))
   function loadUserSettings() as Void {
     try {
-      System.println("Loading user settings");
+      $.logInfo("Loading user settings");
 
       var hadConversionToArrays = Storage.getValue("show_one_field");
       if (hadConversionToArrays == null) {
@@ -129,18 +129,18 @@ class WhatWeatherApp extends Application.AppBase {
 
       $._alertLevelPrecipitationChance =
         $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
-      $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
-      $._alertLevelRainMMfirstHour =
+      var alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
+      var alertLevelRainMMfirstHour =
         $.getStorageValue("alertLevelRainMMfirstHour", 0.2f) as Float;
-      $._alertLevelRainMMHour =
+      var alertLevelRainMMHour =
         $.getStorageValue("alertLevelRainMMHour", 0.2f) as Float;
       $._alertWindIn =
         $.getStorageValue("alertWindIn", $._alertWindIn) as Number;
-      $._alertLevelWindSpeed =
+      var alertLevelWindSpeed =
         $.getStorageValue("alertLevelWindSpeed", 5.0f) as Float;
-      $._alertLevelWindGust =
+      var alertLevelWindGust =
         $.getStorageValue("alertLevelWindGust", 2) as Number;
-      $._alertLevelDewpoint =
+      var alertLevelDewpoint =
         $.getStorageValue("alertLevelDewpoint", 19) as Number;
 
       $._soundMode = $.getStorageValue("sound_mode", 1) as Number;
@@ -180,8 +180,15 @@ class WhatWeatherApp extends Application.AppBase {
       }
       bgHandler.setUpdateFrequencyInMinutes(interval);
 
+      // For TEST set to OWM @@ -------------------------------------
+      // Storage.setValue("weatherDataSource", wsOWMFirst);
+      // Storage.setValue("openWeatherAPIKey", "");
+      // ------------------------------------------------------------
+
       var ws = $.getStorageValue("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;
+
+      setStorageValueIfChanged("openWeatherAPIKey", "");
 
       var apiKey = $.getStorageValue("openWeatherAPIKey", "") as String;
       if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
@@ -201,19 +208,16 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.setAlertPrecipitationChance(
         $._alertLevelPrecipitationChance
       );
-      alertHandler.setAlertUVi($._alertLevelUVi);
-      alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
-      alertHandler.setAlertRainMMHour($._alertLevelRainMMHour);
+      alertHandler.setAlertUVi(alertLevelUVi);
+      alertHandler.setAlertRainMMfirstHour(alertLevelRainMMfirstHour);
+      alertHandler.setAlertRainMMHour(alertLevelRainMMHour);
       alertHandler.setAlertWindIn($._alertWindIn);
-      alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
-      alertHandler.setAlertWindGust($._alertLevelWindGust);
-      alertHandler.setAlertDewpoint($._alertLevelDewpoint);
+      alertHandler.setAlertWindSpeed(alertLevelWindSpeed);
+      alertHandler.setAlertWindGust(alertLevelWindGust);
+      alertHandler.setAlertDewpoint(alertLevelDewpoint);
       alertHandler.resetStatus();
 
       initComfortSettings();
-
-      Storage.setValue("weatherDataSource", ws);
-      setStorageValueIfChanged("openWeatherAPIKey", "");
 
       // Fix proxy url
       var proxuUrl = $.getApplicationProperty("openWeatherProxy", "") as String;
@@ -252,9 +256,9 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherMinutely", showMinutely);
 
       $.gSettingsChanged = true;
-      System.println("User settings loaded");
+      $.logInfo("User settings loaded");
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -274,13 +278,13 @@ class WhatWeatherApp extends Application.AppBase {
           !(storageValue as String).equals(propertyValue)
         ) {
           Storage.setValue(key, propertyValue);
-          System.println(
+          $.logInfo(
             "Storage [" + key + "] set to [" + propertyValue + "]"
           );
         }
       }
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -306,10 +310,10 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    System.println("Background data recieved");
+    $.logInfo("Background data recieved");
 
     if (data instanceof Lang.Number && data == 0) {
-      System.println("Response code is 0 -> reset bg service");
+      $.logInfo("Response code is 0 -> reset bg service");
       loadUserSettings();
       return;
     }

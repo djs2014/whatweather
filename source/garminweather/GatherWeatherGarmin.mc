@@ -21,7 +21,7 @@ function getLatestGarminWeather() as WeatherData {
     wo.observationLocationName = "G" + wo.lat + "," + wo.lon;
     wo.observationTime = garCurrent.observationTime;
     if (DEBUG_DETAILS) {
-      System.println("Gar Observation: " + wo.info());
+      $.logInfo("Gar Observation: " + wo.info());
     }
 
     // Not available for Garmin, rain first hour.
@@ -37,7 +37,7 @@ function getLatestGarminWeather() as WeatherData {
     // Ex. now is 025-11-30 10:10:00, hourlyforecast starts with 025-11-30 11:00:00
     var hf1 = $.getGarminHourly(wo.observationTime, garCurrent);
     if (DEBUG_DETAILS) {
-      System.println("Gar Hourly current: " + hf1.info());
+      $.logInfo("Gar Hourly current: " + hf1.info());
     }
 
     hh.add(hf1);
@@ -71,7 +71,7 @@ function getLatestGarminWeather() as WeatherData {
     var nowSeconds = Time.now().value() - 3600;
     var cutOffTime = new Time.Moment(nowSeconds);
     if (DEBUG_DETAILS) {
-      System.println("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
+      $.logInfo("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
     }
     // Plus 1, for handling hour change. Not showing empty column
     var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
@@ -80,7 +80,7 @@ function getLatestGarminWeather() as WeatherData {
     for (var idx = 0; idx < max; idx += 1) {
       if (hh.size() > maxHoursDisplayed) {
         if (DEBUG_DETAILS) {
-          System.println(["Gar skip forecast:", idx, "max display:", maxHoursDisplayed]);
+          $.logInfo(["Gar skip forecast:", idx, "max display:", maxHoursDisplayed]);
         }
         continue;
       }
@@ -93,7 +93,7 @@ function getLatestGarminWeather() as WeatherData {
       var fcTime = garForecast.forecastTime as Time.Moment;
       if (fcTime.lessThan(cutOffTime)) {
         if (DEBUG_DETAILS) {
-          System.println(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
+          $.logInfo(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
         }
         continue;
       }

@@ -140,7 +140,7 @@ class WhatWeatherView extends WatchUi.DataField {
       mTriggerCheckWeatherAlerts = true;
       $.logInfo("processIncomingWeatherData end");
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
       incomingWeatherData = null;
     }
@@ -155,7 +155,7 @@ class WhatWeatherView extends WatchUi.DataField {
   function compute(info as Activity.Info) as Void {
     try {
       processIncomingWeatherData();
-
+      
       var mBGServiceHandler = $.getBGServiceHandler();
 
       if ($.gSettingsChanged) {
@@ -205,7 +205,7 @@ class WhatWeatherView extends WatchUi.DataField {
       );
 
       if (DEBUG_DETAILS) {
-        System.println(
+        $.logInfo(
           Lang.format(
             "Is weatherChanged Request[$1$] background[$2$] garmin[$3$] merged[$4$]",
             [
@@ -224,7 +224,7 @@ class WhatWeatherView extends WatchUi.DataField {
         garminWeatherChanged
       ) {
         if (DEBUG_DETAILS) {
-          System.println(
+          $.logInfo(
             Lang.format(
               "WeatherChanged[$1$] mWeatherData.changed[$2$] mBgWeatherData.changed[$3$] garminWeatherChanged[$4$]",
               [
@@ -249,7 +249,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
     } catch (ex) {
-      System.println("Error compute: " + ex.getErrorMessage());
+      $.logInfo("Error compute: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -295,7 +295,7 @@ class WhatWeatherView extends WatchUi.DataField {
       calculateOWMAlerts(dc);
       handleOWMAlerts(dc);
     } catch (ex) {
-      System.println("Error on update: " + ex.getErrorMessage());
+      $.logInfo("Error on update: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -581,7 +581,7 @@ class WhatWeatherView extends WatchUi.DataField {
               var pop = (mm as WeatherMinutely).pops[i];
               popTotal = popTotal + pop; // / 60.0; // popTotal is mm/hour, pop is for 1 minute
               if (DEBUG_DETAILS) {
-                System.println(
+                $.logInfo(
                   Lang.format("minutely x[$1$] pop[$2$] i[$3$]", [x, pop, i])
                 );
               }
@@ -715,12 +715,12 @@ class WhatWeatherView extends WatchUi.DataField {
           fcIdx += 1
         ) {
           if (skipFirstForecast && fcIdx == 0) {
-            System.println("Skip first forecast due to rain 1stmm zoom");
+            $.logInfo("Skip first forecast due to rain 1stmm zoom");
             continue;
           }
           var forecast = hourlyForecast[fcIdx] as WeatherHourly;
           if (DEBUG_DETAILS) {
-            System.println(forecast.info());
+            $.logInfo(forecast.info());
           }
 
           var wa;
@@ -743,7 +743,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var cloudColor = mDs.COLOR_CLOUDS;
 
           if (DEBUG_DETAILS) {
-            System.println(
+            $.logInfo(
               Lang.format("valid hour x[$1$] hourly[$2$] colorCondition[$3$]", [
                 x,
                 forecast.info(),
@@ -1004,7 +1004,7 @@ class WhatWeatherView extends WatchUi.DataField {
         var distanceMetric = "km";
         var distanceInKm = 0;
         if (DEBUG_DETAILS) {
-          System.println(mCurrentLocation.infoLocation());
+          $.logInfo(mCurrentLocation.infoLocation());
         }
         if (mCurrentLocation.hasLocation()) {
           distanceInKm = $.getDistanceFromLatLonInKm(
@@ -1079,7 +1079,7 @@ class WhatWeatherView extends WatchUi.DataField {
       }
       return true;
     } catch (ex) {
-      System.println("Error showing weather: " + ex.getErrorMessage());
+      $.logInfo("Error showing weather: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
     return false;
@@ -1223,7 +1223,7 @@ class WhatWeatherView extends WatchUi.DataField {
       try {
         Attention.backlight(true);
       } catch (ex) {
-        System.println("Attention.backlight(true) failed");
+        $.logInfo("Attention.backlight(true) failed");
         ex.printStackTrace();
       }
     }
@@ -1463,7 +1463,7 @@ class WhatWeatherView extends WatchUi.DataField {
       var hasOWMAlert = mWeatherData.alerts.size() > 0;
       mAlertHandler.processOWMAlert(hasOWMAlert);
     } catch (ex) {
-      System.println("Error check for weather alerts: " + ex.getErrorMessage());
+      $.logInfo("Error check for weather alerts: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }

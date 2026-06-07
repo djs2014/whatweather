@@ -124,7 +124,7 @@ function getMatchingFont(
   return font;
 }
 
-function logInfo(info as String) as Void {
+function logInfo(info) as Void {
   var clockTime = System.getClockTime();
 
   var timeString = Lang.format("$1$:$2$:$3$ - $4$", [

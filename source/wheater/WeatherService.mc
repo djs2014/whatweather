@@ -32,7 +32,7 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
   var nowSeconds = Time.now().value() - 3600;
   var cutOffTime = new Time.Moment(nowSeconds);
   if (DEBUG_DETAILS) {
-    System.println("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
+    $.logInfo("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
   }  
   var wData = data as WeatherData;
   var newIdx = -1;
@@ -40,13 +40,13 @@ function purgePastWeatherdata(data as WeatherData?) as WeatherData {
   for (var idx = 0; idx < max; idx += 1) {
     var weatherHourly = wData.hourly[idx] as WeatherHourly;
     if (DEBUG_DETAILS) {
-      System.println("purgePastWeatherdata?: " + $.getDateTimeString(weatherHourly.forecastTime));
+      $.logInfo("purgePastWeatherdata?: " + $.getDateTimeString(weatherHourly.forecastTime));
     }
 
     if (weatherHourly.forecastTime.lessThan(cutOffTime)) {
       // Is a past hour
       if (DEBUG_DETAILS) {
-        System.println("purgePastWeatherdata past hour!: " + $.getDateTimeString(weatherHourly.forecastTime));
+        $.logInfo("purgePastWeatherdata past hour!: " + $.getDateTimeString(weatherHourly.forecastTime));
       }
       newIdx = idx;
       wData.setChanged(true);
@@ -85,7 +85,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
       wo.observationLocationName = wo.lat + "," + wo.lon;
       wo.observationTime = new Time.Moment($.getDictionaryValue(bg_cc, "dt", 0) as Number);
 
-      System.println("OWM Observation: " + wo.info());
+      $.logInfo("OWM Observation: " + wo.info());
     }
 
     if (hourly != null) {
@@ -110,7 +110,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
       // Get start of the hour, minus 1 hour
       var nowSeconds = Time.now().value() - 3600;
       var cutOffTime = new Time.Moment(nowSeconds);
-      System.println("OWM cutOffTime: " + $.getDateTimeString(cutOffTime));
+      $.logInfo("OWM cutOffTime: " + $.getDateTimeString(cutOffTime));
 
       // Plus 1, for handling hour change. Not showing empty column
       var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
@@ -120,7 +120,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
       // There are only values in array to compress the payload
       for (var idx = 0; idx < max; idx++) {
         if (bg_hh.size() > maxHoursDisplayed) {
-          System.println(["OWM skip forecast:", idx, "max display:", maxHoursDisplayed]);
+          $.logInfo(["OWM skip forecast:", idx, "max display:", maxHoursDisplayed]);
           continue;
         }
 
@@ -130,7 +130,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
 
         // Skip forecast of different days/previous hours
         if (fcTime.lessThan(cutOffTime)) {
-          System.println(["OWM skip forecast hour:", $.getDateTimeString(fcTime)]);
+          $.logInfo(["OWM skip forecast hour:", $.getDateTimeString(fcTime)]);
           continue;
         }
 
@@ -152,7 +152,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
         hf.snow1hr = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
         hf.windGust = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
 
-        System.println("OWM Hourly: " + hf.info());
+        $.logInfo("OWM Hourly: " + hf.info());
         hh.add(hf);
       }
     }
@@ -169,7 +169,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
           mm.pops.add(bg_pops[i] as Float);
           // System.println("bgData minutely " + i.format("%d") + ": " +  (bg_pops[i] as Float).format("%.1f"));
         }
-        System.println("OWM size of minutely: " + mm.pops.size());
+        $.logInfo("OWM size of minutely: " + mm.pops.size());
       }
     }
 
@@ -184,7 +184,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
         wal.description = $.getStringValueOrDefault(warr[3] as String, "") as String;
         wal.description = $.stringReplace(wal.description, "\n", " ");
         wal.description = $.stringReplace(wal.description, "\r", " ");
-        System.println("OWM Alert: " + wal.info());
+        $.logInfo("OWM Alert: " + wal.info());
         al.add(wal);
       }
     }
@@ -192,7 +192,7 @@ function toWeatherData(data as Dictionary?) as WeatherData {
     wd.setChanged(true);
     return wd;
   } catch (ex) {
-    System.println("Error toWeatherData: " + ex.getErrorMessage());
+    $.logInfo("Error toWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }
@@ -274,7 +274,7 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
     }
     return wData;
   } catch (ex) {
-     System.println("Error mergeWeatherData: " + ex.getErrorMessage());
+     $.logInfo("Error mergeWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }
@@ -317,8 +317,8 @@ class WeatherDataCheck {
   }
 
   function isEqual(item as WeatherDataCheck) as Boolean {
-    System.println("self [" + self.toString() + "]");
-    System.println("item [" + item.toString() + "]");
+    $.logInfo("self [" + self.toString() + "]");
+    $.logInfo("item [" + item.toString() + "]");
 
     return time.equals(item.time) && lat.equals(item.lat) && lon.equals(item.lon) && name.equals(item.name);
   }
