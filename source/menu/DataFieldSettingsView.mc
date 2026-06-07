@@ -25,8 +25,8 @@ class DataFieldSettingsView extends WatchUi.View {
     var versionString = Lang.format("$1$.$2$.$3$", version);
 
     dc.drawText(
-      dc.getWidth() / 2,
-      dc.getHeight() / 2 - 30,
+      (dc.getWidth() / 2).toNumber(),
+      (dc.getHeight() / 2 - 30).toNumber(),
       Graphics.FONT_SMALL,
       "Press Menu \nfor settings \nCIQ " + versionString,
       Graphics.TEXT_JUSTIFY_CENTER
@@ -47,10 +47,21 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
     var menu = new $.DataFieldSettingsMenu();
     var mi = new WatchUi.MenuItem("Proxy", "Server config", "proxy", null);
     menu.addItem(mi);
-    mi = new WatchUi.MenuItem("Show weather", null, "showweather", null);
+
+    mi = new WatchUi.MenuItem("Weather source", null, "weatherDataSource", null);
+    var value = getStorageValue(mi.getId() as String, $._weatherDataSource) as WeatherSource;
+    mi.setSubLabel($.getWeatherDataSourceText(value));
     menu.addItem(mi);
-    mi = new WatchUi.MenuItem("Extra information", null, "extrainfo", null);
+
+    mi = new WatchUi.MenuItem("One page field", null, "show_one_field", null);
     menu.addItem(mi);
+    mi = new WatchUi.MenuItem("Large field", null, "show_large_field", null);
+    menu.addItem(mi);
+    mi = new WatchUi.MenuItem("Wide field", null, "show_wide_field", null);
+    menu.addItem(mi);
+    mi = new WatchUi.MenuItem("Small field", null, "show_small_field", null);
+    menu.addItem(mi);
+
     mi = new WatchUi.MenuItem("Alerts", null, "alerts", null);
     menu.addItem(mi);
     mi = new WatchUi.MenuItem("Comfort region", null, "comfort", null);
@@ -66,12 +77,9 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
 
     boolean = Storage.getValue("resetAlerts") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Show alerts again", null, "resetAlerts", boolean, null));
-    // boolean = Storage.getValue("debug") ? true : false;
-    // menu.addItem(new WatchUi.ToggleMenuItem("Debug", null, "debug", boolean, null));
+  
     boolean = Storage.getValue("resetDefaults") ? true : false;
     menu.addItem(new WatchUi.ToggleMenuItem("Reset to defaults", null, "resetDefaults", boolean, null));
-  
-
 
     // var view = new $.DataFieldSettingsView();
     WatchUi.pushView(menu, new $.DataFieldSettingsMenuDelegate(), WatchUi.SLIDE_IMMEDIATE);
@@ -79,7 +87,7 @@ class DataFieldSettingsDelegate extends WatchUi.BehaviorDelegate {
   }
 
   function onBack() as Boolean {
-    getApp().onSettingsChanged();    
+    getApp().onSettingsChanged();
     $.gExitedMenu = true;
     return false;
   }
@@ -119,7 +127,7 @@ function getWeatherDataSourceText(value as WeatherSource) as String {
       return "OWM first";
     case wsGarminOnly:
       return "Garmin";
-    case wsOWMOnly:      
+    case wsOWMOnly:
       return "Open Weather Map";
 
     default:
@@ -129,15 +137,13 @@ function getWeatherDataSourceText(value as WeatherSource) as String {
 
 function getShowWindText(value as Number) as String {
   switch (value) {
-    case SHOW_WIND_NOTHING:
-      return "Nothing";
     case SHOW_WIND_METERS:
       return "Meters/sec";
     case SHOW_WIND_KILOMETERS:
       return "Kilometers/hour";
     case SHOW_WIND_BEAUFORT:
       return "Beaufort";
-    
+
     default:
       return "--";
   }
@@ -148,7 +154,7 @@ function getShowInfoText(value as Number) as String {
     case SHOW_INFO_NOTHING:
       return "Nothing";
     case SHOW_INFO_TIME_Of_DAY:
-      return "Time";    
+      return "Time";
     case SHOW_INFO_AMBIENT_PRESSURE:
       return "Pressure";
     case SHOW_INFO_SEALEVEL_PRESSURE:
@@ -169,10 +175,10 @@ function getGustLevelText(value as Number) as String {
     case 1:
       return "Gusts (+18 km/h)";
     case 2:
-      return "Strong gusts (+27.7km/h)";    
+      return "Strong gusts (+27.7km/h)";
     case 3:
       return "Violent gusts (+46 km/h)";
-    
+
     default:
       return "--";
   }
@@ -185,9 +191,9 @@ function getSoundModeText(value as Number) as String {
     case 1:
       return "Beep";
     case 2:
-      return "Canary";    
+      return "Canary";
     case 3:
-      return "Beep Beep";    
+      return "Beep Beep";
 
     default:
       return "--";

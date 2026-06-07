@@ -19,8 +19,6 @@ class AlertHandler {
   var maxWindGust as Lang.Number = 0;
   var maxDewpoint as Lang.Float = 0.0;
 
-  hidden var CONDITION_NEUTRAL as Lang.Number = 0x00aaff; // COLOR_BLUE
-
   hidden const NEUTRAL = 0;
   hidden const TRIGGERED = 1;
   hidden const HANDLED = 2;
@@ -57,7 +55,7 @@ class AlertHandler {
   function setAlertRainMMHour(value as Lang.Float) as Void {
     alertRainMMHour = value;
   }
-  
+
   function setAlertWindIn(value as Number) as Void {
     alertWindIn = value;
   }
@@ -73,11 +71,7 @@ class AlertHandler {
   }
 
   function infoUvi() as Lang.String {
-    return Lang.format("alerthandler alertUvi[$1$] statusUvi[$2$] allClearUvi[$3$]", [
-      alertUvi,
-      statusUvi,
-      allClearUvi,
-    ]);
+    return Lang.format("alerthandler alertUvi[$1$] statusUvi[$2$] allClearUvi[$3$]", [alertUvi, statusUvi, allClearUvi]);
   }
 
   function infoPrecipitationChance() as Lang.String {
@@ -278,9 +272,9 @@ class AlertHandler {
     }
   }
 
-  function processUvi(uvi as Lang.Float?) as Void {
+  function processUvi(uvi as Lang.Float?) as Boolean {
     if (alertUvi <= 0 || uvi == null) {
-      return;
+      return false;
     }
     maxUvi = $.max(maxUvi, uvi) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
@@ -290,17 +284,18 @@ class AlertHandler {
     if (uvi >= alertUvi) {
       allClearUvi = false;
     }
+    return uvi >= alertUvi;
   }
 
-  function processPrecipitationChance(chance as Lang.Number?) as Void {
+  function processPrecipitationChance(chance as Lang.Number?) as Boolean {
     if (chance == null) {
-      return;
+      return false;
     }
 
     maxPrecipitationChance = $.max(maxPrecipitationChance, chance) as Number;
 
     if (alertPrecipitationChance <= 0) {
-      return;
+      return false;
     }
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusPrecipitationChance == NEUTRAL && chance >= alertPrecipitationChance) {
@@ -309,11 +304,12 @@ class AlertHandler {
     if (chance >= alertPrecipitationChance) {
       allClearPrecipitationChance = false;
     }
+    return chance >= alertPrecipitationChance;
   }
 
-  function processRainMMfirstHour(mm as Lang.Float?) as Void {
+  function processRainMMfirstHour(mm as Lang.Float?) as Boolean {
     if (alertRainMMfirstHour <= 0 || mm == null) {
-      return;
+      return false;
     }
 
     maxRainMMfirstHour = $.max(maxRainMMfirstHour, mm) as Number;
@@ -324,11 +320,12 @@ class AlertHandler {
     if (mm >= alertRainMMfirstHour) {
       allClearRainMMfirstHour = false;
     }
+    return mm >= alertRainMMfirstHour;
   }
 
-  function processRainMMHour(mm as Lang.Float?) as Void {
+  function processRainMMHour(mm as Lang.Float?) as Boolean {
     if (alertRainMMHour <= 0 || mm == null) {
-      return;
+      return false;
     }
 
     maxRainMMHour = $.max(maxRainMMHour, mm) as Number;
@@ -339,21 +336,24 @@ class AlertHandler {
     if (mm >= alertRainMMHour) {
       allClearRainMMHour = false;
     }
+    return mm >= alertRainMMHour;
   }
 
-  function processWeather(colorValue as Lang.Number?) as Void {
+  function processWeather(condition as Lang.Number?) as Boolean {
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
-    if (statusCondition == NEUTRAL && colorValue != CONDITION_NEUTRAL) {
+    var alerted = isConditionAlert(condition);
+    if (statusCondition == NEUTRAL && alerted) {
       statusCondition = TRIGGERED;
     }
-    if (colorValue != CONDITION_NEUTRAL) {
+    if (alerted) {
       allClearCondition = false;
     }
+    return alerted;
   }
 
-  function processWindSpeed(windSpeedMs as Lang.Float?) as Void {
+  function processWindSpeed(windSpeedMs as Lang.Float?) as Boolean {
     if (alertWindSpeed <= 0.0f || windSpeedMs == null) {
-      return;
+      return false;
     }
     maxWindSpeed = $.max(maxWindSpeed, windSpeedMs) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
@@ -362,7 +362,7 @@ class AlertHandler {
       convertedWind = $.mpsToKmPerHour(windSpeedMs);
     } else if (alertWindIn == SHOW_WIND_METERS) {
       convertedWind = windSpeedMs;
-    } else {      
+    } else {
       convertedWind = $.windSpeedToBeaufort(windSpeedMs).toFloat() as Float;
     }
 
@@ -372,12 +372,14 @@ class AlertHandler {
     if (convertedWind >= alertWindSpeed) {
       allClearWindSpeed = false;
     }
+    return convertedWind >= alertWindSpeed;
   }
 
-  function processWindGust(windSpeedMs as Lang.Float?, windGustMs as Lang.Float?) as Void {
+  function processWindGust(windSpeedMs as Lang.Float?, windGustMs as Lang.Float?) as Boolean {
     if (alertWindGust <= 0 || windSpeedMs == null || windGustMs == null) {
-      return;
+      return false;
     }
+
     var level = $.getWindGustLevel(windSpeedMs, windGustMs);
     maxWindGust = $.max(maxWindGust, level) as Number;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
@@ -387,10 +389,11 @@ class AlertHandler {
     if (level >= alertWindGust) {
       allClearWindGust = false;
     }
+    return level >= alertWindGust;
   }
-  function processDewpoint(dewPoint as Lang.Float?) as Void {
+  function processDewpoint(dewPoint as Lang.Float?) as Boolean {
     if (alertDewpoint <= 0 || dewPoint == null) {
-      return;
+      return false;
     }
     maxDewpoint = $.max(maxDewpoint, dewPoint) as Float;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
@@ -400,6 +403,7 @@ class AlertHandler {
     if (dewPoint >= alertDewpoint) {
       allClearDewpoint = false;
     }
+    return dewPoint >= alertDewpoint;
   }
 
   function processOWMAlert(hasOWMAlert as Boolean) as Void {
@@ -411,21 +415,34 @@ class AlertHandler {
       allClearOWMAlert = false;
     }
   }
-}
 
-function getWindGustLevel(windSpeedMs as Lang.Float, windGustMs as Lang.Float) as Number {
-  var windGustDiff = 0;
-  var level = 0;
-  if (windGustMs > 0) {
-    windGustDiff = windGustMs - windSpeedMs;
-    if (windGustDiff > 12.8) {
-      level = 3;
-    } else if (windGustDiff > 7.7) {
-      level = 2;
-    } else if (windGustDiff > 5.1) {
-      level = 1;
+  hidden function isConditionAlert(condition as Number?) as Boolean {
+    if (condition == null) {
+      return false;
+    }
+    switch (condition) {
+      case Weather.CONDITION_THUNDERSTORMS:
+      case Weather.CONDITION_SCATTERED_THUNDERSTORMS:
+      case Weather.CONDITION_CHANCE_OF_THUNDERSTORMS:
+      case Weather.CONDITION_HEAVY_SHOWERS:
+      case Weather.CONDITION_HEAVY_RAIN:
+      case Weather.CONDITION_FREEZING_RAIN:
+      case Weather.CONDITION_HAIL:
+      case Weather.CONDITION_HEAVY_RAIN_SNOW:
+      case Weather.CONDITION_HEAVY_SNOW:
+      case Weather.CONDITION_WINTRY_MIX:
+      case Weather.CONDITION_RAIN_SNOW:
+      case Weather.CONDITION_SNOW:
+      case Weather.CONDITION_ICE:
+      case Weather.CONDITION_ICE_SNOW:
+      case Weather.CONDITION_HURRICANE:
+      case Weather.CONDITION_TORNADO:
+      case Weather.CONDITION_SANDSTORM:
+      case Weather.CONDITION_TROPICAL_STORM:
+      case Weather.CONDITION_VOLCANIC_ASH:
+        return true;
+      default:
+        return false;
     }
   }
-  // System.println("gust: " + level)
-  return level;
 }

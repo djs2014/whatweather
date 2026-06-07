@@ -12,8 +12,9 @@ class DataFieldSettingsMenu extends WatchUi.Menu2 {
 
 //! Handles menu input and stores the menu data
 class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
-  hidden var _currentMenuItem as MenuItem?;
-  // hidden var _view as DataFieldSettingsView;
+  hidden var _item as MenuItem?;
+  hidden var _storageKey as String = "";
+  hidden var _arrayIndex as Number = -1;
 
   function initialize() {
     // view as DataFieldSettingsView
@@ -22,8 +23,17 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
   }
 
   function onSelect(menuItem as MenuItem) as Void {
-    _currentMenuItem = menuItem;
+    _item = menuItem;
     var id = menuItem.getId();
+
+    // Extract selected storage key and index
+    _storageKey = stringLeft(id, "|", id);
+    var idx = stringRight(id, "|", "").toNumber();
+    if (idx == null) {
+      _arrayIndex = -1;
+    } else {
+      _arrayIndex = idx;
+    }
 
     if (id instanceof String && id.equals("proxy")) {
       var proxyMenu = new WatchUi.Menu2({ :title => "Poi server config" });
@@ -36,7 +46,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       // @@ proxy url - text picker
       // @@ proxy apikey - text picker
       // @@ owm apikey - text picker
-      mi = new WatchUi.MenuItem("Checkinterval minutes |5", null, "checkIntervalMinutes", null);
+      mi = new WatchUi.MenuItem("Checkinterval|5~(minutes)", null, "checkIntervalMinutes", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
 
@@ -48,102 +58,101 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       proxyMenu.addItem(mi);
 
-      // Set initial position
-      // @@ reset to false when used.
-      // var boolean = Storage.getValue("useInitialPosition") ? true : false;
-      // mi.addItem(new WatchUi.ToggleMenuItem("Use initial position", null, "useInitialPosition", boolean, null));
-
-      // mi = new WatchUi.MenuItem("Initial position", null, "initialposition", null);
-      // mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      // mi = new WatchUi.MenuItem("Weather source", null, "weatherDataSource", null);
+      // value = getStorageValue(mi.getId() as String, $._weatherDataSource) as WeatherSource;
+      // mi.setSubLabel($.getWeatherDataSourceText(value));
       // proxyMenu.addItem(mi);
 
       WatchUi.pushView(proxyMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
-    if (id instanceof String && id.equals("showweather")) {
-      var showMenu = new WatchUi.Menu2({ :title => "Show Weather" });
 
-      // @@ Weather source
-      var mi = new WatchUi.MenuItem("Weather source", null, "weatherDataSource", null);
-      var value = getStorageValue(mi.getId() as String, $._weatherDataSource) as WeatherSource;
-      mi.setSubLabel($.getWeatherDataSourceText(value));
-      showMenu.addItem(mi);
+    if (
+      id instanceof String &&
+      (id.equals("show_one_field") ||
+        id.equals("show_large_field") ||
+        id.equals("show_wide_field") ||
+        id.equals("show_small_field"))
+    ) {
+      var label = menuItem.getLabel();
+      var prefix = id.toString();
+      var fieldMenu = new WatchUi.Menu2({ :title => label + " items" });
 
-      var boolean = Storage.getValue("showCurrentForecast") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Current forecast", null, "showCurrentForecast", boolean, null));
-      boolean = Storage.getValue("showMinuteForecast") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Rain first hour", null, "showMinuteForecast", boolean, null));
+      var storageKey = id.toString();
+
+      var array = $.getStorageValue(storageKey, []) as Array<Number>;
+      // Check size
+      if ($.ensureArraySize(array as Array<Application.PropertyValueType>, $.gSizeArrFieldItems, 0)) {
+        $.setStorageValueOrArray(storageKey, array as Array<Application.PropertyValueType>);
+      }
+      var index = 0;
+      $.addMenuItem(fieldMenu, "Hours forecast|0~24", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+
+      index = 1;
+      $.addToggleMenuItem(fieldMenu, "Rain first hour", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      index = 2;
+      $.addToggleMenuItem(fieldMenu, "Zoom when rain", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      index = 3;
+      $.addMenuItem(fieldMenu, "Zoom when more than|.(mm)", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+
+      index = 4;
+      $.addMenuItem(fieldMenu, "Zoom factor|1~10", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+
+      index = 5;
+      $.addMenuItem(fieldMenu, "Zoom columns|1~6", (array[index] as Number).toString(), getKeyAndIndex(storageKey, index));
+
+      index = 6;       
+      $.addToggleMenuItem(fieldMenu, "Details on alert", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      index = 7;
+      $.addToggleMenuItem(fieldMenu, "Clouds", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      index = 8;
+      $.addToggleMenuItem(fieldMenu, "Wind", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
       
-      boolean = Storage.getValue("zoomMinuteForecast") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Zoom rain first hour", null, "zoomMinuteForecast", boolean, null));
-      mi = new WatchUi.MenuItem("Zoom when mm >|0.0~", null, "zoomMinuteForecastMM", null);
-      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      showMenu.addItem(mi);
-      mi = new WatchUi.MenuItem("Zoom factor |1~10", null, "zoomFactorMinuteForecast", null);
-      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      showMenu.addItem(mi);
+      index = 9; // show_one_field|9 etc
+      $.addMenuItem(fieldMenu, "Wind unit", $.getShowWindText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
 
-      mi = new WatchUi.MenuItem("Max hours forecast|0~24", null, "maxHoursForecast", null);
-      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
-      showMenu.addItem(mi);
+      index = 10;
+      $.addToggleMenuItem(fieldMenu, "UV", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      boolean = Storage.getValue("showClouds") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Clouds", null, "showClouds", boolean, null));
+      index = 11;
+      $.addToggleMenuItem(fieldMenu, "Temperature", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      mi = new WatchUi.MenuItem("Wind", null, "showWind", null);
-      value = getStorageValue(mi.getId() as String, $._showWind) as Number;
-      mi.setSubLabel($.getShowWindText(value));
-      showMenu.addItem(mi);
-      boolean = Storage.getValue("showCurrentWind") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Current wind", null, "showCurrentWind", boolean, null));
+      index = 12;
+      $.addToggleMenuItem(fieldMenu, "Relative humidity", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      boolean = Storage.getValue("showRelativeWind") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Wind relative", null, "showRelativeWind", boolean, null));
+      index = 13;
+      $.addToggleMenuItem(fieldMenu, "Pressure sealevel", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      boolean = Storage.getValue("showUVIndex") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("UV", null, "showUVIndex", boolean, null));
-      boolean = Storage.getValue("showTemperature") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Temperature", null, "showTemperature", boolean, null));
-      boolean = Storage.getValue("showRelativeHumidity") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Relative humidity", null, "showRelativeHumidity", boolean, null));
+      index = 14;
+      $.addToggleMenuItem(fieldMenu, "Dewpoint", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      boolean = Storage.getValue("showPressure") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Pressure sealevel", null, "showPressure", boolean, null));
-      boolean = Storage.getValue("showDewpoint") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Dewpoint", null, "showDewpoint", boolean, null));
-      boolean = Storage.getValue("showComfortZone") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Comfort zone", null, "showComfortZone", boolean, null));
-      boolean = Storage.getValue("showWeatherCondition") ? true : false;
-      showMenu.addItem(new WatchUi.ToggleMenuItem("Weather condition", null, "showWeatherCondition", boolean, null));
+      index = 15;
+      $.addToggleMenuItem(fieldMenu, "Comfort zone", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
 
-      WatchUi.pushView(showMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
+      // Weather condition
+      index = 16; // show_one_field|16
+      $.addToggleMenuItem(fieldMenu, "Weather icons", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      index = 17;
+      $.addMenuItem(fieldMenu, "Extra info", $.getShowInfoText(array[index] as Number), $.getKeyAndIndex(storageKey, index));
+
+      index = 18;
+      $.addToggleMenuItem(fieldMenu, "Details on pause", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+            
+      index = 19;
+      $.addToggleMenuItem(fieldMenu, "0 temperature line", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+      
+      index = 20;
+      $.addToggleMenuItem(fieldMenu, "Weather text", null, $.getKeyAndIndex(storageKey, index), array[index] == true);
+
+      WatchUi.pushView(fieldMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
-    if (id instanceof String && id.equals("extrainfo")) {
-      var extraMenu = new WatchUi.Menu2({ :title => "Extra info" });
-      var mi = new WatchUi.MenuItem("One page field", null, "showInfoOneField", null);
-      var value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
-      mi.setSubLabel($.getShowInfoText(value));
-      extraMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Large field", null, "showInfoLargeField", null);
-      value = getStorageValue(mi.getId() as String, $._showInfoLargeField) as Number;
-      mi.setSubLabel($.getShowInfoText(value));
-      extraMenu.addItem(mi);
-
-      mi = new WatchUi.MenuItem("Wide field", null, "showInfoWideField", null);
-      value = getStorageValue(mi.getId() as String, $._showInfoSmallField) as Number;
-      mi.setSubLabel($.getShowInfoText(value));
-      extraMenu.addItem(mi);
-
-      mi = new WatchUi.MenuItem("Small field", null, "showInfoSmallField", null);
-      value = getStorageValue(mi.getId() as String, $._showInfoSmallField) as Number;
-      mi.setSubLabel($.getShowInfoText(value));
-      extraMenu.addItem(mi);
-
-      WatchUi.pushView(extraMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
-      return;
-    }
     if (id instanceof String && id.equals("alerts")) {
       var alertsMenu = new WatchUi.Menu2({ :title => "Alerts" });
 
@@ -164,10 +173,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       alertsMenu.addItem(mi);
 
       mi = new WatchUi.MenuItem("Wind in", null, "alertWindIn", null);
-      var value = getStorageValue(mi.getId() as String, $._alertWindIn) as Number;
-      if (value == SHOW_WIND_NOTHING) { 
-        value = SHOW_WIND_BEAUFORT;
-      }
+      var value = getStorageValue(mi.getId() as String, $._alertWindIn) as Number;      
       var windIn = $.getShowWindText(value);
       mi.setSubLabel(windIn);
       alertsMenu.addItem(mi);
@@ -181,7 +187,7 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getGustLevelText(value));
       alertsMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Dewpoint (C) |0~50", null, "alertLevelDewpoint", null);
+      mi = new WatchUi.MenuItem("Dewpoint|0~50 (C)", null, "alertLevelDewpoint", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       alertsMenu.addItem(mi);
 
@@ -190,7 +196,11 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     if (id instanceof String && id.equals("advanced")) {
       var advancedMenu = new WatchUi.Menu2({ :title => "Advanced" });
 
-      var mi = new WatchUi.MenuItem("Max temperature (C)|0~100", null, "maxTemperature", null);
+      var mi = new WatchUi.MenuItem("Min temperature|-10~50 (C)", null, "minTemperature", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
+      mi = new WatchUi.MenuItem("Max temperature|0~50 (C)", null, "maxTemperature", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
@@ -198,36 +208,40 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Min pressure (hPa)|0~1200", null, "minPressure", null);
+      mi = new WatchUi.MenuItem("Min pressure|0~1200 (hPa)", null, "minPressure", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max pressure (hPa)|0~1200", null, "maxPressure", null);
+      mi = new WatchUi.MenuItem("Max pressure|0~1200 (hPa)", null, "maxPressure", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max rain per hour (mm))|1~20", null, "maxMMRainPerHour", null);
+      mi = new WatchUi.MenuItem("Max rain per hour|1~20 (mm)", null, "maxMMRainPerHour", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       advancedMenu.addItem(mi);
-      
+
+      mi = new WatchUi.MenuItem("Hide details below y-axis|0~100 (%)", null, "percHideDetails", null);
+      mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
+      advancedMenu.addItem(mi);
+
       WatchUi.pushView(advancedMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
     if (id instanceof String && id.equals("comfort")) {
       var comfortMenu = new WatchUi.Menu2({ :title => "Comfort" });
 
-      var mi = new WatchUi.MenuItem("Min humidity (%)|0~100", null, "comfortHumidityMin", null);
+      var mi = new WatchUi.MenuItem("Min humidity|0~100 (%)", null, "comfortHumidityMin", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Max humidity (%)|0~100", null, "comfortHumidityMax", null);
+      mi = new WatchUi.MenuItem("Max humidity|0~100(%)", null, "comfortHumidityMax", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
-      mi = new WatchUi.MenuItem("Min temp (C)|0~100", null, "comfortTempMin", null);
+      mi = new WatchUi.MenuItem("Min temp|-10~100(C)", null, "comfortTempMin", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
-      mi = new WatchUi.MenuItem("Max temp (C)|0~100", null, "comfortTempMax", null);
+      mi = new WatchUi.MenuItem("Max temp|0~100(C)", null, "comfortTempMax", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       comfortMenu.addItem(mi);
 
@@ -250,39 +264,70 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
     }
     if (id instanceof String && id.equals("demo")) {
       var demoMenu = new WatchUi.Menu2({ :title => "Demo" });
-      
+
       var mi = new WatchUi.MenuItem("Scenario alert/rain/wind|0~3", null, "testScenario", null);
       mi.setSubLabel($.getStorageNumberAsString(mi.getId() as String));
       demoMenu.addItem(mi);
 
+      var boolean = Storage.getValue("weather_condition_loop") ? true : false;
+      demoMenu.addItem(new WatchUi.ToggleMenuItem("Loop weather condition", null, "weather_condition_loop", boolean, null));
+
       WatchUi.pushView(demoMenu, new $.GeneralMenuDelegate(), WatchUi.SLIDE_UP);
       return;
     }
-    if (id instanceof String && menuItem instanceof ToggleMenuItem) {
-      Storage.setValue(id as String, menuItem.isEnabled());
+
+    if (id instanceof String && id.equals("weatherDataSource")) {
+      var sp = new selectionMenuPicker("Weather source", id as String);
+      for (var i = 0; i < 4; i++) {
+        sp.add($.getWeatherDataSourceText(i as WeatherSource), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, _item);
+      sp.show();
       return;
     }
+
+    if (id instanceof String && menuItem instanceof ToggleMenuItem) {
+      $.setStorageValueOrArray(id, menuItem.isEnabled());
+      return;
+    }
+
+  }
+
+  function onSelectedSelection(storageKey as String, value as Application.PropertyValueType) as Void {
+    $.setStorageValueOrArray(storageKey, value);
   }
 }
 
 class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   hidden var _item as MenuItem?;
+  hidden var _storageKey as String = "";
+  hidden var _arrayIndex as Number = -1;
+
   hidden var _currentPrompt as String = "";
-  hidden var _debug as Boolean = false;
 
   function initialize() {
     Menu2InputDelegate.initialize();
   }
 
-  function onSelect(item as MenuItem) as Void {
-    _item = item;
-    var id = item.getId();
+  function onSelect(menuItem as MenuItem) as Void {
+    _item = menuItem;
+    var id = menuItem.getId();
+
+    // Extract selected storage key and index
+    _storageKey = stringLeft(id, "|", id);
+    var idx = stringRight(id, "|", "").toNumber();
+    if (idx == null) {
+      _arrayIndex = -1;
+    } else {
+      _arrayIndex = idx;
+    }
+
     if (id instanceof String && id.equals("minimalGPSquality")) {
       var sp = new selectionMenuPicker("Minimal GPS", id as String);
       for (var i = 0; i <= 4; i++) {
         sp.add($.getMinimalGPSqualityText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -291,25 +336,50 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i < 4; i++) {
         sp.add($.getWeatherDataSourceText(i as WeatherSource), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
-    if (id instanceof String && (id.equals("showWind") || id.equals("alertWindIn"))){
+    if (
+      id instanceof String &&
+      (id.equals("showWind") ||
+        id.equals("show_one_field|9") ||
+        id.equals("show_large_field|9") ||
+        id.equals("show_wide_field|9") ||
+        id.equals("show_small_field|9") ||
+        id.equals("alertWindIn"))
+    ) {
       var sp = new selectionMenuPicker("Wind display", id as String);
-      for (var i = 0; i < 4; i++) {
+      for (var i = 0; i < $.SHOW_WIND_COUNT; i++) {
         sp.add($.getShowWindText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
+
+    if (
+      id instanceof String &&
+      (id.equals("show_one_field|17") ||
+        id.equals("show_large_field|17") ||
+        id.equals("show_wide_field|17") ||
+        id.equals("show_small_field|17"))
+    ) {
+      var sp = new selectionMenuPicker("Extra information", id as String);
+      for (var i = 0; i <= 5; i++) {
+        sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, _item);
+      sp.show();
+      return;
+    }
+
     if (id instanceof String && id.equals("showInfoOneField")) {
       var sp = new selectionMenuPicker("One page field", id as String);
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -318,7 +388,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -327,7 +397,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -336,7 +406,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -345,7 +415,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i <= 3; i++) {
         sp.add($.getGustLevelText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
@@ -354,31 +424,32 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       for (var i = 0; i <= 3; i++) {
         sp.add($.getSoundModeText(i), null, i);
       }
-      sp.setOnSelected(self, :onSelectedSelection, item);
+      sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();
       return;
     }
-    if (id instanceof String && item instanceof ToggleMenuItem) {
-      Storage.setValue(id as String, item.isEnabled());
+    if (id instanceof String && _item instanceof ToggleMenuItem) {
+      $.setStorageValueOrArray(id, _item.isEnabled());
       return;
     }
 
     // Numeric input
-    var prompt = item.getLabel();
+    var prompt = _item.getLabel();
+    // System.println(["Numeric input:", prompt]);
     var value = $.getStorageValue(id as String, 0) as Numeric;
     var view = $.getNumericInputView(prompt, value);
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
 
-    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_RIGHT);
+    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_RIGHT);
   }
 
   function onAcceptNumericinput(value as Numeric, subLabel as String) as Void {
     try {
       if (_item != null) {
-        var storageKey = _item.getId() as String;
-
-        Storage.setValue(storageKey, value);
+        // Note contains `storageKey|index` or `storageKey`
+        var key = _item.getId() as String;
+        $.setStorageValueOrArray(key, value);
         (_item as MenuItem).setSubLabel(subLabel);
       }
     } catch (ex) {
@@ -401,7 +472,7 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
     view.setOnAccept(self, :onAcceptNumericinput);
     view.setOnKeypressed(self, :onNumericinput);
 
-    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(_debug, view), WatchUi.SLIDE_IMMEDIATE);
+    Toybox.WatchUi.pushView(view, new $.NumericInputDelegate(view), WatchUi.SLIDE_IMMEDIATE);
   }
 
   //! Handle the back key being pressed
@@ -417,6 +488,20 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
   }
 
   function onSelectedSelection(storageKey as String, value as Application.PropertyValueType) as Void {
-    Storage.setValue(storageKey, value);
+    $.setStorageValueOrArray(storageKey, value);
   }
+}
+
+function addMenuItem(menu as WatchUi.Menu2, label as String, subLabel as String, id as String) {
+  var mi = new WatchUi.MenuItem(label, subLabel, id, null);
+  menu.addItem(mi);
+}
+
+function addToggleMenuItem(menu as WatchUi.Menu2, label as String, subLabel as String?, id as String, enabled as Boolean) {
+  var tmi = new WatchUi.ToggleMenuItem(label, subLabel, id, enabled, null);
+  menu.addItem(tmi);
+}
+
+function getKeyAndIndex(key as String, index as Number) as String {
+  return Lang.format("$1$|$2$", [key, index.toString()]);
 }

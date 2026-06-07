@@ -2,6 +2,7 @@ import Toybox.Lang;
 
 class WeatherPoint {
   var x as Lang.Number = 0;
+  var y as Lang.Number = 0;
   var value as Lang.Numeric = 0;
   var isHidden as Lang.Boolean;
   

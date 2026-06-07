@@ -28,14 +28,23 @@ function compareTo(numberA as Numeric, numberB as Numeric) as Numeric {
   }
 }
 
-function percentageOf(value as Numeric?, max as Numeric?) as Numeric {
+// Given min and max value, calculate the perc of value in this range.
+function percentageOf(value as Numeric?, min as Numeric, max as Numeric?) as Numeric {
   if (value == null || max == null) {
     return 0.0f;
   }
+
   if (max <= 0) {
     return 0.0f;
   }
-  return value / (max / 100.0);
+  var calculatedValue = value - min;
+  var calculatedMax = max - min;
+  if (calculatedMax <= 0) {
+    // min should be smaller than max
+    return 0.0f;
+  }
+
+  return calculatedValue / (calculatedMax / 100.0);
 }
 
 function valueOfPercentage(percentage as Numeric?, maxValue as Numeric?) as Numeric {

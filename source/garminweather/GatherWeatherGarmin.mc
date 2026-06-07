@@ -5,127 +5,153 @@ import Toybox.System;
 import Toybox.Time;
 import Toybox.Time.Gregorian;
 
-// class GarminWeather {
 function getLatestGarminWeather() as WeatherData {
-  var WEATHER_CONDITION_UNKNOWN = 53;
   try {
     var garCurrent = Weather.getCurrentConditions();
     if (garCurrent == null) {
       return emptyWeatherData();
     }
-
-    var cc = new WeatherCurrent();
-    cc.precipitationChance = $.getNumericValue(garCurrent.precipitationChance, 0) as Lang.Number;
-    cc.forecastTime = null; //@@ needed?
-
+    var wo = new WeatherObservation();
     var position = garCurrent.observationLocationPosition;
     if (position != null) {
       var location = position.toDegrees();
-      cc.lat = $.getNumericValue(location[0], 0.0d) as Lang.Double;
-      cc.lon = $.getNumericValue(location[1], 0.0d) as Lang.Double;
+      wo.lat = $.getNumericValueOrDefault(location[0], 0.0d) as Lang.Double;
+      wo.lon = $.getNumericValueOrDefault(location[1], 0.0d) as Lang.Double;
     }
-    cc.observationLocationName = "G" + cc.lat + "," + cc.lon;
-    // cc.observationLocationName = $.getStringValue(garCurrent.observationLocationName, "") as Lang.String;
-    // // Skip after first ,
-    // var comma = cc.observationLocationName.find(",");
-    // if (comma != null) {
-    //   var onlyName = (cc.observationLocationName as Lang.String).substring(0, comma);
-    //   if (onlyName != null) {
-    //     cc.observationLocationName = onlyName as Lang.String;
-    //   }
-    // }
-
-    cc.observationTime = garCurrent.observationTime;
-    cc.clouds = 0; // Not available
-    cc.uvi = null; // Not available
-    cc.condition = $.getNumericValue(garCurrent.condition, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
-    cc.windBearing = garCurrent.windBearing;
-    cc.windSpeed = garCurrent.windSpeed;
-    cc.temperature = garCurrent.temperature;
-    cc.relativeHumidity = garCurrent.relativeHumidity;
-    cc.dewPoint = calculateDewpoint(cc.temperature, cc.relativeHumidity);
-
-    // TEST
-    // cc.windGust = 15.0;
-
+    wo.observationLocationName = "G" + wo.lat + "," + wo.lon;
+    wo.observationTime = garCurrent.observationTime;
     if (DEBUG_DETAILS) {
-      System.println("Gar Current: " + cc.info());
+      System.println("Gar Observation: " + wo.info());
     }
 
-    var mm = new WeatherMinutely(); // Not available for Garmin
-    // @@TEST weather minutely
+    // Not available for Garmin, rain first hour.
+    var mm = new WeatherMinutely();
+    // @@ TEST weather minutely
     // mm.pops = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,  0.12,  0.159,  0.198,  0.237,  0.9188,  1.6006,  2.2824,  2.9642,  3.646,  3.4636,  3.2812,  3.0988,  2.9164,  2.734,  2.5972,  2.4604,  2.3236,  2.1868,  2.05,  2.05,  2.05,  2.05,  2.05,  2.05,  2.1136,  2.1772,  2.2408,  2.3044,  2.368,  2.4412,  2.5144,  2.5876,  2.6608,  2.734,  2.734,  2.734,  2.734,  2.734,  2.734,  2.6608,  2.5876,  2.5144,  2.4412] as Array<Float>;
     // mm.max = 2.0;
     // mm.pops = [ 0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,  0.12,  0.159,  0.198,  0.237,  0.9188,  0.6006,  0.2824,  0.9642,  0.646,  0.4636,  0.2812,  0.0988,  0.9164,  0.734,  0.5972,  0.4604,  0.3236,  0.1868,  0.05,  0.05,  0.05,  0.05,  0.05,  0.05,  0.1136,  0.1772,  0.2408,  0.3044,  0.368,  0.4412,  0.5144,  0.5876,  0.6608,  0.734,  0.734,  0.734,  0.734,  0.734,  0.734,  0.6608,  0.5876,  0.5144,  0.4412] as Array<Float>;
     // mm.max = 0.8;
 
     var hh = [] as Array<WeatherHourly>;
-    var garHourlyForecast = Weather.getHourlyForecast();
-    if (garHourlyForecast != null) {
-      for (var idx = 0; idx < garHourlyForecast.size(); idx += 1) {
-        var garForecast = garHourlyForecast[idx] as Weather.HourlyForecast;
-        if (garForecast.forecastTime != null) {
-          var hf = new WeatherHourly();
-          hf.forecastTime = garForecast.forecastTime as Time.Moment;          
-          if (garForecast has :cloudCover) {
-            hf.clouds = $.getNumericValue(garForecast.cloudCover, 0) as Lang.Number; 
-          } else {
-            hf.clouds = 0; // Not availablelastUpdateddity;
-          }       
-          if (garForecast has :uvIndex) {
-            hf.uvi = $.getNumericValue(garForecast.uvIndex, 0.0f) as Lang.Float; 
-          } else {            
-            hf.uvi = null; // Not available
-          }
-          hf.precipitationChance = $.getNumericValue(garForecast.precipitationChance, 0) as Lang.Number;
-          hf.condition =
-            $.getNumericValue(garForecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
-          hf.windBearing = garForecast.windBearing;
-          hf.windSpeed = garForecast.windSpeed;
-          hf.temperature = garForecast.temperature;
-          hf.relativeHumidity = garForecast.relativeHumidity;
-          if (garForecast has :dewPoint) {
-            hf.dewPoint = $.getNumericValue(garForecast.dewPoint, 0.0f) as Lang.Float; 
-          } else {            
-            hf.dewPoint = calculateDewpoint(hf.temperature, hf.relativeHumidity);
-          }
-
-          // TEST
-          // hf.windGust = 5.0;
-
-          if (DEBUG_DETAILS) {
-            System.println("Gar Hourly: " + hf.info());
-          }
-          hh.add(hf);
-        }
-      }
+    // Note: hourly forecast from garmin starts at next hour, currentconditions contains first hour.
+    // Ex. now is 025-11-30 10:10:00, hourlyforecast starts with 025-11-30 11:00:00
+    var hf1 = $.getGarminHourly(wo.observationTime, garCurrent);
+    if (DEBUG_DETAILS) {
+      System.println("Gar Hourly current: " + hf1.info());
     }
 
-    // @@ TEST, check server code about repeating alerts.
-    // var alerts = [];
-    // var wa = new WeatherAlert();
-    // wa.event = "Moderate snow warning 5";
-    // //wa.description = "First alert message. Risk of slippery roads due to (earlier) sleet/snowfall.";
-    // wa.description =
-    //   "* WHERE...Portions of east central and northeast Kansas and\ncentral, north central, northeast, northwest and west central\nMissouri.\n\n* WHEN...Until 10 AM CDT this morning.\n* IMPACTS...Frost and freeze conditions will kill crops, other\nsensitive vegetation and\npossibly damage unprotected outdoor plumbing.";
+    hh.add(hf1);
 
-    // wa.description = $.stringReplace(wa.description, "\n", " ");
-    // wa.description = $.stringReplace(wa.description, "\r", " ");
+    var garHourlyForecast = Weather.getHourlyForecast();
 
-    // wa.tags = ["Snow/Ice"] as Lang.Array<String>;
-    // //  cc.observationTime = new Time.Moment($.getDictionaryValue(bg_cc, "dt", 0) as Number);
-    // wa.start = new Time.Moment(1678474800);
-    // wa.end = new Time.Moment(1678528800);
-    // alerts.add(wa);
-    // return new WeatherData(cc, mm, hh, alerts as Array<WeatherAlert>, cc.observationTime);
+    if (garHourlyForecast == null) {
+      return new WeatherData(wo, mm, hh, [] as Array<WeatherAlert>, wo.observationTime);
+    }
+    /* BUG or FEATURE
+    // Get only the hours we need, start from current hour (set minutes to 0)
+    var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+    System.println(["Gar start time pre:", $.getDateTimeString(Time.now())]);
+    // [Gar start time pre:, 2025-11-30 20:32:53] OK
+    var todayStartOfhour = Gregorian.moment({
+      :year => today.year,
+      :month => today.month,
+      :day => today.day,
+      :hour => today.hour,
+      // :minute => 0,
+      // :second => 0 
+      });
+    System.println(["Gar start time init:", $.getDateTimeString(todayStartOfhour)]);
+    // [Gar start time init:, 2025-11-30 21:00:00] -> 1 hour later?, should this not be 20:00:00
+    // var oneHour = Gregorian.duration({ :hours => 1 });
+    var oneHour = Gregorian.duration({ :hours => 1 }); 
+    var startTime = todayStartOfhour.subtract(oneHour);
+    System.println(["Gar start time forecast hourly:", $.getDateTimeString(startTime)]);
+    // [Gar start time forecast hourly:, 2025-11-30 20:00:00]
+*/
+    var nowSeconds = Time.now().value() - 3600;
+    var cutOffTime = new Time.Moment(nowSeconds);
+    if (DEBUG_DETAILS) {
+      System.println("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
+    }
+    // Plus 1, for handling hour change. Not showing empty column
+    var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
 
-    // "sender_name": "KNMI Koninklijk Nederlands Meteorologisch Instituut",
+    var max = garHourlyForecast.size();
+    for (var idx = 0; idx < max; idx += 1) {
+      if (hh.size() > maxHoursDisplayed) {
+        if (DEBUG_DETAILS) {
+          System.println(["Gar skip forecast:", idx, "max display:", maxHoursDisplayed]);
+        }
+        continue;
+      }
 
-    return new WeatherData(cc, mm, hh, [] as Array<WeatherAlert>, cc.observationTime);
+      var garForecast = garHourlyForecast[idx] as Weather.HourlyForecast;
+      if (garForecast.forecastTime == null) {
+        continue;
+      }
+      // Skip forecast of different days/previous hours
+      var fcTime = garForecast.forecastTime as Time.Moment;
+      if (fcTime.lessThan(cutOffTime)) {
+        if (DEBUG_DETAILS) {
+          System.println(["Gar skip forecast hour:", $.getDateTimeString(fcTime)]);
+        }
+        continue;
+      }
+
+      var hf = $.getGarminHourly(fcTime, garForecast);
+      hh.add(hf);
+
+      if (DEBUG_DETAILS) {
+        System.println("Gar Hourly: " + hf.info());
+      }
+    } // for garHourlyForecast
+
+    return new WeatherData(wo, mm, hh, [] as Array<WeatherAlert>, wo.observationTime);
   } catch (ex) {
     ex.printStackTrace();
     return emptyWeatherData();
   }
+}
+
+function getGarminHourly(forecastTime as Moment, forecast as CurrentConditions or HourlyForecast) as WeatherHourly {
+  var WEATHER_CONDITION_UNKNOWN = 53;
+  var hf = new WeatherHourly();
+
+  hf.forecastTime = forecastTime;
+  var today = Gregorian.info(forecastTime, Time.FORMAT_MEDIUM);
+  hf.hour = today.hour;
+  
+  if (forecast has :cloudCover) {
+    hf.clouds = $.getNumericValueOrDefault(forecast.cloudCover, 0) as Lang.Number;
+  } else {
+    hf.clouds = 0;
+  }
+
+  if (forecast has :uvIndex) {
+    hf.uvi = $.getNumericValueOrDefault(forecast.uvIndex, 0.0f) as Lang.Float;
+  } else {
+    hf.uvi = 0.0f;
+  }
+
+  hf.precipitationChance = $.getNumericValueOrDefault(forecast.precipitationChance, 0) as Lang.Number;
+  hf.condition = $.getNumericValueOrDefault(forecast.condition as Lang.Number?, WEATHER_CONDITION_UNKNOWN) as Lang.Number;
+  hf.windBearing = $.getNumericValueOrDefault(forecast.windBearing, 0) as Lang.Number;
+  hf.windSpeed = $.getNumericValueOrDefault(forecast.windSpeed, 0.0f) as Lang.Float;
+  hf.temperature = $.getNumericValueOrDefault(forecast.temperature, 0.0f) as Lang.Numeric;
+  hf.relativeHumidity = $.getNumericValueOrDefault(forecast.relativeHumidity, 0) as Lang.Number;
+  if (forecast has :dewPoint) {
+    hf.dewPoint = $.getNumericValueOrDefault(forecast.dewPoint, 0.0f) as Lang.Float;
+  } else {
+    hf.dewPoint = calculateDewpoint(hf.temperature, hf.relativeHumidity);
+  }
+  if (forecast has :pressure) {
+    var pascal = $.getNumericValueOrDefault(forecast.pressure, 0) as Lang.Number;
+    hf.pressure = pascal / 100;
+  }
+
+  // TEST
+  // hf.windGust = 20.0;
+  return hf;
 }
 
 function calculateDewpoint(temperatureCelcius as Numeric?, relativeHumidity as Number?) as Float {
@@ -135,4 +161,3 @@ function calculateDewpoint(temperatureCelcius as Numeric?, relativeHumidity as N
   // https://learnmetrics.com/dew-point-calculator-chart-formula/
   return (temperatureCelcius as Number) - (100 - (relativeHumidity as Number)) / 5.0;
 }
-//}

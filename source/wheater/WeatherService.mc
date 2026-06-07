@@ -21,63 +21,52 @@ enum apiVersion {
   owmOneCall30 = 1,
 }
 
+// Remove forecasts from past hour
 (:typecheck(disableBackgroundCheck))
 function purgePastWeatherdata(data as WeatherData?) as WeatherData {
   if (data == null) {
     return emptyWeatherData();
   }
+
+  // Get start of the hour, minus 1 hour
+  var nowSeconds = Time.now().value() - 3600;
+  var cutOffTime = new Time.Moment(nowSeconds);
+  if (DEBUG_DETAILS) {
+    System.println("purgePastWeatherdata cutOffTime: " + $.getDateTimeString(cutOffTime));
+  }  
   var wData = data as WeatherData;
+  var newIdx = -1;
   var max = wData.hourly.size();
-  var idxCurrent = -1;
-  var forecast;
   for (var idx = 0; idx < max; idx += 1) {
-    forecast = wData.hourly[idx] as WeatherHourly;
-    if ($.DEBUG_DETAILS) {
-      System.println("purgePastWeatherdata?: " + $.getDateTimeString(forecast.forecastTime));
+    var weatherHourly = wData.hourly[idx] as WeatherHourly;
+    if (DEBUG_DETAILS) {
+      System.println("purgePastWeatherdata?: " + $.getDateTimeString(weatherHourly.forecastTime));
     }
 
-    if (forecast.forecastTime.compare(Time.now()) < 0) {
-      // Is a past forecast
-      idxCurrent = idx;
-      if ($.DEBUG_DETAILS) {
-        System.println("purgePastWeatherdata past data!: " + $.getDateTimeString(forecast.forecastTime));
+    if (weatherHourly.forecastTime.lessThan(cutOffTime)) {
+      // Is a past hour
+      if (DEBUG_DETAILS) {
+        System.println("purgePastWeatherdata past hour!: " + $.getDateTimeString(weatherHourly.forecastTime));
       }
+      newIdx = idx;
       wData.setChanged(true);
     }
   }
-  if (idxCurrent > -1) {
-    // Remove old entries, start after current hour
-    forecast = wData.hourly[idxCurrent] as WeatherHourly;
-    wData.hourly = wData.hourly.slice(idxCurrent + 1, null);
-
-    var current = wData.current as WeatherCurrent;
-    current.forecastTime = forecast.forecastTime;
-    current.clouds = forecast.clouds;
-    current.precipitationChance = forecast.precipitationChance;
-    current.condition = forecast.condition;
-    current.windBearing = forecast.windBearing;
-    current.windSpeed = forecast.windSpeed;
-    current.windGust = forecast.windGust;
-    current.relativeHumidity = forecast.relativeHumidity;
-    current.temperature = forecast.temperature;
-    current.uvi = forecast.uvi;
-    wData.current = current;
+  if (newIdx > -1) {
+    wData.hourly = wData.hourly.slice(newIdx + 1, null);
   }
   return wData;
 }
 
-// For OWM first entry contains current data
 (:typecheck(disableBackgroundCheck))
-function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as WeatherData {
-
- // as Application.PropertyValueType
+function toWeatherData(data as Dictionary?) as WeatherData {
   try {
     if (data == null) {
       return emptyWeatherData();
     }
     var bgData = data as Dictionary;
 
-    var cc = new WeatherCurrent();
+    var wo = new WeatherObservation();
     var hh = [] as Array<WeatherHourly>;
     var mm = new WeatherMinutely();
     var al = [] as Array<WeatherAlert>;
@@ -87,69 +76,83 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
     var minutely = bgData["minutely"];
     var alerts = bgData["alerts"];
 
-    if (current != null && hourly != null) {
+    if (current != null) {
       var bg_cc = current as Dictionary;
       var bg_hh = hourly as Array<Array<Numeric> >;
 
-      cc.lat = ($.getDictionaryValue(bg_cc, "lat", 0.0d) as Double).toDouble();
-      cc.lon = ($.getDictionaryValue(bg_cc, "lon", 0.0d) as Double).toDouble();
-      cc.observationLocationName = cc.lat + "," + cc.lon;
-      cc.observationTime = new Time.Moment($.getDictionaryValue(bg_cc, "dt", 0) as Number);
+      wo.lat = ($.getDictionaryValue(bg_cc, "lat", 0.0d) as Double).toDouble();
+      wo.lon = ($.getDictionaryValue(bg_cc, "lon", 0.0d) as Double).toDouble();
+      wo.observationLocationName = wo.lat + "," + wo.lon;
+      wo.observationTime = new Time.Moment($.getDictionaryValue(bg_cc, "dt", 0) as Number);
 
-      var carr = $.getDictionaryValue(bg_cc, "data", [] as Array<Numeric>) as Array<Numeric>;
-      var firstHour = carr;
-      if (firstEntryIsCurrent && bg_hh.size() > 0) {
-        firstHour = bg_hh[0] as Array<Numeric>;
-      }
-      // First entry of hourly - > clouds + pop goes to current (it is the current hour)
-      // @@ todo, fix proxy to get pop value from daily
-      cc.forecastTime = new Time.Moment(($.getNumericValue(firstHour[0], 0.0) as Number).toNumber());
-      cc.clouds = ($.getNumericValue(firstHour[1], 0) as Number).toNumber();
-      cc.precipitationChance = (($.getNumericValue(firstHour[2], 0.0) as Float) * 100.0).toNumber();
-
-      cc.condition = ($.getNumericValue(carr[3], 0) as Number).toNumber();
-      cc.uvi = ($.getNumericValue(carr[4], 0.0) as Float).toFloat();
-      cc.windSpeed = ($.getNumericValue(carr[5], 0) as Float).toFloat();
-      cc.windBearing = ($.getNumericValue(carr[6], 0) as Number).toNumber();
-      cc.temperature = ($.getNumericValue(carr[7], 0) as Number).toNumber(); // as Float;
-      cc.pressure = ($.getNumericValue(carr[8], 0) as Number).toNumber();
-      cc.relativeHumidity = ($.getNumericValue(carr[9], 0) as Number).toNumber();
-      cc.dewPoint = ($.getNumericValue(carr[10], 0.0) as Float).toFloat();
-      cc.rain1hr = ($.getNumericValue(carr[11], 0.0) as Float).toFloat();
-      cc.snow1hr = ($.getNumericValue(carr[12], 0.0) as Float).toFloat();
-      cc.windGust = ($.getNumericValue(carr[13], 0) as Float).toFloat();
-
-      System.println("bgData Current: " + cc.info());
+      System.println("OWM Observation: " + wo.info());
     }
 
     if (hourly != null) {
-      // there are only values in array to compress the payload
       var bg_hh = hourly as Array<Array>;
-      var startIdx = 0;
+      /*
+      // Get only the hours we need, start from current hour
+      var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
 
-      if (firstEntryIsCurrent) {
-        startIdx = 1;
-      }
-      for (var i = startIdx; i < bg_hh.size(); i++) {
+      var todayStartOfhour = Gregorian.moment({
+        :year => today.year,
+        :month => today.month,
+        :day => today.day,
+        :hour => today.hour,
+        :minute => 0,
+        :second => 0,
+      });
+
+      var oneHour = Gregorian.duration({ :hours => 1 });
+      var startTime = todayStartOfhour.subtract(oneHour);
+      System.println(["OWM start time forecast hourly:", $.getDateTimeString(startTime)]);
+*/
+      // Get start of the hour, minus 1 hour
+      var nowSeconds = Time.now().value() - 3600;
+      var cutOffTime = new Time.Moment(nowSeconds);
+      System.println("OWM cutOffTime: " + $.getDateTimeString(cutOffTime));
+
+      // Plus 1, for handling hour change. Not showing empty column
+      var maxHoursDisplayed = ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
+
+      var max = bg_hh.size();
+
+      // There are only values in array to compress the payload
+      for (var idx = 0; idx < max; idx++) {
+        if (bg_hh.size() > maxHoursDisplayed) {
+          System.println(["OWM skip forecast:", idx, "max display:", maxHoursDisplayed]);
+          continue;
+        }
+
         var hf = new WeatherHourly();
-        var arr = bg_hh[i] as Array<Numeric>;
-        hf.forecastTime = new Time.Moment(($.getNumericValue(arr[0], 0) as Number).toNumber());
-        hf.clouds = ($.getNumericValue(arr[1], 0) as Number).toNumber();
-        // OWM pop from o.o - 1
-        hf.precipitationChance = (($.getNumericValue(arr[2], 0.0) as Float) * 100.0).toNumber();
-        hf.condition = ($.getNumericValue(arr[3], 0) as Number).toNumber();
-        hf.uvi = ($.getNumericValue(arr[4], 0.0) as Float).toFloat();
-        hf.windSpeed = ($.getNumericValue(arr[5], 0) as Float).toFloat();
-        hf.windBearing = ($.getNumericValue(arr[6], 0) as Number).toNumber();
-        hf.temperature = ($.getNumericValue(arr[7], 0) as Number).toNumber();
-        hf.pressure = ($.getNumericValue(arr[8], 0) as Number).toNumber();
-        hf.relativeHumidity = ($.getNumericValue(arr[9], 0) as Number).toNumber();
-        hf.dewPoint = ($.getNumericValue(arr[10], 0.0) as Float).toFloat();
-        hf.rain1hr = ($.getNumericValue(arr[11], 0.0) as Float).toFloat();
-        hf.snow1hr = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
-        hf.windGust = ($.getNumericValue(arr[12], 0.0) as Float).toFloat();
+        var arr = bg_hh[idx] as Array<Numeric>;
+        var fcTime = new Time.Moment(($.getNumericValueOrDefault(arr[0], 0) as Number).toNumber());
 
-        System.println("bgData Hourly: " + hf.info());
+        // Skip forecast of different days/previous hours
+        if (fcTime.lessThan(cutOffTime)) {
+          System.println(["OWM skip forecast hour:", $.getDateTimeString(fcTime)]);
+          continue;
+        }
+
+        hf.forecastTime = fcTime;
+        var today = Gregorian.info(fcTime, Time.FORMAT_MEDIUM);
+        hf.hour = today.hour;
+        hf.clouds = ($.getNumericValueOrDefault(arr[1], 0) as Number).toNumber();
+        // OWM pop from o.o - 1
+        hf.precipitationChance = (($.getNumericValueOrDefault(arr[2], 0.0) as Float) * 100.0).toNumber();
+        hf.condition = ($.getNumericValueOrDefault(arr[3], 0) as Number).toNumber();
+        hf.uvi = ($.getNumericValueOrDefault(arr[4], 0.0) as Float).toFloat();
+        hf.windSpeed = ($.getNumericValueOrDefault(arr[5], 0) as Float).toFloat();
+        hf.windBearing = ($.getNumericValueOrDefault(arr[6], 0) as Number).toNumber();
+        hf.temperature = ($.getNumericValueOrDefault(arr[7], 0) as Number).toNumber();
+        hf.pressure = ($.getNumericValueOrDefault(arr[8], 0) as Number).toNumber();
+        hf.relativeHumidity = ($.getNumericValueOrDefault(arr[9], 0) as Number).toNumber();
+        hf.dewPoint = ($.getNumericValueOrDefault(arr[10], 0.0) as Float).toFloat();
+        hf.rain1hr = ($.getNumericValueOrDefault(arr[11], 0.0) as Float).toFloat();
+        hf.snow1hr = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
+        hf.windGust = ($.getNumericValueOrDefault(arr[12], 0.0) as Float).toFloat();
+
+        System.println("OWM Hourly: " + hf.info());
         hh.add(hf);
       }
     }
@@ -166,7 +169,7 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
           mm.pops.add(bg_pops[i] as Float);
           // System.println("bgData minutely " + i.format("%d") + ": " +  (bg_pops[i] as Float).format("%.1f"));
         }
-        System.println("Size of minutely: " + mm.pops.size());
+        System.println("OWM size of minutely: " + mm.pops.size());
       }
     }
 
@@ -175,20 +178,21 @@ function toWeatherData(data as Dictionary?, firstEntryIsCurrent as Boolean) as W
       for (var i = 0; i < bg_al.size(); i++) {
         var wal = new WeatherAlert();
         var warr = bg_al[i] as Array<Numeric or String>;
-        wal.event = $.getStringValue(warr[0] as String, "") as String;
-        wal.start = new Time.Moment(($.getNumericValue(warr[1] as Number, 0.0) as Number).toNumber());
-        wal.end = new Time.Moment(($.getNumericValue(warr[2] as Number, 0.0) as Number).toNumber());
-        wal.description = $.getStringValue(warr[3] as String, "") as String;
-        wal.description = $.stringReplace(wal.description, "\n"," ");
-        wal.description = $.stringReplace(wal.description, "\r"," ");
-        System.println("bgData Alert: " + wal.info());
+        wal.event = $.getStringValueOrDefault(warr[0] as String, "") as String;
+        wal.start = new Time.Moment(($.getNumericValueOrDefault(warr[1] as Number, 0.0) as Number).toNumber());
+        wal.end = new Time.Moment(($.getNumericValueOrDefault(warr[2] as Number, 0.0) as Number).toNumber());
+        wal.description = $.getStringValueOrDefault(warr[3] as String, "") as String;
+        wal.description = $.stringReplace(wal.description, "\n", " ");
+        wal.description = $.stringReplace(wal.description, "\r", " ");
+        System.println("OWM Alert: " + wal.info());
         al.add(wal);
       }
     }
-    var wd = new WeatherData(cc, mm, hh, al, cc.observationTime);
+    var wd = new WeatherData(wo, mm, hh, al, wo.observationTime);
     wd.setChanged(true);
     return wd;
   } catch (ex) {
+    System.println("Error toWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }
@@ -221,39 +225,12 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
 
     switch (source) {
       case wsGarminFirst:
-        wData.current.precipitationChanceOther = bgData.current.precipitationChance;
-        wData.current.conditionOther = bgData.current.condition;
-        if (wData.current.uvi == null) {
-          wData.current.uvi = bgData.current.uvi;
-        }
-        if (wData.current.clouds == null) {
-          wData.current.clouds = bgData.current.clouds;
-        }
-        if (wData.current.dewPoint == null) {
-          wData.current.dewPoint = bgData.current.dewPoint;
-        }
-        if (wData.current.pressure == null) {
-          wData.current.pressure = bgData.current.pressure;
-        }
-        if (wData.current.rain1hr == null) {
-          wData.current.rain1hr = bgData.current.rain1hr;
-        }
-        if (wData.current.snow1hr == null) {
-          wData.current.rain1hr = bgData.current.snow1hr;
-        }
-        if (wData.current.windGust == null) {
-          wData.current.windGust = bgData.current.windGust;
-        }
-
+        // Not available in garmin data (yet)
         wData.minutely = bgData.minutely;
         wData.alerts = bgData.alerts;
         if (bgData.changed) {
           wData.changed = true;
         }
-        break;
-      case wsOWMFirst:
-        wData.current.precipitationChanceOther = garminData.current.precipitationChance;
-        wData.current.conditionOther = garminData.current.condition;
         break;
     }
 
@@ -266,25 +243,25 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
           case wsGarminFirst:
             wData.hourly[h].precipitationChanceOther = bgData.hourly[h].precipitationChance;
             wData.hourly[h].conditionOther = bgData.hourly[h].condition;
-            if (wData.hourly[h].uvi == null) {
+            if (wData.hourly[h].uvi == 0) {
               wData.hourly[h].uvi = bgData.hourly[h].uvi;
             }
-            if (wData.hourly[h].clouds == null) {
+            if (wData.hourly[h].clouds == 0) {
               wData.hourly[h].clouds = bgData.hourly[h].clouds;
             }
-            if (wData.hourly[h].dewPoint == null) {
+            if (wData.hourly[h].dewPoint == 0) {
               wData.hourly[h].dewPoint = bgData.hourly[h].dewPoint;
             }
-            if (wData.hourly[h].pressure == null) {
+            if (wData.hourly[h].pressure == 0) {
               wData.hourly[h].pressure = bgData.hourly[h].pressure;
             }
-            if (wData.hourly[h].rain1hr == null) {
+            if (wData.hourly[h].rain1hr == 0) {
               wData.hourly[h].rain1hr = bgData.hourly[h].rain1hr;
             }
-            if (wData.hourly[h].snow1hr == null) {
+            if (wData.hourly[h].snow1hr == 0) {
               wData.hourly[h].snow1hr = bgData.hourly[h].snow1hr;
             }
-            if (wData.hourly[h].windGust == null) {
+            if (wData.hourly[h].windGust == 0) {
               wData.hourly[h].windGust = bgData.hourly[h].windGust;
             }
             break;
@@ -297,6 +274,7 @@ function mergeWeatherData(garminData as WeatherData, bgData as WeatherData, sour
     }
     return wData;
   } catch (ex) {
+     System.println("Error mergeWeatherData: " + ex.getErrorMessage());
     ex.printStackTrace();
     return emptyWeatherData();
   }
@@ -331,10 +309,10 @@ class WeatherDataCheck {
   function initialize(data as WeatherData?) {
     if (data != null) {
       var d = data as WeatherData;
-      time = $.getShortTimeString(d.current.observationTime);
-      lat = getDoubleAsStringValue(d.current.lat);
-      lon = getDoubleAsStringValue(d.current.lon);
-      name = data.current.observationLocationName;
+      time = $.getShortTimeString(d.observation.observationTime);
+      lat = getDoubleAsStringValue(d.observation.lat);
+      lon = getDoubleAsStringValue(d.observation.lon);
+      name = data.observation.observationLocationName;
     }
   }
 

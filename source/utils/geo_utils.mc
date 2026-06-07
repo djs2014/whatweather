@@ -64,7 +64,7 @@ function getRhumbLineBearing(latFrom as Numeric, lonFrom as Numeric, latTo as Nu
   // return the angle, normalized
   // not allowed to `modulo` double values, truncate the value to integer
   // value
-  return ($.rad2deg(Math.atan2(dLon, dPhi)) + 360).toNumber() % 360;
+  return (($.rad2deg(Math.atan2(dLon, dPhi)) + 360).toNumber() % 360).toNumber();
 }
 
 // bearing in degrees
@@ -128,7 +128,7 @@ function getCompassDirection(bearing as Numeric) as String {
 // bearing degrees 0 is North, 90 is East, 180 is South, 270 is West
 function getPointOnCircle(x as Number, y as Number, angleInDegrees as Number, radius as Numeric) as Point2D {
   // Convert from degrees to radians
-  angleInDegrees = angleInDegrees % 360;
+  angleInDegrees = ((angleInDegrees % 360).toNumber());
   var px = x + radius * Math.cos((angleInDegrees * Math.PI) / 180);
   var py = y - radius * Math.sin((angleInDegrees * Math.PI) / 180);
 
@@ -139,7 +139,7 @@ function getBearingPointOnCircle(x as Number, y as Number, bearingInDegrees as N
   // convert to trigonometry
   bearingInDegrees = bearingInDegrees + 90;
   // Convert from degrees to radians
-  bearingInDegrees = bearingInDegrees % 360;
+  bearingInDegrees = ((bearingInDegrees % 360).toNumber());
   // swap x
   var px = x - radius * Math.cos((bearingInDegrees * Math.PI) / 180);
   var py = y - radius * Math.sin((bearingInDegrees * Math.PI) / 180);
