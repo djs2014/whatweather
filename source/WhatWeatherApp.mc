@@ -301,7 +301,6 @@ class WhatWeatherApp extends Application.AppBase {
   }
 
   public function getServiceDelegate() as [System.ServiceDelegate] {
-    System.println("getServiceDelegate start bg task:");
     return [new BackgroundServiceDelegate()];
   }
 
@@ -316,7 +315,7 @@ class WhatWeatherApp extends Application.AppBase {
     }
 
     var bgHandler = $.getBGServiceHandler();
-    bgHandler.onBackgroundData(data as Application.PropertyValueType);
+    bgHandler.onBackgroundData(data);
 
     WatchUi.requestUpdate();
   }

@@ -1,4 +1,8 @@
-onlayout get field array -> ook voor metrics
+onbackgrounddata -> remove nested callbacks
+-> set do temp variable and will pickup by next compute
+
+use logInfo
+check null checks etc.
 
 thunder icon higher
 text alternate row 

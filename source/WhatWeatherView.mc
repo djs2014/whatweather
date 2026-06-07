@@ -106,7 +106,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mCurrentLocation.setOnLocationChanged(self, :onLocationChanged);
 
     var mBGServiceHandler = $.getBGServiceHandler();
-    mBGServiceHandler.setOnBackgroundData(self, :onBackgroundDataView);
+    mBGServiceHandler.setOnBackgroundData(self, :onBackgroundDataReceived);
     mBGServiceHandler.setCurrentLocation(mCurrentLocation);
 
     mAlertHandler = $.getAlertHandler();
@@ -118,23 +118,33 @@ class WhatWeatherView extends WatchUi.DataField {
     mLon = degrees[1];
   }
 
-  function onBackgroundDataView(data as Application.PropertyValueType) as Void {
-    System.println("onBackgroundDataView convert to weatherdata");
+  public var incomingWeatherData as Dictionary? = null;
+
+  function onBackgroundDataReceived(data as Dictionary?) as Void {
+    incomingWeatherData = data;
+  }
+
+  function processIncomingWeatherData() as Void {
+    if (incomingWeatherData == null) {
+      return;
+    }
     try {
-      mBgWeatherData = $.toWeatherData(data as Dictionary);
+      $.logInfo("processIncomingWeatherData start");
+      mBgWeatherData = $.toWeatherData(incomingWeatherData);
+      incomingWeatherData = null;
+
       var mBGServiceHandler = $.getBGServiceHandler();
       mBGServiceHandler.setLastObservationMoment(
         mBgWeatherData.getObservationTime()
       );
       mTriggerCheckWeatherAlerts = true;
-      data = null;
-      System.println("onBackgroundDataView end");
+      $.logInfo("processIncomingWeatherData end");
     } catch (ex) {
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
+      incomingWeatherData = null;
     }
   }
-
   function onLayout(dc as Dc) as Void {
     dc.clearClip();
 
@@ -144,6 +154,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function compute(info as Activity.Info) as Void {
     try {
+      processIncomingWeatherData();
+
       var mBGServiceHandler = $.getBGServiceHandler();
 
       if ($.gSettingsChanged) {
@@ -236,23 +248,11 @@ class WhatWeatherView extends WatchUi.DataField {
           mAlertHandler.currentlyTriggeredHandled();
         }
       }
-      // TODO - calc all weather points ..
-      // computeAllWheater();
     } catch (ex) {
       System.println("Error compute: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
-
-  // On hour change, we shift the weather forcast. Not showing past hour.
-  // function newHour() as Boolean {
-  //   var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
-  //   if (mCurrentHour == today.hour) {
-  //     return false;
-  //   }
-  //   mCurrentHour = today.hour;
-  //   return true;
-  // }
 
   function onUpdate(dc as Dc) as Void {
     try {
@@ -309,15 +309,14 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowObservationTime = true;
     mShowRainTotalSize = 3;
     mCurrentEdgeField = $.getEdgeField(dc);
-    System.println("CurrentEdgeField: " + mCurrentEdgeField);
 
     var arrShowField = [] as Array<Numeric>;
     if (mCurrentEdgeField == EfOne) {
       arrShowField = $.getStorageValue("show_one_field", []) as Array<Numeric>;
       mShowRainTotalSize = 3;
-    } else
-    if (mCurrentEdgeField == EfLarge) {
-      arrShowField = $.getStorageValue("show_large_field", []) as Array<Numeric>;
+    } else if (mCurrentEdgeField == EfLarge) {
+      arrShowField =
+        $.getStorageValue("show_large_field", []) as Array<Numeric>;
       mShowRainTotalSize = 2;
       mShowObservationLocationName = false;
     } else if (mCurrentEdgeField == EfWide) {
@@ -327,7 +326,8 @@ class WhatWeatherView extends WatchUi.DataField {
       mShowObservationLocationName = false;
       mShowObservationTime = false;
     } else if (mCurrentEdgeField == EfSmall) {
-      arrShowField = $.getStorageValue("show_small_field", []) as Array<Numeric>;
+      arrShowField =
+        $.getStorageValue("show_small_field", []) as Array<Numeric>;
       mShowRainTotalSize = 1;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
@@ -336,10 +336,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
 
     $.ensureArraySize(arrShowField, $.gSizeArrFieldItems, 0);
-    
-    if (DEBUG_DETAILS) {
-      System.println(["Onlayout", arrShowField]);
-    }
+
     mHoursForecast = arrShowField[0];
     mShowMinuteForecast = arrShowField[1] == true;
     mZoomMinuteForecast = arrShowField[2] == true;
@@ -552,7 +549,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
       if (mShowMinuteForecast) {
         var maxIdx = 0;
-        var mm = WeatherData.minutely;
+        var mm = mWeatherData.minutely;
         if (mm != null) {
           maxIdx = mm.pops.size();
           var show5minMarker = false;
@@ -971,15 +968,10 @@ class WhatWeatherView extends WatchUi.DataField {
             }
           }
           if (mShowWeatherText && previousCondition != forecast.condition) {
-            var line = (weatherTextLine % 2) == 0 ? 0 : 1;
-            weatherTextLine++;            
-            // When changing condition, show text on other line, to avoid flickering                        
-            render.drawWeatherConditionText(
-              dc,
-              x,
-              forecast.condition,
-              line
-            );
+            var line = weatherTextLine % 2 == 0 ? 0 : 1;
+            weatherTextLine++;
+            // When changing condition, show text on other line, to avoid flickering
+            render.drawWeatherConditionText(dc, x, forecast.condition, line);
             previousCondition = forecast.condition;
           }
 
@@ -1560,7 +1552,7 @@ class WhatWeatherView extends WatchUi.DataField {
       return;
     }
     mAlertCounter = mAlertCounter - 1;
-    System.println("Counter: " + mAlertCounter);
+    // System.println("Counter: " + mAlertCounter);
     if (mAlertCounter < 0) {
       mAlertDisplayed.add(key);
       alert.handled = true;
@@ -1591,7 +1583,6 @@ class WhatWeatherView extends WatchUi.DataField {
       dc.fillRectangle(x, y, width, height);
 
       var text = alert.event;
-      System.println(text);
       dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
         (dc.getWidth() / 2).toNumber(),

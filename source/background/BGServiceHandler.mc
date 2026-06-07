@@ -3,6 +3,7 @@
 // 2026-06-04 added methods
 // 2026-06-05 Application.PropertyValueType mCurrentLocation
 // 2026-06-06 onBackgroundData check for null data
+// 2026-06-06 onBackgroundData updated
 import Toybox.Application;
 import Toybox.Lang;
 import Toybox.System;
@@ -31,7 +32,7 @@ class BGServiceHandler {
 
   var mLastRequestMoment as Time.Moment?;
   var mLastObservationMoment as Time.Moment?;
-  
+
   var methodBackgroundDataTargetRef as WeakReference?;
   var methodBackgroundData as Symbol?;
   function setOnBackgroundData(target as Object, callback as Symbol) as Void {
@@ -119,7 +120,7 @@ class BGServiceHandler {
     } catch (ex) {
       System.println(ex.getErrorMessage());
       ex.printStackTrace();
-    }   
+    }
   }
 
   hidden function testOnNonFatalError() as Void {
@@ -231,9 +232,7 @@ class BGServiceHandler {
     return $.secondsToShortTimeString(secondsToNext, "{m}:{s}");
   }
 
-  function onBackgroundData(
-    data as Application.PropertyValueType 
-  ) as Void {
+  function onBackgroundData(data as Application.PersistableType) as Void {
     if (data == null) {
       System.println("bgservicehandler onBackgroundData received null data");
       return;
@@ -252,7 +251,17 @@ class BGServiceHandler {
         mHttpStatus = code;
         mError = CustomErrors.ERROR_BG_HTTPSTATUS;
       }
-      System.println("bgservicehandler onBackgroundData error responsecode: " + data);
+      System.println(
+        "bgservicehandler onBackgroundData error responsecode: " + data
+      );
+      return;
+    }
+
+    if (!(data instanceof Lang.Dictionary)) {
+      System.println(
+        "bgservicehandler onBackgroundData received non-dictionary data"
+      );
+      mError = CustomErrors.ERROR_BG_INVALID_DATA;
       return;
     }
 
@@ -263,9 +272,11 @@ class BGServiceHandler {
         bgData["status"] as Number,
         bgData["error"] as String,
       ]);
-      System.println("bgservicehandler onBackgroundData error OWM: " + mErrorMessage);
+      System.println(
+        "bgservicehandler onBackgroundData error OWM: " + mErrorMessage
+      );
       return;
-    }    
+    }
 
     mHttpStatus = HTTP_OK;
     mError = CustomErrors.ERROR_BG_NONE;
@@ -283,7 +294,7 @@ class BGServiceHandler {
       if (target != null) {
         var callback = target.method(methodBackgroundData);
 
-        callback.invoke(data as Application.PropertyValueType);
+        callback.invoke(data as Dictionary);
       }
     }
   }

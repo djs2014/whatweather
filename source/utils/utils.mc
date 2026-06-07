@@ -21,7 +21,13 @@ function checkFeatures() as Void {
 
 // alpha, 255 is solid, 0 is transparent
 // percent > 0 lighten color, percent < 0 darken
-function shadeColor(alpha as Number, red as Numeric, green as Numeric, blue as Numeric, percent as Number) as ColorType {
+function shadeColor(
+  alpha as Number,
+  red as Numeric,
+  green as Numeric,
+  blue as Numeric,
+  percent as Number
+) as ColorType {
   if (percent != 0) {
     // System.println(["shadeColor - 1", alpha, red, green, blue, percent]);
     red = (red * (100 + percent)) / 100.0;
@@ -33,7 +39,12 @@ function shadeColor(alpha as Number, red as Numeric, green as Numeric, blue as N
     blue = min(blue, 255);
     // System.println(["shadeColor - 2", alpha, red, green, blue, percent]);
   }
-  return Graphics.createColor(alpha, red.toNumber(), green.toNumber(), blue.toNumber());
+  return Graphics.createColor(
+    alpha,
+    red.toNumber(),
+    green.toNumber(),
+    blue.toNumber()
+  );
 }
 
 // alpha, 255 is solid, 0 is transparent
@@ -77,12 +88,23 @@ function idxToColor(
   var blue = Math.floor(lower[3] * pctLower + upper[3] * pctUpper);
 
   if (shadePercentage == 0) {
-    return Graphics.createColor(alpha, red.toNumber(), green.toNumber(), blue.toNumber());
+    return Graphics.createColor(
+      alpha,
+      red.toNumber(),
+      green.toNumber(),
+      blue.toNumber()
+    );
   }
   return $.shadeColor(alpha, red, green, blue, shadePercentage);
 }
 
-function getMatchingFont(dc as Dc, fontList as Array, maxwidth as Number, text as String, startIndex as Number) as FontType {
+function getMatchingFont(
+  dc as Dc,
+  fontList as Array,
+  maxwidth as Number,
+  text as String,
+  startIndex as Number
+) as FontType {
   var index = startIndex;
   if (index < 0) {
     index = fontList.size() - 1;
@@ -100,4 +122,17 @@ function getMatchingFont(dc as Dc, fontList as Array, maxwidth as Number, text a
   }
   // System.println(["matching font: maxwidth", maxwidth, "text:", text, "->", index, "width:", widthValue, "font", font]);
   return font;
+}
+
+function logInfo(info as String) as Void {
+  var clockTime = System.getClockTime();
+
+  var timeString = Lang.format("$1$:$2$:$3$ - $4$", [
+    clockTime.hour.format("%02d"),
+    clockTime.min.format("%02d"),
+    clockTime.sec.format("%02d"),
+    info,
+  ]);
+
+  System.println(timeString);
 }

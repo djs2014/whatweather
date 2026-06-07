@@ -10,14 +10,21 @@ import Toybox.Communications;
 class BackgroundServiceDelegate extends System.ServiceDelegate {
     
     function initialize() {
-        System.println("BackgroundServiceDelegate initialize");
+        logInfo("BackgroundServiceDelegate initialize");
         ServiceDelegate.initialize();        
     }
 
     public function onTemporalEvent() as Void {
-        System.println("BackgroundServiceDelegate onTemporalEvent");       
+        logInfo("onTemporalEvent start");       
+        // Check if the network is actually ready before spamming a request
+        if (!System.getDeviceSettings().phoneConnected) {
+            logInfo("No phone connection, exiting background service");
+            Background.exit(0);
+            return;
+        }
+
         var error = handleOWM();
-        System.println("BackgroundServiceDelegate result handleOWM " + error);
+        logInfo("handleOWM with result code " + error);
         if (error != 0) {            
             Background.exit(error);
         }
@@ -28,7 +35,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var ws = Storage.getValue("weatherDataSource");
             if (ws != null && ws instanceof(Number)) {
                 if (ws == wsGarminOnly) {
-                    System.println("OWM disabled - wsGarminOnly");
+                    logInfo("OWM disabled - wsGarminOnly");
                     Background.exit(0);
                     return 0;
                 }
@@ -70,7 +77,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
             if ((lat >= 179.99 || lat <= -179.99) && (lon >= 179.99 || lon <= -179.99)) {
-                System.println("1 Invalid location lat[" + lat + "] lon[" + lon + "] exit background service");                
+                logInfo("Invalid location lat[" + lat + "] lon[" + lon + "] exit background service");                
                 return CustomErrors.ERROR_BG_NO_POSITION;
             }
             
@@ -88,8 +95,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             requestOWMData(proxyUrl as String, proxyApiKey as String, params);	
             return 0;
         } catch(ex) {
-            System.println("1");
-            System.println(ex.getErrorMessage());
+            logInfo(ex.getErrorMessage());
             ex.printStackTrace();
             return CustomErrors.ERROR_BG_EXCEPTION;
         }
@@ -110,33 +116,43 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         // API DOC: https://openweathermap.org/api/one-call-api
         // OWM json is too big for connect IQ background app, so proxy needed to minify the json
 		var url = proxy;     
-        System.println("Request OWM data from url " + url);             
         Communications.makeWebRequest(url, params, options, responseCallBack);
-        System.println("OWM request sent");
+        logInfo("OWM request sent");
    	}
 
-    function onReceiveOpenWeatherResponse(responseCode as Lang.Number, responseData as Lang.Dictionary or Null or Lang.String) as Void {
+    function onReceiveOpenWeatherResponse(responseCode as Lang.Number, data as Lang.Dictionary?) as Void {
         try { 
-            var curTime = System.getClockTime();
-            System.println("onReceiveOpenWeatherResponse time " + curTime.hour.format("%02d") + ":" + curTime.min.format("%02d") + ":" + curTime.sec.format("%02d"));
-            System.println("onReceiveOpenWeatherResponse responseCode " + responseCode);
-            if (responseCode == 200 && responseData != null) {
-                System.println("onReceiveOpenWeatherResponse responseData not null");                
-                Background.exit(responseData as PropertyValueType);                                         
+            logInfo("onReceiveOpenWeatherResponse responseCode " + responseCode);
+            if (responseCode == 200 && data != null) {
+                logInfo("OWM data received successfully, exiting background with data");             
+                Background.exit(data);                                         
             } else {
-                System.println("Not 200");
-                System.println(responseData);
+                logInfo("Failed to receive OWM data, exiting background with error code " + responseCode);
                 Background.exit(responseCode);
             }
         } catch(ex instanceof Background.ExitDataSizeLimitException ) {
-            System.println(ex.getErrorMessage());
+            logInfo(ex.getErrorMessage());
             ex.printStackTrace();
             Background.exit(CustomErrors.ERROR_BG_EXIT_DATA_SIZE_LIMIT);
         } catch(ex) {
-            System.println(ex.getErrorMessage());
+            logInfo(ex.getErrorMessage());
             ex.printStackTrace();
-            //System.println(responseData);
+            logInfo("Response Data: " + data);
             Background.exit(CustomErrors.ERROR_BG_EXCEPTION);
         }        
+    }
+
+
+    function logInfo(info as String) as Void {
+        var clockTime = System.getClockTime();
+
+        var timeString = Lang.format("$1$:$2$:$3$ - background - $4$", [
+            clockTime.hour.format("%02d"),
+            clockTime.min.format("%02d"),
+            clockTime.sec.format("%02d"),
+            info,
+        ]);
+
+        System.println(timeString);
     }
 }

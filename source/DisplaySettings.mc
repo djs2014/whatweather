@@ -107,7 +107,7 @@ class DisplaySettings {
 
     // Position of dashes under columns
     dashesPosY = (columnY + columnHeight).toNumber();
-    System.println(["#columns",nrOfColumns, "height column", columnHeight, "wind", heightWind, "weather icon", heightWc, "text", heightWt]);
+    // System.println(["#columns",nrOfColumns, "height column", columnHeight, "wind", heightWind, "weather icon", heightWc, "text", heightWt]);
   }
 
   function setColors(darkBackground as Boolean) as Void {

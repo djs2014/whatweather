@@ -226,9 +226,7 @@ class RenderWeather {
       self.maxPressure
     ).toNumber();
     var y = ds.getYpostion(perc).toNumber();
-
-    // System.println(["drawPressureItem", perc, x, y, pressure]);
-
+    
     if (showDetails) {
       var yBlueBar = ds.getYpostion(bluebarPerc).toNumber();
       var h = dc.getFontHeight(Graphics.FONT_TINY);

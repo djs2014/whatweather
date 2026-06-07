@@ -94,7 +94,7 @@ function getStorageValue(
 
     // Get the value from the stored array
     var storageKey = $.stringLeft(key, "|", key);
-    System.println(["getStorageValue storageKey", storageKey]);
+    // System.println(["getStorageValue storageKey", storageKey]);
     var array = Toybox.Application.Storage.getValue(storageKey);
     if (array != null) {
       if (idx > -1 && idx < array.size()) {
@@ -120,13 +120,13 @@ function setStorageValueOrArray(
   // Extract selected storage key and index
   var storageKey = $.stringLeft(key, "|", key);
   var idx = $.stringRight(key, "|", "").toNumber();
-  System.println(["setStorageValueOrArray storageKey|idx", storageKey, idx]);
+  // System.println(["setStorageValueOrArray storageKey|idx", storageKey, idx]);
   if (idx == null || idx == "") {
     Storage.setValue(storageKey, value);
     return;
   }
 
-  System.println(["setStorageValueArray:", storageKey, idx, value]);
+  // System.println(["setStorageValueArray:", storageKey, idx, value]);
 
   // Get current array
   var array =
