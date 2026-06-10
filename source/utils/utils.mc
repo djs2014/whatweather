@@ -136,3 +136,12 @@ function logInfo(info) as Void {
 
   System.println(timeString);
 }
+
+function checkMemory() {
+  var stats = System.getSystemStats();
+
+  // SystemStats returns bytes, so dividing by 1024 converts it to Kilobytes (KB)
+  $.logInfo("Used Memory: " + stats.usedMemory / 1024 + " KB");
+  $.logInfo("Free Memory: " + stats.freeMemory / 1024 + " KB");
+  $.logInfo("Total Memory: " + stats.totalMemory / 1024 + " KB");
+}

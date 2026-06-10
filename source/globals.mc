@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Weather;
 
-const DEBUG_DETAILS = false;
+const DEBUG_DETAILS = true;
 const SHOW_WIND_COUNT = 3;
 const SHOW_WIND_METERS = 0;
 const SHOW_WIND_KILOMETERS = 1;
@@ -41,7 +41,7 @@ var _alertBacklight as Boolean = false;
 var _loopWeatherCondition as Boolean = false;
 
 (:typecheck(disableBackgroundCheck))
-function getWeatherConditionText(conditionCode as Number) {
+function getWeatherConditionText(conditionCode as Number?) as String {
   var text = "Unknown";
   if (conditionCode == null) {
     return text;

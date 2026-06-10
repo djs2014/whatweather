@@ -30,11 +30,11 @@ function deg2rad(deg as Numeric) as Double or Float {
 
 function rad2deg(rad as Numeric?) as Double or Float {
   if (rad == null) {
-    return 0.0;
+    return 0.0f;
   }
   var deg = (rad * 180) / Math.PI;
   if (deg < 0) {
-    deg += 360.0;
+    deg += 360.0f;
   }
   return deg;
 }

@@ -1,5 +1,13 @@
-onbackgrounddata -> remove nested callbacks
+memory still
+check start hour weather
+icon thunder -> bigger?
+
+monkeyc compilerOptions = -O1
+
+onbackgrounddata -> remove nested callbacks -> poiradar etc..
 -> set do temp variable and will pickup by next compute
+-> or temp global var ->
+sync bgservicehandler
 
 use logInfo
 check null checks etc.

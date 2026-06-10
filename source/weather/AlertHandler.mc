@@ -11,13 +11,13 @@ class AlertHandler {
   hidden var alertWindGust as Lang.Number = 0;
   hidden var alertDewpoint as Lang.Number = 0;
 
-  var maxUvi as Lang.Float = 0.0;
+  var maxUvi as Lang.Float = 0.0f;
   var maxPrecipitationChance as Lang.Number = 0;
   var maxRainMMfirstHour as Lang.Number = 0;
   var maxRainMMHour as Lang.Number = 0;
-  var maxWindSpeed as Lang.Float = 0.0;
+  var maxWindSpeed as Lang.Float = 0.0f;
   var maxWindGust as Lang.Number = 0;
-  var maxDewpoint as Lang.Float = 0.0;
+  var maxDewpoint as Lang.Float = 0.0f;
 
   hidden const NEUTRAL = 0;
   hidden const TRIGGERED = 1;
@@ -221,12 +221,12 @@ class AlertHandler {
     statusOWMAlert = NEUTRAL;
 
     maxPrecipitationChance = 0;
-    maxUvi = 0.0;
+    maxUvi = 0.0f;
     maxRainMMfirstHour = 0;
     maxRainMMHour = 0;
-    maxWindSpeed = 0.0;
+    maxWindSpeed = 0.0f;
     maxWindGust = 0;
-    maxDewpoint = 0.0;
+    maxDewpoint = 0.0f;
   }
 
   function resetAllClear() as Void {

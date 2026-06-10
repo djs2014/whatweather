@@ -16,7 +16,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
     public function onTemporalEvent() as Void {
         debugInfo("onTemporalEvent start");
         checkMemory();
-        
+
         // Check if the network is actually ready before spamming a request
         if (!System.getDeviceSettings().phoneConnected) {
             debugInfo("No phone connection, exiting background service");
@@ -29,9 +29,8 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
         if (error != 0) {
             Background.exit(error);
         }
-
     }
-
+   
     function handleOWM() as Number {
         try {
             var ws = Storage.getValue("weatherDataSource");
@@ -64,7 +63,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                     [
                         proxyUrl,
                         location,
-                        apiKey,
+                        "****",
                         apiVersion,
                         maxhours,
                         minutely,
@@ -172,9 +171,9 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             debugInfo(
                 "onReceiveOpenWeatherResponse responseCode " + responseCode
             );
-        
+
             checkMemory();
-        
+
             if (responseCode == 200 && data != null) {
                 debugInfo(
                     "OWM data received successfully, exiting background with data"

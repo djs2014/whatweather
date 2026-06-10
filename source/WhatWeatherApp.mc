@@ -95,6 +95,13 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
+      // For TEST set to OWM @@ -------------------------------------
+      // Storage.setValue("weatherDataSource", wsOWMFirst);
+      //Storage.setValue("weatherDataSource", wsGarminOnly);
+      // Storage.setValue("openWeatherAPIKey", "");
+      //Storage.setValue("testScenario", 2);
+      // ------------------------------------------------------------
+      
 
       $.g_bg_timeout_seconds =
         $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
@@ -180,11 +187,6 @@ class WhatWeatherApp extends Application.AppBase {
       }
       bgHandler.setUpdateFrequencyInMinutes(interval);
 
-      // For TEST set to OWM @@ -------------------------------------
-      // Storage.setValue("weatherDataSource", wsOWMFirst);
-      // Storage.setValue("openWeatherAPIKey", "");
-      // ------------------------------------------------------------
-
       var ws = $.getStorageValue("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;
 
@@ -240,7 +242,6 @@ class WhatWeatherApp extends Application.AppBase {
         "openWeatherAPIVersion",
         $.getStorageValue("openWeatherAPIVersion", 1) as Number
       );
-      //Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
 
       var maxHours = $.max(show_OneField[0], show_LargeField[0]);
       maxHours = $.max(show_WideField[0], maxHours);
@@ -278,9 +279,7 @@ class WhatWeatherApp extends Application.AppBase {
           !(storageValue as String).equals(propertyValue)
         ) {
           Storage.setValue(key, propertyValue);
-          $.logInfo(
-            "Storage [" + key + "] set to [" + propertyValue + "]"
-          );
+          $.logInfo("Storage [" + key + "] set to [" + propertyValue + "]");
         }
       }
     } catch (ex) {
@@ -310,7 +309,8 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    $.logInfo("Background data recieved");
+    $.logInfo("onBackgroundData start");
+    $.checkMemory();
 
     if (data instanceof Lang.Number && data == 0) {
       $.logInfo("Response code is 0 -> reset bg service");
@@ -319,9 +319,42 @@ class WhatWeatherApp extends Application.AppBase {
     }
 
     var bgHandler = $.getBGServiceHandler();
-    bgHandler.onBackgroundData(data);
+    if (data instanceof Lang.Number) {
+      var errorCode = data as Lang.Number;
+      $.logInfo("Response code is " + errorCode + " -> error in bg service");
+      bgHandler.setError(errorCode, "");
+      return;
+    }
 
-    WatchUi.requestUpdate();
+    logInfo("onBackgroundData not a number");
+    if (!(data instanceof Lang.Dictionary)) {
+      $.logInfo("onBackgroundData received non-dictionary data");
+      bgHandler.setError(CustomErrors.ERROR_BG_INVALID_DATA, "");
+      return;
+    }
+
+    // Check for OWM error response
+    var bgData = data as Dictionary;
+    if (bgData["error"] != null && bgData["status"] != null) {
+      var message = Lang.format("$1$ $2$", [
+        bgData["status"].toNumber(),
+        bgData["error"] as String,
+      ]);
+      logInfo("onBackgroundData OWM error message: " + message);
+      bgHandler.setError(bgData["status"].toNumber(), message);
+      return;
+    }
+
+    bgHandler.onValidBackgroundData();
+
+    // Everityhing ok, store data for view to pick up
+    $.logInfo("Data from background: " + bgData);
+    $.gIncomingWeatherData = $.toWeatherDataFlat(bgData);
+    $.logInfo("Data converted: " + $.gIncomingWeatherData);
+    bgData = null; // free memory
+    // WatchUi.requestUpdate();
+    $.checkMemory();
+    $.logInfo("onBackgroundData end");
   }
 
   function removeObsolete() {
@@ -482,3 +515,28 @@ function getCurrentLocation() as CurrentLocation {
 var g_bg_timeout_seconds as Number = 0;
 var g_bg_delay_seconds as Number = 0;
 var gSizeArrFieldItems = 21;
+
+(:typecheck(disableBackgroundCheck))
+function testGetTitle(data) as String {
+  $.logInfo("toWeatherData start");
+  if (data == null) {
+    $.logInfo("toWeatherData: No data or not a dictionary");
+    return "";
+  }
+  if (!(data instanceof Array)) {
+    $.logInfo("toWeatherData: No array, expected array with one dictionary");
+    return "";
+  }
+  var arr = data as Array;
+  if (arr.size() > 0 && arr[0] instanceof Dictionary) {
+    var dict = arr[0] as Dictionary;
+    var title = $.getDictionaryValue(dict, "title", "") as String;
+    $.logInfo("title: " + title);
+    return title;
+  } else {
+    $.logInfo("toWeatherData: No dictionary in array");
+    return "";
+  }
+
+  return "";
+}

@@ -6,10 +6,10 @@ class WindPoint {
   var x as Lang.Number = 0;
   var bearing as Lang.Number = 0;
   // meter per second
-  var speed as Lang.Float = 0.0;
-  var convertedSpeed as Lang.Float = 0.0;
+  var speed as Lang.Float = 0.0f;
+  var convertedSpeed as Lang.Float = 0.0f;
   var speedAlert as Boolean = false;
-  var gust as Lang.Float = 0.0;
+  var gust as Lang.Float = 0.0f;
   var gustLevel as Lang.Number = 0;
   var gustAlert as Boolean = false;
 

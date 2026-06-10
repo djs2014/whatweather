@@ -1,0 +1,11 @@
+
+"files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/*/**": true,
+    "**/bin/**": true,
+    "**/other/**": true,
+    "**/private/**": true,
+    "**/server/**": true,
+    "**/server-azure/**": true,
+}
