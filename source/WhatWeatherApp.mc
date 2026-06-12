@@ -95,13 +95,13 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
+
       // For TEST set to OWM @@ -------------------------------------
-      // Storage.setValue("weatherDataSource", wsOWMFirst);
+      //Storage.setValue("weatherDataSource", wsOWMFirst);
       //Storage.setValue("weatherDataSource", wsGarminOnly);
-      // Storage.setValue("openWeatherAPIKey", "");
+      //Storage.setValue("openWeatherAPIKey", "");
       //Storage.setValue("testScenario", 2);
       // ------------------------------------------------------------
-      
 
       $.g_bg_timeout_seconds =
         $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
@@ -113,13 +113,13 @@ class WhatWeatherApp extends Application.AppBase {
         WeatherSource;
 
       var show_OneField =
-        $.getStorageValue("show_one_field", []) as Array<Numeric>;
+        $.getStorageValue("show_one_field", []) as Array<Numeric or Boolean>;
       var show_LargeField =
-        $.getStorageValue("show_large_field", []) as Array<Numeric>;
+        $.getStorageValue("show_large_field", []) as Array<Numeric or Boolean>;
       var show_WideField =
-        $.getStorageValue("show_wide_field", []) as Array<Numeric>;
+        $.getStorageValue("show_wide_field", []) as Array<Numeric or Boolean>;
       var show_SmallField =
-        $.getStorageValue("show_small_field", []) as Array<Numeric>;
+        $.getStorageValue("show_small_field", []) as Array<Numeric or Boolean>;
 
       if ($.ensureArraySize(show_OneField, $.gSizeArrFieldItems, 0)) {
         $.setStorageValueOrArray("show_one_field", show_OneField);
@@ -243,9 +243,10 @@ class WhatWeatherApp extends Application.AppBase {
         $.getStorageValue("openWeatherAPIVersion", 1) as Number
       );
 
-      var maxHours = $.max(show_OneField[0], show_LargeField[0]);
-      maxHours = $.max(show_WideField[0], maxHours);
-      maxHours = $.max(show_SmallField[0], maxHours);
+      var maxHours = $.max(
+        $.max(show_OneField[0], show_LargeField[0]),
+        $.max(show_WideField[0], show_SmallField[0])
+      );
 
       var showMinutely =
         show_OneField[1] == true ||
@@ -257,7 +258,11 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherMinutely", showMinutely);
 
       $.gSettingsChanged = true;
-      $.logInfo("User settings loaded");
+      $.logInfo(["User settings loaded",
+        "maxHours", maxHours,
+        "showMinutely", showMinutely,
+        "weatherDataSource", $._weatherDataSource,
+      ]);
     } catch (ex) {
       $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
@@ -290,17 +295,17 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function initComfortSettings() as Void {
-    var comfort = getComfort();
+    var comfort = $.gComfortZones;
 
     var humMin = $.getStorageValue("comfortHumidityMin", 40) as Number;
     var humMax = $.getStorageValue("comfortHumidityMax", 60) as Number;
-    comfort.humidityMin = $.min(humMin, humMax).toNumber();
-    comfort.humidityMax = $.max(humMin, humMax).toNumber();
+    comfort[:humidityMin] = $.min(humMin, humMax).toNumber();
+    comfort[:humidityMax] = $.max(humMin, humMax).toNumber();
 
     var tempMin = $.getStorageValue("comfortTempMin", 19) as Number;
     var tempMax = $.getStorageValue("comfortTempMax", 27) as Number;
-    comfort.temperatureMin = $.min(tempMin, tempMax).toNumber();
-    comfort.temperatureMax = $.max(tempMin, tempMax).toNumber();
+    comfort[:temperatureMin] = $.min(tempMin, tempMax).toNumber();
+    comfort[:temperatureMax] = $.max(tempMin, tempMax).toNumber();
   }
 
   public function getServiceDelegate() as [System.ServiceDelegate] {
@@ -357,6 +362,7 @@ class WhatWeatherApp extends Application.AppBase {
     $.logInfo("onBackgroundData end");
   }
 
+  (:typecheck(disableBackgroundCheck))
   function removeObsolete() {
     Storage.deleteValue("showCurrentForecast");
     Storage.deleteValue("showMinuteForecast");
@@ -381,6 +387,7 @@ class WhatWeatherApp extends Application.AppBase {
     Storage.deleteValue("showInfoSmallField");
   }
 
+  (:typecheck(disableBackgroundCheck))
   function resetDisplayFields() {
     Storage.setValue("show_one_field", [
       8, // hours forecast
@@ -484,8 +491,13 @@ function getApp() as WhatWeatherApp {
   return Application.getApp() as WhatWeatherApp;
 }
 
+(:typecheck(disableBackgroundCheck))
 var _alertHandler as AlertHandler?;
+
+(:typecheck(disableBackgroundCheck))
 var _BGServiceHandler as BGServiceHandler?;
+
+(:typecheck(disableBackgroundCheck))
 var _CurrentLocation as CurrentLocation?;
 
 (:typecheck(disableBackgroundCheck))
@@ -512,31 +524,9 @@ function getCurrentLocation() as CurrentLocation {
   return $._CurrentLocation as CurrentLocation;
 }
 
-var g_bg_timeout_seconds as Number = 0;
-var g_bg_delay_seconds as Number = 0;
-var gSizeArrFieldItems = 21;
-
 (:typecheck(disableBackgroundCheck))
-function testGetTitle(data) as String {
-  $.logInfo("toWeatherData start");
-  if (data == null) {
-    $.logInfo("toWeatherData: No data or not a dictionary");
-    return "";
-  }
-  if (!(data instanceof Array)) {
-    $.logInfo("toWeatherData: No array, expected array with one dictionary");
-    return "";
-  }
-  var arr = data as Array;
-  if (arr.size() > 0 && arr[0] instanceof Dictionary) {
-    var dict = arr[0] as Dictionary;
-    var title = $.getDictionaryValue(dict, "title", "") as String;
-    $.logInfo("title: " + title);
-    return title;
-  } else {
-    $.logInfo("toWeatherData: No dictionary in array");
-    return "";
-  }
-
-  return "";
-}
+var g_bg_timeout_seconds as Number = 0;
+(:typecheck(disableBackgroundCheck))
+var g_bg_delay_seconds as Number = 0;
+(:typecheck(disableBackgroundCheck))
+var gSizeArrFieldItems = 21;

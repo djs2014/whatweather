@@ -1,12 +1,14 @@
 memory still
 check start hour weather
 icon thunder -> bigger?
+(:extendedCode) 
+fix # windpoints large/small field
+dissable moon icon when evening start -> other indication
+test met 1 uur 1040
+test hailstone draw
 
 monkeyc compilerOptions = -O1
 
-onbackgrounddata -> remove nested callbacks -> poiradar etc..
--> set do temp variable and will pickup by next compute
--> or temp global var ->
 sync bgservicehandler
 
 use logInfo

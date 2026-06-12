@@ -17,6 +17,7 @@ class CurrentInfo {
   var postfix as String = "";
 }
 
+(:extendedCode)
 class WhatWeatherView extends WatchUi.DataField {
   hidden var mAlertHandler as AlertHandler;
 
@@ -278,22 +279,22 @@ class WhatWeatherView extends WatchUi.DataField {
 
     var arrShowField = [] as Array<Numeric>;
     if (mCurrentEdgeField == EfOne) {
-      arrShowField = $.getStorageValue("show_one_field", []) as Array<Numeric>;
+      arrShowField = $.getStorageValue("show_one_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 3;
     } else if (mCurrentEdgeField == EfLarge) {
       arrShowField =
-        $.getStorageValue("show_large_field", []) as Array<Numeric>;
+        $.getStorageValue("show_large_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 2;
       mShowObservationLocationName = false;
     } else if (mCurrentEdgeField == EfWide) {
-      arrShowField = $.getStorageValue("show_wide_field", []) as Array<Numeric>;
+      arrShowField = $.getStorageValue("show_wide_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 2;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
       mShowObservationTime = false;
     } else if (mCurrentEdgeField == EfSmall) {
       arrShowField =
-        $.getStorageValue("show_small_field", []) as Array<Numeric>;
+        $.getStorageValue("show_small_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 1;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
@@ -1815,4 +1816,5 @@ class WhatWeatherView extends WatchUi.DataField {
   }
 }
 
+(:extendedCode)
 var gIncomingWeatherData as Dictionary? = null;

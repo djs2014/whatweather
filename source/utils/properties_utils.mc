@@ -94,11 +94,10 @@ function getStorageValue(
 
     // Get the value from the stored array
     var storageKey = $.stringLeft(key, "|", key);
-    // System.println(["getStorageValue storageKey", storageKey]);
     var array = Toybox.Application.Storage.getValue(storageKey);
-    if (array != null) {
+    if (array != null && array instanceof Array) {
       if (idx > -1 && idx < array.size()) {
-        return array[idx];
+        return array[idx] as Application.PropertyValueType;
       }
     }
   } catch (ex) {

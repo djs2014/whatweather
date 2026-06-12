@@ -1,6 +1,7 @@
 import Toybox.Lang;
 import Toybox.System;
 
+(:extendedCode) 
 class AlertHandler {
   hidden var alertUvi as Lang.Number = 0;
   hidden var alertPrecipitationChance as Lang.Number = 0;

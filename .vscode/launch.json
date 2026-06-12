@@ -5,11 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "omonkeyc",
+            "type": "monkeyc",
             "request": "launch",
-            "name": "Run Optimized",
-            "stopAtLaunch": false,
-            "device": "${command:GetTargetDevice}"
+            "name": "Monkey C Application",
+            "stopOnEntry": false
         }
+        // {
+        //     "type": "omonkeyc",
+        //     "request": "launch",
+        //     "name": "Run",
+        //     "stopAtLaunch": false,
+        //     "device": "${command:GetTargetDevice}"
+        // }
     ]
 }
