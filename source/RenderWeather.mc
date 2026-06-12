@@ -7,6 +7,7 @@ import Toybox.Time.Gregorian;
 
 typedef Polygon as Lang.Array<Point2D>;
 
+(:extendedCode) 
 class RenderWeather {
   hidden var ds as DisplaySettings = new DisplaySettings();
   hidden var ef as EdgeField = EfLarge; // TODO refactor
@@ -47,20 +48,24 @@ class RenderWeather {
   }
 
   hidden function initComfortZones() as Void {
-    var comfort = getComfort();
-    self.yHumTop = ds.getYpostion(comfort.humidityMax);
-    self.yHumBottom = ds.getYpostion(comfort.humidityMin);
+    var comfort = $.gComfortZones;
+
+    self.yHumTop = ds.getYpostion(comfort[:humidityMax]);
+    self.yHumBottom = ds.getYpostion(comfort[:humidityMin]);
+
     var perc = $.percentageOf(
-      comfort.temperatureMax,
+      comfort[:temperatureMax],
       self.minTemperature,
       self.maxTemperature
     ).toNumber();
+
     self.yTempTop = ds.getYpostion(perc);
     perc = $.percentageOf(
-      comfort.temperatureMin,
+      comfort[:temperatureMin],
       self.minTemperature,
       self.maxTemperature
     ).toNumber();
+
     self.yTempBottom = ds.getYpostion(perc);
   }
 
@@ -147,14 +152,19 @@ class RenderWeather {
       }
 
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 1);
+      dc.drawRectangle(
+        x - (ds.columnWidth / 2).toNumber(),
+        y,
+        ds.columnWidth,
+        1
+      );
 
       dc.drawRectangle(x - 1, y - 6, 3, 8);
       dc.setColor(Graphics.COLOR_DK_GREEN, Graphics.COLOR_TRANSPARENT);
       dc.drawLine(x, y, x, y - 4);
       dc.fillCircle(x, y + 2, 2);
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -199,12 +209,17 @@ class RenderWeather {
       dc.fillCircle(x, y + r - 1, 2);
 
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
-      dc.drawRectangle(x - (ds.columnWidth / 2).toNumber(), y, ds.columnWidth, 1);
+      dc.drawRectangle(
+        x - (ds.columnWidth / 2).toNumber(),
+        y,
+        ds.columnWidth,
+        1
+      );
       dc.drawLine(x - r, y, x, y - 5);
       dc.drawLine(x, y - 5, x + r, y);
       dc.drawArc(x, y, r, Graphics.ARC_CLOCKWISE, 0, 180);
     } catch (ex) {
-      System.println("Error draw dewpoint: " + ex.getErrorMessage());
+      $.logInfo("Error draw dewpoint: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -226,7 +241,7 @@ class RenderWeather {
       self.maxPressure
     ).toNumber();
     var y = ds.getYpostion(perc).toNumber();
-    
+
     if (showDetails) {
       var yBlueBar = ds.getYpostion(bluebarPerc).toNumber();
       var h = dc.getFontHeight(Graphics.FONT_TINY);
@@ -303,29 +318,29 @@ class RenderWeather {
     if (dewpoint == null) {
       return;
     }
-    var comfort = getComfort();
+    var comfort = $.gComfortZones;
     var color = $.dewpointToColor(dewpoint.toNumber(), darkBackground);
     dc.setColor(color, color);
     if (ef == EfSmall) {
       var percTemperature = $.percentageOf(
-        comfort.temperatureMax,
+        comfort[:temperatureMax],
         self.minTemperature,
         self.maxTemperature
       ).toNumber();
       var yTop = ds.getYpostion(
-        $.max(percTemperature, comfort.humidityMax) as Lang.Number
+        $.max(percTemperature, comfort[:humidityMax]) as Lang.Number
       );
       percTemperature = $.percentageOf(
-        comfort.temperatureMin,
+        comfort[:temperatureMin],
         self.minTemperature,
         self.maxTemperature
       ).toNumber();
       var yBottom = ds.getYpostion(
-        $.min(percTemperature, comfort.humidityMin) as Lang.Number
+        $.min(percTemperature, comfort[:humidityMin]) as Lang.Number
       );
       var height = yBottom - yTop;
       dc.fillRectangle(
-        (x - (ds.space / 2).toNumber()),
+        x - (ds.space / 2).toNumber(),
         yTop,
         ds.columnWidth + ds.space,
         height
@@ -363,7 +378,8 @@ class RenderWeather {
         hourText,
         -1
       );
-      var yHours = self.yTempTop + ((self.yTempBottom - self.yTempTop) / 2).toNumber();
+      var yHours =
+        self.yTempTop + ((self.yTempBottom - self.yTempTop) / 2).toNumber();
       // System.println(["hour", hour, hourText, nr, yHours, x]);
       dc.setColor(color, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
@@ -501,8 +517,8 @@ class RenderWeather {
     yLine as Lang.Number
   ) as Void {
     var text = getWeatherConditionText(condition);
-    if (text != null) {      
-      var yOffset = (yLine * ds.heightWt).toNumber();      
+    if (text != null) {
+      var yOffset = (yLine * ds.heightWt).toNumber();
       dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
       dc.drawText(
         x,
@@ -530,7 +546,7 @@ class RenderWeather {
     );
   }
 
-  function getThemeColor(darkBackground) as Dictionary<String, ColorType> {
+  function getThemeColor(darkBackground) as Dictionary {
     return {
       :border => darkBackground ? Graphics.COLOR_WHITE : Graphics.COLOR_BLACK,
       :main => darkBackground ? Graphics.COLOR_LT_GRAY : Graphics.COLOR_LT_GRAY,
@@ -556,7 +572,12 @@ class RenderWeather {
     // Center of bar
     var x = xPos + (ds.columnWidth / 2).toNumber();
     // 2px Below bar
-    var y = ds.columnY + ds.columnHeight + ds.heightWind + (ds.heightWc / 2).toNumber() + 2;
+    var y =
+      ds.columnY +
+      ds.columnHeight +
+      ds.heightWind +
+      (ds.heightWc / 2).toNumber() +
+      2;
     // var iconWidth = (ds.columnWidth / 2.5).toNumber();
     // var cloudWidthSmall = ds.columnWidth / 4;
     var cloudWidth = (ds.columnWidth / 2.5).toNumber();
@@ -578,7 +599,7 @@ class RenderWeather {
 
     var colors = getThemeColor(darkBackground);
     var border = colors[:border];
-    
+
     // clear
     if (condition == Weather.CONDITION_FAIR) {
       drawConditionClear(
@@ -1191,7 +1212,7 @@ class RenderWeather {
   //   return pts as Polygon;
   // }
 
-  hidden function drawHailStone(
+hidden function drawHailStone(
     dc as Dc,
     x as Number,
     y as Number,
@@ -1199,24 +1220,55 @@ class RenderWeather {
     color as ColorType
   ) as Void {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
-    var r = (width / 2).toNumber();
-    var angle = 0;
-    var lastPt = null;
-    var firstPt = null;
+    var r = (width / 2).toFloat();
+    
+    // Pre-calculate the 6 vertices of a hexagon
+    var points = new [6];
+    for (var i = 0; i < 6; i++) {
 
-    while (angle < 360) {
-      var pt = point2DOnCircle(x, y, r, angle);
-      if (lastPt != null) {
-        dc.drawLine(lastPt[0], lastPt[1], pt[0], pt[1]);
-      } else {
-        firstPt = pt;
-      }
-      lastPt = pt;
-      angle += 60; // Back to 60 for efficiency (6 lines total)
+      var pt = point2DOnCircle(x, y, r, i * 60);
+      points[i] = [pt[0].toNumber(), pt[1].toNumber()];
+        // var angleRad = Math.toRadians(i * 60.0);
+        // var ptX = (x + (r * Math.cos(angleRad))).toNumber();
+        // var ptY = (y + (r * Math.sin(angleRad))).toNumber();
+        // points[i] = [ptX, ptY];
     }
-    // Close the shape
-    dc.drawLine(lastPt[0], lastPt[1], firstPt[0], firstPt[1]);
+
+    // Draw lines between vertices
+    for (var i = 0; i < 6; i++) {
+        var startPt = points[i];
+        var endPt = points[(i + 1) % 6]; // Wraps back to 0 at the end
+        
+        dc.drawLine(startPt[0], startPt[1], endPt[0], endPt[1]);
+    }
   }
+
+  // hidden function drawHailStone(
+  //   dc as Dc,
+  //   x as Number,
+  //   y as Number,
+  //   width as Number,
+  //   color as ColorType
+  // ) as Void {
+  //   dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+  //   var r = (width / 2).toNumber();
+  //   var angle = 0;
+  //   var lastPt = null;
+  //   var firstPt = null;
+
+  //   while (angle < 360) {
+  //     var pt = point2DOnCircle(x, y, r, angle);
+  //     if (lastPt != null) {
+  //       dc.drawLine(lastPt[0], lastPt[1] , pt[0], pt[1]);
+  //     } else {
+  //       firstPt = pt;
+  //     }
+  //     lastPt = pt;
+  //     angle += 60; // Back to 60 for efficiency (6 lines total)
+  //   }
+  //   // Close the shape
+  //   dc.drawLine(lastPt[0] as Number, lastPt[1] as Number, firstPt[0] as Number, firstPt[1] as Number  );
+  // }
 
   hidden function drawRainDrops(
     dc as Dc,
@@ -1250,7 +1302,7 @@ class RenderWeather {
       var ry = y + randomYOffset;
 
       dc.drawLine(rx, ry, rx - slant, ry + dropLength);
-    }    
+    }
   }
 
   hidden function drawMoon(
@@ -1384,7 +1436,7 @@ class RenderWeather {
     // Only displaying numbers. They are vertical and horizontal aligned in the circle.
     // But still some space below base line (because of py etc charcters, but numbers are all above baseline)
     // Do a correction, lower the placement some pixels.
-    var yOffset = (dc.getFontDescent(wsFont) / 2).toNumber();
+    var yOffset = (Graphics.getFontDescent(wsFont) / 2).toNumber();
 
     var textWidth = dc.getTextWidthInPixels(text, wsFont);
     radius = (textWidth / 2).toNumber() + padding;
@@ -1532,49 +1584,35 @@ class RenderWeather {
     );
   }
 
-  hidden function point2DOnCircleSlow(
-    x as Number,
-    y as Number,
-    radius as Lang.Numeric,
-    angleInDegrees as Lang.Numeric
-  ) as Point2D {
-    // Convert from degrees to radians
-    try {
-      var xP = radius * Math.cos((angleInDegrees * Math.PI) / 180) + x;
-      var yP = radius * Math.sin((angleInDegrees * Math.PI) / 180) + y;
-
-      return [xP.toNumber(), yP.toNumber()] as Point2D;
-    } catch (ex) {
-      // Stack overflow error
-      System.println(ex.getErrorMessage());
-      ex.printStackTrace();
-      return [0, 0] as Point2D;
-    }
-  }
-
-  hidden var SIN_TABLE = [] as Array<Number>;
-  hidden var COS_TABLE = [] as Array<Number>;
+  hidden var SIN_TABLE as Array<Float> = new Array<Float>[360];
+  hidden var COS_TABLE as Array<Float> = new Array<Float>[360];
   hidden function point2DOnCircle(
     x as Number,
     y as Number,
     radius as Lang.Numeric,
     angleInDegrees as Lang.Numeric
   ) as Point2D {
-    if (SIN_TABLE.size() == 0) {
+    // Check if the first element is null to see if we need to initialize
+    if (SIN_TABLE[0] == null) {
       var DEG_TO_RAD = Math.PI / 180;
-      var angle = 0;
-      while (angle < 360) {
-        SIN_TABLE.add(Math.sin(angle * DEG_TO_RAD));
-        COS_TABLE.add(Math.cos(angle * DEG_TO_RAD));
-        angle = angle + 1;
+      for (var angle = 0; angle < 360; angle++) {
+        // Assign directly to the index instead of using .add()
+        SIN_TABLE[angle] = Math.sin(angle * DEG_TO_RAD).toFloat();
+        COS_TABLE[angle] = Math.cos(angle * DEG_TO_RAD).toFloat();
       }
     }
-    var angleInt = (angleInDegrees.toNumber() % 360).toNumber();
+
+    var angleInt = (angleInDegrees.toNumber() % 360);
     if (angleInt < 0) {
       angleInt = angleInt + 360;
     }
-    var xP = radius * COS_TABLE[angleInt] + x;
-    var yP = radius * SIN_TABLE[angleInt] + y;
+
+    // The compiler now knows 100% that these return Floats
+    var sin = SIN_TABLE[angleInt] as Float;
+    var cos = COS_TABLE[angleInt] as Float;
+    
+    var xP = radius.toFloat() * cos + x;
+    var yP = radius.toFloat() * sin + y;
 
     return [xP.toNumber(), yP.toNumber()] as Point2D;
   }

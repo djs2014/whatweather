@@ -1,5 +1,15 @@
-onbackgrounddata -> remove nested callbacks
--> set do temp variable and will pickup by next compute
+memory still
+check start hour weather
+icon thunder -> bigger?
+(:extendedCode) 
+fix # windpoints large/small field
+dissable moon icon when evening start -> other indication
+test met 1 uur 1040
+test hailstone draw
+
+monkeyc compilerOptions = -O1
+
+sync bgservicehandler
 
 use logInfo
 check null checks etc.

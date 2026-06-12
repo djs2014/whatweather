@@ -3,7 +3,7 @@ import Toybox.Lang;
 import Toybox.Math;
 
 function min(a as Numeric, b as Numeric) as Numeric {
-  if (a <= b) {
+  if (a < b) {
     return a;
   } else {
     return b;
@@ -11,7 +11,7 @@ function min(a as Numeric, b as Numeric) as Numeric {
 }
 
 function max(a as Numeric, b as Numeric) as Numeric {
-  if (a >= b) {
+  if (a > b) {
     return a;
   } else {
     return b;

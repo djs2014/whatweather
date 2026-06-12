@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Weather;
 
-const DEBUG_DETAILS = false;
+const DEBUG_DETAILS = true;
 const SHOW_WIND_COUNT = 3;
 const SHOW_WIND_METERS = 0;
 const SHOW_WIND_KILOMETERS = 1;
@@ -35,18 +35,13 @@ var _percHideDetails as Lang.Number = 5;
 var _observationTimeDelayedMinutesThreshold as Lang.Number = 30;
 
 var _alertLevelPrecipitationChance as Lang.Number = 70;
-var _alertLevelUVi as Lang.Number = 6;
-var _alertLevelRainMMfirstHour as Lang.Float = 0.2f;
-var _alertLevelRainMMHour as Lang.Float = 0.2f;
-var _alertLevelDewpoint as Lang.Number = 19;
 var _alertWindIn as Lang.Number = SHOW_WIND_KILOMETERS;
-var _alertLevelWindSpeed as Lang.Float = 5.0f;
 var _alertLevelWindGust as Lang.Number = 2;
 var _alertBacklight as Boolean = false;
 var _loopWeatherCondition as Boolean = false;
 
 (:typecheck(disableBackgroundCheck))
-function getWeatherConditionText(conditionCode as Number) {
+function getWeatherConditionText(conditionCode as Number?) as String {
   var text = "Unknown";
   if (conditionCode == null) {
     return text;

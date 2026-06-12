@@ -49,7 +49,7 @@ class WhatWeatherApp extends Application.AppBase {
   (:typecheck(disableBackgroundCheck))
   function loadUserSettings() as Void {
     try {
-      System.println("Loading user settings");
+      $.logInfo("Loading user settings");
 
       var hadConversionToArrays = Storage.getValue("show_one_field");
       if (hadConversionToArrays == null) {
@@ -96,6 +96,13 @@ class WhatWeatherApp extends Application.AppBase {
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
 
+      // For TEST set to OWM @@ -------------------------------------
+      //Storage.setValue("weatherDataSource", wsOWMFirst);
+      //Storage.setValue("weatherDataSource", wsGarminOnly);
+      //Storage.setValue("openWeatherAPIKey", "");
+      //Storage.setValue("testScenario", 2);
+      // ------------------------------------------------------------
+
       $.g_bg_timeout_seconds =
         $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
         Number;
@@ -106,13 +113,13 @@ class WhatWeatherApp extends Application.AppBase {
         WeatherSource;
 
       var show_OneField =
-        $.getStorageValue("show_one_field", []) as Array<Numeric>;
+        $.getStorageValue("show_one_field", []) as Array<Numeric or Boolean>;
       var show_LargeField =
-        $.getStorageValue("show_large_field", []) as Array<Numeric>;
+        $.getStorageValue("show_large_field", []) as Array<Numeric or Boolean>;
       var show_WideField =
-        $.getStorageValue("show_wide_field", []) as Array<Numeric>;
+        $.getStorageValue("show_wide_field", []) as Array<Numeric or Boolean>;
       var show_SmallField =
-        $.getStorageValue("show_small_field", []) as Array<Numeric>;
+        $.getStorageValue("show_small_field", []) as Array<Numeric or Boolean>;
 
       if ($.ensureArraySize(show_OneField, $.gSizeArrFieldItems, 0)) {
         $.setStorageValueOrArray("show_one_field", show_OneField);
@@ -129,18 +136,18 @@ class WhatWeatherApp extends Application.AppBase {
 
       $._alertLevelPrecipitationChance =
         $.getStorageValue("alertLevelPrecipitationChance", 70) as Number;
-      $._alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
-      $._alertLevelRainMMfirstHour =
+      var alertLevelUVi = $.getStorageValue("alertLevelUVi", 6) as Number;
+      var alertLevelRainMMfirstHour =
         $.getStorageValue("alertLevelRainMMfirstHour", 0.2f) as Float;
-      $._alertLevelRainMMHour =
+      var alertLevelRainMMHour =
         $.getStorageValue("alertLevelRainMMHour", 0.2f) as Float;
       $._alertWindIn =
         $.getStorageValue("alertWindIn", $._alertWindIn) as Number;
-      $._alertLevelWindSpeed =
+      var alertLevelWindSpeed =
         $.getStorageValue("alertLevelWindSpeed", 5.0f) as Float;
-      $._alertLevelWindGust =
+      var alertLevelWindGust =
         $.getStorageValue("alertLevelWindGust", 2) as Number;
-      $._alertLevelDewpoint =
+      var alertLevelDewpoint =
         $.getStorageValue("alertLevelDewpoint", 19) as Number;
 
       $._soundMode = $.getStorageValue("sound_mode", 1) as Number;
@@ -183,6 +190,8 @@ class WhatWeatherApp extends Application.AppBase {
       var ws = $.getStorageValue("weatherDataSource", 0) as Number;
       $._weatherDataSource = ws as WeatherSource;
 
+      setStorageValueIfChanged("openWeatherAPIKey", "");
+
       var apiKey = $.getStorageValue("openWeatherAPIKey", "") as String;
       if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
         $._weatherDataSource = wsGarminFirst;
@@ -201,19 +210,16 @@ class WhatWeatherApp extends Application.AppBase {
       alertHandler.setAlertPrecipitationChance(
         $._alertLevelPrecipitationChance
       );
-      alertHandler.setAlertUVi($._alertLevelUVi);
-      alertHandler.setAlertRainMMfirstHour($._alertLevelRainMMfirstHour);
-      alertHandler.setAlertRainMMHour($._alertLevelRainMMHour);
+      alertHandler.setAlertUVi(alertLevelUVi);
+      alertHandler.setAlertRainMMfirstHour(alertLevelRainMMfirstHour);
+      alertHandler.setAlertRainMMHour(alertLevelRainMMHour);
       alertHandler.setAlertWindIn($._alertWindIn);
-      alertHandler.setAlertWindSpeed($._alertLevelWindSpeed);
-      alertHandler.setAlertWindGust($._alertLevelWindGust);
-      alertHandler.setAlertDewpoint($._alertLevelDewpoint);
+      alertHandler.setAlertWindSpeed(alertLevelWindSpeed);
+      alertHandler.setAlertWindGust(alertLevelWindGust);
+      alertHandler.setAlertDewpoint(alertLevelDewpoint);
       alertHandler.resetStatus();
 
       initComfortSettings();
-
-      Storage.setValue("weatherDataSource", ws);
-      setStorageValueIfChanged("openWeatherAPIKey", "");
 
       // Fix proxy url
       var proxuUrl = $.getApplicationProperty("openWeatherProxy", "") as String;
@@ -236,11 +242,11 @@ class WhatWeatherApp extends Application.AppBase {
         "openWeatherAPIVersion",
         $.getStorageValue("openWeatherAPIVersion", 1) as Number
       );
-      //Storage.setValue("testScenario", $.getStorageValue("testScenario", 0) as Number);
 
-      var maxHours = $.max(show_OneField[0], show_LargeField[0]);
-      maxHours = $.max(show_WideField[0], maxHours);
-      maxHours = $.max(show_SmallField[0], maxHours);
+      var maxHours = $.max(
+        $.max(show_OneField[0], show_LargeField[0]),
+        $.max(show_WideField[0], show_SmallField[0])
+      );
 
       var showMinutely =
         show_OneField[1] == true ||
@@ -252,9 +258,13 @@ class WhatWeatherApp extends Application.AppBase {
       Storage.setValue("openWeatherMinutely", showMinutely);
 
       $.gSettingsChanged = true;
-      System.println("User settings loaded");
+      $.logInfo(["User settings loaded",
+        "maxHours", maxHours,
+        "showMinutely", showMinutely,
+        "weatherDataSource", $._weatherDataSource,
+      ]);
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
@@ -274,30 +284,28 @@ class WhatWeatherApp extends Application.AppBase {
           !(storageValue as String).equals(propertyValue)
         ) {
           Storage.setValue(key, propertyValue);
-          System.println(
-            "Storage [" + key + "] set to [" + propertyValue + "]"
-          );
+          $.logInfo("Storage [" + key + "] set to [" + propertyValue + "]");
         }
       }
     } catch (ex) {
-      System.println(ex.getErrorMessage());
+      $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
     }
   }
 
   (:typecheck(disableBackgroundCheck))
   function initComfortSettings() as Void {
-    var comfort = getComfort();
+    var comfort = $.gComfortZones;
 
     var humMin = $.getStorageValue("comfortHumidityMin", 40) as Number;
     var humMax = $.getStorageValue("comfortHumidityMax", 60) as Number;
-    comfort.humidityMin = $.min(humMin, humMax).toNumber();
-    comfort.humidityMax = $.max(humMin, humMax).toNumber();
+    comfort[:humidityMin] = $.min(humMin, humMax).toNumber();
+    comfort[:humidityMax] = $.max(humMin, humMax).toNumber();
 
     var tempMin = $.getStorageValue("comfortTempMin", 19) as Number;
     var tempMax = $.getStorageValue("comfortTempMax", 27) as Number;
-    comfort.temperatureMin = $.min(tempMin, tempMax).toNumber();
-    comfort.temperatureMax = $.max(tempMin, tempMax).toNumber();
+    comfort[:temperatureMin] = $.min(tempMin, tempMax).toNumber();
+    comfort[:temperatureMax] = $.max(tempMin, tempMax).toNumber();
   }
 
   public function getServiceDelegate() as [System.ServiceDelegate] {
@@ -306,20 +314,55 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    System.println("Background data recieved");
+    $.logInfo("onBackgroundData start");
+    $.checkMemory();
 
     if (data instanceof Lang.Number && data == 0) {
-      System.println("Response code is 0 -> reset bg service");
+      $.logInfo("Response code is 0 -> reset bg service");
       loadUserSettings();
       return;
     }
 
     var bgHandler = $.getBGServiceHandler();
-    bgHandler.onBackgroundData(data);
+    if (data instanceof Lang.Number) {
+      var errorCode = data as Lang.Number;
+      $.logInfo("Response code is " + errorCode + " -> error in bg service");
+      bgHandler.setError(errorCode, "");
+      return;
+    }
 
-    WatchUi.requestUpdate();
+    logInfo("onBackgroundData not a number");
+    if (!(data instanceof Lang.Dictionary)) {
+      $.logInfo("onBackgroundData received non-dictionary data");
+      bgHandler.setError(CustomErrors.ERROR_BG_INVALID_DATA, "");
+      return;
+    }
+
+    // Check for OWM error response
+    var bgData = data as Dictionary;
+    if (bgData["error"] != null && bgData["status"] != null) {
+      var message = Lang.format("$1$ $2$", [
+        bgData["status"].toNumber(),
+        bgData["error"] as String,
+      ]);
+      logInfo("onBackgroundData OWM error message: " + message);
+      bgHandler.setError(bgData["status"].toNumber(), message);
+      return;
+    }
+
+    bgHandler.onValidBackgroundData();
+
+    // Everityhing ok, store data for view to pick up
+    $.logInfo("Data from background: " + bgData);
+    $.gIncomingWeatherData = $.toWeatherDataFlat(bgData);
+    $.logInfo("Data converted: " + $.gIncomingWeatherData);
+    bgData = null; // free memory
+    // WatchUi.requestUpdate();
+    $.checkMemory();
+    $.logInfo("onBackgroundData end");
   }
 
+  (:typecheck(disableBackgroundCheck))
   function removeObsolete() {
     Storage.deleteValue("showCurrentForecast");
     Storage.deleteValue("showMinuteForecast");
@@ -344,6 +387,7 @@ class WhatWeatherApp extends Application.AppBase {
     Storage.deleteValue("showInfoSmallField");
   }
 
+  (:typecheck(disableBackgroundCheck))
   function resetDisplayFields() {
     Storage.setValue("show_one_field", [
       8, // hours forecast
@@ -447,8 +491,13 @@ function getApp() as WhatWeatherApp {
   return Application.getApp() as WhatWeatherApp;
 }
 
+(:typecheck(disableBackgroundCheck))
 var _alertHandler as AlertHandler?;
+
+(:typecheck(disableBackgroundCheck))
 var _BGServiceHandler as BGServiceHandler?;
+
+(:typecheck(disableBackgroundCheck))
 var _CurrentLocation as CurrentLocation?;
 
 (:typecheck(disableBackgroundCheck))
@@ -475,6 +524,9 @@ function getCurrentLocation() as CurrentLocation {
   return $._CurrentLocation as CurrentLocation;
 }
 
+(:typecheck(disableBackgroundCheck))
 var g_bg_timeout_seconds as Number = 0;
+(:typecheck(disableBackgroundCheck))
 var g_bg_delay_seconds as Number = 0;
+(:typecheck(disableBackgroundCheck))
 var gSizeArrFieldItems = 21;

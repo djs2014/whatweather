@@ -124,7 +124,7 @@ function getMatchingFont(
   return font;
 }
 
-function logInfo(info as String) as Void {
+function logInfo(info) as Void {
   var clockTime = System.getClockTime();
 
   var timeString = Lang.format("$1$:$2$:$3$ - $4$", [
@@ -135,4 +135,13 @@ function logInfo(info as String) as Void {
   ]);
 
   System.println(timeString);
+}
+
+function checkMemory() {
+  var stats = System.getSystemStats();
+
+  // SystemStats returns bytes, so dividing by 1024 converts it to Kilobytes (KB)
+  $.logInfo("Used Memory: " + stats.usedMemory / 1024 + " KB");
+  $.logInfo("Free Memory: " + stats.freeMemory / 1024 + " KB");
+  $.logInfo("Total Memory: " + stats.totalMemory / 1024 + " KB");
 }

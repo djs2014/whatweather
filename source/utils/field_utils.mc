@@ -16,6 +16,7 @@ function getEdgeVersion() as Number {
   if ($.EdgeVersion > 0) {
     return $.EdgeVersion;
   }
+
   var settings = System.getDeviceSettings();
 
   if (settings.screenWidth >= 480 && settings.screenHeight >= 800) {

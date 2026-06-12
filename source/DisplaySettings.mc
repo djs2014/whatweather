@@ -2,6 +2,7 @@ import Toybox.Graphics;
 import Toybox.System;
 import Toybox.Lang;
 
+(:extendedCode) 
 class DisplaySettings {
   var font as Graphics.FontType = Graphics.FONT_LARGE;
   var fontSmall as Graphics.FontType = Graphics.FONT_XTINY;
