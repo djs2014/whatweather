@@ -1,8 +1,11 @@
-memory still
+fix # windpoints large/small field
+  show small field
+  on one field not all windpoints are visible!
+
 check start hour weather
 icon thunder -> bigger?
 (:extendedCode) 
-fix # windpoints large/small field
+
 dissable moon icon when evening start -> other indication
 test met 1 uur 1040
 test hailstone draw

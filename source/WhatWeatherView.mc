@@ -120,11 +120,9 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function processIncomingWeatherData() as Void {
     if ($.gIncomingWeatherData == null) {
-      $.logInfo("processIncomingWeatherData incoming data is null");
       return;
     }
     try {
-      $.logInfo("processIncomingWeatherData start");
       mBgWeatherData = $.gIncomingWeatherData;
       $.gIncomingWeatherData = null;
 
@@ -134,8 +132,7 @@ class WhatWeatherView extends WatchUi.DataField {
         bgServiceHandler.setLastObservationMoment(obsTime);
       }
 
-      mTriggerCheckWeatherAlerts = true;
-      $.logInfo("processIncomingWeatherData end");
+      mTriggerCheckWeatherAlerts = true;      
     } catch (ex) {
       $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
@@ -151,7 +148,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
   function compute(info as Activity.Info) as Void {
     try {
-      $.logInfo("compute start");
       $.checkMemory();
       processIncomingWeatherData();
 
@@ -216,13 +212,11 @@ class WhatWeatherView extends WatchUi.DataField {
     } catch (ex) {
       $.logInfo("Error compute: " + ex.getErrorMessage());
       ex.printStackTrace();
-    }
-    $.logInfo("compute end");
+    }    
   }
 
   function onUpdate(dc as Dc) as Void {
     try {
-      $.logInfo("onUpdate start");
       if ($.gExitedMenu) {
         // fix for leaving menu, draw complete screen, large field
         dc.clearClip();
@@ -264,7 +258,6 @@ class WhatWeatherView extends WatchUi.DataField {
       $.logInfo("Error on update: " + ex.getErrorMessage());
       ex.printStackTrace();
     }
-    $.logInfo("onUpdate end");
   }
 
   hidden function calculateLayout(dc as Dc) as Void {
@@ -545,7 +538,6 @@ class WhatWeatherView extends WatchUi.DataField {
 
     if (maxForecast == 0) {
       $.logInfo("No weather data to show");
-      $.logInfo(mWeatherData);
       // Reset the other
       hrPrecipitationChanceOtherArray = [] as Array<Lang.Number>;
       hrConditionOtherArray = [] as Array<Lang.Number>;
@@ -1060,7 +1052,7 @@ class WhatWeatherView extends WatchUi.DataField {
       var distanceMetric = "km";
       var distanceInKm = 0;
       if (DEBUG_DETAILS) {
-        $.logInfo(mCurrentLocation.infoLocation());
+        $.logInfo(["current location: ", mCurrentLocation.infoLocation()]);
       }
       if (mCurrentLocation.hasLocation()) {
         distanceInKm = $.getDistanceFromLatLonInKm(
@@ -1483,11 +1475,12 @@ class WhatWeatherView extends WatchUi.DataField {
       } // showMinuteForecast
 
       // We always have valid forecast hours, because past hours are removed.
-
+      // fcIdx < mHoursForecast && 
+      // Check all downloaded forecast hours for alerts, and build windpoints for all hours.
       var maxHourly = hrCloudsArray.size();
       for (
         var fcIdx = 0;
-        fcIdx < mHoursForecast && fcIdx < maxHourly;
+        fcIdx < maxHourly;
         fcIdx += 1
       ) {
         var hasOtherForecast =

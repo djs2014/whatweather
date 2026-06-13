@@ -314,8 +314,8 @@ class WhatWeatherApp extends Application.AppBase {
 
   (:typecheck(disableBackgroundCheck))
   function onBackgroundData(data as Application.PersistableType) as Void {
-    $.logInfo("onBackgroundData start");
-    $.checkMemory();
+    // $.logInfo("onBackgroundData start");
+    // $.checkMemory();
 
     if (data instanceof Lang.Number && data == 0) {
       $.logInfo("Response code is 0 -> reset bg service");
@@ -331,7 +331,6 @@ class WhatWeatherApp extends Application.AppBase {
       return;
     }
 
-    logInfo("onBackgroundData not a number");
     if (!(data instanceof Lang.Dictionary)) {
       $.logInfo("onBackgroundData received non-dictionary data");
       bgHandler.setError(CustomErrors.ERROR_BG_INVALID_DATA, "");
@@ -353,13 +352,11 @@ class WhatWeatherApp extends Application.AppBase {
     bgHandler.onValidBackgroundData();
 
     // Everityhing ok, store data for view to pick up
-    $.logInfo("Data from background: " + bgData);
     $.gIncomingWeatherData = $.toWeatherDataFlat(bgData);
-    $.logInfo("Data converted: " + $.gIncomingWeatherData);
     bgData = null; // free memory
     // WatchUi.requestUpdate();
-    $.checkMemory();
-    $.logInfo("onBackgroundData end");
+    // $.checkMemory();
+    // $.logInfo("onBackgroundData end");
   }
 
   (:typecheck(disableBackgroundCheck))

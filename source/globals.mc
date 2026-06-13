@@ -2,7 +2,7 @@ import Toybox.Lang;
 import Toybox.System;
 import Toybox.Weather;
 
-const DEBUG_DETAILS = true;
+const DEBUG_DETAILS = false;
 const SHOW_WIND_COUNT = 3;
 const SHOW_WIND_METERS = 0;
 const SHOW_WIND_KILOMETERS = 1;
