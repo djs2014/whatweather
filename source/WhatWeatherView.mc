@@ -57,7 +57,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mZoomMinuteForecast as Boolean = false;
   hidden var mZoomMinuteForecastWhenMM as Float = 0.2f;
   hidden var mZoomMinuteForecastFactor as Number = 3;
-  hidden var mZoomMinuteForecastColumns as Number = 2;
+  hidden var mZoomMinuteForecastColumns as Number = 3;
   hidden var mShowDetailsWhenAlert as Boolean = false;
   hidden var mShowClouds as Boolean = false;
   hidden var mShowWind as Boolean = false;
@@ -208,6 +208,9 @@ class WhatWeatherView extends WatchUi.DataField {
           playAlert();
           mAlertHandler.currentlyTriggeredHandled();
         }
+      } else {
+        // Only check for zoom when minutely forecast is enabled, and we have minutely data
+        processCheckZoomMinuteForecast();
       }
     } catch (ex) {
       $.logInfo("Error compute: " + ex.getErrorMessage());
@@ -617,8 +620,8 @@ class WhatWeatherView extends WatchUi.DataField {
           var columnWidth = 1;
           var max_mmPerHour = $._maxMMRainPerHour;
           if (mActiveZoomMinuteForecast) {
-            columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen
-            maxHoursForecast = mZoomMinuteForecastColumns;
+            columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen            
+            maxHoursForecast = mZoomMinuteForecastColumns + 1; // We skip the first forecast.
             show5minMarker = true;
             if (mZoomMinuteForecastFactor == 0) {
               mZoomMinuteForecastFactor = 3;
@@ -1429,28 +1432,21 @@ class WhatWeatherView extends WatchUi.DataField {
     return ci;
   }
 
-  // Check for alerts and build windpoints
-  function checkForWeatherAlerts() as Void {
+function processCheckZoomMinuteForecast() as Void {
     mActiveZoomMinuteForecast = false;
 
-    mAlertHandler.resetAllClear();
-    mWindPoints = [];
-    mWeatherAlerts = [];
-
-    // Alerts on both sources,  TODO
-    // TODO snow ..
     try {
       // Decide which weather data to use
-      var maxForecast = setWeatherArrays();    
+      var maxForecast = setWeatherArrays();        
       if (maxForecast == 0) {
         return;
       }
-      var maxHoursForecastOther = $.getWeatherDataSize(mWeatherDataOther);
-
+      
+      // Only for the zoom factor
       if (
         mShowMinuteForecast &&
-        mWeatherData has :minutely_pops &&
-        mWeatherData has :minutely_max
+        mWeatherData.hasKey(:minutely_pops) &&
+        mWeatherData.hasKey(:minutely_max)
       ) {
         var mm_pops = mWeatherData[:minutely_pops] as Array<Numeric>;
         var mm_max = mWeatherData[:minutely_max] as Float;
@@ -1466,7 +1462,58 @@ class WhatWeatherView extends WatchUi.DataField {
             popTotal = popTotal + pop;
           }
           popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
-          $.logInfo("Minutely pop total: " + popTotal);
+          $.logInfo("Minutely pop total: " + popTotal + " mZoomMinuteForecastWhenMM: " + mZoomMinuteForecastWhenMM);
+         // mAlertHandler.processRainMMfirstHour(popTotal);
+
+          mActiveZoomMinuteForecast =
+            mZoomMinuteForecast && popTotal >= mZoomMinuteForecastWhenMM;
+        }
+      } // showMinuteForecast
+    } catch (ex) {
+      $.logInfo("Error check for weather alerts: " + ex.getErrorMessage());
+      ex.printStackTrace();
+    }
+  }
+  // Check for alerts and build windpoints
+  function checkForWeatherAlerts() as Void {
+    mActiveZoomMinuteForecast = false;
+
+    mAlertHandler.resetAllClear();
+    mWindPoints = [];
+    mWeatherAlerts = [];
+
+    // Alerts on both sources,  TODO
+    // TODO snow ..
+    try {
+      // Decide which weather data to use
+      var maxForecast = setWeatherArrays();    
+    
+      if (maxForecast == 0) {
+        return;
+      }
+      var maxHoursForecastOther = $.getWeatherDataSize(mWeatherDataOther);
+      
+      // Always check when for alerts
+      if (
+        //mShowMinuteForecast &&
+        mWeatherData.hasKey(:minutely_pops) &&
+        mWeatherData.hasKey(:minutely_max)
+      ) {
+        var mm_pops = mWeatherData[:minutely_pops] as Array<Numeric>;
+        var mm_max = mWeatherData[:minutely_max] as Float;
+        $.logInfo("Minutely max pop: " + mm_max);
+        $.logInfo("Minutely pops: " + mm_pops);
+        var maxIdx = mm_pops.size();
+        var mmMinutesDelayed = $.getMinutesDelayed(mWeatherData[:minutely_dt]);
+        $.logInfo("Minutely minutes delayed: " + mmMinutesDelayed);
+        var popTotal = 0.0f as Lang.Float;
+        if (maxIdx > 0 && mm_max > 0.049) {
+          for (var i = mmMinutesDelayed; i < maxIdx && i < 60; i += 1) {
+            var pop = mm_pops[i];
+            popTotal = popTotal + pop;
+          }
+          popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
+          $.logInfo("Minutely pop total: " + popTotal + " mZoomMinuteForecastWhenMM: " + mZoomMinuteForecastWhenMM);
           mAlertHandler.processRainMMfirstHour(popTotal);
 
           mActiveZoomMinuteForecast =
