@@ -1,14 +1,3 @@
-fix # windpoints large/small field
-  show small field
-  on one field not all windpoints are visible!
-
-TODO: zoom factor works for actual field, 
-   mZoomMinuteForecastWhenMM = arrShowField[3];
-    mZoomMinuteForecastFactor = arrShowField[4];
-    mZoomMinuteForecastColumns = arrShowField[5];
-    ?? onlayout - calculate zoom factor again / check pop again?
---> only process option to show minute rain as zoom
-
 check start hour weather
 icon thunder -> bigger?
 (:extendedCode) 
