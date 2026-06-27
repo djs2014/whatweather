@@ -91,6 +91,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
   hidden var mFlashScreen as Boolean = false;
   hidden var mTriggerCheckWeatherAlerts as Boolean = true;
+  hidden var mTriggerGetNextSunEvent as Boolean = false;
+  // [Time.Moment, Boolean] = [Time.now(), true]; // Time of next sun event, and isSunrise
+  hidden var mNextSunEventTime as Time.Moment? = null;
+  hidden var mNextSunEventIsSunrise as Boolean = false;
 
   hidden var mHasMinuteRains as Boolean = false;
   hidden var mCalculateLayout as Boolean = false;
@@ -105,6 +109,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
     var mCurrentLocation = $.getCurrentLocation();
     mCurrentLocation.setOnLocationChanged(self, :onLocationChanged);
+    mCurrentLocation.setOnSunEventChanged(self, :onSunEventChanged);
 
     var bgServiceHandler = $.getBGServiceHandler();
     bgServiceHandler.setCurrentLocation(mCurrentLocation);
@@ -116,6 +121,12 @@ class WhatWeatherView extends WatchUi.DataField {
   function onLocationChanged(degrees as Array<Double>) as Void {
     mLat = degrees[0];
     mLon = degrees[1];
+  }
+  function onSunEventChanged(
+    sunrise as Time.Moment,
+    sunset as Time.Moment
+  ) as Void {
+    mTriggerGetNextSunEvent = true;
   }
 
   function processIncomingWeatherData() as Void {
@@ -132,7 +143,7 @@ class WhatWeatherView extends WatchUi.DataField {
         bgServiceHandler.setLastObservationMoment(obsTime);
       }
 
-      mTriggerCheckWeatherAlerts = true;      
+      mTriggerCheckWeatherAlerts = true;
     } catch (ex) {
       $.logInfo(ex.getErrorMessage());
       ex.printStackTrace();
@@ -189,14 +200,14 @@ class WhatWeatherView extends WatchUi.DataField {
       mGarminWeatherData = $.purgePastWeatherdataFlat(mGarminWeatherData);
       mBgWeatherData = $.purgePastWeatherdataFlat(mBgWeatherData);
       if (DEBUG_DETAILS) {
-       $.logInfo(mBgWeatherData);
+        $.logInfo(mBgWeatherData);
       }
-      
+
       if (
         mTriggerCheckWeatherAlerts ||
         mBgWeatherData[:changed] ||
         mGarminWeatherData[:changed]
-      ) {        
+      ) {
         mTriggerCheckWeatherAlerts = false;
         mBgWeatherData[:changed] = false;
         mGarminWeatherData[:changed] = false;
@@ -215,7 +226,7 @@ class WhatWeatherView extends WatchUi.DataField {
     } catch (ex) {
       $.logInfo("Error compute: " + ex.getErrorMessage());
       ex.printStackTrace();
-    }    
+    }
   }
 
   function onUpdate(dc as Dc) as Void {
@@ -275,7 +286,8 @@ class WhatWeatherView extends WatchUi.DataField {
 
     var arrShowField = [] as Array<Numeric>;
     if (mCurrentEdgeField == EfOne) {
-      arrShowField = $.getStorageValue("show_one_field", []) as Array<Numeric or Boolean>;
+      arrShowField =
+        $.getStorageValue("show_one_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 3;
     } else if (mCurrentEdgeField == EfLarge) {
       arrShowField =
@@ -283,7 +295,8 @@ class WhatWeatherView extends WatchUi.DataField {
       mShowRainTotalSize = 2;
       mShowObservationLocationName = false;
     } else if (mCurrentEdgeField == EfWide) {
-      arrShowField = $.getStorageValue("show_wide_field", []) as Array<Numeric or Boolean>;
+      arrShowField =
+        $.getStorageValue("show_wide_field", []) as Array<Numeric or Boolean>;
       mShowRainTotalSize = 2;
       mShowComfortBorders = false;
       mShowObservationLocationName = false;
@@ -580,7 +593,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var y = mDs.columnY;
     var previousCondition = -1;
     var weatherTextLine = 0;
-    var sunsetPassed = false;
+    // var sunsetPassed = false;
     var skipFirstForecast = false;
     var maxHoursForecast = mHoursForecast;
 
@@ -590,7 +603,7 @@ class WhatWeatherView extends WatchUi.DataField {
     if (maxForecast == 0) {
       return false;
     }
-    
+
     var maxHoursForecastOther = $.getWeatherDataSize(mWeatherDataOther);
 
     try {
@@ -600,7 +613,24 @@ class WhatWeatherView extends WatchUi.DataField {
       }
 
       var mCurrentLocation = $.getCurrentLocation();
+      if (mTriggerGetNextSunEvent) {
+        mTriggerGetNextSunEvent = false;
+        var nextSunEvent = mCurrentLocation.getNextSunEvent(null);
+        if (nextSunEvent != null) {
+          mNextSunEventTime = nextSunEvent[0] as Time.Moment;
+          mNextSunEventIsSunrise = nextSunEvent[1] as Boolean;
+          if (DEBUG_DETAILS) {
+            $.logInfo([
+              "Next sun event",
+              $.getLongTimeString(mNextSunEventTime),
+              mNextSunEventIsSunrise,
+            ]);
+          }
+        }
+      }
 
+      var mmMinutesDelayed = 0;
+      var mmStartTime = null;
       if (
         mShowMinuteForecast &&
         mWeatherData.hasKey(:minutely_pops) &&
@@ -613,14 +643,23 @@ class WhatWeatherView extends WatchUi.DataField {
         var show5minMarker = false;
         var popTotal = 0.0f;
         if (maxIdx > 0 && mm_max > 0.049) {
-          var mmMinutesDelayed = $.getMinutesDelayed(
-            mWeatherData[:minutely_dt]
-          );
+          // When we have minutely forecast, we skip the first forecast,
+          // The percipitation is same as the first hourly forecast,
+          // and we show the minutely forecast instead. Less confusion.
+          skipFirstForecast = true;
+          mmMinutesDelayed = $.getMinutesDelayed(mWeatherData[:minutely_dt]);
+          mmStartTime = mWeatherData[:minutely_dt] as Time.Moment;
+          if (mmMinutesDelayed > 0) {
+            mmStartTime = mmStartTime.add(
+              new Time.Duration(mmMinutesDelayed * 60)
+            );
+          }
+
           var xMMstart = x;
           var columnWidth = 1;
           var max_mmPerHour = $._maxMMRainPerHour;
           if (mActiveZoomMinuteForecast) {
-            columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen            
+            columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen
             maxHoursForecast = mZoomMinuteForecastColumns + 1; // We skip the first forecast.
             show5minMarker = true;
             if (mZoomMinuteForecastFactor == 0) {
@@ -630,7 +669,7 @@ class WhatWeatherView extends WatchUi.DataField {
             max_mmPerHour = (
               max_mmPerHour / mZoomMinuteForecastFactor
             ).toNumber();
-            skipFirstForecast = true;
+
             // System.println(["Zoom maxHoursForecast", maxHoursForecast]);
           }
           var offset = (maxIdx * columnWidth + mDs.space).toNumber();
@@ -767,6 +806,68 @@ class WhatWeatherView extends WatchUi.DataField {
         // minutely forecast end
       }
 
+      // if sunevent in first hour and minutely forecast is shown,
+      // then we need to draw the sunevent marker in the minutely forecast.
+      // else start drawing fromt the first hourly forecast.
+
+      if (mNextSunEventTime != null) {
+        // Total width: forecast columns
+        var totalWidth = maxHoursForecast * (mDs.columnWidth + mDs.space);
+        if (maxForecast < maxHoursForecast) {
+          totalWidth = maxForecast * (mDs.columnWidth + mDs.space);
+        }
+
+        var timeFirstForecast = Time.now();
+        if (hrDtArray.size() > 1 && skipFirstForecast) {
+          // First forecast is the current hour == minutely forecast
+          timeFirstForecast = hrDtArray[1];
+        } else if (hrDtArray.size() > 0) {
+          timeFirstForecast = hrDtArray[0];
+        }
+
+        // Check if the next sun event is in the minutely forecast, and before the first hourly forecast.
+        if (
+          mHasMinuteRains &&
+          mmStartTime != null &&
+          $.isInRange(mNextSunEventTime, mmStartTime, timeFirstForecast)
+        ) {
+          System.println(["Sun event in minutely forecast"]);
+
+          // Draw the sun event marker in the minutely forecast
+          var widthMinutelyForecast = x - mDs.columnX;
+          drawSunEventMarker(
+            dc,
+            mmStartTime,
+            mDs.columnX,
+            dc.getHeight() - 10,
+            1,
+            widthMinutelyForecast,
+            10,
+            mNextSunEventTime,
+            mNextSunEventIsSunrise
+          );
+          // Continue the bar for the next hourly forecasts.
+          if (mDarkBackground) {
+            dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+          } else {
+            dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+          }
+          dc.fillRectangle(x, dc.getHeight() - 10, totalWidth, 10);
+        } else {
+          drawSunEventMarker(
+            dc,
+            timeFirstForecast,
+            x,
+            dc.getHeight() - 10,
+            maxHoursForecast,
+            totalWidth,
+            10,
+            mNextSunEventTime,
+            mNextSunEventIsSunrise
+          );
+        }
+      }
+
       // Use the hourly forecast arrays
 
       for (
@@ -774,15 +875,19 @@ class WhatWeatherView extends WatchUi.DataField {
         fcIdx < maxHoursForecast && fcIdx < maxForecast;
         fcIdx += 1
       ) {
-        // TODO check this
-        if (skipFirstForecast && fcIdx == 0) {
-          $.logInfo("Skip first forecast due to rain 1stmm zoom");
-          continue;
+        if (DEBUG_DETAILS) {
+          $.logInfo([
+            "Forecast",
+            fcIdx,
+            $.getLongTimeString(hrDtArray[fcIdx]),
+            hrHourArray[fcIdx],
+          ]);
         }
-        // TODO log info
-        // if (DEBUG_DETAILS) {
-        //   $.logInfo(forecast.info());
-        // }
+
+        if (skipFirstForecast && fcIdx == 0) {
+          $.logInfo("Skip first forecast due to rain 1stmm");
+          continue;
+        }        
         var hasOtherForecast =
           fcIdx < maxHoursForecastOther && fcIdx < maxForecast;
 
@@ -832,6 +937,7 @@ class WhatWeatherView extends WatchUi.DataField {
             hour
           );
         }
+
         // rain chance and rain mm is always shown, the base of the weather columns.
         var rainHeight = drawColumnChance(
           dc,
@@ -1018,10 +1124,10 @@ class WhatWeatherView extends WatchUi.DataField {
             nightTime,
             mDarkBackground
           );
-          if (nightTime && !sunsetPassed) {
-            render.drawSunsetIndication(dc, x);
-            sunsetPassed = true;
-          }
+          // if (nightTime && !sunsetPassed) {
+          //   render.drawSunsetIndication(dc, x);
+          //   sunsetPassed = true;
+          // }
         }
         if (mShowWeatherText && previousCondition != condition) {
           var line = weatherTextLine % 2 == 0 ? 0 : 1;
@@ -1032,7 +1138,7 @@ class WhatWeatherView extends WatchUi.DataField {
         }
 
         if (mShowWind || wa.alertWind) {
-          if (fcIdx < mWindPoints.size()) {            
+          if (fcIdx < mWindPoints.size()) {
             mWindPoints[fcIdx].setXposition(x);
             var wp = mWindPoints[fcIdx] as WindPoint;
             var xW = wp.x + (mDs.columnWidth / 2).toNumber();
@@ -1432,16 +1538,16 @@ class WhatWeatherView extends WatchUi.DataField {
     return ci;
   }
 
-function processCheckZoomMinuteForecast() as Void {
+  function processCheckZoomMinuteForecast() as Void {
     mActiveZoomMinuteForecast = false;
 
     try {
       // Decide which weather data to use
-      var maxForecast = setWeatherArrays();        
+      var maxForecast = setWeatherArrays();
       if (maxForecast == 0) {
         return;
       }
-      
+
       // Only for the zoom factor
       if (
         mShowMinuteForecast &&
@@ -1452,6 +1558,9 @@ function processCheckZoomMinuteForecast() as Void {
         var mm_max = mWeatherData[:minutely_max] as Float;
         $.logInfo("Minutely max pop: " + mm_max);
         $.logInfo("Minutely pops: " + mm_pops);
+        $.logInfo(
+          "Minutely start: " + $.getLongTimeString(mWeatherData[:minutely_dt])
+        );
         var maxIdx = mm_pops.size();
         var mmMinutesDelayed = $.getMinutesDelayed(mWeatherData[:minutely_dt]);
         $.logInfo("Minutely minutes delayed: " + mmMinutesDelayed);
@@ -1462,8 +1571,13 @@ function processCheckZoomMinuteForecast() as Void {
             popTotal = popTotal + pop;
           }
           popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
-          $.logInfo("Minutely pop total: " + popTotal + " mZoomMinuteForecastWhenMM: " + mZoomMinuteForecastWhenMM);
-         // mAlertHandler.processRainMMfirstHour(popTotal);
+          $.logInfo(
+            "Minutely pop total: " +
+              popTotal +
+              " mZoomMinuteForecastWhenMM: " +
+              mZoomMinuteForecastWhenMM
+          );
+          // mAlertHandler.processRainMMfirstHour(popTotal);
 
           mActiveZoomMinuteForecast =
             mZoomMinuteForecast && popTotal >= mZoomMinuteForecastWhenMM;
@@ -1486,13 +1600,13 @@ function processCheckZoomMinuteForecast() as Void {
     // TODO snow ..
     try {
       // Decide which weather data to use
-      var maxForecast = setWeatherArrays();    
-    
+      var maxForecast = setWeatherArrays();
+
       if (maxForecast == 0) {
         return;
       }
       var maxHoursForecastOther = $.getWeatherDataSize(mWeatherDataOther);
-      
+
       // Always check when for alerts
       if (
         //mShowMinuteForecast &&
@@ -1503,6 +1617,9 @@ function processCheckZoomMinuteForecast() as Void {
         var mm_max = mWeatherData[:minutely_max] as Float;
         $.logInfo("Minutely max pop: " + mm_max);
         $.logInfo("Minutely pops: " + mm_pops);
+        $.logInfo(
+          "Minutely start: " + $.getLongTimeString(mWeatherData[:minutely_dt])
+        );
         var maxIdx = mm_pops.size();
         var mmMinutesDelayed = $.getMinutesDelayed(mWeatherData[:minutely_dt]);
         $.logInfo("Minutely minutes delayed: " + mmMinutesDelayed);
@@ -1513,7 +1630,12 @@ function processCheckZoomMinuteForecast() as Void {
             popTotal = popTotal + pop;
           }
           popTotal = popTotal / 60.0; // popTotal is mm/hour, pop is for 1 minute
-          $.logInfo("Minutely pop total: " + popTotal + " mZoomMinuteForecastWhenMM: " + mZoomMinuteForecastWhenMM);
+          $.logInfo(
+            "Minutely pop total: " +
+              popTotal +
+              " mZoomMinuteForecastWhenMM: " +
+              mZoomMinuteForecastWhenMM
+          );
           mAlertHandler.processRainMMfirstHour(popTotal);
 
           mActiveZoomMinuteForecast =
@@ -1522,14 +1644,10 @@ function processCheckZoomMinuteForecast() as Void {
       } // showMinuteForecast
 
       // We always have valid forecast hours, because past hours are removed.
-      // fcIdx < mHoursForecast && 
+      // fcIdx < mHoursForecast &&
       // Check all downloaded forecast hours for alerts, and build windpoints for all hours.
       var maxHourly = hrCloudsArray.size();
-      for (
-        var fcIdx = 0;
-        fcIdx < maxHourly;
-        fcIdx += 1
-      ) {
+      for (var fcIdx = 0; fcIdx < maxHourly; fcIdx += 1) {
         var hasOtherForecast =
           fcIdx < maxHoursForecastOther && fcIdx < maxForecast;
 
@@ -1850,6 +1968,74 @@ function processCheckZoomMinuteForecast() as Void {
           Graphics.FONT_SMALL,
           desc,
           Graphics.TEXT_JUSTIFY_LEFT
+        );
+      }
+    }
+  }
+
+  function drawSunEventMarker(
+    dc as Dc,
+    checkTime as Time.Moment?,
+    xStart as Number,
+    yStart as Number,
+    xHours as Number,
+    totalWidth as Number,
+    totalHeight as Number,
+    sunEventMoment as Time.Moment?,
+    isSunrise as Boolean
+  ) {
+    if (sunEventMoment == null || xHours == null || xHours <= 0) {
+      return;
+    }
+
+    var now = Time.now();
+    if (checkTime != null) {
+      now = checkTime;
+    }
+    var eightHoursSec = xHours * 60 * 60;
+    var endWindow = now.add(new Time.Duration(eightHoursSec));
+
+    // Convert Moments to Unix timestamps (seconds) for easy math
+    var nowSec = now.value();
+    var endSec = endWindow.value();
+    var sunEventSec = sunEventMoment.value();
+
+    // Check if nighttime starts within the next 8 hours
+    if (sunEventSec > nowSec && sunEventSec < endSec) {
+      // 1. Calculate the relative position ratio (0.0 to 1.0)
+      var ratio = (sunEventSec - nowSec).toDouble() / eightHoursSec;
+
+      // 2. Map the ratio to your horizontal pixel width
+      var markerX = xStart + (ratio * totalWidth).toNumber();
+
+      if (mDarkBackground) {
+        dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
+      } else {
+        dc.setColor(Graphics.COLOR_LT_GRAY, Graphics.COLOR_TRANSPARENT);
+      }
+
+      // A horizontal bar starting at the night point to the end of the timeline:
+      var barWidth = xStart + totalWidth - markerX;
+      dc.fillRectangle(markerX, yStart, barWidth, totalHeight);
+
+      // Draw sun or moon icon at the marker position
+      var iconSize = totalHeight - 2; // Adjust size as needed
+      if (isSunrise) {
+        dc.setColor(Graphics.COLOR_YELLOW, Graphics.COLOR_TRANSPARENT);
+        dc.fillCircle(
+          markerX + (iconSize / 2).toNumber(),
+          yStart + (iconSize / 2).toNumber(),
+          (iconSize / 2).toNumber()
+        );
+      } else {
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        render.drawMoon(
+          dc,
+          markerX + (iconSize / 2).toNumber(),
+          yStart + (iconSize / 2).toNumber(),
+          (iconSize / 2).toNumber(),
+          Graphics.COLOR_WHITE,
+          Graphics.COLOR_WHITE
         );
       }
     }

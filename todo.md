@@ -1,4 +1,11 @@
-check start hour weather
+when mm rain -> first hourly forecast is skipped
+TODO
+ - show wind?
+ - show condition.
+
+horizontal show daylight/night progress
+check start hour weather Garmin
+
 icon thunder -> bigger?
 (:extendedCode) 
 

@@ -180,3 +180,12 @@ function getLongTimeString(moment as Time.Moment?) as String {
   }
   return "";
 }
+
+function isInRange(targetMoment as Time.Moment?, startMoment as Time.Moment?, endMoment as Time.Moment?) as Boolean {
+    if (targetMoment == null || startMoment == null || endMoment == null) {
+        return false;
+    }
+
+    // Check if targetMoment is after or equal to startMoment AND before or equal to endMoment
+    return (targetMoment.compare(startMoment) >= 0 && targetMoment.compare(endMoment) <= 0);
+}
