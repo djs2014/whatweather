@@ -7,7 +7,9 @@ Rain 'levels'
 5.0 - 10.0 mm/hr Extreme rain - High risk
 > 10.0 mm/hr Torrential Danger
 
-
+TODO: for rain first hour
+-> if peak / min larger than alert level
+-> indicate text + mark color line
 
 when mm rain -> first hourly forecast is skipped
 TODO

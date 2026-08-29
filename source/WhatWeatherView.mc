@@ -702,6 +702,22 @@ class WhatWeatherView extends WatchUi.DataField {
               max_mmPerHour
             );
 
+            if (mRainWarningLevel > 0) {
+              var warningLevel = getRainWarningLevel(pop);
+              if (warningLevel >= mRainWarningLevel) {
+                drawAlertPrecipitationMillimeters(
+                  dc,
+                  getAlertColor(warningLevel),
+                  x,
+                  y,
+                  columnWidth,
+                  mDs.columnHeight,
+                  pop,
+                  max_mmPerHour
+                );
+              }
+            }
+
             if (
               show5minMarker &&
               ((i + mmMinutesDelayed) % 5).toNumber() == 0
@@ -993,7 +1009,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
           // Get warning level
           if (mRainWarningLevel > 0) {
-            var warningLevel = getRainWarningLevel(hrRain1hrArray[fcIdx]);            
+            var warningLevel = getRainWarningLevel(hrRain1hrArray[fcIdx]);
             if (warningLevel >= mRainWarningLevel) {
               showRainMMtext = true;
               drawAlertPrecipitationMillimeters(

@@ -95,7 +95,7 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
-      
+
       $.g_bg_timeout_seconds =
         $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
         Number;
