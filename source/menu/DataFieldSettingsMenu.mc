@@ -304,6 +304,14 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
         array[index] == true
       );
 
+      index = 21;
+      $.addMenuItem(
+        fieldMenu,
+        "Rain warning level",
+        $.getRainWarningLevelText(array[index] as Number),
+        $.getKeyAndIndex(storageKey, index)
+      );
+
       WatchUi.pushView(
         fieldMenu,
         new $.GeneralMenuDelegate(),
@@ -642,6 +650,22 @@ class GeneralMenuDelegate extends WatchUi.Menu2InputDelegate {
       var sp = new selectionMenuPicker("Extra information", id as String);
       for (var i = 0; i <= 5; i++) {
         sp.add($.getShowInfoText(i), null, i);
+      }
+      sp.setOnSelected(self, :onSelectedSelection, _item);
+      sp.show();
+      return;
+    }
+
+    if (
+      id instanceof String &&
+      (id.equals("show_one_field|21") ||
+        id.equals("show_large_field|21") ||
+        id.equals("show_wide_field|21") ||
+        id.equals("show_small_field|21"))
+    ) {
+      var sp = new selectionMenuPicker("Rain warning level", id as String);
+      for (var i = 0; i <= 4; i++) {
+        sp.add($.getRainWarningLevelText(i), null, i);
       }
       sp.setOnSelected(self, :onSelectedSelection, _item);
       sp.show();

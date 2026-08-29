@@ -73,6 +73,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mShowDetailsWhenPaused as Boolean = false;
   hidden var m0TemperatureLineYpos as Number = -1;
   hidden var mShowWeatherText as Boolean = false;
+  hidden var mRainWarningLevel as Number = 2;
 
   hidden var mWeatherConditionLoop as Number = 0;
 
@@ -334,6 +335,7 @@ class WhatWeatherView extends WatchUi.DataField {
     mShowDetailsWhenPaused = arrShowField[18] == true;
     var show0TemperatureLine = arrShowField[19] == true;
     mShowWeatherText = arrShowField[20] == true;
+    mRainWarningLevel = arrShowField[21]; // 0-4
 
     mShowRelativeWind = mShowExtraInfo == SHOW_INFO_RELATIVE_WIND;
 
@@ -887,7 +889,7 @@ class WhatWeatherView extends WatchUi.DataField {
         if (skipFirstForecast && fcIdx == 0) {
           $.logInfo("Skip first forecast due to rain 1stmm");
           continue;
-        }        
+        }
         var hasOtherForecast =
           fcIdx < maxHoursForecastOther && fcIdx < maxForecast;
 
@@ -976,6 +978,7 @@ class WhatWeatherView extends WatchUi.DataField {
           );
         }
         // mm per hour
+        var showRainMMtext = false;
         if (hrRain1hrArray[fcIdx] > 0.0f) {
           drawColumnPrecipitationMillimeters(
             dc,
@@ -987,6 +990,24 @@ class WhatWeatherView extends WatchUi.DataField {
             hrRain1hrArray[fcIdx], // TODO float
             $._maxMMRainPerHour
           );
+
+          // Get warning level
+          if (mRainWarningLevel > 0) {
+            var warningLevel = getRainWarningLevel(hrRain1hrArray[fcIdx]);            
+            if (warningLevel >= mRainWarningLevel) {
+              showRainMMtext = true;
+              drawAlertPrecipitationMillimeters(
+                dc,
+                getAlertColor(warningLevel),
+                x,
+                mDs.columnY,
+                mDs.columnWidth,
+                mDs.columnHeight,
+                hrRain1hrArray[fcIdx], // TODO float
+                $._maxMMRainPerHour
+              );
+            }
+          }
         }
 
         var bluebarPerc = hrPrecipitationChanceArray[fcIdx];
@@ -1090,7 +1111,7 @@ class WhatWeatherView extends WatchUi.DataField {
           }
         }
 
-        if (mShowDetails) {
+        if (mShowDetails || showRainMMtext) {
           // Show rain mm
           var infoStr = "";
           if (hrRain1hrArray[fcIdx] > 0.0f) {
@@ -1366,6 +1387,38 @@ class WhatWeatherView extends WatchUi.DataField {
     dc.fillRectangle(x, barFilledY, bar_width, height);
     dc.setColor(mDs.COLOR_TEXT_DETAILS, Graphics.COLOR_TRANSPARENT);
     dc.drawLine(x, barFilledY - 1, x + bar_width, barFilledY - 1);
+  }
+
+  function drawAlertPrecipitationMillimeters(
+    dc as Dc,
+    color as Graphics.ColorType,
+    x as Number,
+    y as Number,
+    bar_width as Number,
+    bar_height as Number,
+    mmhour as Float,
+    max_mmPerHour as Number
+  ) as Void {
+    dc.setColor(color, Graphics.COLOR_TRANSPARENT);
+    // var max_mmPerHour = $._maxMMRainPerHour;
+    var perc = $.percentageOf(mmhour, 0, max_mmPerHour).toNumber();
+    if (perc <= 0) {
+      return;
+    }
+    var ymm = mDs.getYpostion(perc);
+    var height = bar_height - ymm;
+    var barFilledY = y + bar_height - height;
+
+    $.fillHatchedRectangle(
+      dc,
+      x,
+      barFilledY,
+      bar_width,
+      height,
+      5,
+      color,
+      Graphics.COLOR_TRANSPARENT
+    );
   }
 
   function drawColumnPrecipitationMillimetersDivider(
@@ -2038,6 +2091,37 @@ class WhatWeatherView extends WatchUi.DataField {
           Graphics.COLOR_WHITE
         );
       }
+    }
+  }
+
+  // Map precipitation rate (mm/hr) to warning levels for road cycling
+  function getRainWarningLevel(rainMmPerHour as Float) as Number {
+    if (rainMmPerHour < 0.2) {
+      return 0; // DRY
+    } else if (rainMmPerHour < 1.0) {
+      return 1; // DRIZZLE / DAMP
+    } else if (rainMmPerHour < 2.5) {
+      return 2; // MODERATE / WET ROADS
+    } else if (rainMmPerHour < 5.0) {
+      return 3; // HEAVY (CYCLING WARNING)
+    } else {
+      return 4; // EXTREME (DANGER)
+    }
+  }
+
+  // TODO check in darkmode
+  function getAlertColor(warningLevel as Number) as Number {
+    switch (warningLevel) {
+      case 1:
+        return Graphics.COLOR_WHITE;
+      case 2:
+        return Graphics.COLOR_YELLOW;
+      case 3:
+        return Graphics.COLOR_ORANGE;
+      case 4:
+        return Graphics.COLOR_RED;
+      default:
+        return Graphics.COLOR_TRANSPARENT;
     }
   }
 }

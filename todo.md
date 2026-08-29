@@ -1,3 +1,14 @@
+Rain 'levels'
+
+< 0.2 mm/hr "Dry"
+0.2 - 1.0 mm/hr: Drizzle
+1.0 - 2.5 mm/hr Moderate rain
+2.5 - 5.0 mm/hr Heavy rain  - Caution
+5.0 - 10.0 mm/hr Extreme rain - High risk
+> 10.0 mm/hr Torrential Danger
+
+
+
 when mm rain -> first hourly forecast is skipped
 TODO
  - show wind?
