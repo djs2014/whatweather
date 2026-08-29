@@ -73,6 +73,15 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
                 )
             );
 
+            if (testScenario == null) {
+                testScenario = 0;
+            } else if ((testScenario as Number) > 0) {
+                // Reset so next request will be normal, unless user sets it again
+                Storage.setValue("testScenario", 0);
+            }
+            // No apikey needed for test scenarios
+            var doApiKeyCheck = (testScenario as Number) == 0;
+            
             if (apiKey == null) {
                 apiKey = "";
             }
@@ -86,7 +95,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (location == null) {
                 return CustomErrors.ERROR_BG_NO_POSITION;
             }
-            if ((apiKey as String).length() == 0) {
+            if (doApiKeyCheck && (apiKey as String).length() == 0) {
                 return CustomErrors.ERROR_BG_NO_API_KEY;
             }
             if ((proxyUrl as String).length() == 0) {
@@ -98,11 +107,7 @@ class BackgroundServiceDelegate extends System.ServiceDelegate {
             if (minutely == null) {
                 minutely = true;
             }
-            if (testScenario == null) {
-                testScenario = 0;
-            } else if ((testScenario as Number) > 0) {
-                Storage.setValue("testScenario", 0);
-            }
+            
             var lat = (location as Array)[0] as Double;
             var lon = (location as Array)[1] as Double;
             if (

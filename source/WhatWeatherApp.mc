@@ -95,14 +95,7 @@ class WhatWeatherApp extends Application.AppBase {
       }
 
       // $.gDebug = $.getStorageValue("debug", $.gDebug) as Boolean;
-
-      // For TEST set to OWM @@ -------------------------------------
-      //Storage.setValue("weatherDataSource", wsOWMFirst);
-      //Storage.setValue("weatherDataSource", wsGarminOnly);
-      //Storage.setValue("openWeatherAPIKey", "");
-      //Storage.setValue("testScenario", 2);
-      // ------------------------------------------------------------
-
+      
       $.g_bg_timeout_seconds =
         $.getStorageValue("g_bg_timeout_seconds", $.g_bg_timeout_seconds) as
         Number;
@@ -191,7 +184,7 @@ class WhatWeatherApp extends Application.AppBase {
       $._weatherDataSource = ws as WeatherSource;
 
       setStorageValueIfChanged("openWeatherAPIKey", "");
-
+      
       var apiKey = $.getStorageValue("openWeatherAPIKey", "") as String;
       if (apiKey.length == 0 && $._weatherDataSource == wsOWMFirst) {
         $._weatherDataSource = wsGarminFirst;

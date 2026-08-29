@@ -1,8 +1,11 @@
-fix # windpoints large/small field
-  show small field
-  on one field not all windpoints are visible!
+when mm rain -> first hourly forecast is skipped
+TODO
+ - show wind?
+ - show condition.
 
-check start hour weather
+horizontal show daylight/night progress
+check start hour weather Garmin
+
 icon thunder -> bigger?
 (:extendedCode) 
 

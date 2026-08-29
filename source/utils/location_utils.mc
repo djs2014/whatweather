@@ -3,6 +3,8 @@
 // 2025-11-11 do not cache sunrise/set
 // 2026-06-01 added debug mode to slope calc and location
 // 2026-06-02 callback weak reference fix
+// 2026-7-27 getNextEventTime() added
+
 import Toybox.Activity;
 import Toybox.Graphics;
 import Toybox.Lang;
@@ -447,7 +449,7 @@ class CurrentLocation {
     }
     return Weather.getSunrise(mLocation as Location, Time.now());
   }
-  // Note: is sunrise of current day. So will return date before now() if the sun has rised already.
+  // Note: is sunset of current day. So will return date before now() if the sun has set already.
   function getSunset() as Moment? {
     if (!validLocation(mLocation)) {
       return null;
@@ -472,6 +474,42 @@ class CurrentLocation {
     var oneDay = new Time.Duration(Gregorian.SECONDS_PER_DAY);
     var tomorrow = today.add(oneDay);
     return Weather.getSunset(mLocation as Location, tomorrow); // ex: 14-6-2022 05:20:43
+  }
+
+  // Returns the next sunrise or sunset time, whichever is next in the future.
+  // As an array of [Moment?, Boolean] where the first element is the next event time
+  // and the second element is true if it's sunrise, false if it's sunset.
+  function getNextSunEvent(time as Moment?) as Array<Moment or Boolean>? {
+    if (!validLocation(mLocation)) {
+      return null;
+    }
+    var timeOnDay = Time.now();
+    if (time != null) {
+      timeOnDay = time;
+    }
+    // Garmin API returns the sunrise and sunset times for the current day, even if they are in the past.
+    // If the current time is before sunrise, return sunrise.
+    // If it's after sunrise but before sunset, return sunset.
+    // If it's after sunset, return tomorrow's sunrise.
+
+    var sunrise = Weather.getSunrise(mLocation as Location, timeOnDay);
+    var sunset = Weather.getSunset(mLocation as Location, timeOnDay);
+
+    if ((timeOnDay as Moment).value() <= (sunrise as Moment).value()) {
+      return [sunrise, true];
+    }
+    if ((timeOnDay as Moment).value() <= (sunset as Moment).value()) {
+      return [sunset, false];
+    }
+
+    // We need the sunset after sunrise, so we got a daytime period from sunrise - to sunset
+    if (debugMode) {
+      System.println(["Get sunrise next day!"]);
+    }
+    var oneDay = new Time.Duration(Gregorian.SECONDS_PER_DAY);
+    sunrise = Weather.getSunrise(mLocation as Location, timeOnDay.add(oneDay));
+
+    return [sunrise, true];
   }
 
   function getRelativeToObservation(

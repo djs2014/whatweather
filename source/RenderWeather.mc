@@ -530,21 +530,7 @@ class RenderWeather {
     }
   }
 
-  function drawSunsetIndication(dc as Dc, x as Lang.Number) as Void {
-    if (ef != EfOne) {
-      // @@TODO should be from settings
-      return;
-    }
-    var yOffset = ds.heightWt;
-    drawMoon(
-      dc,
-      x + (ds.columnWidth / 2).toNumber(),
-      ds.columnY + ds.columnHeight + ds.heightWind + ds.heightWc + yOffset,
-      (ds.columnWidth / 5).toNumber(),
-      Graphics.COLOR_BLACK,
-      Graphics.COLOR_ORANGE
-    );
-  }
+  
 
   function getThemeColor(darkBackground) as Dictionary {
     return {
@@ -1305,7 +1291,7 @@ hidden function drawHailStone(
     }
   }
 
-  hidden function drawMoon(
+  function drawMoon(
     dc as Dc,
     x as Number,
     y as Number,

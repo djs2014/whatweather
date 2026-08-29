@@ -67,11 +67,23 @@ function getLatestGarminWeatherFlat() as Dictionary {
         return flatData;
     }
 
+    // 1. Get the current time in seconds
+    // Note this is based on the position in the Simulator. Can be different from local time on pc!
+    //var nowSec = Time.now().value();
+    // 2. Truncate to the start of the current hour
+    // (e.g., 14:35 becomes 14:00)
+    // var currentHourStartSec =
+    //     nowSec - (nowSec % Time.Gregorian.SECONDS_PER_HOUR);
+
     var nowSeconds = Time.now().value() - 3600;
     var cutOffTime = new Time.Moment(nowSeconds);
-    // if (DEBUG_DETAILS) {
-    //   $.logInfo("Gar cutOffTime: " + $.getDateTimeString(cutOffTime));
-    // }
+    if (DEBUG_DETAILS) {
+        $.logInfo([
+            "now sec",
+            $.secondsToShortTimeString(nowSeconds, ""),
+            "Gar cutOffTime: " + $.getDateTimeString(cutOffTime),
+        ]);
+    }
     // Plus 1, for handling hour change. Not showing empty column
     var maxHoursDisplayed =
         ($.getStorageValue("openWeatherMaxHours", 1) as Number) + 1;
@@ -105,20 +117,29 @@ function getLatestGarminWeatherFlat() as Dictionary {
             continue;
         }
 
-        var fcTime = hfc.forecastTime as Time.Moment;
-        if (fcTime.lessThan(cutOffTime)) {
+        var forecastTime = hfc.forecastTime as Time.Moment;
+
+        // Skip if the forecast hour is strictly before the current hour
+        if (forecastTime.lessThan(cutOffTime)) {
             if (DEBUG_DETAILS) {
                 $.logInfo([
                     "Gar skip forecast hour:",
-                    $.getDateTimeString(fcTime),
+                    $.getDateTimeString(forecastTime),
                 ]);
             }
             continue;
         }
+        if (DEBUG_DETAILS) {
+            $.logInfo([
+                "Garmin hourly forecast",
+                i,
+                $.getDateTimeString(forecastTime),
+            ]);
+        }
 
-        // 2. Add to the local, explicitly-typed arrays (SUPER FAST for VS Code)
-        hrDtArray.add(fcTime);
-        var today = Gregorian.info(fcTime, Time.FORMAT_MEDIUM);
+        // 2. Add to the local, explicitly-typed arrays
+        hrDtArray.add(forecastTime);
+        var today = Gregorian.info(forecastTime, Time.FORMAT_MEDIUM);
         hrHourArray.add(today.hour);
 
         if (hfc has :cloudCover) {
