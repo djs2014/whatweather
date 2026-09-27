@@ -26,7 +26,6 @@ class WindPoint {
     if (speed != null) {
       self.speed = speed;
     }
-    self.speed = speed;
     self.speedAlert = speedAlert;
     if (gust != null) {
       self.gust = gust;

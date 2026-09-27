@@ -1392,7 +1392,7 @@ hidden function drawHailStone(
     } else if (windGustLevel == 2) {
       iconColor = Graphics.COLOR_PINK;
     } else if (windGustLevel == 1) {
-      iconColor = 0xe06666; // TODO night mode color
+      iconColor = ds.COLOR_WIND_GUST1;
     }
     var text = wp.text;
 
@@ -1415,8 +1415,9 @@ hidden function drawHailStone(
     var textWidth = dc.getTextWidthInPixels(text, wsFont);
     var radius = (textWidth / 2).toNumber() + padding;
 
-    // Bearing arrow
-    if (bearingDegrees != 0 && wp.speed != 0 && wp.speed > NO_BEARING_SPEED) {
+    // Bearing arrow, drawn for any meaningful wind speed.
+    // Note: bearing 0 is North (valid direction), not "unknown".
+    if (wp.speed > NO_BEARING_SPEED) {
       // Correction 0 is horizontal, should be North so -90 degrees
       // Wind comes from x but goes to y (opposite) direction so +180 degrees
       // Total is + 90 degrees
@@ -1481,22 +1482,23 @@ hidden function drawHailStone(
           dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
           dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
         }
-        dc.setPenWidth(1);
       }
     }
 
-    // The circle
-    var textColor = Graphics.COLOR_BLACK;
-    dc.setColor(Graphics.COLOR_DK_GRAY, Graphics.COLOR_TRANSPARENT);
-    dc.drawCircle(x, y, radius);
-    if (hasAlert && !bigArrow) {
+    // The circle, themed for light/dark background.
+    // Fill first, then outline, so the fill does not overpaint half the ring.
+    var textColor = ds.COLOR_TEXT;
+    dc.setPenWidth(1);
+    if (hasAlert) {
       // https://rgbcolorcode.com/color/FF0080  rgb(255,0,128)
       dc.setColor(0xff0080, Graphics.COLOR_TRANSPARENT);
       textColor = Graphics.COLOR_WHITE;
     } else {
-      dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+      dc.setColor(ds.COLOR_BACKGROUND, Graphics.COLOR_TRANSPARENT);
     }
     dc.fillCircle(x, y, radius - 1);
+    dc.setColor(ds.COLOR_TEXT_ADDITIONAL2, Graphics.COLOR_TRANSPARENT);
+    dc.drawCircle(x, y, radius);
 
     // Windspeed
     dc.setColor(textColor, Graphics.COLOR_TRANSPARENT);

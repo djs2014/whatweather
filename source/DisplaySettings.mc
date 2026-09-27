@@ -21,6 +21,7 @@ class DisplaySettings {
   var COLOR_HUMIDITY_DETAILS as Lang.Number = Graphics.COLOR_DK_BLUE;
   var COLOR_HUMIDITY as Lang.Number = Graphics.COLOR_DK_BLUE;
   var COLOR_WIND_ICON as Lang.Number = Graphics.COLOR_BLACK;
+  var COLOR_WIND_GUST1 as Lang.Number = 0xe06666;
   var COLOR_CLOUDS as Lang.Number = 0xccd1d1; // rgb(204, 209, 209)
   var COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
   var COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
@@ -126,6 +127,7 @@ class DisplaySettings {
       COLOR_HUMIDITY = Graphics.COLOR_DK_BLUE;
       COLOR_HUMIDITY_DETAILS = Graphics.COLOR_BLUE;
       COLOR_WIND_ICON = Graphics.COLOR_WHITE;
+      COLOR_WIND_GUST1 = 0xea9999; // lighter salmon, readable on black
       COLOR_CLOUDS = colorCloudsNight;
       COLOR_MM_RAIN = Graphics.createColor(255, 0, 213, 255); // rgb(0,213,255)
       COLOR_MM_DIVIDER = Graphics.COLOR_WHITE;
@@ -145,6 +147,7 @@ class DisplaySettings {
       COLOR_HUMIDITY = Graphics.COLOR_DK_BLUE;
       COLOR_HUMIDITY_DETAILS = Graphics.COLOR_DK_BLUE;
       COLOR_WIND_ICON = Graphics.COLOR_BLACK;
+      COLOR_WIND_GUST1 = 0xe06666;
       COLOR_CLOUDS = 0xccd1d1; // rgb(204, 209, 209)
       COLOR_MM_RAIN = 0x154360; // DARK_BLUE_10
       COLOR_MM_DIVIDER = 0xccccff; // Lavender BLUE
