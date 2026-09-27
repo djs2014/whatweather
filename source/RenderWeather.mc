@@ -1380,18 +1380,13 @@ hidden function drawHailStone(
       wsFont = Graphics.FONT_SMALL;
     }
 
-    var radius = 5;
     var padding = 5;
 
     var windGustLevel = wp.gustLevel;
     var iconColor = ds.COLOR_WIND_ICON;
-    var hasAlert = wp.speedAlert;
+    var hasAlert = wp.speedAlert || wp.gustAlert;
     if (hasAlert) {
       iconColor = Graphics.COLOR_RED;
-    }
-    if (wp.gustAlert) {
-      iconColor = Graphics.COLOR_RED;
-      hasAlert = true;
     } else if (windGustLevel >= 3) {
       iconColor = Graphics.COLOR_PURPLE;
     } else if (windGustLevel == 2) {
@@ -1408,15 +1403,8 @@ hidden function drawHailStone(
         circleMaxWidth = (dc.getWidth() / 5).toNumber();
       } else {
         // half columnwidth
-        circleMaxWidth = (ds.columnWidth - ds.columnWidth / 2).toNumber();
+        circleMaxWidth = (ds.columnWidth / 2).toNumber();
       }
-      wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
-    }
-
-    // Only get font if bigArrow
-    if (bigArrow && hasAlert) {
-      // only 1 windpoint in center of screen
-      var circleMaxWidth = (dc.getWidth() / 5).toNumber();
       wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
     }
     // Only displaying numbers. They are vertical and horizontal aligned in the circle.
@@ -1425,44 +1413,35 @@ hidden function drawHailStone(
     var yOffset = (Graphics.getFontDescent(wsFont) / 2).toNumber();
 
     var textWidth = dc.getTextWidthInPixels(text, wsFont);
-    radius = (textWidth / 2).toNumber() + padding;
+    var radius = (textWidth / 2).toNumber() + padding;
 
     // Bearing arrow
     if (bearingDegrees != 0 && wp.speed != 0 && wp.speed > NO_BEARING_SPEED) {
       // Correction 0 is horizontal, should be North so -90 degrees
-      // Wind comes from x but goes to y (opposite) direction so +160 degrees
+      // Wind comes from x but goes to y (opposite) direction so +180 degrees
       // Total is + 90 degrees
-      bearingDegrees = bearingDegrees + 90;
+      var dirTo = bearingDegrees + 90;
+      var fromDir = dirTo - 180;
       dc.setColor(iconColor, Graphics.COLOR_TRANSPARENT);
 
       var pA, pB, pC, pD;
-      var gustOuter = 0;
-      var gustInner = 0;
-      var factor = 0;
+      var gustOuter = 0.0;
+      var gustInner = 0.0;
+      var arrowLenBoost = 0;
       if (bigArrow) {
-        factor = (wp.speed / 4.0).toNumber();
-        pA = point2DOnCircle(
-          x,
-          y,
-          factor + radius * 2.4,
-          bearingDegrees - 35 - 180
-        );
-        pB = point2DOnCircle(x, y, factor + radius * 1.5, bearingDegrees - 180);
-        pC = point2DOnCircle(
-          x,
-          y,
-          factor + radius * 2.4,
-          bearingDegrees + 35 - 180
-        );
-        pD = point2DOnCircle(x, y, factor + radius * 3.0, bearingDegrees);
+        arrowLenBoost = (wp.speed / 4.0).toNumber();
+        pA = point2DOnCircle(x, y, arrowLenBoost + radius * 2.4, fromDir - 35);
+        pB = point2DOnCircle(x, y, arrowLenBoost + radius * 1.5, fromDir);
+        pC = point2DOnCircle(x, y, arrowLenBoost + radius * 2.4, fromDir + 35);
+        pD = point2DOnCircle(x, y, arrowLenBoost + radius * 3.0, dirTo);
 
         gustOuter = 2.6;
         gustInner = 1.8;
       } else {
-        pA = point2DOnCircle(x, y, radius * 1.5, bearingDegrees - 35 - 180);
-        pB = point2DOnCircle(x, y, radius * 1.0, bearingDegrees - 180);
-        pC = point2DOnCircle(x, y, radius * 1.5, bearingDegrees + 35 - 180);
-        pD = point2DOnCircle(x, y, radius * 1.9, bearingDegrees);
+        pA = point2DOnCircle(x, y, radius * 1.5, fromDir - 35);
+        pB = point2DOnCircle(x, y, radius * 1.0, fromDir);
+        pC = point2DOnCircle(x, y, radius * 1.5, fromDir + 35);
+        pD = point2DOnCircle(x, y, radius * 1.9, dirTo);
 
         gustOuter = 1.6;
         gustInner = 1.2;
@@ -1472,72 +1451,32 @@ hidden function drawHailStone(
       if (windGustLevel >= 1) {
         dc.setColor(ds.COLOR_TEXT, Graphics.COLOR_TRANSPARENT);
 
-        factor = factor + 2;
-        pA = point2DOnCircle(
-          x,
-          y,
-          factor + radius * gustOuter,
-          bearingDegrees - 30 - 180
-        );
-        pB = point2DOnCircle(
-          x,
-          y,
-          factor + radius * gustInner,
-          bearingDegrees - 180
-        );
-        pC = point2DOnCircle(
-          x,
-          y,
-          factor + radius * gustOuter,
-          bearingDegrees + 30 - 180
-        );
-
-        dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
-        dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
-
-        //  dc.fillPolygon([pA, pB, pC] as Polygon); this will give stack overflow error
-        if (windGustLevel >= 2) {
-          factor = factor + 3;
+        // NOTE: fillPolygon([pA, pB, pC]) avoided here, it gave stack overflow errors on device
+        var gustOffset = arrowLenBoost;
+        var chevrons = windGustLevel > 3 ? 3 : windGustLevel;
+        for (var i = 0; i < chevrons; i++) {
+          if (i == 0) {
+            gustOffset = gustOffset + 2;
+          } else {
+            gustOffset = gustOffset + 3;
+          }
           pA = point2DOnCircle(
             x,
             y,
-            factor + radius * gustOuter,
-            bearingDegrees - 30 - 180
+            gustOffset + radius * gustOuter,
+            fromDir - 30
           );
           pB = point2DOnCircle(
             x,
             y,
-            factor + radius * gustInner,
-            bearingDegrees - 180
+            gustOffset + radius * gustInner,
+            fromDir
           );
           pC = point2DOnCircle(
             x,
             y,
-            factor + radius * gustOuter,
-            bearingDegrees + 30 - 180
-          );
-          dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
-          dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
-        }
-        if (windGustLevel >= 3) {
-          factor = factor + 3;
-          pA = point2DOnCircle(
-            x,
-            y,
-            factor + radius * gustOuter,
-            bearingDegrees - 30 - 180
-          );
-          pB = point2DOnCircle(
-            x,
-            y,
-            factor + radius * gustInner,
-            bearingDegrees - 180
-          );
-          pC = point2DOnCircle(
-            x,
-            y,
-            factor + radius * gustOuter,
-            bearingDegrees + 30 - 180
+            gustOffset + radius * gustOuter,
+            fromDir + 30
           );
           dc.drawLine(pA[0], pA[1], pB[0], pB[1]);
           dc.drawLine(pB[0], pB[1], pC[0], pC[1]);
