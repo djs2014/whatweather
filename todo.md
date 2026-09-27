@@ -1,3 +1,4 @@
+
 // Node.js Backend Derived Sunshine Calculation
 function calculateHourlySunshine(hourlyItem, dailySunrise, dailySunset) {
     const dt = hourlyItem.dt;
