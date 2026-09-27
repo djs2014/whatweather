@@ -168,6 +168,24 @@ function getShowInfoText(value as Number) as String {
       return "--";
   }
 }
+
+function getRainWarningLevelText(value as Number) as String {
+  switch (value) {
+    case 0:
+      return "None";
+    case 1:
+      return "Drizzle 0.2 - 1.0 mm/h";
+    case 2:
+      return "Wet roads 1.0 - 2.5 mm/h";
+    case 3:
+      return "Heavy 2.5 - 5.0 mm/h";
+    case 4:
+      return "Extreme 5.0 - mm/h";
+    default:
+      return "--";
+  }
+}
+
 function getGustLevelText(value as Number) as String {
   switch (value) {
     case 0:

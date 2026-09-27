@@ -1,3 +1,44 @@
+// Node.js Backend Derived Sunshine Calculation
+function calculateHourlySunshine(hourlyItem, dailySunrise, dailySunset) {
+    const dt = hourlyItem.dt;
+    
+    // Check if the hour is outside daylight hours
+    if (dt < dailySunrise || dt > dailySunset) {
+        return 0; // Night time = 0 sun
+    }
+
+    const cloudiness = hourlyItem.clouds; // 0 - 100
+    
+    // Estimate clear sky fraction (0.0 to 1.0)
+    const sunFraction = Math.max(0, (100 - cloudiness) / 100);
+    
+    // Return estimated sun duration in minutes for that hour
+    return Math.round(sunFraction * 60);
+}
+
+- open meteo
+- bearing from slippery
+- bg service from slippery
+- optimize stuff
+
+Rain 'levels'
+
+< 0.2 mm/hr "Dry"
+0.2 - 1.0 mm/hr: Drizzle
+1.0 - 2.5 mm/hr Moderate rain
+2.5 - 5.0 mm/hr Heavy rain  - Caution
+5.0 - 10.0 mm/hr Extreme rain - High risk
+> 10.0 mm/hr Torrential Danger
+
+
+Option Open-Meteo ipv OWM
+### Test of all Weather Data current hour up to 12 hours &timeformat=unixtime
+### As for What weather data is needed
+### uv index, wind speed, wind direction, wind gust, cloud cover, weather condition, rain minutely
+### etc.
+GET https://api.open-meteo.com/v1/forecast?latitude=52.188950&longitude=4.549666&hourly=uv_index,windspeed_10m,winddirection_10m,windgusts_10m,cloudcover,weathercode,rain,temperature_2m,relativehumidity_2m,dewpoint_2m,precipitation,rain,snowfall,surface_temperature&past_days=0&forecast_days=1&timezone=auto&past_hours=0&forecast_hours=24
+
+
 when mm rain -> first hourly forecast is skipped
 TODO
  - show wind?

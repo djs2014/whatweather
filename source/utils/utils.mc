@@ -145,3 +145,37 @@ function checkMemory() {
   $.logInfo("Free Memory: " + stats.freeMemory / 1024 + " KB");
   $.logInfo("Total Memory: " + stats.totalMemory / 1024 + " KB");
 }
+
+
+// Draws diagonal stripes inside a bounding box
+function fillHatchedRectangle(
+    dc as Graphics.Dc, 
+    x as Number, 
+    y as Number, 
+    width as Number, 
+    height as Number, 
+    spacing as Number, 
+    lineColor as Number, 
+    bgColor as Number
+) as Void {
+    
+    // 1. Draw solid background
+    dc.setColor(bgColor, Graphics.COLOR_TRANSPARENT);
+    dc.fillRectangle(x, y, width, height);
+
+    // 2. Set clipping mask to destination rect
+    dc.setClip(x, y, width, height);
+
+    // 3. Draw diagonal lines across the expanded bounding area
+    dc.setColor(lineColor, Graphics.COLOR_TRANSPARENT);
+    dc.setPenWidth(2);
+
+    var totalSpan = width + height;
+    for (var offset = 0; offset < totalSpan; offset += spacing) {
+        // Draw 45-degree diagonal lines
+        dc.drawLine(x + offset, y, x, y + offset);       
+    }
+
+    // 4. Restore clip
+    dc.clearClip();
+}
