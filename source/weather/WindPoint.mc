@@ -31,9 +31,8 @@ class WindPoint {
     if (gust != null) {
       self.gust = gust;
     }
-    if (self.speed != null && self.gust != null) {
-      gustLevel = $.getWindGustLevel(self.speed, self.gust);
-    }
+
+    self.gustLevel = Wind.calculateOptimalGustLevel(self.speed, self.gust, false);  
     self.gustAlert = gustAlert;
   }
 
@@ -107,24 +106,4 @@ class WindPoint {
       text = $.stringLeft(text, ".", text);
     }
   }
-}
-
-function getWindGustLevel(
-  windSpeedMs as Lang.Float,
-  windGustMs as Lang.Float
-) as Number {
-  var windGustDiff = 0;
-  var level = 0;
-  if (windGustMs > 0) {
-    windGustDiff = windGustMs - windSpeedMs;
-    if (windGustDiff > 12.8) {
-      level = 3;
-    } else if (windGustDiff > 7.7) {
-      level = 2;
-    } else if (windGustDiff > 5.1) {
-      level = 1;
-    }
-  }
-  // System.println("gust: " + level)
-  return level;
 }

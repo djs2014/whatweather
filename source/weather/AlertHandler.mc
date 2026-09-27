@@ -381,7 +381,8 @@ class AlertHandler {
       return false;
     }
 
-    var level = $.getWindGustLevel(windSpeedMs, windGustMs);
+    var level = Wind.calculateOptimalGustLevel(windSpeedMs, windGustMs, false);
+
     maxWindGust = $.max(maxWindGust, level) as Number;
     // level reached NEUTRAL -> TRIGGERED  (skip if already HANDLED)
     if (statusWindGust == NEUTRAL && level >= alertWindGust) {
