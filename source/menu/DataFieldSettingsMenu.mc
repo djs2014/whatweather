@@ -312,6 +312,15 @@ class DataFieldSettingsMenuDelegate extends WatchUi.Menu2InputDelegate {
         $.getKeyAndIndex(storageKey, index)
       );
 
+      index = 22; // show_one_field|22 etc
+      $.addToggleMenuItem(
+        fieldMenu,
+        "Sunshine",
+        null,
+        $.getKeyAndIndex(storageKey, index),
+        array[index] == true
+      );
+
       WatchUi.pushView(
         fieldMenu,
         new $.GeneralMenuDelegate(),

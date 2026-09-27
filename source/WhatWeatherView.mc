@@ -60,6 +60,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mZoomMinuteForecastColumns as Number = 3;
   hidden var mShowDetailsWhenAlert as Boolean = false;
   hidden var mShowClouds as Boolean = false;
+  hidden var mShowSunshine as Boolean = false;
   hidden var mShowWind as Boolean = false;
   hidden var mShowWindUnit as Number = SHOW_WIND_KILOMETERS;
   hidden var mShowUv as Boolean = false;
@@ -337,6 +338,7 @@ class WhatWeatherView extends WatchUi.DataField {
     var show0TemperatureLine = arrShowField[19] == true;
     mShowWeatherText = arrShowField[20] == true;
     mRainWarningLevel = arrShowField[21]; // 0-4
+    mShowSunshine = arrShowField[22] == true;
 
     mShowRelativeWind = mShowExtraInfo == SHOW_INFO_RELATIVE_WIND;
 
@@ -889,6 +891,10 @@ class WhatWeatherView extends WatchUi.DataField {
 
       // Use the hourly forecast arrays
 
+      // End point of the previous sunshine segment (-1 = none, line starts over)
+      var sunPrevX = -1;
+      var sunPrevY = -1;
+
       for (
         var fcIdx = 0;
         fcIdx < maxHoursForecast && fcIdx < maxForecast;
@@ -979,6 +985,38 @@ class WhatWeatherView extends WatchUi.DataField {
             (mDs.columnWidth / 3).toNumber(),
             hrCloudsArray[fcIdx]
           );
+        }
+        // Night check, shared by the sunshine line and the condition icon below.
+        // At night there is no sun, so the sunshine line breaks.
+        var isNight = false;
+        if (mShowSunshine || mShowWeatherCondition || wa.alertWeatherCondition) {
+          isNight = mCurrentLocation.isAtNightTime(hrDtArray[fcIdx], false);
+        }
+        if (mShowSunshine) {
+          var sunshine = 0;
+          if (!isNight) {
+            sunshine = $.calculateHourlySunshine(hrCloudsArray[fcIdx]);
+          }
+          if (sunshine > 0) {
+            var sunY = (
+              mDs.columnY +
+              mDs.columnHeight -
+              (mDs.columnHeight.toFloat() / 100.0) * sunshine
+            ).toNumber();
+            // Continue from the previous hour, or start at the left edge
+            var sunX0 = x;
+            var sunY0 = sunY;
+            if (sunPrevX >= 0) {
+              sunX0 = sunPrevX;
+              sunY0 = sunPrevY;
+            }
+            drawSunshineSegment(dc, sunX0, sunY0, x + mDs.columnWidth, sunY);
+            sunPrevX = x + mDs.columnWidth;
+            sunPrevY = sunY;
+          } else {
+            // Overcast or night: break the line
+            sunPrevX = -1;
+          }
         }
         if (hasOtherForecast && colorCondition != colorOtherCondition) {
           // rain other
@@ -1151,15 +1189,11 @@ class WhatWeatherView extends WatchUi.DataField {
         }
 
         if (mShowWeatherCondition || wa.alertWeatherCondition) {
-          var nightTime = mCurrentLocation.isAtNightTime(
-            hrDtArray[fcIdx],
-            false
-          );
           render.drawWeatherCondition(
             dc,
             x,
             condition,
-            nightTime,
+            isNight,
             mDarkBackground
           );
           // if (nightTime && !sunsetPassed) {
@@ -1380,6 +1414,22 @@ class WhatWeatherView extends WatchUi.DataField {
       dc.fillRectangle(posX, barFilledY, 1, barFilledHeight);
     }
     return barFilledHeight.toNumber();
+  }
+
+  //! Yellowish sunshine indicator across the forecast hours: a 2 pixel
+  //! thick horizontal line segment from (x0, y0) to (x1, y1).
+  //! The caller chains one segment per hour for a continuous line.
+  function drawSunshineSegment(
+    dc as Dc,
+    x0 as Number,
+    y0 as Number,
+    x1 as Number,
+    y1 as Number
+  ) as Void {
+    dc.setColor(mDs.COLOR_SUNSHINE, Graphics.COLOR_TRANSPARENT);
+    dc.setPenWidth(2);
+    dc.drawLine(x0, y0, x1, y1);
+    dc.setPenWidth(1);
   }
 
   function drawColumnPrecipitationMillimeters(

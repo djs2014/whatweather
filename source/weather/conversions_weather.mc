@@ -136,3 +136,19 @@ function getConditionColor(condition as Lang.Number, def as Lang.Number, darkBac
       return def;
   }
 }
+
+//! Sunshine percentage (0-100) derived from cloud cover percentage (0-100).
+//! Clear sky (0 clouds) gives 100 sunshine, overcast (100 clouds) gives 0.
+//! Unknown (null) cloud cover gives 0 sunshine, so nothing is drawn.
+function calculateHourlySunshine(cloudCover as Lang.Numeric?) as Number {
+  if (cloudCover == null) {
+    return 0;
+  }
+  var clouds = cloudCover.toFloat();
+  if (clouds < 0.0) {
+    clouds = 0.0;
+  } else if (clouds > 100.0) {
+    clouds = 100.0;
+  }
+  return (100.0 - clouds).toNumber();
+}

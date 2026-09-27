@@ -402,6 +402,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // show 0 temperature line
       true, // show weather text
       2, // rain warning level
+      false, // sunshine
     ]);
 
     Storage.setValue("show_large_field", [
@@ -427,6 +428,7 @@ class WhatWeatherApp extends Application.AppBase {
       true, // show 0 temperature line
       false, // show weather text
       2, // rain warning level
+      false, // sunshine
     ]);
 
     Storage.setValue("show_wide_field", [
@@ -452,6 +454,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // show 0 temperature line
       false, // show weather text
       2, // rain warning level
+      false, // sunshine
     ]);
 
     Storage.setValue("show_small_field", [
@@ -477,6 +480,7 @@ class WhatWeatherApp extends Application.AppBase {
       false, // show 0 temperature line
       false, // show weather text
       2, // rain warning level
+      false, // sunshine
     ]);
   }
 }
@@ -523,4 +527,4 @@ var g_bg_timeout_seconds as Number = 0;
 (:typecheck(disableBackgroundCheck))
 var g_bg_delay_seconds as Number = 0;
 (:typecheck(disableBackgroundCheck))
-var gSizeArrFieldItems = 22;
+var gSizeArrFieldItems = 23;
