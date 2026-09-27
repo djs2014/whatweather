@@ -29,7 +29,7 @@ class WhatWeatherView extends WatchUi.DataField {
   hidden var mLat as Double = 0d;
   hidden var mLon as Double = 0d;
   hidden var mPreviousTrack as Float = 0.0f;
-  hidden var mBearing as Number = 0;
+  hidden var mHeadingDegrees as Number = 0;
 
   hidden var mBgWeatherData as Dictionary = ({}) as Dictionary;
   hidden var mGarminWeatherData as Dictionary = ({}) as Dictionary;
@@ -176,7 +176,8 @@ class WhatWeatherView extends WatchUi.DataField {
         }
       }
 
-      mBearing = getBearing(info);
+      mHeadingDegrees = Geo.getHeadingDegrees(info, mHeadingDegrees);
+
       mCurrentInfo = getCurrentInfo(info);
       mActivityPaused = activityIsPaused(info);
       mShowDetails = mActivityPaused && mShowDetailsWhenPaused;
@@ -1248,7 +1249,7 @@ class WhatWeatherView extends WatchUi.DataField {
       // mShowDetailsWhenAlert only for wind TODO others
 
       if (mShowRelativeWind || mShowDetailsWhenAlert) {
-        var activityBearing = mBearing;
+        var activityBearing = mHeadingDegrees;
         if (mActivityPaused) {
           activityBearing = 0;
         }
