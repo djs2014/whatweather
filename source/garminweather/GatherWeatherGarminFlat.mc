@@ -61,6 +61,14 @@ function getLatestGarminWeatherFlat() as Dictionary {
     flatData[:minutely_max] = 0.0f as Lang.Float;
     flatData[:minutely_dt] = null as Time.Moment?;
 
+    // @@TEST@@ For test generate minutely data
+    // for (var i = 0; i < 60; i++) {
+    //     var seed = i;
+    //     flatData[:minutely_pops].add(seed * 0.01f as Lang.Numeric);
+    // }
+    // flatData[:minutely_max] = 5.0f as Lang.Float;
+    // flatData[:minutely_dt] = Time.now();
+
     // Get Hourly data
     var hourly = Weather.getHourlyForecast();
     if (hourly == null) {

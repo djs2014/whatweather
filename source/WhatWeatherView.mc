@@ -596,6 +596,8 @@ class WhatWeatherView extends WatchUi.DataField {
   function onUpdateWeather(dc as Dc) as Boolean {
     var x = mDs.columnX;
     var y = mDs.columnY;
+    var width = dc.getWidth();
+
     var previousCondition = -1;
     var weatherTextLine = 0;
     // var sunsetPassed = false;
@@ -661,10 +663,12 @@ class WhatWeatherView extends WatchUi.DataField {
           }
 
           var xMMstart = x;
-          var columnWidth = 1;
+          var columnRainBarWidth = 1;
           var max_mmPerHour = $._maxMMRainPerHour;
           if (mActiveZoomMinuteForecast) {
-            columnWidth = 3; // @@TODO calculate width based on nrOfColumns / width of screen
+            columnRainBarWidth = (width - (mZoomMinuteForecastColumns * mDs.columnWidth)) / 60;
+            // System.println(["columnRainBarWidth", columnRainBarWidth]);
+            // columnRainBarWidth = 3; 
             maxHoursForecast = mZoomMinuteForecastColumns + 1; // We skip the first forecast.
             show5minMarker = true;
             if (mZoomMinuteForecastFactor == 0) {
@@ -677,7 +681,7 @@ class WhatWeatherView extends WatchUi.DataField {
 
             // System.println(["Zoom maxHoursForecast", maxHoursForecast]);
           }
-          var offset = (maxIdx * columnWidth + mDs.space).toNumber();
+          var offset = (maxIdx * columnRainBarWidth + mDs.space).toNumber();
           var rainInXminutes = -1;
           var rainLastEntry = 0;
           mDs.calculateColumns(offset, maxHoursForecast);
@@ -699,7 +703,7 @@ class WhatWeatherView extends WatchUi.DataField {
               mDs.COLOR_MM_RAIN,
               x,
               y,
-              columnWidth,
+              columnRainBarWidth,
               mDs.columnHeight,
               pop,
               max_mmPerHour
@@ -713,7 +717,7 @@ class WhatWeatherView extends WatchUi.DataField {
                   getAlertColor(warningLevel),
                   x,
                   y,
-                  columnWidth,
+                  columnRainBarWidth,
                   mDs.columnHeight,
                   pop,
                   max_mmPerHour
@@ -731,12 +735,12 @@ class WhatWeatherView extends WatchUi.DataField {
                 mDs.COLOR_MM_DIVIDER,
                 x,
                 y,
-                columnWidth,
+                columnRainBarWidth,
                 mDs.columnHeight,
                 5
               );
             }
-            x = x + columnWidth;
+            x = x + columnRainBarWidth;
             rainLastEntry = rainLastEntry + 1;
           }
           if (rainLastEntry > 0 && rainLastEntry < 59) {
@@ -746,7 +750,7 @@ class WhatWeatherView extends WatchUi.DataField {
               mDs.COLOR_MM_DIVIDER,
               x,
               y,
-              columnWidth,
+              columnRainBarWidth,
               mDs.columnHeight,
               5
             );
@@ -810,7 +814,7 @@ class WhatWeatherView extends WatchUi.DataField {
               dc.fillRectangle(
                 xMMstart,
                 mDs.columnY + mDs.columnHeight,
-                maxIdx * columnWidth,
+                maxIdx * columnRainBarWidth,
                 mDs.dashesUnderColumnHeight
               );
             }
@@ -1530,7 +1534,7 @@ class WhatWeatherView extends WatchUi.DataField {
     }
     if ($._soundMode == 3) {
       // TODO quick fix, no toneprofile on edge1050
-      if ($.getEdgeVersion() >= 1050) {
+      if ($.gHasHighResScreen) {
         Attention.playTone(Attention.TONE_LOUD_BEEP);
         return;
       }

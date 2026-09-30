@@ -1,3 +1,5 @@
+60min rain x offset / y offset small / wide / large field
+
 
 // Node.js Backend Derived Sunshine Calculation
 function calculateHourlySunshine(hourlyItem, dailySunrise, dailySunset) {
