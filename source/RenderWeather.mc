@@ -7,7 +7,7 @@ import Toybox.Time.Gregorian;
 
 typedef Polygon as Lang.Array<Point2D>;
 
-(:extendedCode) 
+(:extendedCode)
 class RenderWeather {
   hidden var ds as DisplaySettings = new DisplaySettings();
   hidden var ef as EdgeField = EfLarge; // TODO refactor
@@ -529,8 +529,6 @@ class RenderWeather {
       );
     }
   }
-
-  
 
   function getThemeColor(darkBackground) as Dictionary {
     return {
@@ -1198,7 +1196,7 @@ class RenderWeather {
   //   return pts as Polygon;
   // }
 
-hidden function drawHailStone(
+  hidden function drawHailStone(
     dc as Dc,
     x as Number,
     y as Number,
@@ -1207,25 +1205,24 @@ hidden function drawHailStone(
   ) as Void {
     dc.setColor(color, Graphics.COLOR_TRANSPARENT);
     var r = (width / 2).toFloat();
-    
+
     // Pre-calculate the 6 vertices of a hexagon
     var points = new [6];
     for (var i = 0; i < 6; i++) {
-
       var pt = point2DOnCircle(x, y, r, i * 60);
       points[i] = [pt[0].toNumber(), pt[1].toNumber()];
-        // var angleRad = Math.toRadians(i * 60.0);
-        // var ptX = (x + (r * Math.cos(angleRad))).toNumber();
-        // var ptY = (y + (r * Math.sin(angleRad))).toNumber();
-        // points[i] = [ptX, ptY];
+      // var angleRad = Math.toRadians(i * 60.0);
+      // var ptX = (x + (r * Math.cos(angleRad))).toNumber();
+      // var ptY = (y + (r * Math.sin(angleRad))).toNumber();
+      // points[i] = [ptX, ptY];
     }
 
     // Draw lines between vertices
     for (var i = 0; i < 6; i++) {
-        var startPt = points[i];
-        var endPt = points[(i + 1) % 6]; // Wraps back to 0 at the end
-        
-        dc.drawLine(startPt[0], startPt[1], endPt[0], endPt[1]);
+      var startPt = points[i];
+      var endPt = points[(i + 1) % 6]; // Wraps back to 0 at the end
+
+      dc.drawLine(startPt[0], startPt[1], endPt[0], endPt[1]);
     }
   }
 
@@ -1376,6 +1373,7 @@ hidden function drawHailStone(
     // Option to show it relative to activity direction
     var bearingDegrees = wp.bearing - activityBearing;
     var wsFont = Graphics.FONT_XTINY;
+    
     if (bigArrow) {
       wsFont = Graphics.FONT_SMALL;
     }
@@ -1385,6 +1383,7 @@ hidden function drawHailStone(
     var windGustLevel = wp.gustLevel;
     var iconColor = ds.COLOR_WIND_ICON;
     var hasAlert = wp.speedAlert || wp.gustAlert;
+    
     if (hasAlert) {
       iconColor = Graphics.COLOR_RED;
     } else if (windGustLevel >= 3) {
@@ -1400,12 +1399,14 @@ hidden function drawHailStone(
       var circleMaxWidth;
       if (bigArrow) {
         // only 1 windpoint in center of screen
-        circleMaxWidth = (dc.getWidth() / 5).toNumber();
+        // circleMaxWidth = (dc.getWidth() * 0.2d).toNumber();
+        circleMaxWidth = ds.columnWidth;
       } else {
         // half columnwidth
         circleMaxWidth = (ds.columnWidth / 2).toNumber();
       }
       wsFont = $.getMatchingFont(dc, ds.alertFonts, circleMaxWidth, text, -1);
+      System.println("circleMaxWidth: " + circleMaxWidth);
     }
     // Only displaying numbers. They are vertical and horizontal aligned in the circle.
     // But still some space below base line (because of py etc charcters, but numbers are all above baseline)
@@ -1467,12 +1468,7 @@ hidden function drawHailStone(
             gustOffset + radius * gustOuter,
             fromDir - 30
           );
-          pB = point2DOnCircle(
-            x,
-            y,
-            gustOffset + radius * gustInner,
-            fromDir
-          );
+          pB = point2DOnCircle(x, y, gustOffset + radius * gustInner, fromDir);
           pC = point2DOnCircle(
             x,
             y,
@@ -1529,7 +1525,7 @@ hidden function drawHailStone(
       }
     }
 
-    var angleInt = (angleInDegrees.toNumber() % 360);
+    var angleInt = angleInDegrees.toNumber() % 360;
     if (angleInt < 0) {
       angleInt = angleInt + 360;
     }
@@ -1537,7 +1533,7 @@ hidden function drawHailStone(
     // The compiler now knows 100% that these return Floats
     var sin = SIN_TABLE[angleInt] as Float;
     var cos = COS_TABLE[angleInt] as Float;
-    
+
     var xP = radius.toFloat() * cos + x;
     var yP = radius.toFloat() * sin + y;
 

@@ -1,3 +1,10 @@
+wide field
+no big arrow if height not fits or gHasHighResScreen?
+var scale =
+            (isBigField ? 2.0f : 1.0f) *
+            ($.gHasHighResScreen ? 1.50f : 1.0f);
+
+
 60min rain x offset / y offset small / wide / large field
 
 

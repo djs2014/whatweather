@@ -1295,7 +1295,7 @@ class WhatWeatherView extends WatchUi.DataField {
           var wp1 = mWindPoints[0] as WindPoint;
           // var show = mShowRelativeWind || wp1.hasAlert();
           // In center of screen. Show big arrow when moving or has alert
-          var bigArrow = activityBearing != 0 || wp1.hasAlert();
+          var bigArrow = activityBearing != 0 || wp1.hasAlert();          
           render.drawWindArrow(
             dc,
             (mDs.width / 2).toNumber(),
